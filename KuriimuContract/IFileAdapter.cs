@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using System.IO;
 
 namespace KuriimuContract
@@ -15,9 +16,10 @@ namespace KuriimuContract
 		string About { get; }
 
 		// Feature Support
-		bool CanSave { get; }
-		bool CanAddEntries { get; }
-		bool CanRemoveEntries { get; }
+		bool CanSave { get; } // Is saving supported?.
+		bool CanAddEntries { get; } // Is adding entries supported?
+		bool CanRemoveEntries { get; } // Is removing entries supported?
+		bool EntriesHaveExtendedProperties { get; } // Do entries have extra data
 
 		// I/O
 		FileInfo TargetFile { get; set; }
@@ -31,6 +33,7 @@ namespace KuriimuContract
 		// Features
 		bool AddEntry(IEntry entry);
 		bool RemoveEntry(IEntry entry);
+		void EntryProperties(IEntry entry, Icon icon);
 	}
 
 	public enum LoadResult

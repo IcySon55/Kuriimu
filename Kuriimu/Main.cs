@@ -20,7 +20,7 @@ namespace Kuriimu
 
 		private void Main_Load(object sender, EventArgs e)
 		{
-			this.Icon = Properties.Resources.Kuriimu;
+			this.Icon = Properties.Resources.kuriimu;
 		}
 
 		private void btnEditor_Click(object sender, EventArgs e)

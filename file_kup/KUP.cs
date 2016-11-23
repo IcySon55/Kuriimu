@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using KuriimuContract;
-using System.Xml;
+using System.Drawing;
 using System.IO;
+using System.Text;
+using System.Xml;
+using KuriimuContract;
 
-namespace klibKUP
+namespace file_kup
 {
 	public class KUP : IFileAdapter
 	{
@@ -49,6 +49,11 @@ namespace klibKUP
 		}
 
 		public bool CanRemoveEntries
+		{
+			get { return true; }
+		}
+
+		public bool EntriesHaveExtendedProperties
 		{
 			get { return true; }
 		}
@@ -277,6 +282,13 @@ namespace klibKUP
 			}
 
 			return result;
+		}
+
+		public void EntryProperties(IEntry entry, Icon icon)
+		{
+			EntryProperties properties = new EntryProperties();
+			properties.Icon = icon;
+			properties.ShowDialog();
 		}
 	}
 

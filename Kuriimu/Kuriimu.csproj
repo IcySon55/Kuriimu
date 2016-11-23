@@ -145,12 +145,20 @@
   <ItemGroup>
     <Content Include="Be.Windows.Forms.HexBox.dll" />
     <None Include="images\btn-kuriimu.png" />
+    <None Include="images\find.ico" />
+    <None Include="images\game-none.png" />
     <Content Include="images\kuriimu.ico" />
-    <None Include="images\kuriimu.png" />
+    <None Include="images\menu-about.png" />
     <Content Include="images\menu-add.png" />
     <Content Include="images\menu-delete.png" />
+    <None Include="images\menu-exit.png" />
     <Content Include="images\menu-field-properties.png" />
+    <None Include="images\menu-find.png" />
+    <None Include="images\menu-manage.png" />
+    <None Include="images\menu-gbatemp.png" />
+    <None Include="images\menu-git.png" />
     <Content Include="images\menu-open.png" />
+    <None Include="images\menu-properties.png" />
     <Content Include="images\menu-save-as.png" />
     <Content Include="images\menu-save.png" />
   </ItemGroup>

@@ -1,12 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using KuriimuContract;
 
 namespace Kuriimu
 {
 	class Tools
 	{
+		public static void SetString(IEntry entry, string text)
+		{
+			entry.EditedText = entry.Encoding.GetBytes(text);
+		}
+
 		public static string ToLittleEndian(long value)
 		{
 			byte[] bytes = BitConverter.GetBytes((uint)value);

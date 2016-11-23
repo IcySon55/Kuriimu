@@ -8,8 +8,8 @@
     <ProjectGuid>{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>klibKUP</RootNamespace>
-    <AssemblyName>klibKUP</AssemblyName>
+    <RootNamespace>file_kup</RootNamespace>
+    <AssemblyName>file_kup</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,6 +33,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,6 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KUP.cs" />
+    <Compile Include="EntryProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EntryProperties.Designer.cs">
+      <DependentUpon>EntryProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

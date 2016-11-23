@@ -27,7 +27,7 @@ namespace Kuriimu
 				txtFile.Text = Arguments[1];
 			txtOffset.Text = "0";
 			txtLeneance.Text = "0";
-			this.Icon = Properties.Resources.Kuriimu;
+			this.Icon = Properties.Resources.kuriimu;
 		}
 
 		private void btnBrowse_Click(object sender, EventArgs e)

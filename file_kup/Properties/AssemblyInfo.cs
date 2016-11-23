@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("klibKUP")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("file_kup")]
+[assembly: AssemblyDescription("KUP Archive plugin for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("klibKUP")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct("file_kup")]
+[assembly: AssemblyCopyright("Copyright © IcySon55 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

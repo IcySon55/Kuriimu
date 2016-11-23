@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuContract", "..\KuriimuContract\KuriimuContract.csproj", "{51E474F7-1497-4C30-BC18-C357C884B8B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "klibKUP", "..\klibKUP\klibKUP.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_kup", "..\file_kup\file_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

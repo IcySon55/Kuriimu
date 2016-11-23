@@ -26,7 +26,7 @@ namespace Kuriimu
 
 		private void Editor_Load(object sender, EventArgs e)
 		{
-			this.Icon = Resources.Kuriimu;
+			this.Icon = Resources.kuriimu;
 
 			// Load Plugins
 			fileAdapters = new Dictionary<string, IFileAdapter>();
@@ -190,6 +190,8 @@ namespace Kuriimu
 				tslEntries.Text = _fileAdapter.Entries.Count + " Entries";
 			else
 				tslEntries.Text = "Entries";
+
+			tsbProperties.Enabled = _fileOpen;
 		}
 
 		private string FileName()
@@ -199,7 +201,36 @@ namespace Kuriimu
 
 		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			txtEdit.Text = ((IEntry)lstEntries.SelectedItem).GetOriginalString();
+			txtEdit.Text = ((IEntry)lstEntries.SelectedItem).GetEditedString();
+			txtOriginal.Text = ((IEntry)lstEntries.SelectedItem).GetOriginalString();
 		}
+
+		// Toolbar
+		private void tsbProperties_Click(object sender, EventArgs e)
+		{
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			_fileAdapter.EntryProperties(entry, Properties.Resources.kuriimu);
+		}
+
+		private void lstEntries_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (lstEntries.Focused && e.KeyCode == Keys.F8)
+				tsbProperties_Click(sender, e);
+		}
+
+		// Text
+		private void txtEdit_KeyUp(object sender, KeyEventArgs e)
+		{
+			string result = txtEdit.Text;
+
+			Tools.SetString((IEntry)lstEntries.SelectedItem, txtEdit.Text);
+
+			if (txtEdit.Text != txtOriginal.Text)
+				_hasChanges = true;
+
+			//UpdateHexView();
+			UpdateForm();
+		}
+		
 	}
 }

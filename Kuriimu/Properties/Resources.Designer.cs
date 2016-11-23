@@ -73,10 +73,40 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon Kuriimu {
+        internal static System.Drawing.Icon find {
             get {
-                object obj = ResourceManager.GetObject("Kuriimu", resourceCulture);
+                object obj = ResourceManager.GetObject("find", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap game_none {
+            get {
+                object obj = ResourceManager.GetObject("game_none", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon kuriimu {
+            get {
+                object obj = ResourceManager.GetObject("kuriimu", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_about {
+            get {
+                object obj = ResourceManager.GetObject("menu_about", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -103,6 +133,16 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_exit {
+            get {
+                object obj = ResourceManager.GetObject("menu_exit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_field_properties {
             get {
                 object obj = ResourceManager.GetObject("menu_field_properties", resourceCulture);
@@ -113,9 +153,59 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_find {
+            get {
+                object obj = ResourceManager.GetObject("menu_find", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_gbatemp {
+            get {
+                object obj = ResourceManager.GetObject("menu_gbatemp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_git {
+            get {
+                object obj = ResourceManager.GetObject("menu_git", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_manage {
+            get {
+                object obj = ResourceManager.GetObject("menu_manage", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_open {
             get {
                 object obj = ResourceManager.GetObject("menu_open", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_properties {
+            get {
+                object obj = ResourceManager.GetObject("menu_properties", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
