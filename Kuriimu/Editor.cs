@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
+using Be.Windows.Forms;
 using Kuriimu.Properties;
 using KuriimuContract;
 
@@ -13,10 +13,12 @@ namespace Kuriimu
 		private Main _main = null;
 		private FileInfo _file = null;
 		private IFileAdapter _fileAdapter = null;
+		private IControlCodeHandler _codeHandler = null;
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
 
 		Dictionary<string, IFileAdapter> fileAdapters = null;
+		Dictionary<string, IControlCodeHandler> codeHandlers = null;
 
 		public Editor(Main main)
 		{
@@ -29,9 +31,41 @@ namespace Kuriimu
 			this.Icon = Resources.kuriimu;
 
 			// Load Plugins
+			Console.WriteLine("Loading plugins...");
+
 			fileAdapters = new Dictionary<string, IFileAdapter>();
-			foreach (var fileAdapter in PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory))
+			foreach (IFileAdapter fileAdapter in PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory))
 				fileAdapters.Add(fileAdapter.Name, fileAdapter);
+
+			tsbGameSelect.DropDownItems.Clear();
+			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", Resources.game_none, tsbGameSelect_SelectedIndexChanged);
+			tsbGameSelect.DropDownItems.Add(tsiNoGame);
+			tsbGameSelect.Text = tsiNoGame.Text;
+			tsbGameSelect.Image = tsiNoGame.Image;
+
+			codeHandlers = new Dictionary<string, IControlCodeHandler>();
+			foreach (IControlCodeHandler codeHandler in PluginLoader<IControlCodeHandler>.LoadPlugins(Settings.Default.PluginDirectory))
+			{
+				codeHandlers.Add(codeHandler.Name, codeHandler);
+
+				ToolStripMenuItem tsiHandler = new ToolStripMenuItem(codeHandler.Name, codeHandler.Icon, tsbGameSelect_SelectedIndexChanged);
+				tsbGameSelect.DropDownItems.Add(tsiHandler);
+			}
+		}
+
+		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			ToolStripItem tsi = (ToolStripItem)sender;
+
+			if (tsi.Text == "No Game")
+				_codeHandler = null;
+			else
+				_codeHandler = codeHandlers[((ToolStripItem)sender).Text];
+
+			tsbGameSelect.Text = tsi.Text;
+			tsbGameSelect.Image = tsi.Image;
+
+			lstEntries_SelectedIndexChanged(sender, e);
 		}
 
 		private void Editor_FormClosed(object sender, FormClosedEventArgs e)
@@ -141,13 +175,18 @@ namespace Kuriimu
 
 		private void LoadEntries()
 		{
+			int selectedIndex = lstEntries.SelectedIndex;
+
 			lstEntries.Items.Clear();
 
 			for (int i = 0; i < _fileAdapter.Entries.Count; i++)
 				lstEntries.Items.Add(_fileAdapter.Entries[i]);
 
+			if (selectedIndex > lstEntries.Items.Count - 1)
+				selectedIndex = lstEntries.Items.Count - 1;
+
 			if (lstEntries.Items.Count > 0)
-				lstEntries.SelectedIndex = 0;
+				lstEntries.SelectedIndex = selectedIndex;
 		}
 
 		private DialogResult SaveFile(bool saveAs = false)
@@ -182,6 +221,40 @@ namespace Kuriimu
 		}
 
 		// Utilities
+		private void UpdateTextView()
+		{
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
+
+			if (_codeHandler != null)
+			{
+				txtEdit.Text = _codeHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>");
+				txtOriginal.Text = _codeHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>");
+			}
+			else
+			{
+				txtEdit.Text = entry.GetEditedString().Replace("\0", "<null>");
+				txtOriginal.Text = entry.GetOriginalString().Replace("\0", "<null>");
+			}
+		}
+
+		private void UpdateHexView()
+		{
+			DynamicFileByteProvider dfbp = null;
+
+			try
+			{
+				IEntry ent = (IEntry)lstEntries.SelectedItem;
+				MemoryStream strm = new MemoryStream(ent.EditedText);
+
+				dfbp = new DynamicFileByteProvider(strm);
+				dfbp.Changed += new EventHandler(hbxEdit_Changed);
+			}
+			catch (Exception)
+			{ }
+
+			hbxHexView.ByteProvider = dfbp;
+		}
+
 		private void UpdateForm()
 		{
 			this.Text = Settings.Default.ApplicationName + " Editor" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
@@ -191,7 +264,11 @@ namespace Kuriimu
 			else
 				tslEntries.Text = "Entries";
 
-			tsbProperties.Enabled = _fileOpen;
+			bool itemSelected = lstEntries.SelectedIndex >= 0;
+
+			tsbRename.Enabled = itemSelected;
+			tsbProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected;
+			tsbGameSelect.Enabled = itemSelected;
 		}
 
 		private string FileName()
@@ -201,11 +278,22 @@ namespace Kuriimu
 
 		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			txtEdit.Text = ((IEntry)lstEntries.SelectedItem).GetEditedString();
-			txtOriginal.Text = ((IEntry)lstEntries.SelectedItem).GetOriginalString();
+			UpdateTextView();
+			UpdateHexView();
+			UpdateForm();
 		}
 
 		// Toolbar
+		private void tsbRename_Click(object sender, EventArgs e)
+		{
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
+
+			Name name = new Name(entry, null, _fileAdapter.EntriesHaveUniqueNames);
+			
+			if (name.ShowDialog() == DialogResult.OK)
+				LoadEntries();
+		}
+
 		private void tsbProperties_Click(object sender, EventArgs e)
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
@@ -221,16 +309,37 @@ namespace Kuriimu
 		// Text
 		private void txtEdit_KeyUp(object sender, KeyEventArgs e)
 		{
-			string result = txtEdit.Text;
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
-			Tools.SetString((IEntry)lstEntries.SelectedItem, txtEdit.Text);
+			if (_codeHandler != null)
+				entry.EditedText = _codeHandler.GetBytes(txtEdit.Text.Replace("<null>", "\0"), entry.Encoding);
+			else
+				entry.EditedText = entry.Encoding.GetBytes(txtEdit.Text.Replace("<null>", "\0"));
+
+			UpdateHexView();
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
 
-			//UpdateHexView();
 			UpdateForm();
 		}
-		
+
+		protected void hbxEdit_Changed(object sender, EventArgs e)
+		{
+			DynamicFileByteProvider dfbp = (DynamicFileByteProvider)sender;
+
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			List<byte> bytes = new List<byte>();
+			for (int i = 0; i < (int)dfbp.Length; i++)
+				bytes.Add(dfbp.ReadByte(i));
+			entry.EditedText = bytes.ToArray();
+
+			UpdateTextView();
+
+			if (txtEdit.Text != txtOriginal.Text)
+				_hasChanges = true;
+
+			UpdateForm();
+		}
 	}
 }

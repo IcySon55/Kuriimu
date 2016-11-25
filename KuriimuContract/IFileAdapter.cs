@@ -19,6 +19,7 @@ namespace KuriimuContract
 		bool CanSave { get; } // Is saving supported?.
 		bool CanAddEntries { get; } // Is adding entries supported?
 		bool CanRemoveEntries { get; } // Is removing entries supported?
+		bool EntriesHaveUniqueNames { get; } // Must entry names be unique
 		bool EntriesHaveExtendedProperties { get; } // Do entries have extra data
 
 		// I/O

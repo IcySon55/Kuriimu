@@ -53,6 +53,11 @@ namespace file_kup
 			get { return true; }
 		}
 
+		public bool EntriesHaveUniqueNames
+		{
+			get { return false; }
+		}
+
 		public bool EntriesHaveExtendedProperties
 		{
 			get { return true; }

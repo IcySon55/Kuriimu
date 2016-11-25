@@ -6,11 +6,6 @@ namespace Kuriimu
 {
 	class Tools
 	{
-		public static void SetString(IEntry entry, string text)
-		{
-			entry.EditedText = entry.Encoding.GetBytes(text);
-		}
-
 		public static string ToLittleEndian(long value)
 		{
 			byte[] bytes = BitConverter.GetBytes((uint)value);

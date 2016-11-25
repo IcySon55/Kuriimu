@@ -14,7 +14,6 @@ namespace Kuriimu
 
 			if(Directory.Exists(path))
 			{
-				Console.WriteLine("Loading plugins...");
 				dllFileNames = Directory.GetFiles(path, "*.dll");
 
 				ICollection<Assembly> assemblies = new List<Assembly>(dllFileNames.Length);
@@ -58,7 +57,6 @@ namespace Kuriimu
 					plugins.Add(plugin);
 				}
 
-				Console.WriteLine("Plugins loaded.");
 				return plugins;
 			}
 

@@ -47,7 +47,7 @@
 			this.tlsEntries = new System.Windows.Forms.ToolStrip();
 			this.tslEntries = new System.Windows.Forms.ToolStripLabel();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+			this.tsbRename = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
 			this.tsbProperties = new System.Windows.Forms.ToolStripButton();
 			this.splContent = new System.Windows.Forms.SplitContainer();
@@ -55,12 +55,17 @@
 			this.txtEdit = new System.Windows.Forms.TextBox();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.tslText = new System.Windows.Forms.ToolStripLabel();
-			this.toolStripSplitButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-			this.manageProfilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbGameSelect = new System.Windows.Forms.ToolStripDropDownButton();
 			this.txtOriginal = new System.Windows.Forms.TextBox();
 			this.toolStrip2 = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+			this.splPreview = new System.Windows.Forms.SplitContainer();
+			this.ptbPreview = new System.Windows.Forms.PictureBox();
+			this.toolStrip3 = new System.Windows.Forms.ToolStrip();
+			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+			this.hbxHexView = new Be.Windows.Forms.HexBox();
+			this.toolStrip4 = new System.Windows.Forms.ToolStrip();
+			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -70,6 +75,7 @@
 			this.tlsEntries.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splContent)).BeginInit();
 			this.splContent.Panel1.SuspendLayout();
+			this.splContent.Panel2.SuspendLayout();
 			this.splContent.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splText)).BeginInit();
 			this.splText.Panel1.SuspendLayout();
@@ -77,6 +83,13 @@
 			this.splText.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.toolStrip2.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splPreview)).BeginInit();
+			this.splPreview.Panel1.SuspendLayout();
+			this.splPreview.Panel2.SuspendLayout();
+			this.splPreview.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ptbPreview)).BeginInit();
+			this.toolStrip3.SuspendLayout();
+			this.toolStrip4.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -173,14 +186,14 @@
 			// 
 			this.gBATempToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_gbatemp;
 			this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gBATempToolStripMenuItem.Text = "GBATemp";
 			// 
 			// gitHubToolStripMenuItem
 			// 
 			this.gitHubToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_git;
 			this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gitHubToolStripMenuItem.Text = "GitHub";
 			// 
 			// aboutToolStripMenuItem1
@@ -188,7 +201,7 @@
 			this.aboutToolStripMenuItem1.Image = global::Kuriimu.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
 			this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
 			this.aboutToolStripMenuItem1.Text = "&About";
 			// 
 			// pnlMain
@@ -242,7 +255,7 @@
 			this.tlsEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslEntries,
             this.toolStripButton1,
-            this.toolStripButton2,
+            this.tsbRename,
             this.toolStripButton3,
             this.tsbProperties});
 			this.tlsEntries.Location = new System.Drawing.Point(0, 0);
@@ -253,10 +266,9 @@
 			// 
 			// tslEntries
 			// 
-			this.tslEntries.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
 			this.tslEntries.Name = "tslEntries";
-			this.tslEntries.Size = new System.Drawing.Size(42, 22);
-			this.tslEntries.Text = "Entries";
+			this.tslEntries.Size = new System.Drawing.Size(45, 22);
+			this.tslEntries.Text = "Entries:";
 			// 
 			// toolStripButton1
 			// 
@@ -268,15 +280,16 @@
 			this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
 			this.toolStripButton1.Text = "Add Entry";
 			// 
-			// toolStripButton2
+			// tsbRename
 			// 
-			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton2.Enabled = false;
-			this.toolStripButton2.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
-			this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton2.Name = "toolStripButton2";
-			this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton2.Text = "Rename Entry";
+			this.tsbRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbRename.Enabled = false;
+			this.tsbRename.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
+			this.tsbRename.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbRename.Name = "tsbRename";
+			this.tsbRename.Size = new System.Drawing.Size(23, 22);
+			this.tsbRename.Text = "Rename Entry";
+			this.tsbRename.Click += new System.EventHandler(this.tsbRename_Click);
 			// 
 			// toolStripButton3
 			// 
@@ -309,6 +322,10 @@
 			// splContent.Panel1
 			// 
 			this.splContent.Panel1.Controls.Add(this.splText);
+			// 
+			// splContent.Panel2
+			// 
+			this.splContent.Panel2.Controls.Add(this.splPreview);
 			this.splContent.Size = new System.Drawing.Size(839, 632);
 			this.splContent.SplitterDistance = 309;
 			this.splContent.SplitterWidth = 6;
@@ -352,7 +369,7 @@
 			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslText,
-            this.toolStripSplitButton1});
+            this.tsbGameSelect});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -365,30 +382,15 @@
 			this.tslText.Size = new System.Drawing.Size(32, 22);
 			this.tslText.Text = "Text:";
 			// 
-			// toolStripSplitButton1
+			// tsbGameSelect
 			// 
-			this.toolStripSplitButton1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.toolStripSplitButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.manageProfilesToolStripMenuItem,
-            this.toolStripSeparator2});
-			this.toolStripSplitButton1.Image = global::Kuriimu.Properties.Resources.game_none;
-			this.toolStripSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripSplitButton1.Name = "toolStripSplitButton1";
-			this.toolStripSplitButton1.Size = new System.Drawing.Size(140, 22);
-			this.toolStripSplitButton1.Text = "No game selected...";
-			// 
-			// manageProfilesToolStripMenuItem
-			// 
-			this.manageProfilesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_manage;
-			this.manageProfilesToolStripMenuItem.Name = "manageProfilesToolStripMenuItem";
-			this.manageProfilesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.manageProfilesToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
-			this.manageProfilesToolStripMenuItem.Text = "&Manage Profiles";
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(175, 6);
+			this.tsbGameSelect.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbGameSelect.Enabled = false;
+			this.tsbGameSelect.Image = global::Kuriimu.Properties.Resources.game_none;
+			this.tsbGameSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbGameSelect.Name = "tsbGameSelect";
+			this.tsbGameSelect.Size = new System.Drawing.Size(140, 22);
+			this.tsbGameSelect.Text = "No game selected...";
 			// 
 			// txtOriginal
 			// 
@@ -421,6 +423,86 @@
 			this.toolStripLabel1.Size = new System.Drawing.Size(52, 22);
 			this.toolStripLabel1.Text = "Original:";
 			// 
+			// splPreview
+			// 
+			this.splPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splPreview.Location = new System.Drawing.Point(0, 0);
+			this.splPreview.Name = "splPreview";
+			// 
+			// splPreview.Panel1
+			// 
+			this.splPreview.Panel1.Controls.Add(this.ptbPreview);
+			this.splPreview.Panel1.Controls.Add(this.toolStrip3);
+			// 
+			// splPreview.Panel2
+			// 
+			this.splPreview.Panel2.Controls.Add(this.hbxHexView);
+			this.splPreview.Panel2.Controls.Add(this.toolStrip4);
+			this.splPreview.Size = new System.Drawing.Size(839, 317);
+			this.splPreview.SplitterDistance = 416;
+			this.splPreview.SplitterWidth = 6;
+			this.splPreview.TabIndex = 0;
+			// 
+			// ptbPreview
+			// 
+			this.ptbPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ptbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ptbPreview.Location = new System.Drawing.Point(0, 27);
+			this.ptbPreview.Name = "ptbPreview";
+			this.ptbPreview.Size = new System.Drawing.Size(416, 290);
+			this.ptbPreview.TabIndex = 4;
+			this.ptbPreview.TabStop = false;
+			// 
+			// toolStrip3
+			// 
+			this.toolStrip3.AutoSize = false;
+			this.toolStrip3.BackColor = System.Drawing.Color.Transparent;
+			this.toolStrip3.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.toolStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel2});
+			this.toolStrip3.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip3.Name = "toolStrip3";
+			this.toolStrip3.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+			this.toolStrip3.Size = new System.Drawing.Size(416, 27);
+			this.toolStrip3.TabIndex = 3;
+			// 
+			// toolStripLabel2
+			// 
+			this.toolStripLabel2.Name = "toolStripLabel2";
+			this.toolStripLabel2.Size = new System.Drawing.Size(51, 22);
+			this.toolStripLabel2.Text = "Preview:";
+			// 
+			// hbxHexView
+			// 
+			this.hbxHexView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.hbxHexView.Font = new System.Drawing.Font("Consolas", 9.75F);
+			this.hbxHexView.Location = new System.Drawing.Point(0, 27);
+			this.hbxHexView.Name = "hbxHexView";
+			this.hbxHexView.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+			this.hbxHexView.Size = new System.Drawing.Size(417, 290);
+			this.hbxHexView.StringViewVisible = true;
+			this.hbxHexView.TabIndex = 4;
+			this.hbxHexView.VScrollBarVisible = true;
+			// 
+			// toolStrip4
+			// 
+			this.toolStrip4.AutoSize = false;
+			this.toolStrip4.BackColor = System.Drawing.Color.Transparent;
+			this.toolStrip4.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.toolStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel3});
+			this.toolStrip4.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip4.Name = "toolStrip4";
+			this.toolStrip4.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+			this.toolStrip4.Size = new System.Drawing.Size(417, 27);
+			this.toolStrip4.TabIndex = 4;
+			// 
+			// toolStripLabel3
+			// 
+			this.toolStripLabel3.Name = "toolStripLabel3";
+			this.toolStripLabel3.Size = new System.Drawing.Size(58, 22);
+			this.toolStripLabel3.Text = "Hex View:";
+			// 
 			// Editor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -443,6 +525,7 @@
 			this.tlsEntries.ResumeLayout(false);
 			this.tlsEntries.PerformLayout();
 			this.splContent.Panel1.ResumeLayout(false);
+			this.splContent.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splContent)).EndInit();
 			this.splContent.ResumeLayout(false);
 			this.splText.Panel1.ResumeLayout(false);
@@ -455,6 +538,15 @@
 			this.toolStrip1.PerformLayout();
 			this.toolStrip2.ResumeLayout(false);
 			this.toolStrip2.PerformLayout();
+			this.splPreview.Panel1.ResumeLayout(false);
+			this.splPreview.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splPreview)).EndInit();
+			this.splPreview.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.ptbPreview)).EndInit();
+			this.toolStrip3.ResumeLayout(false);
+			this.toolStrip3.PerformLayout();
+			this.toolStrip4.ResumeLayout(false);
+			this.toolStrip4.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -471,7 +563,7 @@
 		private System.Windows.Forms.ListBox lstEntries;
 		private System.Windows.Forms.ToolStripLabel tslEntries;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
-		private System.Windows.Forms.ToolStripButton toolStripButton2;
+		private System.Windows.Forms.ToolStripButton tsbRename;
 		private System.Windows.Forms.ToolStripButton toolStripButton3;
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splContent;
@@ -488,12 +580,17 @@
 		private System.Windows.Forms.ToolStripMenuItem fIndToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-		private System.Windows.Forms.ToolStripDropDownButton toolStripSplitButton1;
-		private System.Windows.Forms.ToolStripMenuItem manageProfilesToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripDropDownButton tsbGameSelect;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gBATempToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gitHubToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+		private System.Windows.Forms.SplitContainer splPreview;
+		private System.Windows.Forms.ToolStrip toolStrip3;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+		private System.Windows.Forms.ToolStrip toolStrip4;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+		private Be.Windows.Forms.HexBox hbxHexView;
+		private System.Windows.Forms.PictureBox ptbPreview;
 	}
 }
