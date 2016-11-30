@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}</ProjectGuid>
+    <ProjectGuid>{40EA3463-4A08-4E2C-938F-5025E87D6CB6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_kup</RootNamespace>
-    <AssemblyName>file_kup</AssemblyName>
+    <RootNamespace>dump_fenceposts</RootNamespace>
+    <AssemblyName>dump_fenceposts</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,26 +42,71 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KUP.cs" />
-    <Compile Include="KupAdapter.cs" />
-    <Compile Include="EntryProperties.cs">
+    <Compile Include="Fenceposts.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EntryProperties.Designer.cs">
-      <DependentUpon>EntryProperties.cs</DependentUpon>
+    <Compile Include="Fenceposts.Designer.cs">
+      <DependentUpon>Fenceposts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dumper.cs" />
+    <Compile Include="Bound.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Bound.Designer.cs">
+      <DependentUpon>Bound.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\file_kup\file_kup.csproj">
+      <Project>{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}</Project>
+      <Name>file_kup</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EntryProperties.resx">
-      <DependentUpon>EntryProperties.cs</DependentUpon>
+    <EmbeddedResource Include="Fenceposts.resx">
+      <DependentUpon>Fenceposts.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Bound.resx">
+      <DependentUpon>Bound.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu_new.png" />
+    <None Include="images\menu-exit.png" />
+    <None Include="images\menu-open.png" />
+    <None Include="images\menu-save-as.png" />
+    <None Include="images\menu-save.png" />
+    <None Include="images\menu-properties.png" />
+    <None Include="images\menu-delete.png" />
+    <None Include="images\menu-add.png" />
+    <None Include="images\fenceposts.ico" />
+    <Content Include="images\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -89,6 +89,12 @@
     <Compile Include="Director.Designer.cs">
       <DependentUpon>Director.cs</DependentUpon>
     </Compile>
+    <Compile Include="DumperSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DumperSelect.Designer.cs">
+      <DependentUpon>DumperSelect.cs</DependentUpon>
+    </Compile>
     <Compile Include="Editor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +141,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Director.resx">
       <DependentUpon>Director.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DumperSelect.resx">
+      <DependentUpon>DumperSelect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>
@@ -205,7 +214,7 @@
 del "D:\Abyss Web Server\htdocs\tools\kuriimu.rar"
 del "$(TargetDir)\plugins\KuriimuContract.*"
 cd "$(TargetDir)"
-"C:\Program Files\WinRAR\rar.exe" a "D:\Abyss Web Server\htdocs\tools\kuriimu.rar" $(TargetFileName) KuriimuContract.dll "plugins\*.dll"</PostBuildEvent>
+"C:\Program Files\WinRAR\rar.exe" a "D:\Abyss Web Server\htdocs\tools\kuriimu.rar" $(TargetFileName) KuriimuContract.dll Be.Windows.Forms.HexBox.dll "plugins\*.dll"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

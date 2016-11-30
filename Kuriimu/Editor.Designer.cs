@@ -46,10 +46,10 @@
 			this.lstEntries = new System.Windows.Forms.ListBox();
 			this.tlsEntries = new System.Windows.Forms.ToolStrip();
 			this.tslEntries = new System.Windows.Forms.ToolStripLabel();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-			this.tsbRename = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-			this.tsbProperties = new System.Windows.Forms.ToolStripButton();
+			this.tsbEntryAdd = new System.Windows.Forms.ToolStripButton();
+			this.tsbEntryRename = new System.Windows.Forms.ToolStripButton();
+			this.tsbEntryDelete = new System.Windows.Forms.ToolStripButton();
+			this.tsbEntryProperties = new System.Windows.Forms.ToolStripButton();
 			this.splContent = new System.Windows.Forms.SplitContainer();
 			this.splText = new System.Windows.Forms.SplitContainer();
 			this.txtEdit = new System.Windows.Forms.TextBox();
@@ -121,7 +121,7 @@
 			this.openToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -130,7 +130,7 @@
 			this.saveToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -139,21 +139,21 @@
 			this.saveAsToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave As...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			// 
 			// editToolStripMenuItem
@@ -245,6 +245,7 @@
 			this.lstEntries.Sorted = true;
 			this.lstEntries.TabIndex = 1;
 			this.lstEntries.SelectedIndexChanged += new System.EventHandler(this.lstEntries_SelectedIndexChanged);
+			this.lstEntries.DoubleClick += new System.EventHandler(this.lstEntries_DoubleClick);
 			this.lstEntries.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lstEntries_KeyUp);
 			// 
 			// tlsEntries
@@ -254,10 +255,10 @@
 			this.tlsEntries.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslEntries,
-            this.toolStripButton1,
-            this.tsbRename,
-            this.toolStripButton3,
-            this.tsbProperties});
+            this.tsbEntryAdd,
+            this.tsbEntryRename,
+            this.tsbEntryDelete,
+            this.tsbEntryProperties});
 			this.tlsEntries.Location = new System.Drawing.Point(0, 0);
 			this.tlsEntries.Name = "tlsEntries";
 			this.tlsEntries.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -270,47 +271,47 @@
 			this.tslEntries.Size = new System.Drawing.Size(45, 22);
 			this.tslEntries.Text = "Entries:";
 			// 
-			// toolStripButton1
+			// tsbEntryAdd
 			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton1.Enabled = false;
-			this.toolStripButton1.Image = global::Kuriimu.Properties.Resources.menu_add;
-			this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton1.Name = "toolStripButton1";
-			this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton1.Text = "Add Entry";
+			this.tsbEntryAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbEntryAdd.Enabled = false;
+			this.tsbEntryAdd.Image = global::Kuriimu.Properties.Resources.menu_add;
+			this.tsbEntryAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbEntryAdd.Name = "tsbEntryAdd";
+			this.tsbEntryAdd.Size = new System.Drawing.Size(23, 22);
+			this.tsbEntryAdd.Text = "Add Entry";
 			// 
-			// tsbRename
+			// tsbEntryRename
 			// 
-			this.tsbRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbRename.Enabled = false;
-			this.tsbRename.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
-			this.tsbRename.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbRename.Name = "tsbRename";
-			this.tsbRename.Size = new System.Drawing.Size(23, 22);
-			this.tsbRename.Text = "Rename Entry";
-			this.tsbRename.Click += new System.EventHandler(this.tsbRename_Click);
+			this.tsbEntryRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbEntryRename.Enabled = false;
+			this.tsbEntryRename.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
+			this.tsbEntryRename.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbEntryRename.Name = "tsbEntryRename";
+			this.tsbEntryRename.Size = new System.Drawing.Size(23, 22);
+			this.tsbEntryRename.Text = "Rename Entry";
+			this.tsbEntryRename.Click += new System.EventHandler(this.tsbEntryRename_Click);
 			// 
-			// toolStripButton3
+			// tsbEntryDelete
 			// 
-			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.toolStripButton3.Enabled = false;
-			this.toolStripButton3.Image = global::Kuriimu.Properties.Resources.menu_delete;
-			this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton3.Name = "toolStripButton3";
-			this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-			this.toolStripButton3.Text = "Delete Entry";
+			this.tsbEntryDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbEntryDelete.Enabled = false;
+			this.tsbEntryDelete.Image = global::Kuriimu.Properties.Resources.menu_delete;
+			this.tsbEntryDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbEntryDelete.Name = "tsbEntryDelete";
+			this.tsbEntryDelete.Size = new System.Drawing.Size(23, 22);
+			this.tsbEntryDelete.Text = "Delete Entry";
 			// 
-			// tsbProperties
+			// tsbEntryProperties
 			// 
-			this.tsbProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbProperties.Enabled = false;
-			this.tsbProperties.Image = global::Kuriimu.Properties.Resources.menu_properties;
-			this.tsbProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbProperties.Name = "tsbProperties";
-			this.tsbProperties.Size = new System.Drawing.Size(23, 22);
-			this.tsbProperties.Text = "Entry Properties";
-			this.tsbProperties.Click += new System.EventHandler(this.tsbProperties_Click);
+			this.tsbEntryProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbEntryProperties.Enabled = false;
+			this.tsbEntryProperties.Image = global::Kuriimu.Properties.Resources.menu_properties;
+			this.tsbEntryProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbEntryProperties.Name = "tsbEntryProperties";
+			this.tsbEntryProperties.Size = new System.Drawing.Size(23, 22);
+			this.tsbEntryProperties.Text = "Entry Properties";
+			this.tsbEntryProperties.Click += new System.EventHandler(this.tsbEntryProperties_Click);
 			// 
 			// splContent
 			// 
@@ -512,7 +513,7 @@
 			this.Controls.Add(this.mnuMain);
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "Editor";
-			this.Text = "Kuriimu Editor";
+			this.Text = "Kuriimu";
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Editor_FormClosed);
 			this.Load += new System.EventHandler(this.Editor_Load);
 			this.mnuMain.ResumeLayout(false);
@@ -562,9 +563,9 @@
 		private System.Windows.Forms.ToolStrip tlsEntries;
 		private System.Windows.Forms.ListBox lstEntries;
 		private System.Windows.Forms.ToolStripLabel tslEntries;
-		private System.Windows.Forms.ToolStripButton toolStripButton1;
-		private System.Windows.Forms.ToolStripButton tsbRename;
-		private System.Windows.Forms.ToolStripButton toolStripButton3;
+		private System.Windows.Forms.ToolStripButton tsbEntryAdd;
+		private System.Windows.Forms.ToolStripButton tsbEntryRename;
+		private System.Windows.Forms.ToolStripButton tsbEntryDelete;
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splContent;
 		private System.Windows.Forms.TextBox txtEdit;
@@ -576,7 +577,7 @@
 		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
 		private System.Windows.Forms.TextBox txtOriginal;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-		private System.Windows.Forms.ToolStripButton tsbProperties;
+		private System.Windows.Forms.ToolStripButton tsbEntryProperties;
 		private System.Windows.Forms.ToolStripMenuItem fIndToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;

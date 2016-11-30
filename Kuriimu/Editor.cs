@@ -51,21 +51,8 @@ namespace Kuriimu
 				ToolStripMenuItem tsiHandler = new ToolStripMenuItem(codeHandler.Name, codeHandler.Icon, tsbGameSelect_SelectedIndexChanged);
 				tsbGameSelect.DropDownItems.Add(tsiHandler);
 			}
-		}
 
-		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ToolStripItem tsi = (ToolStripItem)sender;
-
-			if (tsi.Text == "No Game")
-				_codeHandler = null;
-			else
-				_codeHandler = codeHandlers[((ToolStripItem)sender).Text];
-
-			tsbGameSelect.Text = tsi.Text;
-			tsbGameSelect.Image = tsi.Image;
-
-			lstEntries_SelectedIndexChanged(sender, e);
+			Tools.DoubleBuffer((Control)lstEntries, true);
 		}
 
 		private void Editor_FormClosed(object sender, FormClosedEventArgs e)
@@ -87,6 +74,21 @@ namespace Kuriimu
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveFile(true);
+		}
+
+		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			ToolStripItem tsi = (ToolStripItem)sender;
+
+			if (tsi.Text == "No Game")
+				_codeHandler = null;
+			else
+				_codeHandler = codeHandlers[((ToolStripItem)sender).Text];
+
+			tsbGameSelect.Text = tsi.Text;
+			tsbGameSelect.Image = tsi.Image;
+
+			lstEntries_SelectedIndexChanged(sender, e);
 		}
 
 		private void ConfirmOpenFile(string filename = "")
@@ -156,39 +158,6 @@ namespace Kuriimu
 			}
 		}
 
-		private IFileAdapter SelectFileAdapter(string filename)
-		{
-			IFileAdapter result = null;
-			string extension = new FileInfo(filename).Extension;
-
-			foreach (string key in fileAdapters.Keys)
-			{
-				if (fileAdapters[key].Extension.EndsWith(extension))
-				{
-					result = fileAdapters[key];
-					break;
-				}
-			}
-
-			return result;
-		}
-
-		private void LoadEntries()
-		{
-			int selectedIndex = lstEntries.SelectedIndex;
-
-			lstEntries.Items.Clear();
-
-			for (int i = 0; i < _fileAdapter.Entries.Count; i++)
-				lstEntries.Items.Add(_fileAdapter.Entries[i]);
-
-			if (selectedIndex > lstEntries.Items.Count - 1)
-				selectedIndex = lstEntries.Items.Count - 1;
-
-			if (lstEntries.Items.Count > 0)
-				lstEntries.SelectedIndex = selectedIndex;
-		}
-
 		private DialogResult SaveFile(bool saveAs = false)
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
@@ -220,6 +189,38 @@ namespace Kuriimu
 			return dr;
 		}
 
+		private IFileAdapter SelectFileAdapter(string filename)
+		{
+			IFileAdapter result = null;
+			string extension = new FileInfo(filename).Extension;
+
+			foreach (string key in fileAdapters.Keys)
+			{
+				if (fileAdapters[key].Extension.EndsWith(extension))
+				{
+					result = fileAdapters[key];
+					break;
+				}
+			}
+
+			return result;
+		}
+
+		private void LoadEntries()
+		{
+			IEntry selectedItem = (IEntry)lstEntries.SelectedItem;
+
+			lstEntries.Items.Clear();
+
+			for (int i = 0; i < _fileAdapter.Entries.Count; i++)
+				lstEntries.Items.Add(_fileAdapter.Entries[i]);
+
+			if (selectedItem != null && lstEntries.Items.Contains(selectedItem))
+				lstEntries.SelectedItem = selectedItem;
+			else
+				lstEntries.SelectedIndex = 0;
+		}
+
 		// Utilities
 		private void UpdateTextView()
 		{
@@ -227,13 +228,13 @@ namespace Kuriimu
 
 			if (_codeHandler != null)
 			{
-				txtEdit.Text = _codeHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>");
-				txtOriginal.Text = _codeHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>");
+				txtEdit.Text = _codeHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtOriginal.Text = _codeHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
 			}
 			else
 			{
-				txtEdit.Text = entry.GetEditedString().Replace("\0", "<null>");
-				txtOriginal.Text = entry.GetOriginalString().Replace("\0", "<null>");
+				txtEdit.Text = entry.GetEditedString().Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtOriginal.Text = entry.GetOriginalString().Replace("\0", "<null>").Replace("\n", "\r\n");
 			}
 		}
 
@@ -266,8 +267,8 @@ namespace Kuriimu
 
 			bool itemSelected = lstEntries.SelectedIndex >= 0;
 
-			tsbRename.Enabled = itemSelected;
-			tsbProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected;
+			tsbEntryRename.Enabled = itemSelected;
+			tsbEntryProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected;
 			tsbGameSelect.Enabled = itemSelected;
 		}
 
@@ -276,15 +277,8 @@ namespace Kuriimu
 			return _fileAdapter == null || _fileAdapter.TargetFile == null ? string.Empty : _fileAdapter.TargetFile.Name;
 		}
 
-		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			UpdateTextView();
-			UpdateHexView();
-			UpdateForm();
-		}
-
 		// Toolbar
-		private void tsbRename_Click(object sender, EventArgs e)
+		private void tsbEntryRename_Click(object sender, EventArgs e)
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
@@ -294,16 +288,29 @@ namespace Kuriimu
 				LoadEntries();
 		}
 
-		private void tsbProperties_Click(object sender, EventArgs e)
+		private void tsbEntryProperties_Click(object sender, EventArgs e)
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 			_fileAdapter.EntryProperties(entry, Properties.Resources.kuriimu);
 		}
 
+		// List
+		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			UpdateTextView();
+			UpdateHexView();
+			UpdateForm();
+		}
+
 		private void lstEntries_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (lstEntries.Focused && e.KeyCode == Keys.F8)
-				tsbProperties_Click(sender, e);
+				tsbEntryProperties_Click(sender, e);
+		}
+
+		private void lstEntries_DoubleClick(object sender, EventArgs e)
+		{
+			tsbEntryProperties_Click(sender, e);
 		}
 
 		// Text
@@ -312,9 +319,9 @@ namespace Kuriimu
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
 			if (_codeHandler != null)
-				entry.EditedText = _codeHandler.GetBytes(txtEdit.Text.Replace("<null>", "\0"), entry.Encoding);
+				entry.EditedText = _codeHandler.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding);
 			else
-				entry.EditedText = entry.Encoding.GetBytes(txtEdit.Text.Replace("<null>", "\0"));
+				entry.EditedText = entry.Encoding.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"));
 
 			UpdateHexView();
 

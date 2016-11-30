@@ -28,19 +28,21 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.btnDumper = new System.Windows.Forms.Button();
+			this.btnDumping = new System.Windows.Forms.Button();
 			this.btnEditor = new System.Windows.Forms.Button();
 			this.btnInjector = new System.Windows.Forms.Button();
+			this.btnDirector = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
-			// btnDumper
+			// btnDumping
 			// 
-			this.btnDumper.Location = new System.Drawing.Point(160, 42);
-			this.btnDumper.Name = "btnDumper";
-			this.btnDumper.Size = new System.Drawing.Size(96, 96);
-			this.btnDumper.TabIndex = 0;
-			this.btnDumper.Text = "Dumper";
-			this.btnDumper.UseVisualStyleBackColor = true;
+			this.btnDumping.Location = new System.Drawing.Point(160, 42);
+			this.btnDumping.Name = "btnDumping";
+			this.btnDumping.Size = new System.Drawing.Size(96, 96);
+			this.btnDumping.TabIndex = 0;
+			this.btnDumping.Text = "Dumping";
+			this.btnDumping.UseVisualStyleBackColor = true;
+			this.btnDumping.Click += new System.EventHandler(this.btnDumping_Click);
 			// 
 			// btnEditor
 			// 
@@ -63,14 +65,26 @@
 			this.btnInjector.Text = "Injector";
 			this.btnInjector.UseVisualStyleBackColor = true;
 			// 
+			// btnDirector
+			// 
+			this.btnDirector.Location = new System.Drawing.Point(160, 144);
+			this.btnDirector.Name = "btnDirector";
+			this.btnDirector.Size = new System.Drawing.Size(96, 30);
+			this.btnDirector.TabIndex = 3;
+			this.btnDirector.Text = "Director";
+			this.btnDirector.UseVisualStyleBackColor = true;
+			this.btnDirector.Click += new System.EventHandler(this.btnDirector_Click);
+			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(433, 186);
+			this.Controls.Add(this.btnDirector);
 			this.Controls.Add(this.btnInjector);
 			this.Controls.Add(this.btnEditor);
-			this.Controls.Add(this.btnDumper);
+			this.Controls.Add(this.btnDumping);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "Main";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Kuriimu";
@@ -81,8 +95,9 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button btnDumper;
+		private System.Windows.Forms.Button btnDumping;
 		private System.Windows.Forms.Button btnEditor;
 		private System.Windows.Forms.Button btnInjector;
+		private System.Windows.Forms.Button btnDirector;
 	}
 }

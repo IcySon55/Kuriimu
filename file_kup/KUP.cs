@@ -1,333 +1,189 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 using KuriimuContract;
 
 namespace file_kup
 {
-	public class KUP : IFileAdapter
+	[XmlRoot("kup")]
+	public class KUP
 	{
-		private FileInfo _targetFile = null;
-		private List<IEntry> _entries = new List<IEntry>();
-		private XmlDocument _xmlDocument = null;
+		[XmlAttribute("count")]
+		public int Count { get; set; }
 
-		#region Properties
+		[XmlIgnore]
+		public Encoding Encoding { get; set; }
 
-		// Information
-		public string Name
+		[XmlAttribute("encoding")]
+		public string EncodingString
 		{
-			get { return "KUP"; }
-		}
-
-		public string Description
-		{
-			get { return "Kuriimu Archive"; }
-		}
-
-		public string Extension
-		{
-			get { return "*.kup"; }
-		}
-
-		public string About
-		{
-			get { return "This is the KUP file adapter for Kuriimu."; }
-		}
-
-		// Feature Support
-		public bool CanSave
-		{
-			get { return true; }
-		}
-
-		public bool CanAddEntries
-		{
-			get { return true; }
-		}
-
-		public bool CanRemoveEntries
-		{
-			get { return true; }
-		}
-
-		public bool EntriesHaveUniqueNames
-		{
-			get { return false; }
-		}
-
-		public bool EntriesHaveExtendedProperties
-		{
-			get { return true; }
-		}
-
-		#endregion
-
-		public FileInfo TargetFile
-		{
-			get
-			{
-				return _targetFile;
-			}
+			get { return Encoding.EncodingName; }
 			set
 			{
-				_targetFile = value;
+				Encoding enc = Encoding.Unicode;
+				Encoding.GetEncoding(value);
+				Encoding = enc;
 			}
 		}
 
-		public LoadResult Load(string filename)
+		[XmlAttribute("ramOffset")]
+		public uint RamOffsetUInt { get; set; }
+
+		[XmlIgnore]
+		public string RamOffset
 		{
-			Encoding encoding = Encoding.Unicode;
-			LoadResult result = LoadResult.Success;
-
-			_targetFile = new FileInfo(filename);
-
-			if (File.Exists(filename))
+			get { return RamOffsetUInt.ToString("X2"); }
+			set
 			{
-				try
-				{
-					_xmlDocument = new XmlDocument();
-					_xmlDocument.Load(_targetFile.FullName);
-
-					XmlNode root = _xmlDocument.SelectSingleNode("/kuriimu");
-
-					if (root.Attributes["encoding"] != null)
-						encoding = Encoding.GetEncoding(root.Attributes["encoding"].Value);
-
-					// Load Entries
-					XmlNodeList xmlEntries = _xmlDocument.SelectNodes("/kuriimu/entries/entry");
-					foreach (XmlNode xmlEntry in xmlEntries)
-					{
-						Entry entry = new Entry(encoding);
-
-						entry.Offset = Convert.ToInt64(xmlEntry.Attributes["offset"].Value, 16);
-
-						if (xmlEntry.Attributes["name"] != null)
-							entry.Name = xmlEntry.Attributes["name"].Value;
-
-						// Pointers
-						if (xmlEntry.Attributes["pointer"] != null)
-							entry.Pointers.Add(Convert.ToInt64(xmlEntry.Attributes["pointer"].Value, 16));
-
-						foreach (XmlNode pointer in xmlEntry.SelectNodes("pointer"))
-						{
-							if (pointer.Attributes["address"] != null)
-								entry.Pointers.Add(Convert.ToInt64(pointer.Attributes["address"].Value, 16));
-						}
-
-						bool matched = false;
-						foreach (Entry ntr in _entries)
-						{
-							if (entry.Offset == ntr.Offset)
-							{
-								ntr.Pointers.AddRange(entry.Pointers);
-								matched = true;
-								break;
-							}
-						}
-						if (matched)
-							continue;
-
-						// Text
-						XmlNode xmlOriginal = xmlEntry.SelectSingleNode("text");
-						if (xmlOriginal == null)
-							xmlOriginal = xmlEntry.SelectSingleNode("original");
-						if (xmlOriginal != null)
-							entry.OriginalText = encoding.GetBytes(xmlOriginal.InnerText);
-
-						XmlNode xmlEdited = xmlEntry.SelectSingleNode("translation");
-						if (xmlEdited == null)
-							xmlEdited = xmlEntry.SelectSingleNode("edited");
-						if (xmlEdited != null)
-							entry.EditedText = encoding.GetBytes(xmlEdited.InnerText);
-
-						// Length
-						if (xmlEntry.Attributes["max_length"] != null)
-							entry.MaxLength = Convert.ToInt32(xmlEntry.Attributes["max_length"].Value);
-
-						_entries.Add(entry);
-					}
-				}
-				catch (XmlException)
-				{
-					result = LoadResult.TypeMismatch;
-				}
-				catch (Exception)
-				{
-					result = LoadResult.Failure;
-				}
+				uint val = 0;
+				uint.TryParse(value, NumberStyles.HexNumber, null, out val);
+				RamOffsetUInt = val;
 			}
-			else
-				result = LoadResult.FileNotFound;
-
-			return result;
 		}
 
-		public SaveResult Save(string filename = "")
+		[XmlAttribute("file")]
+		public string File { get; set; }
+
+		[XmlArray("pointerTables")]
+		[XmlArrayItem("pointerTable")]
+		public List<Bound> PointerTables { get; set; }
+
+		[XmlArray("dumpingBounds")]
+		[XmlArrayItem("dumpingBound")]
+		public List<Bound> DumpingBounds { get; set; }
+
+		[XmlArray("injectionBounds")]
+		[XmlArrayItem("injectionBound")]
+		public List<Bound> InjectionBounds { get; set; }
+
+		[XmlArray("entries")]
+		[XmlArrayItem("entry")]
+		public List<Entry> Entries { get; set; }
+
+		public KUP()
 		{
-			SaveResult result = SaveResult.Success;
+			this.Count = 0;
+			this.Encoding = Encoding.Unicode;
+			this.RamOffsetUInt = 0x0;
+			this.PointerTables = new List<Bound>();
+			this.DumpingBounds = new List<Bound>();
+			this.InjectionBounds = new List<Bound>();
+			this.Entries = new List<Entry>();
+		}
 
-			if (filename.Trim() != string.Empty)
-				_targetFile = new FileInfo(filename);
+		public KUP(Encoding encoding) : this()
+		{
+			this.Encoding = encoding;
+		}
 
+		public static KUP Load(string filename)
+		{
+			try
+			{
+				using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					return (KUP)new XmlSerializer(typeof(KUP)).Deserialize(fs);
+				}
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+		}
+
+		public void Save(string filename)
+		{
 			try
 			{
 				XmlWriterSettings xmlSettings = new XmlWriterSettings();
 				xmlSettings.Encoding = Encoding.UTF8;
 				xmlSettings.Indent = true;
-				xmlSettings.IndentChars = "\t";
-				xmlSettings.CheckCharacters = false;
+				xmlSettings.NewLineOnAttributes = false;
+				xmlSettings.IndentChars = "	";
 
-				XmlNode xmlEntries = _xmlDocument.SelectSingleNode("/kuriimu/entries");
-				xmlEntries.RemoveAll();
-
-				// Save Entries
-				foreach (Entry entry in _entries)
+				using (StreamWriter xmlIO = new StreamWriter(filename, false, xmlSettings.Encoding))
 				{
-					XmlElement xmlEntry = _xmlDocument.CreateElement("entry");
-					xmlEntries.AppendChild(xmlEntry);
-
-					XmlAttribute xmlAttribute = null;
-
-					if (entry.Name.Trim() != string.Empty)
-					{
-						xmlAttribute = _xmlDocument.CreateAttribute("name");
-						xmlAttribute.Value = entry.Name;
-						xmlEntry.Attributes.Append(xmlAttribute);
-					}
-
-					xmlAttribute = _xmlDocument.CreateAttribute("offset");
-					xmlAttribute.Value = entry.Offset.ToString("X2");
-					xmlEntry.Attributes.Append(xmlAttribute);
-
-					if (entry.MaxLength > 0)
-					{
-						xmlAttribute = _xmlDocument.CreateAttribute("max_length");
-						xmlAttribute.Value = entry.MaxLength.ToString();
-						xmlEntry.Attributes.Append(xmlAttribute);
-					}
-
-					// Pointers
-					if (entry.Pointers.Count > 0)
-					{
-						foreach (long pointer in entry.Pointers)
-						{
-							XmlElement xmlPointer = _xmlDocument.CreateElement("pointer");
-							xmlEntry.AppendChild(xmlPointer);
-
-							xmlAttribute = _xmlDocument.CreateAttribute("address");
-							xmlAttribute.Value = pointer.ToString("X2");
-							xmlPointer.Attributes.Append(xmlAttribute);
-						}
-					}
-
-					// Text
-					XmlElement xmlString = _xmlDocument.CreateElement("original");
-					xmlString.InnerText = entry.GetOriginalString();
-					xmlEntry.AppendChild(xmlString);
-
-					xmlString = _xmlDocument.CreateElement("edited");
-					xmlString.InnerText = entry.GetEditedString();
-					xmlEntry.AppendChild(xmlString);
+					XmlSerializer serializer = new XmlSerializer(typeof(KUP));
+					XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+					namespaces.Add(string.Empty, string.Empty);
+					serializer.Serialize(XmlWriter.Create(xmlIO, xmlSettings), this, namespaces);
 				}
-
-				System.IO.StreamWriter stream = new StreamWriter(_targetFile.FullName, false, Encoding.UTF8);
-				_xmlDocument.Save(XmlWriter.Create(stream, xmlSettings));
-				stream.Close();
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				result = SaveResult.Failure;
+				throw ex;
 			}
-
-			return result;
-		}
-
-		// Entries
-		public bool HasEntries
-		{
-			get { return _entries.Count > 0; }
-		}
-
-		public List<IEntry> Entries
-		{
-			get { return _entries; }
-		}
-
-		// Features
-		public bool AddEntry(IEntry entry)
-		{
-			bool result = true;
-
-			try
-			{
-				_entries.Add(entry);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
-		public bool RemoveEntry(IEntry entry)
-		{
-			bool result = true;
-
-			try
-			{
-				_entries.Remove(entry);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
-		public void EntryProperties(IEntry entry, Icon icon)
-		{
-			EntryProperties properties = new EntryProperties();
-			properties.Icon = icon;
-			properties.ShowDialog();
 		}
 	}
 
 	public class Entry : IEntry
 	{
+		[XmlIgnore]
 		public Encoding Encoding { get; set; }
-		public string Name { get; set; }
-		public byte[] OriginalText { get; set; }
-		public byte[] EditedText { get; set; }
 
-		public long Offset { get; set; }
-		public List<long> Pointers { get; private set; }
+		[XmlAttribute("name")]
+		public string Name { get; set; }
+
+		[XmlAttribute("offset")]
+		public long OffsetLong { get; set; }
+
+		[XmlIgnore]
+		public string Offset
+		{
+			get { return OffsetLong.ToString("X2"); }
+			set
+			{
+				long val = 0;
+				long.TryParse(value, NumberStyles.HexNumber, null, out val);
+				OffsetLong = val;
+			}
+		}
+
+		[XmlAttribute("relocatable")]
+		public bool Relocatable { get; set; }
+
+		[XmlAttribute("max_length")]
 		public int MaxLength { get; set; }
 
+		[XmlElement("pointer")]
+		public List<Pointer> Pointers { get; private set; }
+
+		[XmlElement("original")]
+		public byte[] OriginalText { get; set; }
+
+		[XmlElement("edited")]
+		public byte[] EditedText { get; set; }
+
+		[XmlIgnore]
 		public bool HasPointers
 		{
 			get { return Pointers.Count > 0 && MaxLength == 0; }
 		}
 
-		public Entry(Encoding encoding)
+		public Entry()
 		{
-			this.Encoding = encoding;
+			this.Encoding = Encoding.Unicode;
 			this.Name = string.Empty;
+			this.OffsetLong = 0x0;
+			this.Relocatable = true;
+			this.MaxLength = 0;
+			this.Pointers = new List<Pointer>();
 			this.OriginalText = new byte[] { 0x0 };
 			this.EditedText = new byte[] { 0x0 };
+		}
 
-			this.Offset = 0x0;
-			this.Pointers = new List<long>();
-			this.MaxLength = 0;
+		public Entry(Encoding encoding) : this()
+		{
+			this.Encoding = encoding;
 		}
 
 		public override string ToString()
 		{
-			return Name == string.Empty ? Offset.ToString("X2") : Name;
+			return Name == string.Empty ? Offset : Name;
 		}
 
 		public string GetOriginalString()
@@ -346,6 +202,74 @@ namespace file_kup
 			if (result == 0)
 				result = this.Offset.CompareTo(((Entry)rhs).Offset);
 			return result;
+		}
+	}
+
+	public class Bound
+	{
+		[XmlAttribute("start")]
+		public long StartLong { get; set; }
+
+		[XmlIgnore]
+		public string Start
+		{
+			get { return StartLong.ToString("X2"); }
+			set
+			{
+				long val = 0;
+				long.TryParse(value, NumberStyles.HexNumber, null, out val);
+				StartLong = val;
+			}
+		}
+
+		[XmlAttribute("end")]
+		public long EndLong { get; set; }
+
+		[XmlIgnore]
+		public string End
+		{
+			get { return EndLong.ToString("X2"); }
+			set
+			{
+				long val = 0;
+				long.TryParse(value, NumberStyles.HexNumber, null, out val);
+				EndLong = val;
+			}
+		}
+
+		[XmlAttribute("notes")]
+		public string Notes { get; set; }
+
+		public Bound() { }
+
+		public override string ToString()
+		{
+			return "From " + Start + " to " + End;
+		}
+	}
+
+	public class Pointer
+	{
+		[XmlAttribute("address")]
+		public long AddressLong { get; set; }
+
+		[XmlIgnore]
+		public string Address
+		{
+			get { return AddressLong.ToString("X2"); }
+			set
+			{
+				long val = 0;
+				long.TryParse(value, NumberStyles.HexNumber, null, out val);
+				AddressLong = val;
+			}
+		}
+
+		public Pointer() { }
+
+		public Pointer(long address)
+		{
+			this.AddressLong = address;
 		}
 	}
 }

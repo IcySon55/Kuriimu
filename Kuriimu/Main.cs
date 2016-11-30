@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using KuriimuContract;
 
 namespace Kuriimu
 {
@@ -28,6 +29,23 @@ namespace Kuriimu
 			Editor editor = new Editor(this);
 			this.Hide();
 			editor.Show();
+		}
+
+		private void btnDumping_Click(object sender, EventArgs e)
+		{
+			DumperSelect dSelect = new DumperSelect();
+			dSelect.StartPosition = FormStartPosition.CenterParent;
+
+			if (dSelect.ShowDialog() == DialogResult.OK)
+			{
+				dSelect.Dumper.ShowDialog();
+			}
+		}
+
+		private void btnDirector_Click(object sender, EventArgs e)
+		{
+			Director director = new Director();
+			director.ShowDialog();
 		}
 	}
 }
