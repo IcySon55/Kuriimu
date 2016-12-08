@@ -6,7 +6,7 @@ using KuriimuContract;
 
 namespace game_rocket_slime_3ds
 {
-	public class ControlCodes : IControlCodeHandler
+	public class ControlCodes : IGameHandler
 	{
 		Dictionary<string, string> _pairs = null;
 		Encoding _encoding = Encoding.Unicode;
@@ -42,6 +42,7 @@ namespace game_rocket_slime_3ds
 				// Color
 				_pairs.Add("</color>", encoding.GetString(new byte[] { 0x13, 0x00, 0x00, 0x00 }));
 				_pairs.Add("<color>", encoding.GetString(new byte[] { 0x13, 0x00 }));
+				_pairs.Add("<red>", encoding.GetString(new byte[] { 0x01, 0x00 }));
 				_pairs.Add("<blue>", encoding.GetString(new byte[] { 0x03, 0x00 }));
 
 				_encoding = encoding;

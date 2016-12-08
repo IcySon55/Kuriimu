@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-	partial class DumperSelect
+	partial class ExtensionSelect
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -31,7 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
-			this.treDumpers = new System.Windows.Forms.TreeView();
+			this.treExtensions = new System.Windows.Forms.TreeView();
 			this.imgList = new System.Windows.Forms.ImageList(this.components);
 			this.SuspendLayout();
 			// 
@@ -59,20 +59,20 @@
 			// 
 			// treDumpers
 			// 
-			this.treDumpers.FullRowSelect = true;
-			this.treDumpers.HideSelection = false;
-			this.treDumpers.HotTracking = true;
-			this.treDumpers.ImageIndex = 0;
-			this.treDumpers.ImageList = this.imgList;
-			this.treDumpers.ItemHeight = 18;
-			this.treDumpers.Location = new System.Drawing.Point(12, 12);
-			this.treDumpers.Name = "treDumpers";
-			this.treDumpers.SelectedImageIndex = 0;
-			this.treDumpers.ShowLines = false;
-			this.treDumpers.ShowPlusMinus = false;
-			this.treDumpers.ShowRootLines = false;
-			this.treDumpers.Size = new System.Drawing.Size(260, 209);
-			this.treDumpers.TabIndex = 3;
+			this.treExtensions.FullRowSelect = true;
+			this.treExtensions.HideSelection = false;
+			this.treExtensions.HotTracking = true;
+			this.treExtensions.ImageIndex = 0;
+			this.treExtensions.ImageList = this.imgList;
+			this.treExtensions.ItemHeight = 18;
+			this.treExtensions.Location = new System.Drawing.Point(12, 12);
+			this.treExtensions.Name = "treDumpers";
+			this.treExtensions.SelectedImageIndex = 0;
+			this.treExtensions.ShowLines = false;
+			this.treExtensions.ShowPlusMinus = false;
+			this.treExtensions.ShowRootLines = false;
+			this.treExtensions.Size = new System.Drawing.Size(260, 209);
+			this.treExtensions.TabIndex = 3;
 			// 
 			// imgList
 			// 
@@ -80,18 +80,20 @@
 			this.imgList.ImageSize = new System.Drawing.Size(16, 16);
 			this.imgList.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// DumperSelect
+			// PluginSelect
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
-			this.Controls.Add(this.treDumpers);
+			this.Controls.Add(this.treExtensions);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOK);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-			this.Name = "DumperSelect";
-			this.Text = "Select a Dumper";
-			this.Load += new System.EventHandler(this.DumperSelect_Load);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
+			this.Name = "PluginSelect";
+			this.Text = "Select a Plugin";
+			this.Load += new System.EventHandler(this.ExtensionSelect_Load);
 			this.ResumeLayout(false);
 
 		}
@@ -100,7 +102,7 @@
 
 		private System.Windows.Forms.Button btnOK;
 		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.TreeView treDumpers;
+		private System.Windows.Forms.TreeView treExtensions;
 		private System.Windows.Forms.ImageList imgList;
 	}
 }

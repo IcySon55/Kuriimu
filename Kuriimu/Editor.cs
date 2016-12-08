@@ -10,20 +10,18 @@ namespace Kuriimu
 {
 	public partial class Editor : Form
 	{
-		private Main _main = null;
 		private FileInfo _file = null;
 		private IFileAdapter _fileAdapter = null;
-		private IControlCodeHandler _codeHandler = null;
+		private IGameHandler _gameHandler = null;
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
 
-		Dictionary<string, IFileAdapter> fileAdapters = null;
-		Dictionary<string, IControlCodeHandler> codeHandlers = null;
+		private Dictionary<string, IFileAdapter> _fileAdapters = null;
+		private Dictionary<string, IGameHandler> _gameHandlers = null;
 
-		public Editor(Main main)
+		public Editor()
 		{
 			InitializeComponent();
-			_main = main;
 		}
 
 		private void Editor_Load(object sender, EventArgs e)
@@ -33,9 +31,9 @@ namespace Kuriimu
 			// Load Plugins
 			Console.WriteLine("Loading plugins...");
 
-			fileAdapters = new Dictionary<string, IFileAdapter>();
-			foreach (IFileAdapter fileAdapter in PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory))
-				fileAdapters.Add(fileAdapter.Name, fileAdapter);
+			_fileAdapters = new Dictionary<string, IFileAdapter>();
+			foreach (IFileAdapter fileAdapter in PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll"))
+				_fileAdapters.Add(fileAdapter.Name, fileAdapter);
 
 			tsbGameSelect.DropDownItems.Clear();
 			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", Resources.game_none, tsbGameSelect_SelectedIndexChanged);
@@ -43,22 +41,16 @@ namespace Kuriimu
 			tsbGameSelect.Text = tsiNoGame.Text;
 			tsbGameSelect.Image = tsiNoGame.Image;
 
-			codeHandlers = new Dictionary<string, IControlCodeHandler>();
-			foreach (IControlCodeHandler codeHandler in PluginLoader<IControlCodeHandler>.LoadPlugins(Settings.Default.PluginDirectory))
+			_gameHandlers = new Dictionary<string, IGameHandler>();
+			foreach (IGameHandler gameHandler in PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"))
 			{
-				codeHandlers.Add(codeHandler.Name, codeHandler);
+				_gameHandlers.Add(gameHandler.Name, gameHandler);
 
-				ToolStripMenuItem tsiHandler = new ToolStripMenuItem(codeHandler.Name, codeHandler.Icon, tsbGameSelect_SelectedIndexChanged);
+				ToolStripMenuItem tsiHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, tsbGameSelect_SelectedIndexChanged);
 				tsbGameSelect.DropDownItems.Add(tsiHandler);
 			}
 
 			Tools.DoubleBuffer((Control)lstEntries, true);
-		}
-
-		private void Editor_FormClosed(object sender, FormClosedEventArgs e)
-		{
-			if (_main != null)
-				_main.Show();
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -76,14 +68,30 @@ namespace Kuriimu
 			SaveFile(true);
 		}
 
+		private void findToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Search search = new Search();
+			search.Entries = _fileAdapter.Entries;
+			search.ShowDialog();
+
+			if (search.Selected != null)
+				lstEntries.SelectedItem = search.Selected;
+
+			txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
+			txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
+			txtEdit.Focus();
+
+			SelectInHex();
+		}
+
 		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			ToolStripItem tsi = (ToolStripItem)sender;
 
 			if (tsi.Text == "No Game")
-				_codeHandler = null;
+				_gameHandler = null;
 			else
-				_codeHandler = codeHandlers[((ToolStripItem)sender).Text];
+				_gameHandler = _gameHandlers[((ToolStripItem)sender).Text];
 
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;
@@ -117,8 +125,8 @@ namespace Kuriimu
 
 			// Supported Types
 			List<string> types = new List<string>();
-			foreach (string key in fileAdapters.Keys)
-				types.Add(fileAdapters[key].Description + " (" + fileAdapters[key].Extension + ")|" + fileAdapters[key].Extension);
+			foreach (string key in _fileAdapters.Keys)
+				types.Add(_fileAdapters[key].Description + " (" + _fileAdapters[key].Extension + ")|" + _fileAdapters[key].Extension);
 			types.Add("All Files (*.*)|*.*");
 			ofd.Filter = string.Join("|", types.ToArray());
 
@@ -194,11 +202,11 @@ namespace Kuriimu
 			IFileAdapter result = null;
 			string extension = new FileInfo(filename).Extension;
 
-			foreach (string key in fileAdapters.Keys)
+			foreach (string key in _fileAdapters.Keys)
 			{
-				if (fileAdapters[key].Extension.EndsWith(extension))
+				if (_fileAdapters[key].Extension.EndsWith(extension))
 				{
-					result = fileAdapters[key];
+					result = _fileAdapters[key];
 					break;
 				}
 			}
@@ -226,10 +234,10 @@ namespace Kuriimu
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
-			if (_codeHandler != null)
+			if (_gameHandler != null)
 			{
-				txtEdit.Text = _codeHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
-				txtOriginal.Text = _codeHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtEdit.Text = _gameHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtOriginal.Text = _gameHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
 			}
 			else
 			{
@@ -267,9 +275,25 @@ namespace Kuriimu
 
 			bool itemSelected = lstEntries.SelectedIndex >= 0;
 
+			splMain.Enabled = _fileOpen;
+			splContent.Enabled = _fileOpen;
+			splText.Enabled = _fileOpen;
+			splPreview.Enabled = _fileOpen;
+
+			saveToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
+			saveAsToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
+			findToolStripMenuItem.Enabled = _fileOpen;
+
+			tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
 			tsbEntryRename.Enabled = itemSelected;
 			tsbEntryProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected;
 			tsbGameSelect.Enabled = itemSelected;
+
+			lstEntries.Enabled = _fileOpen;
+
+			txtEdit.Enabled = itemSelected;
+			txtOriginal.Enabled = itemSelected;
+			hbxHexView.Enabled = itemSelected;
 		}
 
 		private string FileName()
@@ -282,8 +306,8 @@ namespace Kuriimu
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
-			Name name = new Name(entry, null, _fileAdapter.EntriesHaveUniqueNames);
-			
+			Name name = new Name(entry);
+
 			if (name.ShowDialog() == DialogResult.OK)
 				LoadEntries();
 		}
@@ -318,17 +342,44 @@ namespace Kuriimu
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
-			if (_codeHandler != null)
-				entry.EditedText = _codeHandler.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding);
+			if (_gameHandler != null)
+				entry.EditedText = _gameHandler.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding);
 			else
 				entry.EditedText = entry.Encoding.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"));
 
 			UpdateHexView();
+			SelectInHex();
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
 
 			UpdateForm();
+		}
+
+		private void txtEdit_MouseUp(object sender, MouseEventArgs e)
+		{
+			SelectInHex();
+		}
+
+		private void txtEdit_TextChanged(object sender, EventArgs e)
+		{
+			SelectInHex();
+		}
+
+		private void SelectInHex()
+		{
+			// Magic that is not perfect
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			int selectionStart = txtEdit.SelectionStart * (entry.Encoding.IsSingleByte ? 1 : 2);
+			int selectionLength = txtEdit.SelectionLength * (entry.Encoding.IsSingleByte ? 1 : 2);
+
+			if (_gameHandler != null)
+				selectionLength = entry.Encoding.GetString(_gameHandler.GetBytes(txtEdit.SelectedText.Replace("<null>", "\0"), entry.Encoding)).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+			else
+				selectionLength = txtEdit.SelectedText.Replace("<null>", "\0").Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+
+			hbxHexView.SelectionStart = selectionStart;
+			hbxHexView.SelectionLength = selectionLength;
 		}
 
 		protected void hbxEdit_Changed(object sender, EventArgs e)

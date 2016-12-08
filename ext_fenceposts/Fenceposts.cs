@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using KuriimuContract;
 using System.Drawing;
-using dump_fenceposts.Properties;
+using ext_fenceposts.Properties;
 using System.Windows.Forms;
 
-namespace dump_fenceposts
+namespace ext_fenceposts
 {
-	public class Dumper : IDumper
+	public class Fenceposts : IExtension
 	{
 		#region Properties
 
@@ -25,11 +25,11 @@ namespace dump_fenceposts
 
 		#endregion
 
-		public DialogResult ShowDialog()
+		public void Show()
 		{
-			Fenceposts configure = new Fenceposts();
+			Extension configure = new Extension();
 			configure.StartPosition = FormStartPosition.CenterParent;
-			return configure.ShowDialog();
+			configure.Show();
 		}
 
 		public override string ToString()

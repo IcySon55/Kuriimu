@@ -63,9 +63,29 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btn_kuriimu {
+        internal static System.Drawing.Bitmap btn_director {
             get {
-                object obj = ResourceManager.GetObject("btn_kuriimu", resourceCulture);
+                object obj = ResourceManager.GetObject("btn_director", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btn_editor {
+            get {
+                object obj = ResourceManager.GetObject("btn_editor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap btn_extensions {
+            get {
+                object obj = ResourceManager.GetObject("btn_extensions", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

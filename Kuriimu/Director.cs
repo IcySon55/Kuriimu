@@ -23,8 +23,6 @@ namespace Kuriimu
 
 		private void Director_Load(object sender, EventArgs e)
 		{
-			if (Arguments.Length > 1)
-				txtFile.Text = Arguments[1];
 			txtOffset.Text = "0";
 			txtLeneance.Text = "0";
 			this.Icon = Properties.Resources.kuriimu;

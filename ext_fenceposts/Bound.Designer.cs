@@ -1,4 +1,4 @@
-﻿namespace dump_fenceposts
+﻿namespace ext_fenceposts
 {
 	partial class frmBound
 	{
@@ -36,6 +36,8 @@
 			this.lblEnd = new System.Windows.Forms.Label();
 			this.txtNotes = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.chkInjectable = new System.Windows.Forms.CheckBox();
+			this.chkDumpable = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// lblStart
@@ -60,10 +62,10 @@
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(234, 151);
+			this.btnOK.Location = new System.Drawing.Point(234, 194);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
-			this.btnOK.TabIndex = 2;
+			this.btnOK.TabIndex = 6;
 			this.btnOK.Text = "OK";
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -71,10 +73,10 @@
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.Location = new System.Drawing.Point(315, 151);
+			this.btnCancel.Location = new System.Drawing.Point(315, 194);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 3;
+			this.btnCancel.TabIndex = 7;
 			this.btnCancel.Text = "Cancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -86,7 +88,7 @@
 			this.txtEnd.Location = new System.Drawing.Point(104, 38);
 			this.txtEnd.Name = "txtEnd";
 			this.txtEnd.Size = new System.Drawing.Size(221, 20);
-			this.txtEnd.TabIndex = 5;
+			this.txtEnd.TabIndex = 2;
 			// 
 			// lblEnd
 			// 
@@ -106,7 +108,7 @@
 			this.txtNotes.Multiline = true;
 			this.txtNotes.Name = "txtNotes";
 			this.txtNotes.Size = new System.Drawing.Size(221, 74);
-			this.txtNotes.TabIndex = 7;
+			this.txtNotes.TabIndex = 3;
 			// 
 			// label1
 			// 
@@ -118,11 +120,31 @@
 			this.label1.Text = "Notes:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// Name
+			// chkInjectable
+			// 
+			this.chkInjectable.Location = new System.Drawing.Point(104, 169);
+			this.chkInjectable.Name = "chkInjectable";
+			this.chkInjectable.Size = new System.Drawing.Size(154, 19);
+			this.chkInjectable.TabIndex = 5;
+			this.chkInjectable.Text = "Injectable Space";
+			this.chkInjectable.UseVisualStyleBackColor = true;
+			// 
+			// chkDumpable
+			// 
+			this.chkDumpable.Location = new System.Drawing.Point(104, 144);
+			this.chkDumpable.Name = "chkDumpable";
+			this.chkDumpable.Size = new System.Drawing.Size(154, 19);
+			this.chkDumpable.TabIndex = 4;
+			this.chkDumpable.Text = "Dumpable Strings";
+			this.chkDumpable.UseVisualStyleBackColor = true;
+			// 
+			// frmBound
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(396, 181);
+			this.ClientSize = new System.Drawing.Size(396, 224);
+			this.Controls.Add(this.chkDumpable);
+			this.Controls.Add(this.chkInjectable);
 			this.Controls.Add(this.txtNotes);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.txtEnd);
@@ -134,8 +156,9 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "Name";
-			this.Text = "Name";
+			this.Name = "frmBound";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.Text = "Bound";
 			this.Load += new System.EventHandler(this.frmBound_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -152,5 +175,7 @@
 		private System.Windows.Forms.Label lblEnd;
 		private System.Windows.Forms.TextBox txtNotes;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.CheckBox chkInjectable;
+		private System.Windows.Forms.CheckBox chkDumpable;
 	}
 }

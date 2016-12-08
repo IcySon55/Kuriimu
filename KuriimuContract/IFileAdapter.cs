@@ -30,11 +30,24 @@ namespace KuriimuContract
 		// Entries
 		bool HasEntries { get; }
 		List<IEntry> Entries { get; }
+		List<string> NameList { get; }
 
 		// Features
 		bool AddEntry(IEntry entry);
 		bool RemoveEntry(IEntry entry);
 		void EntryProperties(IEntry entry, Icon icon);
+	}
+
+	public interface IEntry : IComparable<IEntry>
+	{
+		Encoding Encoding { get; set; }
+		string Name { get; set; }
+		byte[] OriginalText { get; set; }
+		byte[] EditedText { get; set; }
+
+		string ToString();
+		string GetOriginalString();
+		string GetEditedString();
 	}
 
 	public enum LoadResult

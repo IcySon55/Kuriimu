@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using dump_fenceposts.Properties;
+using ext_fenceposts.Properties;
 using KuriimuContract;
 using file_kup;
 
-namespace dump_fenceposts
+namespace ext_fenceposts
 {
 	public partial class frmBound : Form
 	{
@@ -32,12 +32,14 @@ namespace dump_fenceposts
 
 		private void frmBound_Load(object sender, EventArgs e)
 		{
-			this.Text = Settings.Default.PluginName;
+			this.Text = Settings.Default.PluginName + " - Bound Properties";
 			this.Icon = Resources.fenceposts;
 
 			txtStart.Text = _bound.Start;
 			txtEnd.Text = _bound.End;
 			txtNotes.Text = _bound.Notes;
+			chkDumpable.Checked = _bound.Dumpable;
+			chkInjectable.Checked = _bound.Injectable;
 		}
 
 		private void btnOK_Click(object sender, EventArgs e)
@@ -45,6 +47,8 @@ namespace dump_fenceposts
 			_bound.Start = txtStart.Text;
 			_bound.End = txtEnd.Text;
 			_bound.Notes = txtNotes.Text;
+			_bound.Dumpable = chkDumpable.Checked;
+			_bound.Injectable = chkInjectable.Checked;
 
 			OnBoundSubmitted(new EventArgs());
 			DialogResult = DialogResult.OK;

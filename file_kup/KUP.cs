@@ -52,13 +52,9 @@ namespace file_kup
 		[XmlArrayItem("pointerTable")]
 		public List<Bound> PointerTables { get; set; }
 
-		[XmlArray("dumpingBounds")]
-		[XmlArrayItem("dumpingBound")]
-		public List<Bound> DumpingBounds { get; set; }
-
-		[XmlArray("injectionBounds")]
-		[XmlArrayItem("injectionBound")]
-		public List<Bound> InjectionBounds { get; set; }
+		[XmlArray("stringBounds")]
+		[XmlArrayItem("stringBound")]
+		public List<Bound> StringBounds { get; set; }
 
 		[XmlArray("entries")]
 		[XmlArrayItem("entry")]
@@ -70,8 +66,7 @@ namespace file_kup
 			this.Encoding = Encoding.Unicode;
 			this.RamOffsetUInt = 0x0;
 			this.PointerTables = new List<Bound>();
-			this.DumpingBounds = new List<Bound>();
-			this.InjectionBounds = new List<Bound>();
+			this.StringBounds = new List<Bound>();
 			this.Entries = new List<Entry>();
 		}
 
@@ -158,12 +153,6 @@ namespace file_kup
 		[XmlElement("edited")]
 		public byte[] EditedText { get; set; }
 
-		[XmlIgnore]
-		public bool HasPointers
-		{
-			get { return Pointers.Count > 0 && MaxLength == 0; }
-		}
-
 		public Entry()
 		{
 			this.Encoding = Encoding.Unicode;
@@ -237,10 +226,37 @@ namespace file_kup
 			}
 		}
 
+		[XmlIgnore]
+		public long NextAvailableOffset { get; set; }
+
 		[XmlAttribute("notes")]
 		public string Notes { get; set; }
 
-		public Bound() { }
+		[XmlAttribute("dumpable")]
+		public bool Dumpable { get; set; }
+
+		[XmlAttribute("injectable")]
+		public bool Injectable { get; set; }
+
+		public Bound()
+		{
+			StartLong = 0;
+			EndLong = 0;
+			NextAvailableOffset = 0;
+			Notes = string.Empty;
+			Dumpable = false;
+			Injectable = false;
+		}
+
+		public long SpaceRemaining
+		{
+			get { return EndLong - NextAvailableOffset; }
+		}
+
+		public bool Full
+		{
+			get { return SpaceRemaining == 0; }
+		}
 
 		public override string ToString()
 		{

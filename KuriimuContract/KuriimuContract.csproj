@@ -43,10 +43,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryTools.cs" />
-    <Compile Include="IControlCodeHandler.cs" />
-    <Compile Include="IDumper.cs" />
-    <Compile Include="IEntry.cs" />
+    <Compile Include="IGameHandler.cs" />
+    <Compile Include="IExtension.cs" />
     <Compile Include="IFileAdapter.cs" />
+    <Compile Include="ListItem.cs" />
+    <Compile Include="PluginLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>

@@ -16,6 +16,7 @@ namespace Kuriimu
 		{
 			InitializeComponent();
 
+			this.ClientSize = new Size(32 + (104 * 3) + (6 * 2) + 32, 32 + 104 + 32);
 			Console.Write(Common.GetAppMessage());
 		}
 
@@ -26,26 +27,23 @@ namespace Kuriimu
 
 		private void btnEditor_Click(object sender, EventArgs e)
 		{
-			Editor editor = new Editor(this);
-			this.Hide();
+			Editor editor = new Editor();
 			editor.Show();
 		}
 
 		private void btnDumping_Click(object sender, EventArgs e)
 		{
-			DumperSelect dSelect = new DumperSelect();
+			ExtensionSelect dSelect = new ExtensionSelect();
 			dSelect.StartPosition = FormStartPosition.CenterParent;
 
 			if (dSelect.ShowDialog() == DialogResult.OK)
-			{
-				dSelect.Dumper.ShowDialog();
-			}
+				dSelect.Extension.Show();
 		}
 
 		private void btnDirector_Click(object sender, EventArgs e)
 		{
 			Director director = new Director();
-			director.ShowDialog();
+			director.Show();
 		}
 	}
 }

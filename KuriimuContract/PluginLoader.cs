@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using KuriimuContract;
 
-namespace Kuriimu
+namespace KuriimuContract
 {
 	public static class PluginLoader<T>
 	{
-		public static ICollection<T> LoadPlugins(string path)
+		public static ICollection<T> LoadPlugins(string path, string filter = "*.dll")
 		{
 			string[] dllFileNames = null;
 
 			if(Directory.Exists(path))
 			{
-				dllFileNames = Directory.GetFiles(path, "*.dll");
+				dllFileNames = Directory.GetFiles(path, filter);
 
 				ICollection<Assembly> assemblies = new List<Assembly>(dllFileNames.Length);
 				foreach(string dllFile in dllFileNames)

@@ -36,7 +36,7 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.fIndToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -127,6 +127,7 @@
 			// 
 			// saveToolStripMenuItem
 			// 
+			this.saveToolStripMenuItem.Enabled = false;
 			this.saveToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
@@ -136,6 +137,7 @@
 			// 
 			// saveAsToolStripMenuItem
 			// 
+			this.saveAsToolStripMenuItem.Enabled = false;
 			this.saveAsToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
@@ -159,18 +161,20 @@
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fIndToolStripMenuItem});
+            this.findToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
 			// 
-			// fIndToolStripMenuItem
+			// findToolStripMenuItem
 			// 
-			this.fIndToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_find;
-			this.fIndToolStripMenuItem.Name = "fIndToolStripMenuItem";
-			this.fIndToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.fIndToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
-			this.fIndToolStripMenuItem.Text = "&Find";
+			this.findToolStripMenuItem.Enabled = false;
+			this.findToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_find;
+			this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+			this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+			this.findToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+			this.findToolStripMenuItem.Text = "&Find";
+			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -217,6 +221,7 @@
 			// splMain
 			// 
 			this.splMain.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splMain.Enabled = false;
 			this.splMain.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splMain.Location = new System.Drawing.Point(6, 6);
 			this.splMain.Name = "splMain";
@@ -237,6 +242,7 @@
 			// lstEntries
 			// 
 			this.lstEntries.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lstEntries.Enabled = false;
 			this.lstEntries.FormattingEnabled = true;
 			this.lstEntries.IntegralHeight = false;
 			this.lstEntries.Location = new System.Drawing.Point(0, 27);
@@ -316,6 +322,7 @@
 			// splContent
 			// 
 			this.splContent.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splContent.Enabled = false;
 			this.splContent.Location = new System.Drawing.Point(0, 0);
 			this.splContent.Name = "splContent";
 			this.splContent.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -335,6 +342,7 @@
 			// splText
 			// 
 			this.splText.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splText.Enabled = false;
 			this.splText.Location = new System.Drawing.Point(0, 0);
 			this.splText.Name = "splText";
 			// 
@@ -355,13 +363,16 @@
 			// txtEdit
 			// 
 			this.txtEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtEdit.Enabled = false;
 			this.txtEdit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.txtEdit.Location = new System.Drawing.Point(0, 27);
 			this.txtEdit.Multiline = true;
 			this.txtEdit.Name = "txtEdit";
 			this.txtEdit.Size = new System.Drawing.Size(416, 282);
 			this.txtEdit.TabIndex = 0;
+			this.txtEdit.TextChanged += new System.EventHandler(this.txtEdit_TextChanged);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
+			this.txtEdit.MouseUp += new System.Windows.Forms.MouseEventHandler(this.txtEdit_MouseUp);
 			// 
 			// toolStrip1
 			// 
@@ -397,6 +408,7 @@
 			// 
 			this.txtOriginal.BackColor = System.Drawing.SystemColors.Window;
 			this.txtOriginal.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtOriginal.Enabled = false;
 			this.txtOriginal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.txtOriginal.Location = new System.Drawing.Point(0, 27);
 			this.txtOriginal.Multiline = true;
@@ -427,6 +439,7 @@
 			// splPreview
 			// 
 			this.splPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splPreview.Enabled = false;
 			this.splPreview.Location = new System.Drawing.Point(0, 0);
 			this.splPreview.Name = "splPreview";
 			// 
@@ -476,6 +489,7 @@
 			// hbxHexView
 			// 
 			this.hbxHexView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.hbxHexView.Enabled = false;
 			this.hbxHexView.Font = new System.Drawing.Font("Consolas", 9.75F);
 			this.hbxHexView.Location = new System.Drawing.Point(0, 27);
 			this.hbxHexView.Name = "hbxHexView";
@@ -514,7 +528,6 @@
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "Editor";
 			this.Text = "Kuriimu";
-			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Editor_FormClosed);
 			this.Load += new System.EventHandler(this.Editor_Load);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
@@ -578,7 +591,7 @@
 		private System.Windows.Forms.TextBox txtOriginal;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton tsbEntryProperties;
-		private System.Windows.Forms.ToolStripMenuItem fIndToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripDropDownButton tsbGameSelect;

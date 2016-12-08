@@ -121,11 +121,17 @@
   <data name="fenceposts" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\fenceposts.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="game_none" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\game_none.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="menu_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\menu-add.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="menu_copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\menu-copy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="menu_delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\menu-delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
