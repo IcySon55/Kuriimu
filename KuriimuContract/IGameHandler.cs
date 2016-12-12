@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace KuriimuContract
 {
-	public interface IDumper
+	public interface IGameHandler
 	{
 		string Name { get; }
 		Image Icon { get; }
-		DialogResult ShowDialog();
-		string ToString();
+		string GetString(byte[] text, Encoding encoding);
+		byte[] GetBytes(string text, Encoding encoding);
 	}
 }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace dump_fenceposts.Properties {
+namespace ext_fenceposts.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,10 +25,31 @@ namespace dump_fenceposts.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Fencepost Dumper")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Fenceposts")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
+        public string PluginDirectory {
+            get {
+                return ((string)(this["PluginDirectory"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CleanDump {
+            get {
+                return ((bool)(this["CleanDump"]));
+            }
+            set {
+                this["CleanDump"] = value;
             }
         }
     }

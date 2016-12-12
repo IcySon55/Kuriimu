@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace KuriimuContract
 {
-	public interface IControlCodeHandler
+	public interface IExtension
 	{
 		string Name { get; }
 		Image Icon { get; }
-		string GetString(byte[] text, Encoding encoding);
-		byte[] GetBytes(string text, Encoding encoding);
+		void Show();
+		string ToString();
 	}
 }

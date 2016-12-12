@@ -23,15 +23,12 @@ namespace Kuriimu.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
         public string PluginDirectory {
             get {
                 return ((string)(this["PluginDirectory"]));
-            }
-            set {
-                this["PluginDirectory"] = value;
             }
         }
         
@@ -47,15 +44,36 @@ namespace Kuriimu.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Kuriimu")]
         public string ApplicationName {
             get {
                 return ((string)(this["ApplicationName"]));
             }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FindWhat {
+            get {
+                return ((string)(this["FindWhat"]));
+            }
             set {
-                this["ApplicationName"] = value;
+                this["FindWhat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FindMatchCase {
+            get {
+                return ((bool)(this["FindMatchCase"]));
+            }
+            set {
+                this["FindMatchCase"] = value;
             }
         }
     }

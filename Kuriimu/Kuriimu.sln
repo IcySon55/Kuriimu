@@ -4,7 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8} = {9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}
-		{40EA3463-4A08-4E2C-938F-5025E87D6CB6} = {40EA3463-4A08-4E2C-938F-5025E87D6CB6}
 		{76791481-35E8-41C0-A01C-F0FC66416A20} = {76791481-35E8-41C0-A01C-F0FC66416A20}
 	EndProjectSection
 EndProject
@@ -14,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_kup", "..\file_kup\fil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_rocket_slime_3ds", "..\game_rocket_slime_3ds\game_rocket_slime_3ds.csproj", "{76791481-35E8-41C0-A01C-F0FC66416A20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dump_fenceposts", "..\dump_fenceposts\dump_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_fenceposts", "..\ext_fenceposts\ext_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

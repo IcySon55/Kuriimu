@@ -9,8 +9,8 @@ namespace Kuriimu
 	public partial class Name : Form
 	{
 		private IEntry _entry = null;
+		private bool _namesMustBeUnique = false;
 		private List<string> _nameList = null;
-		private bool _mustBeUnique = false;
 		private bool _isNew = false;
 
 		public event EventHandler<NameFormEventArgs> NameSubmitted;
@@ -19,26 +19,34 @@ namespace Kuriimu
 
 		public IEntry Entry
 		{
-			get { return _entry;  }
 			set { _entry = value; }
+		}
+
+		public bool NamesMustBeUnique
+		{
+			set { _namesMustBeUnique = value; }
+		}
+
+		public List<string> NameList
+		{
+			set { _nameList = value; }
 		}
 
 		public bool IsNew
 		{
-			get { return _isNew; }
 			set { _isNew = value; }
 		}
 
 		#endregion
 
-		public Name(IEntry entry, List<string> nameList, bool mustBeUnique)
+		public Name(IEntry entry, bool namesMustBeUnique = false, List<string> nameList = null, bool isNew = false)
 		{
 			InitializeComponent();
 
 			_entry = entry;
+			_namesMustBeUnique = namesMustBeUnique;
 			_nameList = nameList;
-			_mustBeUnique = mustBeUnique;
-			_isNew = false;
+			_isNew = isNew;
 		}
 
 		private void Name_Load(object sender, EventArgs e)
@@ -54,34 +62,26 @@ namespace Kuriimu
 			string oldName = _entry.Name.Trim();
 			string newName = txtName.Text.Trim();
 
-			if (newName.Length > 0)
-				if (_mustBeUnique)
-				{
-					if (!_nameList.Contains(newName) || (oldName == newName && !_isNew))
-					{
-						_entry.Name = newName;
-						DialogResult = DialogResult.OK;
-						OnNameSubmitted(new NameFormEventArgs(oldName, newName));
-					}
-					else
-						MessageBox.Show("Entry names must be unique. " + newName + " already exists.", "Must Be Unique", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-				}
-				else
+			if (_namesMustBeUnique)
+			{
+				if (!_nameList.Contains(newName) || (oldName == newName && !_isNew))
 				{
 					_entry.Name = newName;
 					DialogResult = DialogResult.OK;
 					OnNameSubmitted(new NameFormEventArgs(oldName, newName));
 				}
-			//else
-			//    MessageBox.Show("The name field is required.", "Name Required", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				else
+					MessageBox.Show("Entry names must be unique. " + newName + " already exists.", "Must Be Unique", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			}
+			else
+			{
+				_entry.Name = newName;
+				DialogResult = DialogResult.OK;
+				OnNameSubmitted(new NameFormEventArgs(oldName, newName));
+			}
 		}
 
 		private void btnCancel_Click(object sender, EventArgs e)
-		{
-			DialogResult = DialogResult.Cancel;
-		}
-
-		private void Name_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			DialogResult = DialogResult.Cancel;
 		}

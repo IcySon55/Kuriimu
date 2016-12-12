@@ -140,6 +140,11 @@ namespace file_kup
 			}
 		}
 
+		public List<string> NameList
+		{
+			get { return null; }
+		}
+
 		// Features
 		public bool AddEntry(IEntry entry)
 		{
@@ -177,7 +182,6 @@ namespace file_kup
 		{
 			EntryProperties properties = new EntryProperties();
 			properties.Icon = icon;
-			properties.StartPosition = FormStartPosition.CenterParent;
 			properties.Entry = (Entry)entry;
 			properties.ShowDialog();
 		}
