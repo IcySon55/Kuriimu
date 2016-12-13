@@ -104,8 +104,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.prgBottom.Location = new System.Drawing.Point(0, 35);
 			this.prgBottom.Margin = new System.Windows.Forms.Padding(0);
+			this.prgBottom.Maximum = 1000;
 			this.prgBottom.Name = "prgBottom";
 			this.prgBottom.Size = new System.Drawing.Size(863, 23);
+			this.prgBottom.Step = 1;
 			this.prgBottom.TabIndex = 0;
 			// 
 			// prgTop
@@ -114,8 +116,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.prgTop.Location = new System.Drawing.Point(0, 6);
 			this.prgTop.Margin = new System.Windows.Forms.Padding(0);
+			this.prgTop.Maximum = 1000;
 			this.prgTop.Name = "prgTop";
 			this.prgTop.Size = new System.Drawing.Size(863, 23);
+			this.prgTop.Step = 1;
 			this.prgTop.TabIndex = 1;
 			// 
 			// txtFilename

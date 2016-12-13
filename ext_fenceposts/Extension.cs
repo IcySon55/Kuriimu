@@ -371,7 +371,7 @@ namespace ext_fenceposts
 					if (offset < br.BaseStream.Length)
 						_pointers.Add(br.BaseStream.Position - sizeof(uint), offset); // AAAHAAAAARRRRRRGGRGGGGHHHHHHH
 
-					_workerDumper.ReportProgress((int)(((double)br.BaseStream.Position - pointerBound.StartLong) / ((double)pointerBound.EndLong - pointerBound.StartLong) * 100), "BOTTOM");
+					_workerDumper.ReportProgress((int)(((double)br.BaseStream.Position - pointerBound.StartLong) / ((double)pointerBound.EndLong - pointerBound.StartLong) * prgBottom.Maximum), "BOTTOM");
 				}
 			}
 			_workerDumper.ReportProgress(0, "STATUS|Found " + _pointers.Count + " pointers...");
@@ -381,7 +381,7 @@ namespace ext_fenceposts
 			{
 				Bound stringBound = _kup.StringBounds[i];
 
-				_workerDumper.ReportProgress((int)(((double)i / (double)_kup.StringBounds.Count) * 100), "BOTTOM");
+				_workerDumper.ReportProgress((int)(((double)i + 1 / (double)_kup.StringBounds.Count) * prgBottom.Maximum), "BOTTOM");
 
 				if (stringBound.Dumpable)
 				{
@@ -436,16 +436,16 @@ namespace ext_fenceposts
 										entry.OriginalText = result.ToArray();
 										entry.EditedText = result.ToArray();
 										entry.Relocatable = stringBound.Injectable;
-										entry.Name = Regex.Match(_kup.Encoding.GetString(entry.OriginalText), @"\w+", RegexOptions.IgnoreCase).Value;
+										entry.Name = Regex.Match(entry.OriginalTextString, @"\w+", RegexOptions.IgnoreCase).Value;
 										_kup.Entries.Add(entry);
 									}
 
-									string str = entry.GetEditedString();
+									string str = entry.EditedTextString;
 
 									if (_gameHandler != null)
 										str = _gameHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
 									else
-										str = entry.GetEditedString().Replace("\0", "<null>").Replace("\n", "\r\n");
+										str = entry.EditedTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
 
 									if (Regex.Matches(str, "<null>").Count > 0)
 										_workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);
@@ -491,7 +491,7 @@ namespace ext_fenceposts
 										entry.OriginalText = result.ToArray();
 										entry.EditedText = entry.OriginalText;
 										entry.Relocatable = stringBound.Injectable;
-										entry.Name = Regex.Match(_kup.Encoding.GetString(entry.OriginalText), @"\w+", RegexOptions.IgnoreCase).Value;
+										entry.Name = Regex.Match(entry.OriginalTextString, @"\w+", RegexOptions.IgnoreCase).Value;
 										entry.MaxLength = entry.EditedTextString.Length;
 										_kup.Entries.Add(entry);
 									}
@@ -501,7 +501,7 @@ namespace ext_fenceposts
 							}
 						}
 
-						_workerDumper.ReportProgress((int)(((double)br.BaseStream.Position - stringBound.StartLong) / ((double)stringBound.EndLong - stringBound.StartLong) * 100), "TOP");
+						_workerDumper.ReportProgress((int)(((double)br.BaseStream.Position - stringBound.StartLong) / ((double)stringBound.EndLong - stringBound.StartLong) * prgTop.Maximum), "TOP");
 					}
 				}
 			}
@@ -517,10 +517,10 @@ namespace ext_fenceposts
 			switch(items[0])
 			{
 				case "TOP":
-					prgTop.Value = Math.Max(Math.Min(e.ProgressPercentage, 100), 0);
+					prgTop.Value = Math.Max(Math.Min(e.ProgressPercentage, prgTop.Maximum), 0);
 					break;
 				case "BOTTOM":
-					prgBottom.Value = Math.Max(Math.Min(e.ProgressPercentage, 100), 0);
+					prgBottom.Value = Math.Max(Math.Min(e.ProgressPercentage, prgBottom.Maximum), 0);
 					break;
 				case "STATUS":
 					if (items.Length == 3)
@@ -535,8 +535,8 @@ namespace ext_fenceposts
 
 		private void workerDumper_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			prgTop.Value = 100;
-			prgBottom.Value = 100;
+			prgTop.Value = prgTop.Maximum;
+			prgBottom.Value = prgBottom.Maximum;
 			tlsMain.Enabled = true;
 			tlsPointerTables.Enabled = true;
 			tlsStringBounds.Enabled = true;
@@ -590,7 +590,7 @@ namespace ext_fenceposts
 					bool optimized = false;
 					foreach (Entry injectedEntry in injectedEntries)
 					{
-						if (injectedEntry.GetEditedString().EndsWith(entry.GetEditedString()))
+						if (injectedEntry.EditedTextString.EndsWith(entry.EditedTextString))
 						{
 							// Update the pointer
 							foreach (Pointer pointer in injectedEntry.Pointers)
@@ -659,7 +659,7 @@ namespace ext_fenceposts
 					_workerInjector.ReportProgress(0, "TEXT|" + entry.Encoding.GetString(entry.EditedText).Replace("\0", "<null>") + "\r\n\r\n");
 				}
 
-				_workerInjector.ReportProgress((int)(((double)count) / ((double)_kup.Entries.Count) * 100), "BOTTOM");
+				_workerInjector.ReportProgress((int)(((double)count) / ((double)_kup.Entries.Count) * prgBottom.Maximum), "BOTTOM");
 			}
 
 			if (outOfSpace)
@@ -683,7 +683,7 @@ namespace ext_fenceposts
 			switch (items[0])
 			{
 				case "BOTTOM":
-					prgBottom.Value = Math.Max(Math.Min(e.ProgressPercentage, 100), 0);
+					prgBottom.Value = Math.Max(Math.Min(e.ProgressPercentage, prgBottom.Maximum), 0);
 					break;
 				case "STATUS":
 					lstStatus.Items.Add(items[1]);
@@ -695,7 +695,7 @@ namespace ext_fenceposts
 
 		private void workerInjector_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			prgBottom.Value = 100;
+			prgBottom.Value = prgBottom.Maximum;
 			tlsMain.Enabled = true;
 			tlsPointerTables.Enabled = true;
 			tlsStringBounds.Enabled = true;

@@ -220,16 +220,6 @@ namespace file_kup
 			return Name == string.Empty ? Offset : Name;
 		}
 
-		public string GetOriginalString()
-		{
-			return Encoding.GetString(OriginalText);
-		}
-
-		public string GetEditedString()
-		{
-			return Encoding.GetString(EditedText);
-		}
-
 		public void AddPointer(long address)
 		{
 			Pointer pointer = null;

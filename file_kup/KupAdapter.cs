@@ -91,9 +91,7 @@ namespace file_kup
 					_kup = KUP.Load(filename);
 
 					foreach (Entry entry in _kup.Entries)
-					{
 						entry.PointerCleanup();
-					}
 				}
 				catch (XmlException)
 				{
