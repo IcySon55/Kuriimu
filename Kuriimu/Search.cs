@@ -11,12 +11,12 @@ using KuriimuContract;
 
 namespace Kuriimu
 {
-	public partial class Search : Form
+	public partial class frmSearch : Form
 	{
 		public List<IEntry> Entries { get; set; }
 		public IEntry Selected { get; set; }
 
-		public Search()
+		public frmSearch()
 		{
 			InitializeComponent();
 			this.Icon = Resources.find;
@@ -50,12 +50,12 @@ namespace Kuriimu
 				{
 					if (chkMatchCase.Checked)
 					{
-						if (entry.GetEditedString().Contains(txtFindText.Text) || entry.GetOriginalString().Contains(txtFindText.Text))
+						if (entry.EditedTextString.Contains(txtFindText.Text) || entry.OriginalTextString.Contains(txtFindText.Text))
 							matches.Add(entry);
 					}
 					else
 					{
-						if (entry.GetEditedString().ToLower().Contains(txtFindText.Text) || entry.GetOriginalString().ToLower().Contains(txtFindText.Text))
+						if (entry.EditedTextString.ToLower().Contains(txtFindText.Text) || entry.OriginalTextString.ToLower().Contains(txtFindText.Text))
 							matches.Add(entry);
 					}
 				}

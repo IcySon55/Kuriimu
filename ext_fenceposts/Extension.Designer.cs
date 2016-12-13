@@ -1,6 +1,6 @@
 ﻿namespace ext_fenceposts
 {
-	partial class Extension
+	partial class frmExtension
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -55,6 +55,7 @@
 			this.splStatus = new System.Windows.Forms.SplitContainer();
 			this.pnlCommands = new System.Windows.Forms.Panel();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.chkCleanDump = new System.Windows.Forms.CheckBox();
 			this.lblFile = new System.Windows.Forms.Label();
 			this.btnInject = new System.Windows.Forms.Button();
 			this.txtRamOffset = new System.Windows.Forms.TextBox();
@@ -75,7 +76,6 @@
 			this.tlsMain = new System.Windows.Forms.ToolStrip();
 			this.tsbGameSelect = new System.Windows.Forms.ToolStripDropDownButton();
 			this.tslDumpUsing = new System.Windows.Forms.ToolStripLabel();
-			this.chkCleanDump = new System.Windows.Forms.CheckBox();
 			this.cmsStatus.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splConfigure)).BeginInit();
@@ -410,6 +410,16 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Control Panel";
 			// 
+			// chkCleanDump
+			// 
+			this.chkCleanDump.Location = new System.Drawing.Point(215, 50);
+			this.chkCleanDump.Name = "chkCleanDump";
+			this.chkCleanDump.Size = new System.Drawing.Size(126, 19);
+			this.chkCleanDump.TabIndex = 10;
+			this.chkCleanDump.Text = "Clean Dump";
+			this.chkCleanDump.UseVisualStyleBackColor = true;
+			this.chkCleanDump.CheckedChanged += new System.EventHandler(this.chkCleanDump_CheckedChanged);
+			// 
 			// lblFile
 			// 
 			this.lblFile.AutoSize = true;
@@ -601,8 +611,8 @@
 			this.tsbGameSelect.Image = global::ext_fenceposts.Properties.Resources.game_none;
 			this.tsbGameSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbGameSelect.Name = "tsbGameSelect";
-			this.tsbGameSelect.Size = new System.Drawing.Size(140, 22);
-			this.tsbGameSelect.Text = "No game selected...";
+			this.tsbGameSelect.Size = new System.Drawing.Size(86, 22);
+			this.tsbGameSelect.Text = "No Game";
 			// 
 			// tslDumpUsing
 			// 
@@ -611,17 +621,7 @@
 			this.tslDumpUsing.Size = new System.Drawing.Size(75, 22);
 			this.tslDumpUsing.Text = "Dump using:";
 			// 
-			// chkCleanDump
-			// 
-			this.chkCleanDump.Location = new System.Drawing.Point(215, 50);
-			this.chkCleanDump.Name = "chkCleanDump";
-			this.chkCleanDump.Size = new System.Drawing.Size(126, 19);
-			this.chkCleanDump.TabIndex = 10;
-			this.chkCleanDump.Text = "Clean Dump";
-			this.chkCleanDump.UseVisualStyleBackColor = true;
-			this.chkCleanDump.CheckedChanged += new System.EventHandler(this.chkCleanDump_CheckedChanged);
-			// 
-			// Extension
+			// frmExtension
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -629,7 +629,7 @@
 			this.Controls.Add(this.pnlMain);
 			this.Controls.Add(this.tlsMain);
 			this.Controls.Add(this.mnuMain);
-			this.Name = "Extension";
+			this.Name = "frmExtension";
 			this.Text = "Fenceposts";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Fenceposts_FormClosing);
 			this.Load += new System.EventHandler(this.Fenceposts_Load);

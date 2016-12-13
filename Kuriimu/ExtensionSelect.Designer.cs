@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-	partial class ExtensionSelect
+	partial class frmExtensionSelect
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -57,7 +57,7 @@
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
 			// 
-			// treDumpers
+			// treExtensions
 			// 
 			this.treExtensions.FullRowSelect = true;
 			this.treExtensions.HideSelection = false;
@@ -66,7 +66,7 @@
 			this.treExtensions.ImageList = this.imgList;
 			this.treExtensions.ItemHeight = 18;
 			this.treExtensions.Location = new System.Drawing.Point(12, 12);
-			this.treExtensions.Name = "treDumpers";
+			this.treExtensions.Name = "treExtensions";
 			this.treExtensions.SelectedImageIndex = 0;
 			this.treExtensions.ShowLines = false;
 			this.treExtensions.ShowPlusMinus = false;
@@ -80,7 +80,7 @@
 			this.imgList.ImageSize = new System.Drawing.Size(16, 16);
 			this.imgList.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// PluginSelect
+			// frmExtensionSelect
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -91,7 +91,8 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "PluginSelect";
+			this.Name = "frmExtensionSelect";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Select a Plugin";
 			this.Load += new System.EventHandler(this.ExtensionSelect_Load);
 			this.ResumeLayout(false);

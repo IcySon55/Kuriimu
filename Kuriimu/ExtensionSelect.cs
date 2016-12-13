@@ -11,7 +11,7 @@ using Kuriimu.Properties;
 
 namespace Kuriimu
 {
-	public partial class ExtensionSelect : Form
+	public partial class frmExtensionSelect : Form
 	{
 		private Dictionary<string, IExtension> extensions = null;
 
@@ -21,7 +21,7 @@ namespace Kuriimu
 
 		#endregion
 
-		public ExtensionSelect()
+		public frmExtensionSelect()
 		{
 			InitializeComponent();
 			this.Extension = null;

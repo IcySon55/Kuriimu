@@ -25,7 +25,7 @@ namespace Kuriimu
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Main(args));
+			Application.Run(new frmMain(args));
 
 #if DEBUG
 			FreeConsole();

@@ -13,7 +13,7 @@ using System.Xml;
 
 namespace ext_fenceposts
 {
-	public partial class Extension : Form
+	public partial class frmExtension : Form
 	{
 		private FileInfo _file = null;
 		private IGameHandler _gameHandler = null;
@@ -27,7 +27,7 @@ namespace ext_fenceposts
 		private BackgroundWorker _workerDumper = new BackgroundWorker();
 		private BackgroundWorker _workerInjector = new BackgroundWorker();
 
-		public Extension()
+		public frmExtension()
 		{
 			InitializeComponent();
 		}
@@ -40,20 +40,7 @@ namespace ext_fenceposts
 			// Load Plugins
 			Console.WriteLine("Loading plugins...");
 
-			tsbGameSelect.DropDownItems.Clear();
-			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", Resources.game_none, tsbGameSelect_SelectedIndexChanged);
-			tsbGameSelect.DropDownItems.Add(tsiNoGame);
-			tsbGameSelect.Text = tsiNoGame.Text;
-			tsbGameSelect.Image = tsiNoGame.Image;
-
-			_gameHandlers = new Dictionary<string, IGameHandler>();
-			foreach (IGameHandler gameHandler in PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"))
-			{
-				_gameHandlers.Add(gameHandler.Name, gameHandler);
-
-				ToolStripMenuItem tsiHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, tsbGameSelect_SelectedIndexChanged);
-				tsbGameSelect.DropDownItems.Add(tsiHandler);
-			}
+			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 
 			// Configure workers
 			_workerDumper.DoWork += new DoWorkEventHandler(workerDumper_DoWork);
@@ -435,8 +422,8 @@ namespace ext_fenceposts
 									if (matched)
 									{
 										foreach (long key in _pointers.Keys)
-											if (_pointers[key] == offset && !entry.Pointers.Contains(new Pointer(key)))
-												entry.Pointers.Add(new Pointer(key));
+											if (_pointers[key] == offset)
+												entry.AddPointer(key);
 										if (Array.Equals(entry.EditedText, entry.OriginalText))
 											entry.EditedText = result.ToArray();
 										entry.OriginalText = result.ToArray();
@@ -445,7 +432,7 @@ namespace ext_fenceposts
 									{
 										foreach (long key in _pointers.Keys)
 											if (_pointers[key] == offset)
-												entry.Pointers.Add(new Pointer(key));
+												entry.AddPointer(key);
 										entry.OriginalText = result.ToArray();
 										entry.EditedText = result.ToArray();
 										entry.Relocatable = stringBound.Injectable;
@@ -505,7 +492,7 @@ namespace ext_fenceposts
 										entry.EditedText = entry.OriginalText;
 										entry.Relocatable = stringBound.Injectable;
 										entry.Name = Regex.Match(_kup.Encoding.GetString(entry.OriginalText), @"\w+", RegexOptions.IgnoreCase).Value;
-										entry.MaxLength = (int)(stringBound.EndLong - stringBound.StartLong - (_kup.Encoding.IsSingleByte ? 1 : 2));
+										entry.MaxLength = entry.EditedTextString.Length;
 										_kup.Entries.Add(entry);
 									}
 								}

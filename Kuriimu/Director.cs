@@ -11,12 +11,12 @@ using KuriimuContract;
 
 namespace Kuriimu
 {
-	public partial class Director : Form
+	public partial class frmDirector : Form
 	{
 		public string[] Arguments { get; set; }
 		private uint ram = 0x100000; // 3DS
 
-		public Director()
+		public frmDirector()
 		{
 			InitializeComponent();
 		}

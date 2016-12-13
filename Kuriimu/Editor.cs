@@ -8,7 +8,7 @@ using KuriimuContract;
 
 namespace Kuriimu
 {
-	public partial class Editor : Form
+	public partial class frmEditor : Form
 	{
 		private FileInfo _file = null;
 		private IFileAdapter _fileAdapter = null;
@@ -19,7 +19,7 @@ namespace Kuriimu
 		private Dictionary<string, IFileAdapter> _fileAdapters = null;
 		private Dictionary<string, IGameHandler> _gameHandlers = null;
 
-		public Editor()
+		public frmEditor()
 		{
 			InitializeComponent();
 		}
@@ -35,20 +35,7 @@ namespace Kuriimu
 			foreach (IFileAdapter fileAdapter in PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll"))
 				_fileAdapters.Add(fileAdapter.Name, fileAdapter);
 
-			tsbGameSelect.DropDownItems.Clear();
-			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", Resources.game_none, tsbGameSelect_SelectedIndexChanged);
-			tsbGameSelect.DropDownItems.Add(tsiNoGame);
-			tsbGameSelect.Text = tsiNoGame.Text;
-			tsbGameSelect.Image = tsiNoGame.Image;
-
-			_gameHandlers = new Dictionary<string, IGameHandler>();
-			foreach (IGameHandler gameHandler in PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"))
-			{
-				_gameHandlers.Add(gameHandler.Name, gameHandler);
-
-				ToolStripMenuItem tsiHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, tsbGameSelect_SelectedIndexChanged);
-				tsbGameSelect.DropDownItems.Add(tsiHandler);
-			}
+			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 
 			Tools.DoubleBuffer((Control)lstEntries, true);
 		}
@@ -70,7 +57,7 @@ namespace Kuriimu
 
 		private void findToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Search search = new Search();
+			frmSearch search = new frmSearch();
 			search.Entries = _fileAdapter.Entries;
 			search.ShowDialog();
 
@@ -189,7 +176,7 @@ namespace Kuriimu
 
 			if (dr == DialogResult.OK)
 			{
-				_fileAdapter.Save(sfd.FileName);
+				_fileAdapter.Save(_file.FullName);
 				_hasChanges = false;
 				UpdateForm();
 			}
@@ -241,9 +228,12 @@ namespace Kuriimu
 			}
 			else
 			{
-				txtEdit.Text = entry.GetEditedString().Replace("\0", "<null>").Replace("\n", "\r\n");
-				txtOriginal.Text = entry.GetOriginalString().Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtEdit.Text = entry.EditedTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtOriginal.Text = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
 			}
+
+			if (!entry.IsResizable)
+				txtEdit.MaxLength = entry.MaxLength;
 		}
 
 		private void UpdateHexView()
@@ -306,10 +296,14 @@ namespace Kuriimu
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
 
-			Name name = new Name(entry);
+			frmName name = new frmName(entry);
 
-			if (name.ShowDialog() == DialogResult.OK)
+			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
+			{
+				_hasChanges = true;
 				LoadEntries();
+				UpdateForm();
+			}
 		}
 
 		private void tsbEntryProperties_Click(object sender, EventArgs e)
@@ -354,6 +348,12 @@ namespace Kuriimu
 				_hasChanges = true;
 
 			UpdateForm();
+		}
+
+		private void txtEdit_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Control & e.KeyCode == Keys.A)
+				txtEdit.SelectAll();
 		}
 
 		private void txtEdit_MouseUp(object sender, MouseEventArgs e)

@@ -1,6 +1,6 @@
 ﻿namespace file_kup
 {
-	partial class EntryProperties
+	partial class frmProperties
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -36,13 +36,14 @@
 			this.chkRelocatable = new System.Windows.Forms.CheckBox();
 			this.txtOffset = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
+			this.lblPointerCount = new System.Windows.Forms.Label();
 			this.grpProperties.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(113, 129);
+			this.btnOK.Location = new System.Drawing.Point(113, 147);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 0;
@@ -53,7 +54,8 @@
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.Location = new System.Drawing.Point(194, 129);
+			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.btnCancel.Location = new System.Drawing.Point(194, 147);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 1;
@@ -66,6 +68,7 @@
 			this.grpProperties.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpProperties.Controls.Add(this.lblPointerCount);
 			this.grpProperties.Controls.Add(this.txtMaxLength);
 			this.grpProperties.Controls.Add(this.label2);
 			this.grpProperties.Controls.Add(this.chkRelocatable);
@@ -74,7 +77,7 @@
 			this.grpProperties.Location = new System.Drawing.Point(12, 12);
 			this.grpProperties.Name = "grpProperties";
 			this.grpProperties.Padding = new System.Windows.Forms.Padding(6);
-			this.grpProperties.Size = new System.Drawing.Size(257, 111);
+			this.grpProperties.Size = new System.Drawing.Size(257, 129);
 			this.grpProperties.TabIndex = 2;
 			this.grpProperties.TabStop = false;
 			this.grpProperties.Text = "Entry Properties";
@@ -120,18 +123,27 @@
 			this.label1.Text = "Offset:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// EntryProperties
+			// lblPointerCount
+			// 
+			this.lblPointerCount.Location = new System.Drawing.Point(85, 101);
+			this.lblPointerCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblPointerCount.Name = "lblPointerCount";
+			this.lblPointerCount.Size = new System.Drawing.Size(157, 20);
+			this.lblPointerCount.TabIndex = 5;
+			this.lblPointerCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// frmProperties
 			// 
 			this.AcceptButton = this.btnOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(281, 164);
+			this.ClientSize = new System.Drawing.Size(281, 182);
 			this.Controls.Add(this.grpProperties);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOK);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Name = "EntryProperties";
+			this.Name = "frmProperties";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Properties";
 			this.Load += new System.EventHandler(this.EntryProperties_Load);
@@ -151,5 +163,6 @@
 		private System.Windows.Forms.CheckBox chkRelocatable;
 		private System.Windows.Forms.TextBox txtMaxLength;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label lblPointerCount;
 	}
 }

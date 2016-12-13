@@ -27,7 +27,7 @@ namespace ext_fenceposts
 
 		public void Show()
 		{
-			Extension configure = new Extension();
+			frmExtension configure = new frmExtension();
 			configure.StartPosition = FormStartPosition.CenterParent;
 			configure.Show();
 		}

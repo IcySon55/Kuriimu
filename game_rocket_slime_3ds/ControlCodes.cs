@@ -33,6 +33,7 @@ namespace game_rocket_slime_3ds
 				_pairs.Add("<player>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x05, 0x00 }));
 				_pairs.Add("<name>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x02, 0x00 }));
 				_pairs.Add("</name>", encoding.GetString(new byte[] { 0x02, 0x00 }));
+				_pairs.Add("<u1>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x00, 0x00 }));
 				_pairs.Add("<top?>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x00, 0x01 }));
 				_pairs.Add("<bottom?>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x00, 0x02 }));
 				_pairs.Add("<u2>", encoding.GetString(new byte[] { 0x15, 0x00 }));

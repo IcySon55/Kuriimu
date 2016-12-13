@@ -44,11 +44,11 @@
   <ItemGroup>
     <Compile Include="KUP.cs" />
     <Compile Include="KupAdapter.cs" />
-    <Compile Include="EntryProperties.cs">
+    <Compile Include="Properties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EntryProperties.Designer.cs">
-      <DependentUpon>EntryProperties.cs</DependentUpon>
+    <Compile Include="Properties.Designer.cs">
+      <DependentUpon>Properties.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,8 +59,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="EntryProperties.resx">
-      <DependentUpon>EntryProperties.cs</DependentUpon>
+    <EmbeddedResource Include="Properties.resx">
+      <DependentUpon>Properties.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

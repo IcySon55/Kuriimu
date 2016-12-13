@@ -10,9 +10,9 @@ using KuriimuContract;
 
 namespace Kuriimu
 {
-	public partial class Main : Form
+	public partial class frmMain : Form
 	{
-		public Main(string[] args)
+		public frmMain(string[] args)
 		{
 			InitializeComponent();
 
@@ -27,14 +27,13 @@ namespace Kuriimu
 
 		private void btnEditor_Click(object sender, EventArgs e)
 		{
-			Editor editor = new Editor();
+			frmEditor editor = new frmEditor();
 			editor.Show();
 		}
 
 		private void btnDumping_Click(object sender, EventArgs e)
 		{
-			ExtensionSelect dSelect = new ExtensionSelect();
-			dSelect.StartPosition = FormStartPosition.CenterParent;
+			frmExtensionSelect dSelect = new frmExtensionSelect();
 
 			if (dSelect.ShowDialog() == DialogResult.OK)
 				dSelect.Extension.Show();
@@ -42,7 +41,7 @@ namespace Kuriimu
 
 		private void btnDirector_Click(object sender, EventArgs e)
 		{
-			Director director = new Director();
+			frmDirector director = new frmDirector();
 			director.Show();
 		}
 	}

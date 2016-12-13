@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-	partial class Name
+	partial class frmName
 	{
 		/// <summary>
 		/// Required designer variable.
