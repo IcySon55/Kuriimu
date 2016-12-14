@@ -16,13 +16,13 @@ namespace Kuriimu
 		{
 			InitializeComponent();
 
-			this.ClientSize = new Size(32 + (104 * 3) + (6 * 2) + 32, 32 + 104 + 32);
+			ClientSize = new Size(32 + (104 * 3) + (6 * 2) + 32, 32 + 104 + 32);
 			Console.Write(Common.GetAppMessage());
 		}
 
 		private void Main_Load(object sender, EventArgs e)
 		{
-			this.Icon = Properties.Resources.kuriimu;
+			Icon = Properties.Resources.kuriimu;
 		}
 
 		private void btnEditor_Click(object sender, EventArgs e)

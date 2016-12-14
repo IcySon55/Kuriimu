@@ -62,17 +62,17 @@ namespace file_kup
 
 		public KUP()
 		{
-			this.Count = 0;
-			this.Encoding = Encoding.Unicode;
-			this.RamOffsetUInt = 0x0;
-			this.PointerTables = new List<Bound>();
-			this.StringBounds = new List<Bound>();
-			this.Entries = new List<Entry>();
+			Count = 0;
+			Encoding = Encoding.Unicode;
+			RamOffsetUInt = 0x0;
+			PointerTables = new List<Bound>();
+			StringBounds = new List<Bound>();
+			Entries = new List<Entry>();
 		}
 
 		public KUP(Encoding encoding) : this()
 		{
-			this.Encoding = encoding;
+			Encoding = encoding;
 		}
 
 		public static KUP Load(string filename)
@@ -164,6 +164,9 @@ namespace file_kup
 			}
 		}
 
+		[XmlIgnore]
+		public long InjectedOffsetLong { get; set; }
+
 		[XmlAttribute("relocatable")]
 		public bool Relocatable { get; set; }
 
@@ -200,19 +203,20 @@ namespace file_kup
 
 		public Entry()
 		{
-			this.Encoding = Encoding.Unicode;
-			this.Name = string.Empty;
-			this.OffsetLong = 0x0;
-			this.Relocatable = true;
-			this.MaxLength = 0;
-			this.Pointers = new List<Pointer>();
-			this.OriginalText = new byte[] { 0x0 };
-			this.EditedText = new byte[] { 0x0 };
+			Encoding = Encoding.Unicode;
+			Name = string.Empty;
+			OffsetLong = 0x0;
+			InjectedOffsetLong = 0x0;
+			Relocatable = true;
+			MaxLength = 0;
+			Pointers = new List<Pointer>();
+			OriginalText = new byte[] { 0x0 };
+			EditedText = new byte[] { 0x0 };
 		}
 
 		public Entry(Encoding encoding) : this()
 		{
-			this.Encoding = encoding;
+			Encoding = encoding;
 		}
 
 		public override string ToString()
@@ -249,9 +253,9 @@ namespace file_kup
 
 		public int CompareTo(IEntry rhs)
 		{
-			int result = this.Name.CompareTo(rhs.Name);
+			int result = Name.CompareTo(rhs.Name);
 			if (result == 0)
-				result = this.Offset.CompareTo(((Entry)rhs).Offset);
+				result = Offset.CompareTo(((Entry)rhs).Offset);
 			return result;
 		}
 	}
@@ -351,12 +355,12 @@ namespace file_kup
 
 		public Pointer(long address)
 		{
-			this.AddressLong = address;
+			AddressLong = address;
 		}
 
 		public bool Equals(Pointer rhs)
 		{
-			return this.AddressLong == rhs.AddressLong;
+			return AddressLong == rhs.AddressLong;
 		}
 	}
 }

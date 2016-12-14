@@ -26,7 +26,7 @@ namespace Kuriimu
 
 		private void Editor_Load(object sender, EventArgs e)
 		{
-			this.Icon = Resources.kuriimu;
+			Icon = Resources.kuriimu;
 
 			// Load Plugins
 			Console.WriteLine("Loading plugins...");
@@ -62,13 +62,15 @@ namespace Kuriimu
 			search.ShowDialog();
 
 			if (search.Selected != null)
+			{
 				lstEntries.SelectedItem = search.Selected;
 
-			txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
-			txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
-			txtEdit.Focus();
+				txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
+				txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
+				txtEdit.Focus();
 
-			SelectInHex();
+				SelectInHex();
+			}
 		}
 
 		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -256,7 +258,7 @@ namespace Kuriimu
 
 		private void UpdateForm()
 		{
-			this.Text = Settings.Default.ApplicationName + " Editor" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
+			Text = Settings.Default.ApplicationName + " Editor" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
 			if (_fileOpen)
 				tslEntries.Text = _fileAdapter.Entries.Count + " Entries";

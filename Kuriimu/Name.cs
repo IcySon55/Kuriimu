@@ -57,8 +57,8 @@ namespace Kuriimu
 
 		private void Name_Load(object sender, EventArgs e)
 		{
-			this.Text = Settings.Default.ApplicationName;
-			this.Icon = Resources.kuriimu;
+			Text = Settings.Default.ApplicationName;
+			Icon = Resources.kuriimu;
 
 			txtName.Text = _entry.Name;
 		}

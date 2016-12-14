@@ -19,7 +19,7 @@ namespace Kuriimu
 		public frmSearch()
 		{
 			InitializeComponent();
-			this.Icon = Resources.find;
+			Icon = Resources.find;
 		}
 
 		private void frmSearch_Load(object sender, EventArgs e)
@@ -69,7 +69,7 @@ namespace Kuriimu
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 
 		private void txtFindText_TextChanged(object sender, EventArgs e)
@@ -89,7 +89,7 @@ namespace Kuriimu
 			if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
 			{
 				Selected = (IEntry)((ListItem)lstResults.SelectedItem).Value;
-				this.Close();
+				Close();
 			}
 		}
 	}

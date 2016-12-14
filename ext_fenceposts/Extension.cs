@@ -34,8 +34,8 @@ namespace ext_fenceposts
 
 		private void Fenceposts_Load(object sender, EventArgs e)
 		{
-			this.Text = Settings.Default.PluginName;
-			this.Icon = Resources.fenceposts;
+			Text = Settings.Default.PluginName;
+			Icon = Resources.fenceposts;
 
 			// Load Plugins
 			Console.WriteLine("Loading plugins...");
@@ -85,7 +85,7 @@ namespace ext_fenceposts
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 
 		private void tsbNew_Click(object sender, EventArgs e)
@@ -250,7 +250,7 @@ namespace ext_fenceposts
 		// Utilities
 		private void UpdateForm()
 		{
-			this.Text = Settings.Default.PluginName + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
+			Text = Settings.Default.PluginName + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
 			saveToolStripMenuItem.Enabled = _fileOpen;
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
@@ -387,6 +387,7 @@ namespace ext_fenceposts
 				{
 					List<byte> result = new List<byte>();
 					long offset = stringBound.StartLong;
+					long jumpBack = 0;
 
 					br.BaseStream.Seek(stringBound.StartLong, SeekOrigin.Begin);
 					while (br.BaseStream.Position < stringBound.EndLong)
@@ -396,59 +397,65 @@ namespace ext_fenceposts
 
 						if (stringBound.Injectable)
 						{
-							if (_pointers.Values.Contains(br.BaseStream.Position))
+							if (jumpBack == 0 && (_pointers.Values.Contains(br.BaseStream.Position) || br.BaseStream.Position == stringBound.EndLong))
+								jumpBack = br.BaseStream.Position;
+
+							if ((_pointers.Values.Contains(br.BaseStream.Position) || br.BaseStream.Position == stringBound.EndLong) && (result[result.Count - 1] == 0x00 && result[result.Count - 2] == 0x00))
 							{
-								if (result.Count >= 2)
+								if (result[result.Count - 1] == 0x00 && result[result.Count - 2] == 0x00)
 								{
-									if (result[result.Count - 1] == 0x00 && result[result.Count - 2] == 0x00)
+									result.RemoveAt(result.Count - 1);
+									result.RemoveAt(result.Count - 1);
+								}
+
+								Entry entry = new Entry(_kup.Encoding);
+								entry.OffsetLong = offset;
+
+								// Merging
+								bool matched = false;
+								foreach (Entry ent in _kup.Entries)
+									if (ent.Offset == entry.Offset)
 									{
-										result.RemoveAt(result.Count - 1);
-										result.RemoveAt(result.Count - 1);
+										entry = ent;
+										matched = true;
+										break;
 									}
 
-									Entry entry = new Entry(_kup.Encoding);
-									entry.OffsetLong = offset;
-
-									// Merging
-									bool matched = false;
-									foreach (Entry ent in _kup.Entries)
-										if (ent.Offset == entry.Offset)
-										{
-											entry = ent;
-											matched = true;
-											break;
-										}
-
-									if (matched)
-									{
-										foreach (long key in _pointers.Keys)
-											if (_pointers[key] == offset)
-												entry.AddPointer(key);
-										if (Array.Equals(entry.EditedText, entry.OriginalText))
-											entry.EditedText = result.ToArray();
-										entry.OriginalText = result.ToArray();
-									}
-									else
-									{
-										foreach (long key in _pointers.Keys)
-											if (_pointers[key] == offset)
-												entry.AddPointer(key);
-										entry.OriginalText = result.ToArray();
+								if (matched)
+								{
+									foreach (long key in _pointers.Keys)
+										if (_pointers[key] == offset)
+											entry.AddPointer(key);
+									if (entry.EditedTextString == entry.OriginalTextString)
 										entry.EditedText = result.ToArray();
-										entry.Relocatable = stringBound.Injectable;
-										entry.Name = Regex.Match(entry.OriginalTextString, @"\w+", RegexOptions.IgnoreCase).Value;
-										_kup.Entries.Add(entry);
-									}
+									entry.OriginalText = result.ToArray();
+								}
+								else
+								{
+									foreach (long key in _pointers.Keys)
+										if (_pointers[key] == offset)
+											entry.AddPointer(key);
+									entry.OriginalText = result.ToArray();
+									entry.EditedText = result.ToArray();
+									entry.Relocatable = stringBound.Injectable;
+									entry.Name = Regex.Match(entry.OriginalTextString, @"\w+", RegexOptions.IgnoreCase).Value;
+									_kup.Entries.Add(entry);
+								}
 
-									string str = entry.EditedTextString;
+								string str = entry.OriginalTextString;
 
-									if (_gameHandler != null)
-										str = _gameHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
-									else
-										str = entry.EditedTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
+								if (_gameHandler != null)
+									str = _gameHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
+								else
+									str = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
 
-									if (Regex.Matches(str, "<null>").Count > 0)
-										_workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);
+								if (Regex.Matches(str, "<null>").Count > 0)
+									_workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);
+
+								if (jumpBack > 0)
+								{
+									br.BaseStream.Seek(jumpBack, SeekOrigin.Begin);
+									jumpBack = 0;
 								}
 
 								offset = br.BaseStream.Position;
@@ -549,19 +556,12 @@ namespace ext_fenceposts
 		{
 			int result = lhs.EditedText.Length.CompareTo(rhs.EditedText.Length);
 			if (result == 0)
-			{
-				string myString = lhs.Encoding.GetString(lhs.EditedText);
-				string theirString = rhs.Encoding.GetString(rhs.EditedText);
-				result = myString.CompareTo(theirString);
-			}
+				result = lhs.EditedTextString.CompareTo(rhs.EditedTextString);
 			return result;
 		}
 
 		private void workerInjector_DoWork(object sender, DoWorkEventArgs e)
 		{
-			File.Copy(txtFilename.Text, txtFilename.Text + ".injected", true);
-			FileInfo codeFile = new FileInfo(txtFilename.Text + ".injected");
-
 			List<Entry> injectedEntries = new List<Entry>();
 
 			// Sort Entries
@@ -572,6 +572,10 @@ namespace ext_fenceposts
 			foreach (Bound bound in _kup.StringBounds)
 				bound.NextAvailableOffset = bound.StartLong;
 
+			// Copy Injection File
+			File.Copy(txtFilename.Text, txtFilename.Text + ".injected", true);
+			FileInfo codeFile = new FileInfo(txtFilename.Text + ".injected");
+
 			// Begin Injection
 			FileStream fs = new FileStream(codeFile.FullName, FileMode.Open, FileAccess.Write, FileShare.Read);
 			BinaryWriterX bw = new BinaryWriterX(fs, ByteOrder.LittleEndian);
@@ -579,7 +583,7 @@ namespace ext_fenceposts
 			_workerInjector.ReportProgress(0, "STATUS|Injecting strings...");
 
 			bool outOfSpace = false;
-			int count = 0;
+			int count = 0, optimizedCount = 0;
 			foreach (Entry entry in _kup.Entries)
 			{
 				count++;
@@ -593,12 +597,13 @@ namespace ext_fenceposts
 						if (injectedEntry.EditedTextString.EndsWith(entry.EditedTextString))
 						{
 							// Update the pointer
-							foreach (Pointer pointer in injectedEntry.Pointers)
+							foreach (Pointer pointer in entry.Pointers)
 							{
 								bw.BaseStream.Seek(pointer.AddressLong, SeekOrigin.Begin);
-								bw.Write((uint)(injectedEntry.OffsetLong + (injectedEntry.EditedText.Length - entry.EditedText.Length) + _kup.RamOffsetUInt));
-								optimized = true;
+								bw.Write((uint)(injectedEntry.InjectedOffsetLong + (injectedEntry.EditedText.Length - entry.EditedText.Length) + _kup.RamOffsetUInt));
 							}
+							optimized = true;
+							optimizedCount++;
 							break;
 						}
 					}
@@ -628,13 +633,12 @@ namespace ext_fenceposts
 							// Write the string
 							bw.BaseStream.Seek(bound.NextAvailableOffset, SeekOrigin.Begin);
 							bw.Write(entry.EditedText);
+							entry.InjectedOffsetLong = bound.NextAvailableOffset;
 							if (entry.Encoding.IsSingleByte)
 								bw.Write(new byte[] { 0x0 });
 							else
 								bw.Write(new byte[] { 0x0, 0x0 });
 							bound.NextAvailableOffset = bw.BaseStream.Position;
-
-							_workerInjector.ReportProgress(0, "TEXT|" + entry.Encoding.GetString(entry.EditedText).Replace("\0", "<null>") + "\r\n\r\n");
 
 							injectedEntries.Add(entry);
 						}
@@ -655,8 +659,6 @@ namespace ext_fenceposts
 						bw.Write(new byte[] { 0x0 });
 					else
 						bw.Write(new byte[] { 0x0, 0x0 });
-
-					_workerInjector.ReportProgress(0, "TEXT|" + entry.Encoding.GetString(entry.EditedText).Replace("\0", "<null>") + "\r\n\r\n");
 				}
 
 				_workerInjector.ReportProgress((int)(((double)count) / ((double)_kup.Entries.Count) * prgBottom.Maximum), "BOTTOM");
@@ -666,11 +668,13 @@ namespace ext_fenceposts
 			{
 				_workerInjector.ReportProgress(0, "STATUS|The injector has run out of space to inject strings.");
 				_workerInjector.ReportProgress(0, "STATUS|Injected " + injectedEntries.Count + " strings...");
+				_workerInjector.ReportProgress(0, "STATUS|Optimized " + optimizedCount + " strings...");
 				_workerInjector.ReportProgress(0, "STATUS|" + (_kup.Entries.Count - count) + " strings were not injected.");
 			}
 			else
 			{
 				_workerInjector.ReportProgress(0, "STATUS|Injected " + injectedEntries.Count + " strings...");
+				_workerInjector.ReportProgress(0, "STATUS|Optimized " + optimizedCount + " strings...");
 			}
 
 			bw.Close();
