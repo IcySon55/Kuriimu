@@ -7,17 +7,17 @@ using file_kup;
 
 namespace ext_fenceposts
 {
-	public partial class frmBound : Form
+	public partial class frmOptions : Form
 	{
-		private Bound _bound = null;
+		private KUP _kup = null;
 		private bool _hasChanges = false;
 
 		#region Properties
 
-		public Bound Bound
+		public KUP Kup
 		{
-			get { return _bound;  }
-			set { _bound = value; }
+			get { return _kup;  }
+			set { _kup = value; }
 		}
 
 		public bool HasChanges
@@ -28,32 +28,29 @@ namespace ext_fenceposts
 
 		#endregion
 
-		public frmBound(Bound bound)
+		public frmOptions(KUP kup)
 		{
 			InitializeComponent();
 
-			_bound = bound;
+			_kup = kup;
 		}
 
 		private void frmBound_Load(object sender, EventArgs e)
 		{
-			Text = Settings.Default.PluginName + " - Bound Properties";
+			Text = "Options";
 			Icon = Resources.fenceposts;
 
-			txtStart.Text = _bound.Start;
-			txtEnd.Text = _bound.End;
-			txtNotes.Text = _bound.Notes;
-			chkDumpable.Checked = _bound.Dumpable;
-			chkInjectable.Checked = _bound.Injectable;
+			txtMemoryOffset.Text = _kup.RamOffset;
+			chkOptimizeStrings.Checked = _kup.OptimizeStrings;
 		}
 
 		private void btnOK_Click(object sender, EventArgs e)
 		{
-			_bound.Start = txtStart.Text;
-			_bound.End = txtEnd.Text;
-			_bound.Notes = txtNotes.Text;
-			_bound.Dumpable = chkDumpable.Checked;
-			_bound.Injectable = chkInjectable.Checked;
+			if (_kup.RamOffset != txtMemoryOffset.Text.Trim() || _kup.OptimizeStrings != chkOptimizeStrings.Checked)
+				_hasChanges = true;
+
+			_kup.RamOffset = txtMemoryOffset.Text;
+			_kup.OptimizeStrings = chkOptimizeStrings.Checked;
 
 			DialogResult = DialogResult.OK;
 		}

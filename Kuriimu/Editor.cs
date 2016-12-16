@@ -73,6 +73,11 @@ namespace Kuriimu
 			SaveFile(true);
 		}
 
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Close();
+		}
+
 		private void findToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			frmSearch search = new frmSearch();

@@ -45,6 +45,9 @@ namespace file_kup
 			}
 		}
 
+		[XmlAttribute("optimizeStrings")]
+		public bool OptimizeStrings { get; set; }
+
 		[XmlArray("pointerTables")]
 		[XmlArrayItem("pointerTable")]
 		public List<Bound> PointerTables { get; set; }
@@ -62,6 +65,7 @@ namespace file_kup
 			Count = 0;
 			Encoding = Encoding.Unicode;
 			RamOffsetUInt = 0x0;
+			OptimizeStrings = true;
 			PointerTables = new List<Bound>();
 			StringBounds = new List<Bound>();
 			Entries = new List<Entry>();

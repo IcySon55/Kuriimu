@@ -247,7 +247,6 @@ namespace ext_fenceposts
 				lstStringBounds.SelectedIndex = 0;
 
 			txtFilename.Text = _kupUser.Filename;
-			txtRamOffset.Text = _kup.RamOffset;
 			chkCleanDump.Checked = Settings.Default.CleanDump;
 		}
 
@@ -280,7 +279,7 @@ namespace ext_fenceposts
 
 			txtFilename.Enabled = _fileOpen;
 			btnBrowse.Enabled = _fileOpen;
-			txtRamOffset.Enabled = _fileOpen;
+			btnOptions.Enabled = _fileOpen;
 			chkCleanDump.Enabled = _fileOpen;
 			btnDump.Enabled = (lstPointerTables.Items.Count > 0 && lstStringBounds.Items.Count > 0);
 			btnInject.Enabled = lstStringBounds.Items.Count > 0;
@@ -305,6 +304,18 @@ namespace ext_fenceposts
 
 			if (ofd.ShowDialog() == DialogResult.OK)
 				txtFilename.Text = ofd.FileName;
+		}
+
+		private void btnOptions_Click(object sender, EventArgs e)
+		{
+			frmOptions options = new frmOptions(_kup);
+			options.ShowDialog();
+
+			if (options.HasChanges)
+			{
+				_hasChanges = true;
+				UpdateForm();
+			}
 		}
 
 		private void btnDump_Click(object sender, EventArgs e)
@@ -569,8 +580,11 @@ namespace ext_fenceposts
 			List<Entry> injectedEntries = new List<Entry>();
 
 			// Sort Entries
-			_kup.Entries.Sort(SortEntriesForInjection);
-			_kup.Entries.Reverse();
+			if (_kup.OptimizeStrings)
+			{
+				_kup.Entries.Sort(SortEntriesForInjection);
+				_kup.Entries.Reverse();
+			}
 
 			// Bound Setup
 			foreach (Bound bound in _kup.StringBounds)
@@ -596,19 +610,23 @@ namespace ext_fenceposts
 				{
 					// Optimization pass
 					bool optimized = false;
-					foreach (Entry injectedEntry in injectedEntries)
+
+					if (_kup.OptimizeStrings)
 					{
-						if (injectedEntry.EditedTextString.EndsWith(entry.EditedTextString))
+						foreach (Entry injectedEntry in injectedEntries)
 						{
-							// Update the pointer
-							foreach (Pointer pointer in entry.Pointers)
+							if (injectedEntry.EditedTextString.EndsWith(entry.EditedTextString))
 							{
-								bw.BaseStream.Seek(pointer.AddressLong, SeekOrigin.Begin);
-								bw.Write((uint)(injectedEntry.InjectedOffsetLong + (injectedEntry.EditedText.Length - entry.EditedText.Length) + _kup.RamOffsetUInt));
+								// Update the pointer
+								foreach (Pointer pointer in entry.Pointers)
+								{
+									bw.BaseStream.Seek(pointer.AddressLong, SeekOrigin.Begin);
+									bw.Write((uint)(injectedEntry.InjectedOffsetLong + (injectedEntry.EditedText.Length - entry.EditedText.Length) + _kup.RamOffsetUInt));
+								}
+								optimized = true;
+								optimizedCount++;
+								break;
 							}
-							optimized = true;
-							optimizedCount++;
-							break;
 						}
 					}
 
@@ -838,13 +856,6 @@ namespace ext_fenceposts
 		private void txtFilename_TextChanged(object sender, EventArgs e)
 		{
 			_kupUser.Filename = txtFilename.Text;
-			_hasChanges = true;
-			UpdateForm();
-		}
-
-		private void txtRamOffset_TextChanged(object sender, EventArgs e)
-		{
-			_kup.RamOffset = txtRamOffset.Text;
 			_hasChanges = true;
 			UpdateForm();
 		}

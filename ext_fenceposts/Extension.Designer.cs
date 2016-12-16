@@ -58,8 +58,6 @@
 			this.chkCleanDump = new System.Windows.Forms.CheckBox();
 			this.lblFile = new System.Windows.Forms.Label();
 			this.btnInject = new System.Windows.Forms.Button();
-			this.txtRamOffset = new System.Windows.Forms.TextBox();
-			this.lblRamOffset = new System.Windows.Forms.Label();
 			this.pnlProgress = new System.Windows.Forms.Panel();
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,6 +74,7 @@
 			this.tlsMain = new System.Windows.Forms.ToolStrip();
 			this.tsbGameSelect = new System.Windows.Forms.ToolStripDropDownButton();
 			this.tslDumpUsing = new System.Windows.Forms.ToolStripLabel();
+			this.btnOptions = new System.Windows.Forms.Button();
 			this.cmsStatus.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splConfigure)).BeginInit();
@@ -398,11 +397,10 @@
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.btnOptions);
 			this.groupBox1.Controls.Add(this.chkCleanDump);
 			this.groupBox1.Controls.Add(this.lblFile);
 			this.groupBox1.Controls.Add(this.btnInject);
-			this.groupBox1.Controls.Add(this.txtRamOffset);
-			this.groupBox1.Controls.Add(this.lblRamOffset);
 			this.groupBox1.Controls.Add(this.txtFilename);
 			this.groupBox1.Controls.Add(this.btnDump);
 			this.groupBox1.Controls.Add(this.btnBrowse);
@@ -416,9 +414,9 @@
 			// 
 			// chkCleanDump
 			// 
-			this.chkCleanDump.Location = new System.Drawing.Point(215, 50);
+			this.chkCleanDump.Location = new System.Drawing.Point(162, 50);
 			this.chkCleanDump.Name = "chkCleanDump";
-			this.chkCleanDump.Size = new System.Drawing.Size(126, 19);
+			this.chkCleanDump.Size = new System.Drawing.Size(179, 19);
 			this.chkCleanDump.TabIndex = 10;
 			this.chkCleanDump.Text = "Clean Dump";
 			this.chkCleanDump.UseVisualStyleBackColor = true;
@@ -444,23 +442,6 @@
 			this.btnInject.Text = "Inject!";
 			this.btnInject.UseVisualStyleBackColor = true;
 			this.btnInject.Click += new System.EventHandler(this.btnInject_Click);
-			// 
-			// txtRamOffset
-			// 
-			this.txtRamOffset.Location = new System.Drawing.Point(90, 49);
-			this.txtRamOffset.Name = "txtRamOffset";
-			this.txtRamOffset.Size = new System.Drawing.Size(119, 20);
-			this.txtRamOffset.TabIndex = 7;
-			this.txtRamOffset.TextChanged += new System.EventHandler(this.txtRamOffset_TextChanged);
-			// 
-			// lblRamOffset
-			// 
-			this.lblRamOffset.AutoSize = true;
-			this.lblRamOffset.Location = new System.Drawing.Point(6, 52);
-			this.lblRamOffset.Name = "lblRamOffset";
-			this.lblRamOffset.Size = new System.Drawing.Size(78, 13);
-			this.lblRamOffset.TabIndex = 6;
-			this.lblRamOffset.Text = "Memory Offset:";
 			// 
 			// pnlProgress
 			// 
@@ -501,7 +482,7 @@
 			this.newToolStripMenuItem.Image = global::ext_fenceposts.Properties.Resources.menu_new;
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
 			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.newToolStripMenuItem.Text = "&New";
 			this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
 			// 
@@ -510,7 +491,7 @@
 			this.openToolStripMenuItem.Image = global::ext_fenceposts.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -520,7 +501,7 @@
 			this.saveToolStripMenuItem.Image = global::ext_fenceposts.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -530,21 +511,21 @@
 			this.saveAsToolStripMenuItem.Image = global::ext_fenceposts.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave As...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::ext_fenceposts.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -625,6 +606,18 @@
 			this.tslDumpUsing.Size = new System.Drawing.Size(75, 22);
 			this.tslDumpUsing.Text = "Dump using:";
 			// 
+			// btnOptions
+			// 
+			this.btnOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnOptions.Location = new System.Drawing.Point(6, 47);
+			this.btnOptions.Name = "btnOptions";
+			this.btnOptions.Size = new System.Drawing.Size(150, 23);
+			this.btnOptions.TabIndex = 11;
+			this.btnOptions.Text = "Options";
+			this.btnOptions.UseVisualStyleBackColor = true;
+			this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
+			// 
 			// frmExtension
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -694,8 +687,6 @@
 		private System.Windows.Forms.SplitContainer splStatus;
 		private System.Windows.Forms.Panel pnlCommands;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Label lblRamOffset;
-		private System.Windows.Forms.TextBox txtRamOffset;
 		private System.Windows.Forms.Button btnInject;
 		private System.Windows.Forms.Label lblFile;
 		private System.Windows.Forms.MenuStrip mnuMain;
@@ -716,5 +707,6 @@
 		private System.Windows.Forms.ContextMenuStrip cmsStatus;
 		private System.Windows.Forms.ToolStripMenuItem copyOffsetToolStripMenuItem;
 		private System.Windows.Forms.CheckBox chkCleanDump;
+		private System.Windows.Forms.Button btnOptions;
 	}
 }
