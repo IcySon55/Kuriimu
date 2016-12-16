@@ -33,6 +33,7 @@ namespace KuriimuContract
 		List<string> NameList { get; }
 
 		// Features
+		IEntry NewEntry();
 		bool AddEntry(IEntry entry);
 		bool RemoveEntry(IEntry entry);
 		void EntryProperties(IEntry entry, Icon icon);

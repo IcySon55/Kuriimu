@@ -45,9 +45,6 @@ namespace file_kup
 			}
 		}
 
-		[XmlAttribute("file")]
-		public string File { get; set; }
-
 		[XmlArray("pointerTables")]
 		[XmlArrayItem("pointerTable")]
 		public List<Bound> PointerTables { get; set; }
@@ -210,8 +207,8 @@ namespace file_kup
 			Relocatable = true;
 			MaxLength = 0;
 			Pointers = new List<Pointer>();
-			OriginalText = new byte[] { 0x0 };
-			EditedText = new byte[] { 0x0 };
+			OriginalText = new byte[] {};
+			EditedText = new byte[] {};
 		}
 
 		public Entry(Encoding encoding) : this()

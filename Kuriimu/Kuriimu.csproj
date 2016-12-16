@@ -217,8 +217,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y $(TargetPath) "D:\3DS\04 Dragon Quest Monsters Rocket Slime 3\code.bin\Kuriimu.exe"
-del "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar"
+    <PostBuildEvent>del "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar"
 del "$(TargetDir)\plugins\KuriimuContract.*"
 cd "$(TargetDir)"
 "C:\Program Files\WinRAR\rar.exe" a "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar" $(TargetFileName) KuriimuContract.dll Be.Windows.Forms.HexBox.dll "plugins\*.dll"</PostBuildEvent>

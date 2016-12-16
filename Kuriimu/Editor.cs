@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using Be.Windows.Forms;
@@ -18,6 +19,8 @@ namespace Kuriimu
 
 		private Dictionary<string, IFileAdapter> _fileAdapters = null;
 		private Dictionary<string, IGameHandler> _gameHandlers = null;
+
+		private BindingList<IEntry> _entries = null;
 
 		public frmEditor()
 		{
@@ -45,12 +48,27 @@ namespace Kuriimu
 			ConfirmOpenFile();
 		}
 
+		private void tsbOpen_Click(object sender, EventArgs e)
+		{
+			ConfirmOpenFile();
+		}
+
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveFile();
 		}
 
+		private void tsbSave_Click(object sender, EventArgs e)
+		{
+			SaveFile();
+		}
+
 		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFile(true);
+		}
+
+		private void tsbSaveAs_Click(object sender, EventArgs e)
 		{
 			SaveFile(true);
 		}
@@ -65,27 +83,30 @@ namespace Kuriimu
 			{
 				lstEntries.SelectedItem = search.Selected;
 
-				txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
-				txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
-				txtEdit.Focus();
+				if (txtEdit.Text.Contains(Settings.Default.FindWhat))
+				{
+					txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
+					txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
+					txtEdit.Focus();
 
-				SelectInHex();
+					SelectInHex();
+				}
 			}
 		}
 
-		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
+		private void tsbFind_Click(object sender, EventArgs e)
 		{
-			ToolStripItem tsi = (ToolStripItem)sender;
+			findToolStripMenuItem_Click(sender, e);
+		}
 
-			if (tsi.Text == "No Game")
-				_gameHandler = null;
-			else
-				_gameHandler = _gameHandlers[((ToolStripItem)sender).Text];
+		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
+		}
 
-			tsbGameSelect.Text = tsi.Text;
-			tsbGameSelect.Image = tsi.Image;
-
-			lstEntries_SelectedIndexChanged(sender, e);
+		private void gitHubToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start("https://github.com/Icyson55/Kuriimu");
 		}
 
 		private void ConfirmOpenFile(string filename = "")
@@ -207,14 +228,12 @@ namespace Kuriimu
 		{
 			IEntry selectedItem = (IEntry)lstEntries.SelectedItem;
 
-			lstEntries.Items.Clear();
-
-			for (int i = 0; i < _fileAdapter.Entries.Count; i++)
-				lstEntries.Items.Add(_fileAdapter.Entries[i]);
+			_entries = new BindingList<IEntry>(_fileAdapter.Entries);
+			lstEntries.DataSource = _entries;
 
 			if (selectedItem != null && lstEntries.Items.Contains(selectedItem))
 				lstEntries.SelectedItem = selectedItem;
-			else
+			else if(lstEntries.Items.Count > 0)
 				lstEntries.SelectedIndex = 0;
 		}
 
@@ -273,8 +292,11 @@ namespace Kuriimu
 			splPreview.Enabled = _fileOpen;
 
 			saveToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
+			tsbSave.Enabled = _fileOpen && _fileAdapter.CanSave;
 			saveAsToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
+			tsbSaveAs.Enabled = _fileOpen && _fileAdapter.CanSave;
 			findToolStripMenuItem.Enabled = _fileOpen;
+			tsbFind.Enabled = _fileOpen;
 
 			tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
 			tsbEntryRename.Enabled = itemSelected;
@@ -294,6 +316,25 @@ namespace Kuriimu
 		}
 
 		// Toolbar
+		private void tsbEntryAdd_Click(object sender, EventArgs e)
+		{
+			IEntry entry = _fileAdapter.NewEntry();
+
+			frmName name = new frmName(entry);
+
+			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
+			{
+				_hasChanges = true;
+				_fileAdapter.AddEntry(entry);
+				LoadEntries();
+
+				if (lstEntries.Items.Contains(entry))
+					lstEntries.SelectedItem = entry;
+
+				UpdateForm();
+			}
+		}
+
 		private void tsbEntryRename_Click(object sender, EventArgs e)
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
@@ -303,7 +344,8 @@ namespace Kuriimu
 			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 			{
 				_hasChanges = true;
-				LoadEntries();
+				_entries.ResetBindings();
+				lstEntries.SelectedItem = entry;
 				UpdateForm();
 			}
 		}
@@ -314,6 +356,21 @@ namespace Kuriimu
 			_fileAdapter.EntryProperties(entry, Properties.Resources.kuriimu);
 		}
 
+		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			ToolStripItem tsi = (ToolStripItem)sender;
+
+			if (tsi.Text == "No Game")
+				_gameHandler = null;
+			else
+				_gameHandler = _gameHandlers[((ToolStripItem)sender).Text];
+
+			tsbGameSelect.Text = tsi.Text;
+			tsbGameSelect.Image = tsi.Image;
+
+			lstEntries_SelectedIndexChanged(sender, e);
+		}
+
 		// List
 		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -322,9 +379,9 @@ namespace Kuriimu
 			UpdateForm();
 		}
 
-		private void lstEntries_KeyUp(object sender, KeyEventArgs e)
+		private void lstEntries_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (lstEntries.Focused && e.KeyCode == Keys.F8)
+			if (lstEntries.Focused && (e.KeyCode == Keys.Enter))
 				tsbEntryProperties_Click(sender, e);
 		}
 
@@ -337,16 +394,26 @@ namespace Kuriimu
 		private void txtEdit_KeyUp(object sender, KeyEventArgs e)
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			string next = string.Empty;
+			string previous = string.Empty;
 
 			if (_gameHandler != null)
-				entry.EditedText = _gameHandler.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding);
+			{
+				previous = _gameHandler.GetString(entry.EditedText, entry.Encoding);
+				next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n");
+				entry.EditedText = _gameHandler.GetBytes(next, entry.Encoding);
+			}
 			else
-				entry.EditedText = entry.Encoding.GetBytes(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n"));
+			{
+				previous = entry.EditedTextString;
+				next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n");
+				entry.EditedText = entry.Encoding.GetBytes(next);
+			}
 
 			UpdateHexView();
 			SelectInHex();
 
-			if (txtEdit.Text != txtOriginal.Text)
+			if (next != previous)
 				_hasChanges = true;
 
 			UpdateForm();

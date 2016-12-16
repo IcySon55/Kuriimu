@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="KUP.cs" />
     <Compile Include="KupAdapter.cs" />
+    <Compile Include="KupUser.cs" />
     <Compile Include="Properties.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -45,12 +45,12 @@ namespace file_kup
 
 		public bool CanAddEntries
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		public bool CanRemoveEntries
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		public bool EntriesHaveUniqueNames
@@ -149,6 +149,11 @@ namespace file_kup
 		}
 
 		// Features
+		public IEntry NewEntry()
+		{
+			return new Entry(_kup.Encoding); ;
+		}
+
 		public bool AddEntry(IEntry entry)
 		{
 			bool result = true;

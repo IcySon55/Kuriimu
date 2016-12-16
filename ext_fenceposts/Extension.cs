@@ -21,6 +21,7 @@ namespace ext_fenceposts
 		private bool _hasChanges = false;
 
 		private KUP _kup = null;
+		private KupUser _kupUser = null;
 		private Dictionary<long, long> _pointers = null;
 		private Dictionary<string, IGameHandler> _gameHandlers = null;
 
@@ -164,6 +165,7 @@ namespace ext_fenceposts
 			_file = null;
 			_fileOpen = true;
 			_kup = new KUP();
+			_kupUser = new KupUser();
 			LoadForm();
 			_hasChanges = false;
 			UpdateForm();
@@ -188,6 +190,7 @@ namespace ext_fenceposts
 					_file = new FileInfo(filename);
 					_fileOpen = true;
 					_kup = KUP.Load(filename);
+					_kupUser = KupUser.Load(filename + ".user");
 					LoadForm();
 					_hasChanges = false;
 				}
@@ -221,6 +224,7 @@ namespace ext_fenceposts
 			if (dr == DialogResult.OK)
 			{
 				_kup.Save(_file.FullName);
+				_kupUser.Save(_file.FullName + ".user");
 				_hasChanges = false;
 				UpdateForm();
 			}
@@ -242,7 +246,7 @@ namespace ext_fenceposts
 			if (lstStringBounds.Items.Count > 0)
 				lstStringBounds.SelectedIndex = 0;
 
-			txtFilename.Text = _kup.File;
+			txtFilename.Text = _kupUser.Filename;
 			txtRamOffset.Text = _kup.RamOffset;
 			chkCleanDump.Checked = Settings.Default.CleanDump;
 		}
@@ -833,7 +837,7 @@ namespace ext_fenceposts
 		// Change Detection
 		private void txtFilename_TextChanged(object sender, EventArgs e)
 		{
-			_kup.File = txtFilename.Text;
+			_kupUser.Filename = txtFilename.Text;
 			_hasChanges = true;
 			UpdateForm();
 		}
