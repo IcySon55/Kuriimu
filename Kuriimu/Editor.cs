@@ -401,5 +401,15 @@ namespace Kuriimu
 
 			UpdateForm();
 		}
-	}
+
+        private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
+        }
+
+        private void gitHubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Icyson55/Kuriimu");
+        }
+    }
 }
