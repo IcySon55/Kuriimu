@@ -11,15 +11,15 @@ using KuriimuContract;
 
 namespace Kuriimu
 {
-	public partial class Search : Form
+	public partial class frmSearch : Form
 	{
 		public List<IEntry> Entries { get; set; }
 		public IEntry Selected { get; set; }
 
-		public Search()
+		public frmSearch()
 		{
 			InitializeComponent();
-			this.Icon = Resources.find;
+			Icon = Resources.find;
 		}
 
 		private void frmSearch_Load(object sender, EventArgs e)
@@ -50,12 +50,12 @@ namespace Kuriimu
 				{
 					if (chkMatchCase.Checked)
 					{
-						if (entry.GetEditedString().Contains(txtFindText.Text) || entry.GetOriginalString().Contains(txtFindText.Text))
+						if (entry.EditedTextString.Contains(txtFindText.Text) || entry.OriginalTextString.Contains(txtFindText.Text))
 							matches.Add(entry);
 					}
 					else
 					{
-						if (entry.GetEditedString().ToLower().Contains(txtFindText.Text) || entry.GetOriginalString().ToLower().Contains(txtFindText.Text))
+						if (entry.EditedTextString.ToLower().Contains(txtFindText.Text) || entry.OriginalTextString.ToLower().Contains(txtFindText.Text))
 							matches.Add(entry);
 					}
 				}
@@ -69,7 +69,7 @@ namespace Kuriimu
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			Close();
 		}
 
 		private void txtFindText_TextChanged(object sender, EventArgs e)
@@ -89,7 +89,7 @@ namespace Kuriimu
 			if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
 			{
 				Selected = (IEntry)((ListItem)lstResults.SelectedItem).Value;
-				this.Close();
+				Close();
 			}
 		}
 	}

@@ -30,10 +30,10 @@ namespace file_kup
 			}
 		}
 
-		[XmlAttribute("ramOffset")]
+		[XmlIgnore]
 		public uint RamOffsetUInt { get; set; }
 
-		[XmlIgnore]
+		[XmlAttribute("ramOffset")]
 		public string RamOffset
 		{
 			get { return RamOffsetUInt.ToString("X2"); }
@@ -62,26 +62,31 @@ namespace file_kup
 
 		public KUP()
 		{
-			this.Count = 0;
-			this.Encoding = Encoding.Unicode;
-			this.RamOffsetUInt = 0x0;
-			this.PointerTables = new List<Bound>();
-			this.StringBounds = new List<Bound>();
-			this.Entries = new List<Entry>();
+			Count = 0;
+			Encoding = Encoding.Unicode;
+			RamOffsetUInt = 0x0;
+			PointerTables = new List<Bound>();
+			StringBounds = new List<Bound>();
+			Entries = new List<Entry>();
 		}
 
 		public KUP(Encoding encoding) : this()
 		{
-			this.Encoding = encoding;
+			Encoding = encoding;
 		}
 
 		public static KUP Load(string filename)
 		{
 			try
 			{
+				XmlReaderSettings xmlSettings = new XmlReaderSettings();
+				xmlSettings.CheckCharacters = false;
+
 				using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					return (KUP)new XmlSerializer(typeof(KUP)).Deserialize(fs);
+					KUP kup = (KUP)new XmlSerializer(typeof(KUP)).Deserialize(XmlReader.Create(fs, xmlSettings));
+					kup.Resequence();
+					return kup;
 				}
 			}
 			catch (Exception ex)
@@ -99,6 +104,7 @@ namespace file_kup
 				xmlSettings.Indent = true;
 				xmlSettings.NewLineOnAttributes = false;
 				xmlSettings.IndentChars = "	";
+				xmlSettings.CheckCharacters = false;
 
 				using (StreamWriter xmlIO = new StreamWriter(filename, false, xmlSettings.Encoding))
 				{
@@ -113,6 +119,14 @@ namespace file_kup
 				throw ex;
 			}
 		}
+
+		public void Resequence()
+		{
+			for (int i = 0; i < PointerTables.Count; i++)
+				PointerTables[i].Sequence = (i + 1);
+			for (int i = 0; i < StringBounds.Count; i++)
+				StringBounds[i].Sequence = (i + 1);
+		}
 	}
 
 	public class Entry : IEntry
@@ -120,13 +134,25 @@ namespace file_kup
 		[XmlIgnore]
 		public Encoding Encoding { get; set; }
 
+		[XmlAttribute("encoding")]
+		public string EncodingString
+		{
+			get { return Encoding.EncodingName; }
+			set
+			{
+				Encoding enc = Encoding.Unicode;
+				Encoding.GetEncoding(value);
+				Encoding = enc;
+			}
+		}
+
 		[XmlAttribute("name")]
 		public string Name { get; set; }
 
-		[XmlAttribute("offset")]
+		[XmlIgnore]
 		public long OffsetLong { get; set; }
 
-		[XmlIgnore]
+		[XmlAttribute("offset")]
 		public string Offset
 		{
 			get { return OffsetLong.ToString("X2"); }
@@ -138,6 +164,9 @@ namespace file_kup
 			}
 		}
 
+		[XmlIgnore]
+		public long InjectedOffsetLong { get; set; }
+
 		[XmlAttribute("relocatable")]
 		public bool Relocatable { get; set; }
 
@@ -147,27 +176,47 @@ namespace file_kup
 		[XmlElement("pointer")]
 		public List<Pointer> Pointers { get; private set; }
 
-		[XmlElement("original")]
+		[XmlIgnore]
 		public byte[] OriginalText { get; set; }
 
-		[XmlElement("edited")]
+		[XmlElement("original")]
+		public string OriginalTextString
+		{
+			get { return Encoding.GetString(OriginalText); }
+			set { OriginalText = Encoding.GetBytes(value); }
+		}
+
+		[XmlIgnore]
 		public byte[] EditedText { get; set; }
+
+		[XmlElement("edited")]
+		public string EditedTextString
+		{
+			get { return Encoding.GetString(EditedText); }
+			set { EditedText = Encoding.GetBytes(value); }
+		}
+
+		public bool IsResizable
+		{
+			get { return MaxLength == 0; }
+		}
 
 		public Entry()
 		{
-			this.Encoding = Encoding.Unicode;
-			this.Name = string.Empty;
-			this.OffsetLong = 0x0;
-			this.Relocatable = true;
-			this.MaxLength = 0;
-			this.Pointers = new List<Pointer>();
-			this.OriginalText = new byte[] { 0x0 };
-			this.EditedText = new byte[] { 0x0 };
+			Encoding = Encoding.Unicode;
+			Name = string.Empty;
+			OffsetLong = 0x0;
+			InjectedOffsetLong = 0x0;
+			Relocatable = true;
+			MaxLength = 0;
+			Pointers = new List<Pointer>();
+			OriginalText = new byte[] { 0x0 };
+			EditedText = new byte[] { 0x0 };
 		}
 
 		public Entry(Encoding encoding) : this()
 		{
-			this.Encoding = encoding;
+			Encoding = encoding;
 		}
 
 		public override string ToString()
@@ -175,31 +224,48 @@ namespace file_kup
 			return Name == string.Empty ? Offset : Name;
 		}
 
-		public string GetOriginalString()
+		public void AddPointer(long address)
 		{
-			return Encoding.GetString(OriginalText);
+			Pointer pointer = null;
+			foreach (Pointer p in Pointers)
+				if (p.AddressLong == address)
+				{
+					pointer = p;
+					break;
+				}
+			if (pointer == null)
+				Pointers.Add(new Pointer(address));
 		}
 
-		public string GetEditedString()
+		public void PointerCleanup()
 		{
-			return Encoding.GetString(EditedText);
+			List<Pointer> pointers = new List<Pointer>();
+
+			foreach (Pointer p in Pointers)
+			{
+				if (!pointers.Contains(p))
+					pointers.Add(p);
+			}
+
+			Pointers.Clear();
+			Pointers.AddRange(pointers);
 		}
 
 		public int CompareTo(IEntry rhs)
 		{
-			int result = this.Name.CompareTo(rhs.Name);
+			int result = Name.CompareTo(rhs.Name);
 			if (result == 0)
-				result = this.Offset.CompareTo(((Entry)rhs).Offset);
+				result = Offset.CompareTo(((Entry)rhs).Offset);
 			return result;
 		}
 	}
 
 	public class Bound
 	{
-		[XmlAttribute("start")]
+		[XmlIgnore]
 		public long StartLong { get; set; }
 
-		[XmlIgnore]
+		[XmlAttribute("start")]
 		public string Start
 		{
 			get { return StartLong.ToString("X2"); }
@@ -211,10 +277,10 @@ namespace file_kup
 			}
 		}
 
-		[XmlAttribute("end")]
+		[XmlIgnore]
 		public long EndLong { get; set; }
 
-		[XmlIgnore]
+		[XmlAttribute("end")]
 		public string End
 		{
 			get { return EndLong.ToString("X2"); }
@@ -238,6 +304,9 @@ namespace file_kup
 		[XmlAttribute("injectable")]
 		public bool Injectable { get; set; }
 
+		[XmlAttribute("sequence")]
+		public int Sequence { get; set; }
+
 		public Bound()
 		{
 			StartLong = 0;
@@ -246,6 +315,7 @@ namespace file_kup
 			Notes = string.Empty;
 			Dumpable = false;
 			Injectable = false;
+			Sequence = 0;
 		}
 
 		public long SpaceRemaining
@@ -255,7 +325,7 @@ namespace file_kup
 
 		public bool Full
 		{
-			get { return SpaceRemaining == 0; }
+			get { return SpaceRemaining <= 0; }
 		}
 
 		public override string ToString()
@@ -264,12 +334,12 @@ namespace file_kup
 		}
 	}
 
-	public class Pointer
+	public class Pointer : IEquatable<Pointer>
 	{
-		[XmlAttribute("address")]
+		[XmlIgnore]
 		public long AddressLong { get; set; }
 
-		[XmlIgnore]
+		[XmlAttribute("address")]
 		public string Address
 		{
 			get { return AddressLong.ToString("X2"); }
@@ -285,7 +355,12 @@ namespace file_kup
 
 		public Pointer(long address)
 		{
-			this.AddressLong = address;
+			AddressLong = address;
+		}
+
+		public bool Equals(Pointer rhs)
+		{
+			return AddressLong == rhs.AddressLong;
 		}
 	}
 }

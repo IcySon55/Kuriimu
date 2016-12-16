@@ -3,11 +3,11 @@ using System.Windows.Forms;
 
 namespace file_kup
 {
-	public partial class EntryProperties : Form
+	public partial class frmProperties : Form
 	{
 		public Entry Entry { get; set; }
 
-		public EntryProperties()
+		public frmProperties()
 		{
 			InitializeComponent();
 		}
@@ -19,6 +19,7 @@ namespace file_kup
 				txtOffset.Text = Entry.Offset;
 				chkRelocatable.Checked = Entry.Relocatable;
 				txtMaxLength.Text = Entry.MaxLength.ToString();
+				lblPointerCount.Text = "Pointers: " + Entry.Pointers.Count;
 			}
 		}
 

@@ -76,5 +76,41 @@ namespace Kuriimu.Properties {
                 this["FindMatchCase"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorFile {
+            get {
+                return ((string)(this["DirectorFile"]));
+            }
+            set {
+                this["DirectorFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorOffset {
+            get {
+                return ((string)(this["DirectorOffset"]));
+            }
+            set {
+                this["DirectorOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorLeneance {
+            get {
+                return ((string)(this["DirectorLeneance"]));
+            }
+            set {
+                this["DirectorLeneance"] = value;
+            }
+        }
     }
 }

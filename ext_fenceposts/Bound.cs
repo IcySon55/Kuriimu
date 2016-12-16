@@ -32,8 +32,8 @@ namespace ext_fenceposts
 
 		private void frmBound_Load(object sender, EventArgs e)
 		{
-			this.Text = Settings.Default.PluginName + " - Bound Properties";
-			this.Icon = Resources.fenceposts;
+			Text = Settings.Default.PluginName + " - Bound Properties";
+			Icon = Resources.fenceposts;
 
 			txtStart.Text = _bound.Start;
 			txtEnd.Text = _bound.End;

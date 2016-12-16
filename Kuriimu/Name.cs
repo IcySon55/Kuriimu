@@ -6,12 +6,13 @@ using KuriimuContract;
 
 namespace Kuriimu
 {
-	public partial class Name : Form
+	public partial class frmName : Form
 	{
 		private IEntry _entry = null;
 		private bool _namesMustBeUnique = false;
 		private List<string> _nameList = null;
 		private bool _isNew = false;
+		private bool _nameChanged = false;
 
 		public event EventHandler<NameFormEventArgs> NameSubmitted;
 
@@ -37,9 +38,14 @@ namespace Kuriimu
 			set { _isNew = value; }
 		}
 
+		public bool NameChanged
+		{
+			get { return _nameChanged; }
+		}
+
 		#endregion
 
-		public Name(IEntry entry, bool namesMustBeUnique = false, List<string> nameList = null, bool isNew = false)
+		public frmName(IEntry entry, bool namesMustBeUnique = false, List<string> nameList = null, bool isNew = false)
 		{
 			InitializeComponent();
 
@@ -51,8 +57,8 @@ namespace Kuriimu
 
 		private void Name_Load(object sender, EventArgs e)
 		{
-			this.Text = Settings.Default.ApplicationName;
-			this.Icon = Resources.kuriimu;
+			Text = Settings.Default.ApplicationName;
+			Icon = Resources.kuriimu;
 
 			txtName.Text = _entry.Name;
 		}
@@ -61,6 +67,7 @@ namespace Kuriimu
 		{
 			string oldName = _entry.Name.Trim();
 			string newName = txtName.Text.Trim();
+			_nameChanged = oldName != newName;
 
 			if (_namesMustBeUnique)
 			{

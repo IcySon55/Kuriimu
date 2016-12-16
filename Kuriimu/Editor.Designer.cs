@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-	partial class Editor
+	partial class frmEditor
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -121,7 +121,7 @@
 			this.openToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -131,7 +131,7 @@
 			this.saveToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -141,21 +141,21 @@
 			this.saveAsToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave As...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			// 
 			// editToolStripMenuItem
@@ -371,6 +371,7 @@
 			this.txtEdit.Size = new System.Drawing.Size(416, 282);
 			this.txtEdit.TabIndex = 0;
 			this.txtEdit.TextChanged += new System.EventHandler(this.txtEdit_TextChanged);
+			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyDown);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
 			this.txtEdit.MouseUp += new System.Windows.Forms.MouseEventHandler(this.txtEdit_MouseUp);
 			// 
@@ -401,8 +402,8 @@
 			this.tsbGameSelect.Image = global::Kuriimu.Properties.Resources.game_none;
 			this.tsbGameSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbGameSelect.Name = "tsbGameSelect";
-			this.tsbGameSelect.Size = new System.Drawing.Size(140, 22);
-			this.tsbGameSelect.Text = "No game selected...";
+			this.tsbGameSelect.Size = new System.Drawing.Size(86, 22);
+			this.tsbGameSelect.Text = "No Game";
 			// 
 			// txtOriginal
 			// 
@@ -518,7 +519,7 @@
 			this.toolStripLabel3.Size = new System.Drawing.Size(58, 22);
 			this.toolStripLabel3.Text = "Hex View:";
 			// 
-			// Editor
+			// frmEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -526,7 +527,7 @@
 			this.Controls.Add(this.pnlMain);
 			this.Controls.Add(this.mnuMain);
 			this.MainMenuStrip = this.mnuMain;
-			this.Name = "Editor";
+			this.Name = "frmEditor";
 			this.Text = "Kuriimu";
 			this.Load += new System.EventHandler(this.Editor_Load);
 			this.mnuMain.ResumeLayout(false);

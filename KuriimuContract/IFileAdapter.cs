@@ -43,11 +43,14 @@ namespace KuriimuContract
 		Encoding Encoding { get; set; }
 		string Name { get; set; }
 		byte[] OriginalText { get; set; }
+		string OriginalTextString { get; }
 		byte[] EditedText { get; set; }
+		string EditedTextString { get; }
+
+		bool IsResizable { get; }
+		int MaxLength { get; }
 
 		string ToString();
-		string GetOriginalString();
-		string GetEditedString();
 	}
 
 	public enum LoadResult

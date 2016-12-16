@@ -90,8 +90,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="images\menu-new.png" />
     <None Include="images\menu-copy.png" />
-    <None Include="images\menu_new.png" />
     <None Include="images\menu-exit.png" />
     <None Include="images\menu-open.png" />
     <None Include="images\menu-save-as.png" />
@@ -100,7 +100,7 @@
     <None Include="images\menu-delete.png" />
     <None Include="images\menu-add.png" />
     <None Include="images\fenceposts.ico" />
-    <None Include="images\game_none.png" />
+    <None Include="images\game-none.png" />
     <Content Include="images\icon.png" />
   </ItemGroup>
   <ItemGroup>

@@ -8,24 +8,31 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using KuriimuContract;
+using Kuriimu.Properties;
 
 namespace Kuriimu
 {
-	public partial class Director : Form
+	public partial class frmDirector : Form
 	{
-		public string[] Arguments { get; set; }
 		private uint ram = 0x100000; // 3DS
 
-		public Director()
+		public frmDirector()
 		{
 			InitializeComponent();
 		}
 
 		private void Director_Load(object sender, EventArgs e)
 		{
-			txtOffset.Text = "0";
-			txtLeneance.Text = "0";
-			this.Icon = Properties.Resources.kuriimu;
+			Icon = Properties.Resources.kuriimu;
+
+			txtFile.Text = Settings.Default.DirectorFile;
+			txtOffset.Text = Settings.Default.DirectorOffset;
+			txtLeneance.Text = Settings.Default.DirectorLeneance;
+
+			if (txtOffset.Text.Trim().Length == 0)
+				txtOffset.Text = "00";
+			if (txtLeneance.Text.Trim().Length == 0)
+				txtLeneance.Text = "0";
 		}
 
 		private void btnBrowse_Click(object sender, EventArgs e)
@@ -54,17 +61,14 @@ namespace Kuriimu
 				uint offset = Convert.ToUInt32(txtOffset.Text.Trim(), 16);
 				uint leneance = Convert.ToUInt32(txtLeneance.Text.Trim());
 
-				Console.WriteLine("Working...");
-
-				bool found = false;
 				uint value = 0;
-				long next = 0x0;
+				List<uint> pointers = new List<uint>();
 
 				while (br.BaseStream.Position < br.BaseStream.Length - 4)
 				{
-					found = false;
+					bool found = false;
+					uint pointer = (uint)br.BaseStream.Position;
 					value = br.ReadUInt32();
-					next = br.BaseStream.Position;
 
 					if (value == (offset + ram))
 						found = true;
@@ -74,44 +78,65 @@ namespace Kuriimu
 						found = true;
 
 					if (found)
+						pointers.Add(pointer);
+				}
+
+				if (pointers.Count > 0)
+				{
+					List<byte> result = new List<byte>();
+					br.BaseStream.Seek(offset, SeekOrigin.Begin);
+					while (br.BaseStream.Position < br.BaseStream.Length)
 					{
-						Console.WriteLine("Found!");
-						txtResults.AppendText("\r\n");
-						txtResults.AppendText("\t\t<entry offset=\"" + (value - ram).ToString("X2") + "\" pointer=\"" + (br.BaseStream.Position - 4).ToString("X2") + "\">");
-						txtResults.AppendText("\r\n");
+						byte[] unichar = br.ReadBytes(2);
 
-						List<byte> result = new List<byte>();
-						br.BaseStream.Seek(offset, SeekOrigin.Begin);
-						while (br.BaseStream.Position < br.BaseStream.Length)
-						{
-							byte[] unichar = br.ReadBytes(2);
-
-							if (unichar[0] != 0x0 || unichar[1] != 0x0)
-								result.AddRange(unichar);
-							else
-							{
-								if (!found)
-								{
-									txtResults.AppendText("\r\n");
-									txtResults.AppendText("\t\t<entry offset=\"" + offset.ToString("X2") + "\" max-length=\"" + 21 + "\">");
-									txtResults.AppendText("\r\n");
-								}
-								txtResults.AppendText("\t\t\t<text>" + enc.GetString(result.ToArray()) + "</text>");
-								txtResults.AppendText("\r\n");
-								txtResults.AppendText("\t\t\t<translation>" + enc.GetString(result.ToArray()) + "</translation>");
-								txtResults.AppendText("\r\n");
-								txtResults.AppendText("\t\t</entry>");
-								break;
-							}
-						}
-
-						br.BaseStream.Seek(next, SeekOrigin.Begin);
+						if (unichar[0] != 0x0 || unichar[1] != 0x0)
+							result.AddRange(unichar);
+						else
+							break;
 					}
+
+					string strResult = enc.GetString(result.ToArray());
+
+					txtResults.AppendText("<entry encoding=\"Unicode\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
+					txtResults.AppendText("\r\n");
+
+					foreach (uint p in pointers)
+					{
+						txtResults.AppendText("\t<pointer address=\"" + p.ToString("X2") + "\" />");
+						txtResults.AppendText("\r\n");
+					}
+
+					txtResults.AppendText("\t<original>" + strResult + "</original>");
+					txtResults.AppendText("\r\n");
+					txtResults.AppendText("\t<edited>" + strResult + "</edited>");
+					txtResults.AppendText("\r\n");
+					txtResults.AppendText("</entry>");
+				}
+				else
+				{
+					txtResults.Text = "No pointers found...";
 				}
 
 				br.Close();
-				Console.WriteLine("Done~");
 			}
+		}
+
+		private void txtFile_TextChanged(object sender, EventArgs e)
+		{
+			Settings.Default.DirectorFile = txtFile.Text;
+			Settings.Default.Save();
+		}
+
+		private void txtOffset_TextChanged(object sender, EventArgs e)
+		{
+			Settings.Default.DirectorOffset = txtOffset.Text;
+			Settings.Default.Save();
+		}
+
+		private void txtLeneance_TextChanged(object sender, EventArgs e)
+		{
+			Settings.Default.DirectorLeneance = txtLeneance.Text;
+			Settings.Default.Save();
 		}
 	}
 }

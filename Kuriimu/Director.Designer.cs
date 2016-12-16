@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-	partial class Director
+	partial class frmDirector
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -42,6 +42,7 @@
 			this.txtFile.Name = "txtFile";
 			this.txtFile.Size = new System.Drawing.Size(407, 20);
 			this.txtFile.TabIndex = 0;
+			this.txtFile.TextChanged += new System.EventHandler(this.txtFile_TextChanged);
 			// 
 			// btnBrowse
 			// 
@@ -59,6 +60,7 @@
 			this.txtOffset.Name = "txtOffset";
 			this.txtOffset.Size = new System.Drawing.Size(305, 20);
 			this.txtOffset.TabIndex = 2;
+			this.txtOffset.TextChanged += new System.EventHandler(this.txtOffset_TextChanged);
 			// 
 			// btnLookup
 			// 
@@ -75,6 +77,7 @@
 			this.txtResults.Location = new System.Drawing.Point(12, 64);
 			this.txtResults.Multiline = true;
 			this.txtResults.Name = "txtResults";
+			this.txtResults.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.txtResults.Size = new System.Drawing.Size(507, 308);
 			this.txtResults.TabIndex = 4;
 			// 
@@ -84,8 +87,9 @@
 			this.txtLeneance.Name = "txtLeneance";
 			this.txtLeneance.Size = new System.Drawing.Size(96, 20);
 			this.txtLeneance.TabIndex = 5;
+			this.txtLeneance.TextChanged += new System.EventHandler(this.txtLeneance_TextChanged);
 			// 
-			// Director
+			// frmDirector
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -98,7 +102,7 @@
 			this.Controls.Add(this.txtFile);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
-			this.Name = "Director";
+			this.Name = "frmDirector";
 			this.Text = "Kuriimu - Director";
 			this.Load += new System.EventHandler(this.Director_Load);
 			this.ResumeLayout(false);

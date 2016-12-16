@@ -89,6 +89,9 @@ namespace file_kup
 				try
 				{
 					_kup = KUP.Load(filename);
+
+					foreach (Entry entry in _kup.Entries)
+						entry.PointerCleanup();
 				}
 				catch (XmlException)
 				{
@@ -180,7 +183,7 @@ namespace file_kup
 
 		public void EntryProperties(IEntry entry, Icon icon)
 		{
-			EntryProperties properties = new EntryProperties();
+			frmProperties properties = new frmProperties();
 			properties.Icon = icon;
 			properties.Entry = (Entry)entry;
 			properties.ShowDialog();
