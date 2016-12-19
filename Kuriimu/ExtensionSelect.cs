@@ -29,7 +29,6 @@ namespace Kuriimu
 
 		private void ExtensionSelect_Load(object sender, EventArgs e)
 		{
-			this.Text = Settings.Default.ApplicationName;
 			this.Icon = Resources.kuriimu;
 
 			// Load Dumpers

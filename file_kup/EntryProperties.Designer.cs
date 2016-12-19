@@ -1,6 +1,6 @@
 ﻿namespace file_kup
 {
-	partial class frmProperties
+	partial class frmEntryProperties
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -31,12 +31,12 @@
 			this.btnOK = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.grpProperties = new System.Windows.Forms.GroupBox();
+			this.lblPointerCount = new System.Windows.Forms.Label();
 			this.txtMaxLength = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.chkRelocatable = new System.Windows.Forms.CheckBox();
 			this.txtOffset = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.lblPointerCount = new System.Windows.Forms.Label();
 			this.grpProperties.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -46,7 +46,7 @@
 			this.btnOK.Location = new System.Drawing.Point(113, 147);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
-			this.btnOK.TabIndex = 0;
+			this.btnOK.TabIndex = 3;
 			this.btnOK.Text = "OK";
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -58,7 +58,7 @@
 			this.btnCancel.Location = new System.Drawing.Point(194, 147);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 1;
+			this.btnCancel.TabIndex = 4;
 			this.btnCancel.Text = "Cancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -82,12 +82,21 @@
 			this.grpProperties.TabStop = false;
 			this.grpProperties.Text = "Entry Properties";
 			// 
+			// lblPointerCount
+			// 
+			this.lblPointerCount.Location = new System.Drawing.Point(85, 101);
+			this.lblPointerCount.Margin = new System.Windows.Forms.Padding(3);
+			this.lblPointerCount.Name = "lblPointerCount";
+			this.lblPointerCount.Size = new System.Drawing.Size(157, 20);
+			this.lblPointerCount.TabIndex = 5;
+			this.lblPointerCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
 			// txtMaxLength
 			// 
 			this.txtMaxLength.Location = new System.Drawing.Point(88, 75);
 			this.txtMaxLength.Name = "txtMaxLength";
 			this.txtMaxLength.Size = new System.Drawing.Size(154, 20);
-			this.txtMaxLength.TabIndex = 4;
+			this.txtMaxLength.TabIndex = 2;
 			// 
 			// label2
 			// 
@@ -103,7 +112,7 @@
 			this.chkRelocatable.Location = new System.Drawing.Point(88, 49);
 			this.chkRelocatable.Name = "chkRelocatable";
 			this.chkRelocatable.Size = new System.Drawing.Size(154, 20);
-			this.chkRelocatable.TabIndex = 2;
+			this.chkRelocatable.TabIndex = 1;
 			this.chkRelocatable.Text = "Relocatable";
 			this.chkRelocatable.UseVisualStyleBackColor = true;
 			// 
@@ -112,7 +121,7 @@
 			this.txtOffset.Location = new System.Drawing.Point(88, 23);
 			this.txtOffset.Name = "txtOffset";
 			this.txtOffset.Size = new System.Drawing.Size(154, 20);
-			this.txtOffset.TabIndex = 1;
+			this.txtOffset.TabIndex = 0;
 			// 
 			// label1
 			// 
@@ -123,16 +132,7 @@
 			this.label1.Text = "Offset:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// lblPointerCount
-			// 
-			this.lblPointerCount.Location = new System.Drawing.Point(85, 101);
-			this.lblPointerCount.Margin = new System.Windows.Forms.Padding(3);
-			this.lblPointerCount.Name = "lblPointerCount";
-			this.lblPointerCount.Size = new System.Drawing.Size(157, 20);
-			this.lblPointerCount.TabIndex = 5;
-			this.lblPointerCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// frmProperties
+			// frmEntryProperties
 			// 
 			this.AcceptButton = this.btnOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -143,9 +143,9 @@
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOK);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Name = "frmProperties";
+			this.Name = "frmEntryProperties";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Properties";
+			this.Text = "Entry Properties";
 			this.Load += new System.EventHandler(this.EntryProperties_Load);
 			this.grpProperties.ResumeLayout(false);
 			this.grpProperties.PerformLayout();

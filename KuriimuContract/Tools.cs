@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using KuriimuContract.Properties;
+using System.Text;
 
 namespace KuriimuContract
 {
@@ -27,6 +28,23 @@ namespace KuriimuContract
 			}
 
 			return gameHandlers;
+		}
+
+		public static void LoadSupportedEncodings(ComboBox cmb, Encoding encoding)
+		{
+			List<ListItem> items = new List<ListItem>();
+			foreach (EncodingInfo enc in Encoding.GetEncodings())
+			{
+				string name = enc.GetEncoding().EncodingName;
+				if (name.Contains("ASCII") || name.Contains("Shift-JIS") || (name.Contains("Unicode") && !name.Contains("32")))
+					items.Add(new ListItem(name.Replace("US-", ""), enc.GetEncoding()));
+			}
+			items.Sort();
+
+			cmb.DisplayMember = "Text";
+			cmb.ValueMember = "Value";
+			cmb.DataSource = items;
+			cmb.SelectedValue = encoding;
 		}
 
 		public static void DoubleBuffer(Control ctrl, bool doubleBuffered)

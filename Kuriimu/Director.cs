@@ -23,6 +23,7 @@ namespace Kuriimu
 
 		private void Director_Load(object sender, EventArgs e)
 		{
+			Text = Settings.Default.ApplicationName + " Director " + Settings.Default.ApplicationVersion;
 			Icon = Properties.Resources.kuriimu;
 
 			txtFile.Text = Settings.Default.DirectorFile;

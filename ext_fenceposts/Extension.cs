@@ -460,7 +460,7 @@ namespace ext_fenceposts
 								string str = entry.OriginalTextString;
 
 								if (_gameHandler != null)
-									str = _gameHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
+									str = _gameHandler.GetString(entry.OriginalText, _kup.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
 								else
 									str = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
 
@@ -656,7 +656,7 @@ namespace ext_fenceposts
 							bw.BaseStream.Seek(bound.NextAvailableOffset, SeekOrigin.Begin);
 							bw.Write(entry.EditedText);
 							entry.InjectedOffsetLong = bound.NextAvailableOffset;
-							if (entry.Encoding.IsSingleByte)
+							if (_kup.Encoding.IsSingleByte)
 								bw.Write(new byte[] { 0x0 });
 							else
 								bw.Write(new byte[] { 0x0, 0x0 });
@@ -677,7 +677,7 @@ namespace ext_fenceposts
 					// In place string update
 					bw.BaseStream.Seek(entry.OffsetLong, SeekOrigin.Begin);
 					bw.Write(entry.EditedText, 0, Math.Min(entry.EditedText.Length, entry.MaxLength));
-					if (entry.Encoding.IsSingleByte)
+					if (_kup.Encoding.IsSingleByte)
 						bw.Write(new byte[] { 0x0 });
 					else
 						bw.Write(new byte[] { 0x0, 0x0 });
@@ -690,13 +690,15 @@ namespace ext_fenceposts
 			{
 				_workerInjector.ReportProgress(0, "STATUS|The injector has run out of space to inject strings.");
 				_workerInjector.ReportProgress(0, "STATUS|Injected " + injectedEntries.Count + " strings...");
-				_workerInjector.ReportProgress(0, "STATUS|Optimized " + optimizedCount + " strings...");
+				if (_kup.OptimizeStrings)
+					_workerInjector.ReportProgress(0, "STATUS|Optimized " + optimizedCount + " strings...");
 				_workerInjector.ReportProgress(0, "STATUS|" + (_kup.Entries.Count - count) + " strings were not injected.");
 			}
 			else
 			{
 				_workerInjector.ReportProgress(0, "STATUS|Injected " + injectedEntries.Count + " strings...");
-				_workerInjector.ReportProgress(0, "STATUS|Optimized " + optimizedCount + " strings...");
+				if (_kup.OptimizeStrings)
+					_workerInjector.ReportProgress(0, "STATUS|Optimized " + optimizedCount + " strings...");
 			}
 
 			bw.Close();

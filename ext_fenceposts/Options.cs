@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using ext_fenceposts.Properties;
 using KuriimuContract;
 using file_kup;
+using System.Text;
+using System.ComponentModel;
 
 namespace ext_fenceposts
 {
@@ -33,11 +35,12 @@ namespace ext_fenceposts
 			InitializeComponent();
 
 			_kup = kup;
+			Tools.LoadSupportedEncodings(cmbEncoding, _kup.Encoding);
 		}
 
-		private void frmBound_Load(object sender, EventArgs e)
+		private void frmOptions_Load(object sender, EventArgs e)
 		{
-			Text = "Options";
+			Text = Settings.Default.PluginName + " - Options";
 			Icon = Resources.fenceposts;
 
 			txtMemoryOffset.Text = _kup.RamOffset;
@@ -46,9 +49,10 @@ namespace ext_fenceposts
 
 		private void btnOK_Click(object sender, EventArgs e)
 		{
-			if (_kup.RamOffset != txtMemoryOffset.Text.Trim() || _kup.OptimizeStrings != chkOptimizeStrings.Checked)
+			if (_kup.Encoding != (Encoding)cmbEncoding.SelectedValue || _kup.RamOffset != txtMemoryOffset.Text.Trim() || _kup.OptimizeStrings != chkOptimizeStrings.Checked)
 				_hasChanges = true;
 
+			_kup.Encoding = (Encoding)cmbEncoding.SelectedValue;
 			_kup.RamOffset = txtMemoryOffset.Text;
 			_kup.OptimizeStrings = chkOptimizeStrings.Checked;
 

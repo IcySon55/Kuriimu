@@ -5,7 +5,7 @@ using System.Text;
 
 namespace KuriimuContract
 {
-	public class ListItem
+	public class ListItem : IComparable<ListItem>
 	{
 		private string _text = string.Empty;
 		private object _value = null;
@@ -45,6 +45,11 @@ namespace KuriimuContract
 		public override string ToString()
 		{
 			return Text;
+		}
+
+		public int CompareTo(ListItem rhs)
+		{
+			return Text.CompareTo(rhs.Text);
 		}
 	}
 }

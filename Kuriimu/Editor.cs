@@ -11,7 +11,6 @@ namespace Kuriimu
 {
 	public partial class frmEditor : Form
 	{
-		private FileInfo _file = null;
 		private IFileAdapter _fileAdapter = null;
 		private IGameHandler _gameHandler = null;
 		private bool _fileOpen = false;
@@ -41,6 +40,8 @@ namespace Kuriimu
 			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 
 			Tools.DoubleBuffer((Control)lstEntries, true);
+
+			UpdateForm();
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -104,6 +105,20 @@ namespace Kuriimu
 			findToolStripMenuItem_Click(sender, e);
 		}
 
+		private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_fileAdapter.ShowProperties(Resources.kuriimu))
+			{
+				_hasChanges = true;
+				UpdateForm();
+			}
+		}
+
+		private void tsbFileProperties_Click(object sender, EventArgs e)
+		{
+			propertiesToolStripMenuItem_Click(sender, e);
+		}
+
 		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
@@ -160,10 +175,9 @@ namespace Kuriimu
 					_fileAdapter = SelectFileAdapter(filename);
 					if (_fileAdapter != null)
 					{
-						_file = new FileInfo(filename);
+						_fileAdapter.Load(filename);
 						_fileOpen = true;
 						_hasChanges = false;
-						_fileAdapter.Load(filename);
 						LoadEntries();
 						Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
 						Settings.Default.Save();
@@ -188,15 +202,15 @@ namespace Kuriimu
 
 			sfd.Filter = _fileAdapter.Description + " (" + _fileAdapter.Extension + ")|" + _fileAdapter.Extension;
 
-			if (_file == null || saveAs)
+			if (_fileAdapter.FileInfo == null || saveAs)
 			{
 				sfd.InitialDirectory = Settings.Default.LastDirectory;
 				dr = sfd.ShowDialog();
 			}
 
-			if ((_file == null || saveAs) && dr == DialogResult.OK)
+			if ((_fileAdapter.FileInfo == null || saveAs) && dr == DialogResult.OK)
 			{
-				_file = new FileInfo(sfd.FileName);
+				_fileAdapter.FileInfo = new FileInfo(sfd.FileName);
 				Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
 				Settings.Default.Save();
 				Settings.Default.Reload();
@@ -204,7 +218,7 @@ namespace Kuriimu
 
 			if (dr == DialogResult.OK)
 			{
-				_fileAdapter.Save(_file.FullName);
+				_fileAdapter.Save(_fileAdapter.FileInfo.FullName);
 				_hasChanges = false;
 				UpdateForm();
 			}
@@ -282,7 +296,7 @@ namespace Kuriimu
 
 		private void UpdateForm()
 		{
-			Text = Settings.Default.ApplicationName + " Editor" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
+			Text = Settings.Default.ApplicationName + " Editor " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
 			if (_fileOpen)
 				tslEntries.Text = _fileAdapter.Entries.Count + " Entries";
@@ -302,6 +316,8 @@ namespace Kuriimu
 			tsbSaveAs.Enabled = _fileOpen && _fileAdapter.CanSave;
 			findToolStripMenuItem.Enabled = _fileOpen;
 			tsbFind.Enabled = _fileOpen;
+			propertiesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
+			tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
 
 			tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
 			tsbEntryRename.Enabled = itemSelected;
@@ -317,7 +333,7 @@ namespace Kuriimu
 
 		private string FileName()
 		{
-			return _fileAdapter == null || _fileAdapter.TargetFile == null ? string.Empty : _fileAdapter.TargetFile.Name;
+			return _fileAdapter == null || _fileAdapter.FileInfo == null ? string.Empty : _fileAdapter.FileInfo.Name;
 		}
 
 		// Toolbar
@@ -358,7 +374,11 @@ namespace Kuriimu
 		private void tsbEntryProperties_Click(object sender, EventArgs e)
 		{
 			IEntry entry = (IEntry)lstEntries.SelectedItem;
-			_fileAdapter.EntryProperties(entry, Properties.Resources.kuriimu);
+			if (_fileAdapter.ShowEntryProperties(entry, Resources.kuriimu))
+			{
+				_hasChanges = true;
+				UpdateForm();
+			}
 		}
 
 		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)

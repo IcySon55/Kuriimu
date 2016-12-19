@@ -16,6 +16,7 @@ namespace KuriimuContract
 		string About { get; }
 
 		// Feature Support
+		bool FileHasExtendedProperties { get; }
 		bool CanSave { get; } // Is saving supported?.
 		bool CanAddEntries { get; } // Is adding entries supported?
 		bool CanRemoveEntries { get; } // Is removing entries supported?
@@ -23,7 +24,7 @@ namespace KuriimuContract
 		bool EntriesHaveExtendedProperties { get; } // Do entries have extra data
 
 		// I/O
-		FileInfo TargetFile { get; set; }
+		FileInfo FileInfo { get; set; }
 		LoadResult Load(string filename);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
@@ -33,10 +34,11 @@ namespace KuriimuContract
 		List<string> NameList { get; }
 
 		// Features
+		bool ShowProperties(Icon icon);
 		IEntry NewEntry();
 		bool AddEntry(IEntry entry);
 		bool RemoveEntry(IEntry entry);
-		void EntryProperties(IEntry entry, Icon icon);
+		bool ShowEntryProperties(IEntry entry, Icon icon);
 	}
 
 	public interface IEntry : IComparable<IEntry>

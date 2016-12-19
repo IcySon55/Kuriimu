@@ -38,6 +38,11 @@ namespace file_kup
 		}
 
 		// Feature Support
+		public bool FileHasExtendedProperties
+		{
+			get { return true; }
+		}
+
 		public bool CanSave
 		{
 			get { return true; }
@@ -65,7 +70,7 @@ namespace file_kup
 
 		#endregion
 
-		public FileInfo TargetFile
+		public FileInfo FileInfo
 		{
 			get
 			{
@@ -84,7 +89,7 @@ namespace file_kup
 
 			_targetFile = new FileInfo(filename);
 
-			if (File.Exists(filename))
+			if (_targetFile.Exists)
 			{
 				try
 				{
@@ -149,6 +154,11 @@ namespace file_kup
 		}
 
 		// Features
+		public bool ShowProperties(Icon icon)
+		{
+			return false;
+		}
+
 		public IEntry NewEntry()
 		{
 			return new Entry(_kup.Encoding); ;
@@ -186,12 +196,11 @@ namespace file_kup
 			return result;
 		}
 
-		public void EntryProperties(IEntry entry, Icon icon)
+		public bool ShowEntryProperties(IEntry entry, Icon icon)
 		{
-			frmProperties properties = new frmProperties();
-			properties.Icon = icon;
-			properties.Entry = (Entry)entry;
+			frmEntryProperties properties = new frmEntryProperties((Entry)entry, icon);
 			properties.ShowDialog();
+			return properties.HasChanges;
 		}
 	}
 }

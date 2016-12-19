@@ -103,7 +103,7 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.Name = "frmDirector";
-			this.Text = "Kuriimu - Director";
+			this.Text = "Director";
 			this.Load += new System.EventHandler(this.Director_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();

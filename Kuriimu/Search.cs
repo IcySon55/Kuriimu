@@ -24,11 +24,16 @@ namespace Kuriimu
 
 		private void frmSearch_Load(object sender, EventArgs e)
 		{
+			Icon = Resources.find;
+
 			Selected = null;
 			txtFindText.Text = Settings.Default.FindWhat;
 			chkMatchCase.Checked = Settings.Default.FindMatchCase;
 
 			Find();
+
+			if (lstResults.Items.Count > Settings.Default.FindSelectedIndex)
+				lstResults.SelectedIndex = Settings.Default.FindSelectedIndex;
 		}
 
 		private void btnFindText_Click(object sender, EventArgs e)
@@ -91,6 +96,12 @@ namespace Kuriimu
 				Selected = (IEntry)((ListItem)lstResults.SelectedItem).Value;
 				Close();
 			}
+		}
+
+		private void lstResults_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Settings.Default.FindSelectedIndex = lstResults.SelectedIndex;
+			Settings.Default.Save();
 		}
 	}
 }

@@ -12,8 +12,7 @@ namespace file_kup
 	[XmlRoot("kup")]
 	public class KUP
 	{
-		[XmlAttribute("count")]
-		public int Count { get; set; }
+		#region Properties
 
 		[XmlIgnore]
 		public Encoding Encoding { get; set; }
@@ -21,11 +20,15 @@ namespace file_kup
 		[XmlAttribute("encoding")]
 		public string EncodingString
 		{
-			get { return Encoding.EncodingName; }
+			get { return Encoding.WebName; }
 			set
 			{
 				Encoding enc = Encoding.Unicode;
-				Encoding.GetEncoding(value);
+				try
+				{
+					enc = Encoding.GetEncoding(value);
+				}
+				catch (Exception) { }
 				Encoding = enc;
 			}
 		}
@@ -60,9 +63,16 @@ namespace file_kup
 		[XmlArrayItem("entry")]
 		public List<Entry> Entries { get; set; }
 
+		[XmlIgnore]
+		public int Count
+		{
+			get { return Entries.Count; }
+		}
+
+		#endregion
+
 		public KUP()
 		{
-			Count = 0;
 			Encoding = Encoding.Unicode;
 			RamOffsetUInt = 0x0;
 			OptimizeStrings = true;
@@ -138,11 +148,15 @@ namespace file_kup
 		[XmlAttribute("encoding")]
 		public string EncodingString
 		{
-			get { return Encoding.EncodingName; }
+			get { return Encoding.WebName; }
 			set
 			{
 				Encoding enc = Encoding.Unicode;
-				Encoding.GetEncoding(value);
+				try
+				{
+					enc = Encoding.GetEncoding(value);
+				}
+				catch (Exception) { }
 				Encoding = enc;
 			}
 		}

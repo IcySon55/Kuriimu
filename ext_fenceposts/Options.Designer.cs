@@ -33,12 +33,14 @@
 			this.btnOK = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.chkOptimizeStrings = new System.Windows.Forms.CheckBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.cmbEncoding = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// lblMemoryOffset
 			// 
 			this.lblMemoryOffset.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.lblMemoryOffset.Location = new System.Drawing.Point(8, 10);
+			this.lblMemoryOffset.Location = new System.Drawing.Point(12, 36);
 			this.lblMemoryOffset.Name = "lblMemoryOffset";
 			this.lblMemoryOffset.Size = new System.Drawing.Size(106, 22);
 			this.lblMemoryOffset.TabIndex = 0;
@@ -49,7 +51,7 @@
 			// 
 			this.txtMemoryOffset.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtMemoryOffset.Location = new System.Drawing.Point(120, 12);
+			this.txtMemoryOffset.Location = new System.Drawing.Point(124, 38);
 			this.txtMemoryOffset.Name = "txtMemoryOffset";
 			this.txtMemoryOffset.Size = new System.Drawing.Size(205, 20);
 			this.txtMemoryOffset.TabIndex = 1;
@@ -57,10 +59,10 @@
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(234, 62);
+			this.btnOK.Location = new System.Drawing.Point(234, 89);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
-			this.btnOK.TabIndex = 6;
+			this.btnOK.TabIndex = 3;
 			this.btnOK.Text = "OK";
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -68,28 +70,49 @@
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.Location = new System.Drawing.Point(315, 62);
+			this.btnCancel.Location = new System.Drawing.Point(315, 89);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 7;
+			this.btnCancel.TabIndex = 4;
 			this.btnCancel.Text = "Cancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
 			// 
 			// chkOptimizeStrings
 			// 
-			this.chkOptimizeStrings.Location = new System.Drawing.Point(120, 38);
+			this.chkOptimizeStrings.Location = new System.Drawing.Point(124, 64);
 			this.chkOptimizeStrings.Name = "chkOptimizeStrings";
 			this.chkOptimizeStrings.Size = new System.Drawing.Size(138, 19);
-			this.chkOptimizeStrings.TabIndex = 4;
+			this.chkOptimizeStrings.TabIndex = 2;
 			this.chkOptimizeStrings.Text = "Optimize Strings";
 			this.chkOptimizeStrings.UseVisualStyleBackColor = true;
+			// 
+			// label1
+			// 
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+			this.label1.Location = new System.Drawing.Point(12, 9);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(106, 22);
+			this.label1.TabIndex = 8;
+			this.label1.Text = "Encoding:";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// cmbEncoding
+			// 
+			this.cmbEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbEncoding.FormattingEnabled = true;
+			this.cmbEncoding.Location = new System.Drawing.Point(124, 11);
+			this.cmbEncoding.Name = "cmbEncoding";
+			this.cmbEncoding.Size = new System.Drawing.Size(205, 21);
+			this.cmbEncoding.TabIndex = 0;
 			// 
 			// frmOptions
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(396, 92);
+			this.ClientSize = new System.Drawing.Size(396, 119);
+			this.Controls.Add(this.cmbEncoding);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.chkOptimizeStrings);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOK);
@@ -100,8 +123,8 @@
 			this.MinimizeBox = false;
 			this.Name = "frmOptions";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Bound";
-			this.Load += new System.EventHandler(this.frmBound_Load);
+			this.Text = "Options";
+			this.Load += new System.EventHandler(this.frmOptions_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -114,5 +137,7 @@
 		private System.Windows.Forms.Button btnOK;
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.CheckBox chkOptimizeStrings;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.ComboBox cmbEncoding;
 	}
 }

@@ -107,15 +107,16 @@
 			this.lstResults.Location = new System.Drawing.Point(13, 70);
 			this.lstResults.Margin = new System.Windows.Forms.Padding(4);
 			this.lstResults.Name = "lstResults";
-			this.lstResults.Size = new System.Drawing.Size(458, 274);
+			this.lstResults.Size = new System.Drawing.Size(458, 256);
 			this.lstResults.TabIndex = 5;
+			this.lstResults.SelectedIndexChanged += new System.EventHandler(this.lstResults_SelectedIndexChanged);
 			this.lstResults.DoubleClick += new System.EventHandler(this.lstResults_DoubleClick);
 			// 
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslResultCount});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 358);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 340);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(484, 22);
 			this.statusStrip1.TabIndex = 6;
@@ -127,13 +128,13 @@
 			this.tslResultCount.Size = new System.Drawing.Size(469, 17);
 			this.tslResultCount.Spring = true;
 			// 
-			// Search
+			// frmSearch
 			// 
 			this.AcceptButton = this.btnFindText;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(484, 380);
+			this.ClientSize = new System.Drawing.Size(484, 362);
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.lstResults);
 			this.Controls.Add(this.chkMatchCase);
@@ -144,7 +145,8 @@
 			this.KeyPreview = true;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "Search";
+			this.MinimumSize = new System.Drawing.Size(500, 400);
+			this.Name = "frmSearch";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Find";
 			this.Load += new System.EventHandler(this.frmSearch_Load);

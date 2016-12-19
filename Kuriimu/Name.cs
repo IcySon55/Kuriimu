@@ -57,7 +57,10 @@ namespace Kuriimu
 
 		private void Name_Load(object sender, EventArgs e)
 		{
-			Text = Settings.Default.ApplicationName;
+			if (_isNew)
+				Text = "New Entry";
+			else
+				Text = "Rename Entry";
 			Icon = Resources.kuriimu;
 
 			txtName.Text = _entry.Name;
