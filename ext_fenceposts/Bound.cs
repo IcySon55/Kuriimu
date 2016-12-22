@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
-using KuriimuContract;
 using file_kup;
 
 namespace ext_fenceposts

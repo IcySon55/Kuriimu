@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlCodes.cs" />
+    <Compile Include="Handler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -63,6 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\blank_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\MainFont.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

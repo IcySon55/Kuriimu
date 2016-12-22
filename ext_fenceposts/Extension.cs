@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
 using file_kup;
 using KuriimuContract;
-using System.Xml;
 
 namespace ext_fenceposts
 {

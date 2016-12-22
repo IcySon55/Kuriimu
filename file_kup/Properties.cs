@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using ext_fenceposts.Properties;
-using file_kup;
+using file_kup.Properties;
 using KuriimuContract;
 
-namespace ext_fenceposts
+namespace file_kup
 {
-	public partial class frmOptions : Form
+	public partial class frmProperties : Form
 	{
 		private KUP _kup = null;
 		private bool _hasChanges = false;
@@ -28,31 +28,29 @@ namespace ext_fenceposts
 
 		#endregion
 
-		public frmOptions(KUP kup)
+		public frmProperties(KUP kup, Icon icon)
 		{
 			InitializeComponent();
 
+			Icon = icon;
 			_kup = kup;
 		}
 
 		private void frmOptions_Load(object sender, EventArgs e)
 		{
-			Text = Settings.Default.PluginName + " - Options";
-			Icon = Resources.fenceposts;
+			Text = Settings.Default.PluginName + " - Properties";
 
 			Tools.LoadSupportedEncodings(cmbEncoding, _kup.Encoding);
 			txtMemoryOffset.Text = _kup.RamOffset;
-			chkOptimizeStrings.Checked = _kup.OptimizeStrings;
 		}
 
 		private void btnOK_Click(object sender, EventArgs e)
 		{
-			if (_kup.Encoding != (Encoding)cmbEncoding.SelectedValue || _kup.RamOffset != txtMemoryOffset.Text.Trim() || _kup.OptimizeStrings != chkOptimizeStrings.Checked)
+			if (_kup.Encoding != (Encoding)cmbEncoding.SelectedValue || _kup.RamOffset != txtMemoryOffset.Text.Trim())
 				_hasChanges = true;
 
 			_kup.Encoding = (Encoding)cmbEncoding.SelectedValue;
 			_kup.RamOffset = txtMemoryOffset.Text;
-			_kup.OptimizeStrings = chkOptimizeStrings.Checked;
 
 			DialogResult = DialogResult.OK;
 		}

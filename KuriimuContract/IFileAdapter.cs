@@ -16,15 +16,16 @@ namespace KuriimuContract
 		string About { get; }
 
 		// Feature Support
-		bool FileHasExtendedProperties { get; }
-		bool CanSave { get; } // Is saving supported?.
+		bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
+		bool CanSave { get; } // Is saving supported?
 		bool CanAddEntries { get; } // Is adding entries supported?
 		bool CanRemoveEntries { get; } // Is removing entries supported?
-		bool EntriesHaveUniqueNames { get; } // Must entry names be unique
-		bool EntriesHaveExtendedProperties { get; } // Do entries have extra data
+		bool EntriesHaveUniqueNames { get; } // Must entry names be unique?
+		bool EntriesHaveExtendedProperties { get; } // Entries provides an extended properties dialog?
 
 		// I/O
 		FileInfo FileInfo { get; set; }
+		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 		LoadResult Load(string filename);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 

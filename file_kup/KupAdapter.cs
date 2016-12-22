@@ -132,6 +132,22 @@ namespace file_kup
 			return result;
 		}
 
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				KUP.Load(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
+
 		// Entries
 		public bool HasEntries
 		{
@@ -156,7 +172,9 @@ namespace file_kup
 		// Features
 		public bool ShowProperties(Icon icon)
 		{
-			return false;
+			frmProperties properties = new frmProperties(_kup, icon);
+			properties.ShowDialog();
+			return properties.HasChanges;
 		}
 
 		public IEntry NewEntry()
@@ -198,9 +216,9 @@ namespace file_kup
 
 		public bool ShowEntryProperties(IEntry entry, Icon icon)
 		{
-			frmEntryProperties properties = new frmEntryProperties((Entry)entry, icon);
-			properties.ShowDialog();
-			return properties.HasChanges;
+			frmEntryProperties entryProperties = new frmEntryProperties((Entry)entry, icon);
+			entryProperties.ShowDialog();
+			return entryProperties.HasChanges;
 		}
 	}
 }

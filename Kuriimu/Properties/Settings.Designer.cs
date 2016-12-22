@@ -125,15 +125,24 @@ namespace Kuriimu.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("v1.0.0")]
         public string ApplicationVersion {
             get {
                 return ((string)(this["ApplicationVersion"]));
             }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectedGameHandler {
+            get {
+                return ((string)(this["SelectedGameHandler"]));
+            }
             set {
-                this["ApplicationVersion"] = value;
+                this["SelectedGameHandler"] = value;
             }
         }
     }

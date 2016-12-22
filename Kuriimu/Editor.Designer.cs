@@ -37,6 +37,8 @@
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +62,7 @@
 			this.tlsOriginal = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
 			this.splPreview = new System.Windows.Forms.SplitContainer();
-			this.ptbPreview = new System.Windows.Forms.PictureBox();
+			this.pbxPreview = new System.Windows.Forms.PictureBox();
 			this.tlsPreview = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
 			this.hbxHexView = new Be.Windows.Forms.HexBox();
@@ -72,10 +74,9 @@
 			this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbFind = new System.Windows.Forms.ToolStripButton();
-			this.tsbProperties = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-			this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsbProperties = new System.Windows.Forms.ToolStripButton();
+			this.pnlPreview = new System.Windows.Forms.Panel();
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -97,10 +98,11 @@
 			this.splPreview.Panel1.SuspendLayout();
 			this.splPreview.Panel2.SuspendLayout();
 			this.splPreview.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.ptbPreview)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).BeginInit();
 			this.tlsPreview.SuspendLayout();
 			this.tlsHexView.SuspendLayout();
 			this.tlsMain.SuspendLayout();
+			this.pnlPreview.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -112,7 +114,7 @@
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
 			this.mnuMain.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
-			this.mnuMain.Size = new System.Drawing.Size(1113, 24);
+			this.mnuMain.Size = new System.Drawing.Size(1166, 24);
 			this.mnuMain.TabIndex = 0;
 			// 
 			// fileToolStripMenuItem
@@ -132,7 +134,7 @@
 			this.openToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -142,7 +144,7 @@
 			this.saveToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -152,21 +154,21 @@
 			this.saveAsToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave As...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -186,9 +188,24 @@
 			this.findToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_find;
 			this.findToolStripMenuItem.Name = "findToolStripMenuItem";
 			this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.findToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.findToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.findToolStripMenuItem.Text = "&Find";
 			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(143, 6);
+			// 
+			// propertiesToolStripMenuItem
+			// 
+			this.propertiesToolStripMenuItem.Enabled = false;
+			this.propertiesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_properties;
+			this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+			this.propertiesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
+			this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.propertiesToolStripMenuItem.Text = "&Properties";
+			this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -204,7 +221,7 @@
 			// 
 			this.gBATempToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_gbatemp;
 			this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gBATempToolStripMenuItem.Text = "GBATemp";
 			this.gBATempToolStripMenuItem.Click += new System.EventHandler(this.gBATempToolStripMenuItem_Click);
 			// 
@@ -212,7 +229,7 @@
 			// 
 			this.gitHubToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_git;
 			this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gitHubToolStripMenuItem.Text = "GitHub";
 			this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
 			// 
@@ -221,7 +238,7 @@
 			this.aboutToolStripMenuItem1.Image = global::Kuriimu.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
 			this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
 			this.aboutToolStripMenuItem1.Text = "&About";
 			// 
 			// pnlMain
@@ -231,7 +248,7 @@
 			this.pnlMain.Location = new System.Drawing.Point(0, 51);
 			this.pnlMain.Name = "pnlMain";
 			this.pnlMain.Padding = new System.Windows.Forms.Padding(6);
-			this.pnlMain.Size = new System.Drawing.Size(1113, 617);
+			this.pnlMain.Size = new System.Drawing.Size(1166, 617);
 			this.pnlMain.TabIndex = 1;
 			// 
 			// splMain
@@ -250,7 +267,7 @@
 			// splMain.Panel2
 			// 
 			this.splMain.Panel2.Controls.Add(this.splContent);
-			this.splMain.Size = new System.Drawing.Size(1101, 605);
+			this.splMain.Size = new System.Drawing.Size(1154, 605);
 			this.splMain.SplitterDistance = 256;
 			this.splMain.SplitterWidth = 6;
 			this.splMain.TabIndex = 0;
@@ -352,7 +369,7 @@
 			// splContent.Panel2
 			// 
 			this.splContent.Panel2.Controls.Add(this.splPreview);
-			this.splContent.Size = new System.Drawing.Size(839, 605);
+			this.splContent.Size = new System.Drawing.Size(892, 605);
 			this.splContent.SplitterDistance = 282;
 			this.splContent.SplitterWidth = 6;
 			this.splContent.TabIndex = 0;
@@ -373,8 +390,8 @@
 			// 
 			this.splText.Panel2.Controls.Add(this.txtOriginal);
 			this.splText.Panel2.Controls.Add(this.tlsOriginal);
-			this.splText.Size = new System.Drawing.Size(839, 282);
-			this.splText.SplitterDistance = 416;
+			this.splText.Size = new System.Drawing.Size(892, 282);
+			this.splText.SplitterDistance = 442;
 			this.splText.SplitterWidth = 6;
 			this.splText.TabIndex = 2;
 			// 
@@ -387,7 +404,7 @@
 			this.txtEdit.Multiline = true;
 			this.txtEdit.Name = "txtEdit";
 			this.txtEdit.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.txtEdit.Size = new System.Drawing.Size(416, 255);
+			this.txtEdit.Size = new System.Drawing.Size(442, 255);
 			this.txtEdit.TabIndex = 0;
 			this.txtEdit.TextChanged += new System.EventHandler(this.txtEdit_TextChanged);
 			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyDown);
@@ -405,7 +422,7 @@
 			this.tlsEdit.Location = new System.Drawing.Point(0, 0);
 			this.tlsEdit.Name = "tlsEdit";
 			this.tlsEdit.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-			this.tlsEdit.Size = new System.Drawing.Size(416, 27);
+			this.tlsEdit.Size = new System.Drawing.Size(442, 27);
 			this.tlsEdit.TabIndex = 2;
 			// 
 			// tslText
@@ -435,7 +452,7 @@
 			this.txtOriginal.Name = "txtOriginal";
 			this.txtOriginal.ReadOnly = true;
 			this.txtOriginal.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.txtOriginal.Size = new System.Drawing.Size(417, 255);
+			this.txtOriginal.Size = new System.Drawing.Size(444, 255);
 			this.txtOriginal.TabIndex = 4;
 			// 
 			// tlsOriginal
@@ -448,7 +465,7 @@
 			this.tlsOriginal.Location = new System.Drawing.Point(0, 0);
 			this.tlsOriginal.Name = "tlsOriginal";
 			this.tlsOriginal.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-			this.tlsOriginal.Size = new System.Drawing.Size(417, 27);
+			this.tlsOriginal.Size = new System.Drawing.Size(444, 27);
 			this.tlsOriginal.TabIndex = 3;
 			// 
 			// toolStripLabel1
@@ -466,27 +483,26 @@
 			// 
 			// splPreview.Panel1
 			// 
-			this.splPreview.Panel1.Controls.Add(this.ptbPreview);
+			this.splPreview.Panel1.Controls.Add(this.pnlPreview);
 			this.splPreview.Panel1.Controls.Add(this.tlsPreview);
 			// 
 			// splPreview.Panel2
 			// 
 			this.splPreview.Panel2.Controls.Add(this.hbxHexView);
 			this.splPreview.Panel2.Controls.Add(this.tlsHexView);
-			this.splPreview.Size = new System.Drawing.Size(839, 317);
-			this.splPreview.SplitterDistance = 416;
+			this.splPreview.Size = new System.Drawing.Size(892, 317);
+			this.splPreview.SplitterDistance = 442;
 			this.splPreview.SplitterWidth = 6;
 			this.splPreview.TabIndex = 0;
 			// 
-			// ptbPreview
+			// pbxPreview
 			// 
-			this.ptbPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.ptbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ptbPreview.Location = new System.Drawing.Point(0, 27);
-			this.ptbPreview.Name = "ptbPreview";
-			this.ptbPreview.Size = new System.Drawing.Size(416, 290);
-			this.ptbPreview.TabIndex = 4;
-			this.ptbPreview.TabStop = false;
+			this.pbxPreview.Location = new System.Drawing.Point(0, 0);
+			this.pbxPreview.Name = "pbxPreview";
+			this.pbxPreview.Size = new System.Drawing.Size(128, 128);
+			this.pbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.pbxPreview.TabIndex = 4;
+			this.pbxPreview.TabStop = false;
 			// 
 			// tlsPreview
 			// 
@@ -498,7 +514,7 @@
 			this.tlsPreview.Location = new System.Drawing.Point(0, 0);
 			this.tlsPreview.Name = "tlsPreview";
 			this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-			this.tlsPreview.Size = new System.Drawing.Size(416, 27);
+			this.tlsPreview.Size = new System.Drawing.Size(442, 27);
 			this.tlsPreview.TabIndex = 3;
 			// 
 			// toolStripLabel2
@@ -515,7 +531,7 @@
 			this.hbxHexView.Location = new System.Drawing.Point(0, 27);
 			this.hbxHexView.Name = "hbxHexView";
 			this.hbxHexView.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-			this.hbxHexView.Size = new System.Drawing.Size(417, 290);
+			this.hbxHexView.Size = new System.Drawing.Size(444, 290);
 			this.hbxHexView.StringViewVisible = true;
 			this.hbxHexView.TabIndex = 4;
 			this.hbxHexView.VScrollBarVisible = true;
@@ -530,7 +546,7 @@
 			this.tlsHexView.Location = new System.Drawing.Point(0, 0);
 			this.tlsHexView.Name = "tlsHexView";
 			this.tlsHexView.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-			this.tlsHexView.Size = new System.Drawing.Size(417, 27);
+			this.tlsHexView.Size = new System.Drawing.Size(444, 27);
 			this.tlsHexView.TabIndex = 4;
 			// 
 			// toolStripLabel3
@@ -555,7 +571,7 @@
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-			this.tlsMain.Size = new System.Drawing.Size(1113, 27);
+			this.tlsMain.Size = new System.Drawing.Size(1166, 27);
 			this.tlsMain.TabIndex = 2;
 			// 
 			// tsbOpen
@@ -606,6 +622,11 @@
 			this.tsbFind.Text = "Find";
 			this.tsbFind.Click += new System.EventHandler(this.tsbFind_Click);
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
 			// tsbProperties
 			// 
 			this.tsbProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -617,31 +638,22 @@
 			this.tsbProperties.Text = "Properties";
 			this.tsbProperties.Click += new System.EventHandler(this.tsbFileProperties_Click);
 			// 
-			// toolStripSeparator3
+			// pnlPreview
 			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripMenuItem1
-			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
-			// 
-			// propertiesToolStripMenuItem
-			// 
-			this.propertiesToolStripMenuItem.Enabled = false;
-			this.propertiesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_properties;
-			this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-			this.propertiesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.propertiesToolStripMenuItem.Text = "&Properties";
-			this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
+			this.pnlPreview.AutoScroll = true;
+			this.pnlPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.pnlPreview.Controls.Add(this.pbxPreview);
+			this.pnlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnlPreview.Location = new System.Drawing.Point(0, 27);
+			this.pnlPreview.Name = "pnlPreview";
+			this.pnlPreview.Size = new System.Drawing.Size(442, 290);
+			this.pnlPreview.TabIndex = 5;
 			// 
 			// frmEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1113, 668);
+			this.ClientSize = new System.Drawing.Size(1166, 668);
 			this.Controls.Add(this.pnlMain);
 			this.Controls.Add(this.tlsMain);
 			this.Controls.Add(this.mnuMain);
@@ -676,13 +688,15 @@
 			this.splPreview.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splPreview)).EndInit();
 			this.splPreview.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.ptbPreview)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).EndInit();
 			this.tlsPreview.ResumeLayout(false);
 			this.tlsPreview.PerformLayout();
 			this.tlsHexView.ResumeLayout(false);
 			this.tlsHexView.PerformLayout();
 			this.tlsMain.ResumeLayout(false);
 			this.tlsMain.PerformLayout();
+			this.pnlPreview.ResumeLayout(false);
+			this.pnlPreview.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -727,7 +741,7 @@
 		private System.Windows.Forms.ToolStrip tlsHexView;
 		private System.Windows.Forms.ToolStripLabel toolStripLabel3;
 		private Be.Windows.Forms.HexBox hbxHexView;
-		private System.Windows.Forms.PictureBox ptbPreview;
+		private System.Windows.Forms.PictureBox pbxPreview;
 		private System.Windows.Forms.ToolStrip tlsMain;
 		private System.Windows.Forms.ToolStripButton tsbOpen;
 		private System.Windows.Forms.ToolStripButton tsbSave;
@@ -738,5 +752,6 @@
 		private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripButton tsbProperties;
+		private System.Windows.Forms.Panel pnlPreview;
 	}
 }

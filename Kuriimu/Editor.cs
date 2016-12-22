@@ -178,6 +178,27 @@ namespace Kuriimu
 						_fileAdapter.Load(filename);
 						_fileOpen = true;
 						_hasChanges = false;
+
+						// Select Game Handler
+						if (Settings.Default.SelectedGameHandler != string.Empty)
+						{
+							foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+							{
+								if (tsi.Text == Settings.Default.SelectedGameHandler)
+								{
+									if (tsi.Text == "No Game")
+										_gameHandler = null;
+									else
+										_gameHandler = _gameHandlers[tsi.Text];
+
+									tsbGameSelect.Text = tsi.Text;
+									tsbGameSelect.Image = tsi.Image;
+
+									break;
+								}
+							}
+						}
+
 						LoadEntries();
 						Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
 						Settings.Default.Save();
@@ -229,11 +250,10 @@ namespace Kuriimu
 		private IFileAdapter SelectFileAdapter(string filename)
 		{
 			IFileAdapter result = null;
-			string extension = new FileInfo(filename).Extension;
 
 			foreach (string key in _fileAdapters.Keys)
 			{
-				if (_fileAdapters[key].Extension.EndsWith(extension))
+				if (_fileAdapters[key].Identify(filename))
 				{
 					result = _fileAdapters[key];
 					break;
@@ -274,6 +294,18 @@ namespace Kuriimu
 
 			if (!entry.IsResizable)
 				txtEdit.MaxLength = entry.MaxLength;
+		}
+
+		private void UpdatePreview()
+		{
+			IEntry entry = (IEntry)lstEntries.SelectedItem;
+
+			if (_gameHandler != null)
+			{
+				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText, entry.Encoding);
+			}
+			else
+				pbxPreview.Image = null;
 		}
 
 		private void UpdateHexView()
@@ -394,12 +426,16 @@ namespace Kuriimu
 			tsbGameSelect.Image = tsi.Image;
 
 			lstEntries_SelectedIndexChanged(sender, e);
+
+			Settings.Default.SelectedGameHandler = tsi.Text;
+			Settings.Default.Save();
 		}
 
 		// List
 		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			UpdateTextView();
+			UpdatePreview();
 			UpdateHexView();
 			UpdateForm();
 		}
@@ -435,6 +471,7 @@ namespace Kuriimu
 				entry.EditedText = entry.Encoding.GetBytes(next);
 			}
 
+			UpdatePreview();
 			UpdateHexView();
 			SelectInHex();
 

@@ -12,5 +12,6 @@ namespace KuriimuContract
 		Image Icon { get; }
 		string GetString(byte[] text, Encoding encoding);
 		byte[] GetBytes(string text, Encoding encoding);
+		Bitmap GeneratePreview(byte[] text, Encoding encoding);
 	}
 }
