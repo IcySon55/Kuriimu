@@ -13,27 +13,16 @@ namespace Kuriimu
 	{
 		public static string GetAppMessage()
 		{
-			StringBuilder sb = new StringBuilder();
 			System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
-			// Title
-			sb.Append("Kuriimu");
-
-			// Version
-			sb.Append(" v");
-			sb.Append(version.Major + ".");
-			sb.Append(version.Minor + ".");
-			sb.Append(version.Build + ".");
-			sb.Append(version.Revision);
-
-			// Build Date
-			sb.Append(" built on ");
-			sb.Append(RetrieveLinkerTimestamp().ToString("MMM dd yyyy hh:mm:ss"));
-
-			// Copyright
-			sb.Append("\r\nCopyright " + GetCopyrightYears(new DateTime(2016, 1, 1)) + " IcySon55\r\n\r\n");
-
-			return sb.ToString();
+			return string.Format("Kuriimu v{0}.{1}.{2}.{3} built on {4}\r\nCopyright {6} IcySon55\r\n\r\n",
+				version.Major,
+				version.Minor,
+				version.Build,
+				version.Revision,
+				RetrieveLinkerTimestamp().ToString("MMM dd yyyy hh:mm:ss"),
+				Environment.NewLine,
+				GetCopyrightYears(new DateTime(2016, 1, 1)));
 		}
 
 		public static DateTime RetrieveLinkerTimestamp()
