@@ -13,8 +13,6 @@ namespace Kuriimu
 {
 	public partial class frmExtensionSelect : Form
 	{
-		private Dictionary<string, IExtension> extensions = null;
-
 		#region Properties
 
 		public IExtension Extension { get; set; }
@@ -34,7 +32,7 @@ namespace Kuriimu
 			// Load Dumpers
 			Console.WriteLine("Loading extensions...");
 
-			extensions = new Dictionary<string, IExtension>();
+			var extensions = new Dictionary<string, IExtension>();
 			foreach (IExtension extension in PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll"))
 				extensions.Add(extension.Name, extension);
 
