@@ -42,19 +42,10 @@ namespace Kuriimu
 			const int c_PeHeaderOffset = 60;
 			const int c_LinkerTimestampOffset = 8;
 			byte[] b = new byte[2048];
-			System.IO.Stream s = null;
 
-			try
+			using (var s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
 			{
-				s = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read);
 				s.Read(b, 0, 2048);
-			}
-			finally
-			{
-				if (s != null)
-				{
-					s.Close();
-				}
 			}
 
 			int i = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
