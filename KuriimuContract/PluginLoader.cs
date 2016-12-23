@@ -7,7 +7,7 @@ namespace KuriimuContract
 {
 	public static class PluginLoader<T>
 	{
-		public static ICollection<T> LoadPlugins(string path, string filter = "*.dll")
+		public static IEnumerable<T> LoadPlugins(string path, string filter = "*.dll")
 		{
 			string[] dllFileNames = null;
 
