@@ -167,6 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Be.Windows.Forms.HexBox.dll" />
+    <None Include="images\menu-unsorted.png" />
+    <None Include="images\menu-sorted.png" />
     <None Include="images\btn-editor.png" />
     <None Include="images\find.ico" />
     <None Include="images\game-none.png" />

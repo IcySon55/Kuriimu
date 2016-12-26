@@ -565,7 +565,7 @@ namespace ext_fenceposts
 		}
 
 		// Injector
-		private int SortEntriesForInjection(Entry lhs, Entry rhs)
+		private int SortEntriesForInjection(IEntry lhs, IEntry rhs)
 		{
 			int result = lhs.EditedText.Length.CompareTo(rhs.EditedText.Length);
 			if (result == 0)

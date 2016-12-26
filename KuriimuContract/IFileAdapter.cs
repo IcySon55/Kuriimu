@@ -20,26 +20,32 @@ namespace KuriimuContract
 		bool CanSave { get; } // Is saving supported?
 		bool CanAddEntries { get; } // Is adding entries supported?
 		bool CanRemoveEntries { get; } // Is removing entries supported?
+		bool EntriesHaveSubEntries { get; } // Do entries contain multiple text values?
 		bool EntriesHaveUniqueNames { get; } // Must entry names be unique?
 		bool EntriesHaveExtendedProperties { get; } // Entries provides an extended properties dialog?
 
 		// I/O
 		FileInfo FileInfo { get; set; }
-		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 		LoadResult Load(string filename);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
+		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 
 		// Entries
-		bool HasEntries { get; }
-		List<IEntry> Entries { get; }
+		IEnumerable<IEntry> Entries { get; }
 		List<string> NameList { get; }
+		string NameFilter { get; } // This must be a regular expression that the incoming names must match. Use @".*" to accept any charcter.
+		int NameMaxLength { get; }
 
 		// Features
 		bool ShowProperties(Icon icon);
 		IEntry NewEntry();
 		bool AddEntry(IEntry entry);
+		bool RenameEntry(IEntry entry, string newName);
 		bool RemoveEntry(IEntry entry);
 		bool ShowEntryProperties(IEntry entry, Icon icon);
+
+		// Settings
+		bool SortEntries { get; set; }
 	}
 
 	public interface IEntry : IComparable<IEntry>
@@ -51,8 +57,24 @@ namespace KuriimuContract
 		byte[] EditedText { get; set; }
 		string EditedTextString { get; }
 
-		bool IsResizable { get; }
 		int MaxLength { get; }
+		bool IsResizable { get; }
+
+		List<ISubEntry> SubEntries { get; }
+
+		string ToString();
+	}
+
+	public interface ISubEntry : IComparable<ISubEntry>
+	{
+		Encoding Encoding { get; set; }
+		byte[] OriginalText { get; set; }
+		string OriginalTextString { get; }
+		byte[] EditedText { get; set; }
+		string EditedTextString { get; }
+
+		int MaxLength { get; }
+		bool IsResizable { get; }
 
 		string ToString();
 	}

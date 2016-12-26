@@ -13,7 +13,7 @@ namespace Kuriimu
 {
 	public partial class frmSearch : Form
 	{
-		public List<IEntry> Entries { get; set; }
+		public IEnumerable<IEntry> Entries { get; set; }
 		public IEntry Selected { get; set; }
 
 		public frmSearch()
@@ -47,6 +47,7 @@ namespace Kuriimu
 		private void Find()
 		{
 			List<IEntry> matches = new List<IEntry>();
+
 			lstResults.Items.Clear();
 
 			if (txtFindText.Text.Trim() != string.Empty && Entries != null)

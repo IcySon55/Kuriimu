@@ -8,8 +8,26 @@ using System.Text;
 
 namespace KuriimuContract
 {
-	public class Tools
+	public static class Tools
 	{
+		public static string LoadFileFilters(Dictionary<string, IFileAdapter> fileAdapters)
+		{
+			List<string> extensions = new List<string>();
+			List<string> types = new List<string>();
+
+			// All Supported
+			foreach (string key in fileAdapters.Keys)
+				extensions.Add(fileAdapters[key].Extension.ToLower());
+			types.Add("All Supported Files (" + string.Join(";", extensions.ToArray()) + ")|" + string.Join(";", extensions.ToArray()));
+
+			// Individual
+			foreach (string key in fileAdapters.Keys)
+				types.Add(fileAdapters[key].Description + " (" + fileAdapters[key].Extension.ToLower() + ")|" + fileAdapters[key].Extension.ToLower());
+			types.Add("All Files (*.*)|*.*");
+
+			return string.Join("|", types.ToArray());
+		}
+
 		public static Dictionary<string, IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();
@@ -45,6 +63,34 @@ namespace KuriimuContract
 			cmb.ValueMember = "Value";
 			cmb.DataSource = items;
 			cmb.SelectedValue = encoding;
+		}
+
+		public static TreeNode FindNodeByIEntry(this TreeView tre, IEntry entry)
+		{
+			TreeNode result = null;
+
+			foreach (TreeNode node in tre.Nodes)
+			{
+				if (node.Tag == entry)
+				{
+					result = node;
+					break;
+				}
+			}
+
+			return result;
+		}
+
+		public static void SelectNodeByIEntry(this TreeView tre, IEntry entry)
+		{
+			foreach (TreeNode node in tre.Nodes)
+			{
+				if (node.Tag == entry)
+				{
+					tre.SelectedNode = node;
+					break;
+				}
+			}
 		}
 
 		public static void DoubleBuffer(Control ctrl, bool doubleBuffered)

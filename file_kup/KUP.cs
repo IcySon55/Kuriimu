@@ -185,9 +185,6 @@ namespace file_kup
 		[XmlAttribute("relocatable")]
 		public bool Relocatable { get; set; }
 
-		[XmlAttribute("max_length")]
-		public int MaxLength { get; set; }
-
 		[XmlElement("pointer")]
 		public List<Pointer> Pointers { get; private set; }
 
@@ -211,10 +208,16 @@ namespace file_kup
 			set { EditedText = Encoding.GetBytes(value); }
 		}
 
+		[XmlAttribute("max_length")]
+		public int MaxLength { get; set; }
+
 		public bool IsResizable
 		{
 			get { return MaxLength == 0; }
 		}
+
+		[XmlIgnore]
+		public List<ISubEntry> SubEntries { get; set; }
 
 		public Entry()
 		{
@@ -225,8 +228,8 @@ namespace file_kup
 			Relocatable = true;
 			MaxLength = 0;
 			Pointers = new List<Pointer>();
-			OriginalText = new byte[] {};
-			EditedText = new byte[] {};
+			OriginalText = new byte[] { };
+			EditedText = new byte[] { };
 		}
 
 		public Entry(Encoding encoding) : this()

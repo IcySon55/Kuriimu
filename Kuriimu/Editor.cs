@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Be.Windows.Forms;
 using Kuriimu.Properties;
@@ -16,17 +16,17 @@ namespace Kuriimu
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
 
+		private IEnumerable<IEntry> _entries = null;
+
 		private Dictionary<string, IFileAdapter> _fileAdapters = null;
 		private Dictionary<string, IGameHandler> _gameHandlers = null;
-
-		private BindingList<IEntry> _entries = null;
 
 		public frmEditor()
 		{
 			InitializeComponent();
 		}
 
-		private void Editor_Load(object sender, EventArgs e)
+		private void frmEditor_Load(object sender, EventArgs e)
 		{
 			Icon = Resources.kuriimu;
 
@@ -39,7 +39,7 @@ namespace Kuriimu
 
 			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 
-			Tools.DoubleBuffer((Control)lstEntries, true);
+			Tools.DoubleBuffer((Control)treEntries, true);
 
 			UpdateForm();
 		}
@@ -82,12 +82,12 @@ namespace Kuriimu
 		private void findToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			frmSearch search = new frmSearch();
-			search.Entries = _fileAdapter.Entries;
+			search.Entries = _entries;
 			search.ShowDialog();
 
 			if (search.Selected != null)
 			{
-				lstEntries.SelectedItem = search.Selected;
+				treEntries.SelectNodeByIEntry(search.Selected);
 
 				if (txtEdit.Text.Contains(Settings.Default.FindWhat))
 				{
@@ -129,6 +129,18 @@ namespace Kuriimu
 			System.Diagnostics.Process.Start("https://github.com/Icyson55/Kuriimu");
 		}
 
+		private void frmEditor_DragEnter(object sender, DragEventArgs e)
+		{
+			e.Effect = DragDropEffects.Copy;
+		}
+
+		private void frmEditor_DragDrop(object sender, DragEventArgs e)
+		{
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+			if (files.Length > 0 && File.Exists(files[0]))
+				ConfirmOpenFile(files[0]);
+		}
+
 		private void ConfirmOpenFile(string filename = "")
 		{
 			DialogResult dr = DialogResult.No;
@@ -154,11 +166,7 @@ namespace Kuriimu
 			ofd.InitialDirectory = Settings.Default.LastDirectory;
 
 			// Supported Types
-			List<string> types = new List<string>();
-			foreach (string key in _fileAdapters.Keys)
-				types.Add(_fileAdapters[key].Description + " (" + _fileAdapters[key].Extension + ")|" + _fileAdapters[key].Extension);
-			types.Add("All Files (*.*)|*.*");
-			ofd.Filter = string.Join("|", types.ToArray());
+			ofd.Filter = Tools.LoadFileFilters(_fileAdapters);
 
 			DialogResult dr = DialogResult.OK;
 
@@ -265,21 +273,50 @@ namespace Kuriimu
 
 		private void LoadEntries()
 		{
-			IEntry selectedItem = (IEntry)lstEntries.SelectedItem;
+			UpdateEntries();
 
-			_entries = new BindingList<IEntry>(_fileAdapter.Entries);
-			lstEntries.DataSource = _entries;
+			treEntries.BeginUpdate();
 
-			if (selectedItem != null && lstEntries.Items.Contains(selectedItem))
-				lstEntries.SelectedItem = selectedItem;
-			else if(lstEntries.Items.Count > 0)
-				lstEntries.SelectedIndex = 0;
+			IEntry selectedEntry = null;
+			if (treEntries.SelectedNode != null)
+				selectedEntry = (IEntry)treEntries.SelectedNode.Tag;
+
+			treEntries.Nodes.Clear();
+			foreach (IEntry entry in _entries)
+			{
+				TreeNode node = new TreeNode(entry.ToString());
+				node.Tag = entry;
+				treEntries.Nodes.Add(node);
+
+				if(_fileAdapter.EntriesHaveSubEntries)
+					foreach (ISubEntry sub in entry.SubEntries)
+					{
+						TreeNode subNode = new TreeNode(sub.ToString());
+						subNode.Tag = sub;
+						node.Nodes.Add(subNode);
+					}
+			}
+
+			if ((selectedEntry == null || !_entries.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
+				treEntries.SelectedNode = treEntries.Nodes[0];
+			else
+				treEntries.SelectNodeByIEntry(selectedEntry);
+
+			treEntries.EndUpdate();
+		}
+
+		private void UpdateEntries()
+		{
+			_entries = _fileAdapter.Entries;
+
+			if (_fileAdapter.SortEntries)
+				_entries = _entries.OrderBy(x => x);
 		}
 
 		// Utilities
 		private void UpdateTextView()
 		{
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 
 			if (_gameHandler != null)
 			{
@@ -298,7 +335,7 @@ namespace Kuriimu
 
 		private void UpdatePreview()
 		{
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 
 			if (_gameHandler != null)
 			{
@@ -314,8 +351,8 @@ namespace Kuriimu
 
 			try
 			{
-				IEntry ent = (IEntry)lstEntries.SelectedItem;
-				MemoryStream strm = new MemoryStream(ent.EditedText);
+				IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+				MemoryStream strm = new MemoryStream(entry.EditedText);
 
 				dfbp = new DynamicFileByteProvider(strm);
 				dfbp.Changed += new EventHandler(hbxEdit_Changed);
@@ -331,35 +368,42 @@ namespace Kuriimu
 			Text = Settings.Default.ApplicationName + " Editor " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
 			if (_fileOpen)
-				tslEntries.Text = _fileAdapter.Entries.Count + " Entries";
+				tslEntries.Text = _fileAdapter.Entries.Count() + " Entries";
 			else
 				tslEntries.Text = "Entries";
 
-			bool itemSelected = lstEntries.SelectedIndex >= 0;
+			bool itemSelected = treEntries.SelectedNode != null;
 
 			splMain.Enabled = _fileOpen;
 			splContent.Enabled = _fileOpen;
 			splText.Enabled = _fileOpen;
 			splPreview.Enabled = _fileOpen;
 
-			saveToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
-			tsbSave.Enabled = _fileOpen && _fileAdapter.CanSave;
-			saveAsToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
-			tsbSaveAs.Enabled = _fileOpen && _fileAdapter.CanSave;
-			findToolStripMenuItem.Enabled = _fileOpen;
-			tsbFind.Enabled = _fileOpen;
-			propertiesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
-			tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
+			if (_fileAdapter != null)
+			{
+				saveToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
+				tsbSave.Enabled = _fileOpen && _fileAdapter.CanSave;
+				saveAsToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
+				tsbSaveAs.Enabled = _fileOpen && _fileAdapter.CanSave;
+				findToolStripMenuItem.Enabled = _fileOpen;
+				tsbFind.Enabled = _fileOpen;
+				propertiesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
+				tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
 
-			tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
-			tsbEntryRename.Enabled = itemSelected;
-			tsbEntryProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected;
-			tsbGameSelect.Enabled = itemSelected;
+				tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
+				tsbEntryRename.Enabled = itemSelected;
+				tsbEntryRemove.Enabled = _fileOpen && _fileAdapter.CanRemoveEntries;
+				tsbEntryProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected;
+				tsbGameSelect.Enabled = itemSelected;
 
-			lstEntries.Enabled = _fileOpen;
+				tsbSortEntries.Enabled = _fileOpen;
+				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+			}
+
+			treEntries.Enabled = _fileOpen;
 
 			txtEdit.Enabled = itemSelected;
-			txtOriginal.Enabled = itemSelected;
+			txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
 			hbxHexView.Enabled = itemSelected;
 		}
 
@@ -373,44 +417,64 @@ namespace Kuriimu
 		{
 			IEntry entry = _fileAdapter.NewEntry();
 
-			frmName name = new frmName(entry);
+			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
 
 			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 			{
 				_hasChanges = true;
+				entry.Name = name.NewName;
 				_fileAdapter.AddEntry(entry);
 				LoadEntries();
-
-				if (lstEntries.Items.Contains(entry))
-					lstEntries.SelectedItem = entry;
-
+				treEntries.SelectNodeByIEntry(entry);
 				UpdateForm();
 			}
 		}
 
 		private void tsbEntryRename_Click(object sender, EventArgs e)
 		{
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 
-			frmName name = new frmName(entry);
+			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
 
 			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 			{
 				_hasChanges = true;
-				_entries.ResetBindings();
-				lstEntries.SelectedItem = entry;
+				_fileAdapter.RenameEntry(entry, name.NewName);
+				treEntries.FindNodeByIEntry(entry).Text = name.NewName;
 				UpdateForm();
+			}
+		}
+
+		private void tsbEntryRemove_Click(object sender, EventArgs e)
+		{
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+
+			if (MessageBox.Show("Are you sure you want to remove " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+			{
+				_hasChanges = true;
+				TreeNode nextNode = treEntries.SelectedNode.NextNode;
+				_fileAdapter.RemoveEntry(entry);
+				UpdateEntries();
+				treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
+				treEntries.SelectedNode = nextNode;
 			}
 		}
 
 		private void tsbEntryProperties_Click(object sender, EventArgs e)
 		{
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 			if (_fileAdapter.ShowEntryProperties(entry, Resources.kuriimu))
 			{
 				_hasChanges = true;
 				UpdateForm();
 			}
+		}
+
+		private void tsbSortEntries_Click(object sender, EventArgs e)
+		{
+			_fileAdapter.SortEntries = !_fileAdapter.SortEntries;
+			LoadEntries();
+			UpdateForm();
 		}
 
 		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -425,14 +489,15 @@ namespace Kuriimu
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;
 
-			lstEntries_SelectedIndexChanged(sender, e);
+			UpdateTextView();
+			UpdatePreview();
 
 			Settings.Default.SelectedGameHandler = tsi.Text;
 			Settings.Default.Save();
 		}
 
 		// List
-		private void lstEntries_SelectedIndexChanged(object sender, EventArgs e)
+		private void treEntries_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			UpdateTextView();
 			UpdatePreview();
@@ -440,13 +505,13 @@ namespace Kuriimu
 			UpdateForm();
 		}
 
-		private void lstEntries_KeyDown(object sender, KeyEventArgs e)
+		private void treEntries_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (lstEntries.Focused && (e.KeyCode == Keys.Enter))
+			if (treEntries.Focused && (e.KeyCode == Keys.Enter))
 				tsbEntryProperties_Click(sender, e);
 		}
 
-		private void lstEntries_DoubleClick(object sender, EventArgs e)
+		private void treEntries_DoubleClick(object sender, EventArgs e)
 		{
 			tsbEntryProperties_Click(sender, e);
 		}
@@ -454,7 +519,7 @@ namespace Kuriimu
 		// Text
 		private void txtEdit_KeyUp(object sender, KeyEventArgs e)
 		{
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 			string next = string.Empty;
 			string previous = string.Empty;
 
@@ -500,7 +565,7 @@ namespace Kuriimu
 		private void SelectInHex()
 		{
 			// Magic that is not perfect
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 			int selectionStart = txtEdit.SelectionStart * (entry.Encoding.IsSingleByte ? 1 : 2);
 			int selectionLength = txtEdit.SelectionLength * (entry.Encoding.IsSingleByte ? 1 : 2);
 
@@ -517,7 +582,7 @@ namespace Kuriimu
 		{
 			DynamicFileByteProvider dfbp = (DynamicFileByteProvider)sender;
 
-			IEntry entry = (IEntry)lstEntries.SelectedItem;
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));

@@ -3,44 +3,43 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Xml;
 using KuriimuContract;
-using file_kup.Properties;
+using file_msbt.Properties;
 
-namespace file_kup
+namespace file_msbt
 {
-	public class KupAdatper : IFileAdapter
+	public class MsbtAdapter : IFileAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private KUP _kup = null;
+		private MSBT _msbt = null;
 
 		#region Properties
 
 		// Information
 		public string Name
 		{
-			get { return "KUP"; }
+			get { return "MSBT"; }
 		}
 
 		public string Description
 		{
-			get { return "Kuriimu Archive"; }
+			get { return "Message Binary Text"; }
 		}
 
 		public string Extension
 		{
-			get { return "*.kup"; }
+			get { return "*.msbt"; }
 		}
 
 		public string About
 		{
-			get { return "This is the KUP file adapter for Kuriimu."; }
+			get { return "This is the MSBT file adapter for Kuriimu."; }
 		}
 
 		// Feature Support
 		public bool FileHasExtendedProperties
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		public bool CanSave
@@ -50,12 +49,12 @@ namespace file_kup
 
 		public bool CanAddEntries
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public bool CanRemoveEntries
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public bool EntriesHaveSubEntries
@@ -65,12 +64,12 @@ namespace file_kup
 
 		public bool EntriesHaveUniqueNames
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public bool EntriesHaveExtendedProperties
 		{
-			get { return true; }
+			get { return false; }
 		}
 
 		public FileInfo FileInfo
@@ -97,14 +96,7 @@ namespace file_kup
 			{
 				try
 				{
-					_kup = KUP.Load(_fileInfo.FullName);
-
-					foreach (Entry entry in _kup.Entries)
-						entry.PointerCleanup();
-				}
-				catch (XmlException)
-				{
-					result = LoadResult.TypeMismatch;
+					_msbt = new MSBT(_fileInfo.FullName);
 				}
 				catch (Exception)
 				{
@@ -126,7 +118,7 @@ namespace file_kup
 
 			try
 			{
-				_kup.Save(_fileInfo.FullName);
+				_msbt.Save(_fileInfo.FullName);
 			}
 			catch (Exception)
 			{
@@ -142,7 +134,7 @@ namespace file_kup
 
 			try
 			{
-				KUP.Load(filename);
+				new MSBT(filename);
 			}
 			catch (Exception)
 			{
@@ -157,36 +149,40 @@ namespace file_kup
 		{
 			get
 			{
-				return _kup.Entries;
+				return _msbt.Entries;
 			}
 		}
 
 		public List<string> NameList
 		{
-			get { return null; }
+			get
+			{
+				List<string> names = new List<string>();
+				foreach (Entry entry in _msbt.Entries)
+					names.Add(entry.Name);
+				return names;
+			}
 		}
 
 		public string NameFilter
 		{
-			get { return @".*"; }
+			get { return MSBT.LabelFilter; }
 		}
 
 		public int NameMaxLength
 		{
-			get { return 0; }
+			get { return MSBT.LabelMaxLength; }
 		}
 
 		// Features
 		public bool ShowProperties(Icon icon)
 		{
-			frmProperties properties = new frmProperties(_kup, icon);
-			properties.ShowDialog();
-			return properties.HasChanges;
+			return false;
 		}
 
 		public IEntry NewEntry()
 		{
-			return new Entry(_kup.Encoding);
+			return new Entry(_msbt.FileEncoding);
 		}
 
 		public bool AddEntry(IEntry entry)
@@ -195,7 +191,7 @@ namespace file_kup
 
 			try
 			{
-				_kup.Entries.Add((Entry)entry);
+				_msbt.AddEntry((Entry)entry);
 			}
 			catch (Exception)
 			{
@@ -205,13 +201,13 @@ namespace file_kup
 			return result;
 		}
 
-		public bool RenameEntry(IEntry entry, string name)
+		public bool RenameEntry(IEntry entry, string newName)
 		{
 			bool result = true;
 
 			try
 			{
-				entry.Name = name;
+				_msbt.RenameEntry((Entry)entry, newName);
 			}
 			catch (Exception)
 			{
@@ -227,7 +223,7 @@ namespace file_kup
 
 			try
 			{
-				_kup.Entries.Remove((Entry)entry);
+				_msbt.RemoveEntry((Entry)entry);
 			}
 			catch (Exception)
 			{
@@ -239,9 +235,7 @@ namespace file_kup
 
 		public bool ShowEntryProperties(IEntry entry, Icon icon)
 		{
-			frmEntryProperties entryProperties = new frmEntryProperties((Entry)entry, icon);
-			entryProperties.ShowDialog();
-			return entryProperties.HasChanges;
+			return false;
 		}
 
 		// Settings

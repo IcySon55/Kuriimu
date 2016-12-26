@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace file_kup.Properties {
+namespace file_msbt.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -23,12 +23,15 @@ namespace file_kup.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("KUP")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MSBT")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));
+            }
+            set {
+                this["PluginName"] = value;
             }
         }
         

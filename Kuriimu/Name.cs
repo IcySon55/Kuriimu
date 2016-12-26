@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Kuriimu.Properties;
 using KuriimuContract;
+using System.Text.RegularExpressions;
 
 namespace Kuriimu
 {
@@ -11,10 +12,12 @@ namespace Kuriimu
 		private IEntry _entry = null;
 		private bool _namesMustBeUnique = false;
 		private List<string> _nameList = null;
+		private string _validNameRegex = ".*";
+		private int _maxLength = 0;
 		private bool _isNew = false;
-		private bool _nameChanged = false;
 
-		public event EventHandler<NameFormEventArgs> NameSubmitted;
+		private string _newName = string.Empty;
+		private bool _nameChanged = false;
 
 		#region Properties
 
@@ -38,6 +41,11 @@ namespace Kuriimu
 			set { _isNew = value; }
 		}
 
+		public string NewName
+		{
+			get { return _newName; }
+		}
+
 		public bool NameChanged
 		{
 			get { return _nameChanged; }
@@ -45,13 +53,15 @@ namespace Kuriimu
 
 		#endregion
 
-		public frmName(IEntry entry, bool namesMustBeUnique = false, List<string> nameList = null, bool isNew = false)
+		public frmName(IEntry entry, bool namesMustBeUnique = false, List<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
 		{
 			InitializeComponent();
 
 			_entry = entry;
 			_namesMustBeUnique = namesMustBeUnique;
 			_nameList = nameList;
+			_validNameRegex = validNameRegex;
+			_maxLength = maxLength;
 			_isNew = isNew;
 		}
 
@@ -63,6 +73,7 @@ namespace Kuriimu
 				Text = "Rename Entry";
 			Icon = Resources.kuriimu;
 
+			txtName.MaxLength = _maxLength == 0 ? Int32.MaxValue : _maxLength;
 			txtName.Text = _entry.Name;
 		}
 
@@ -72,47 +83,37 @@ namespace Kuriimu
 			string newName = txtName.Text.Trim();
 			_nameChanged = oldName != newName;
 
-			if (_namesMustBeUnique)
-			{
-				if (!_nameList.Contains(newName) || (oldName == newName && !_isNew))
-				{
-					_entry.Name = newName;
-					DialogResult = DialogResult.OK;
-					OnNameSubmitted(new NameFormEventArgs(oldName, newName));
-				}
+			if (txtName.Text.Trim().Length <= _maxLength || _maxLength == 0)
+				if (Regex.IsMatch(newName, _validNameRegex))
+					if (_namesMustBeUnique)
+					{
+						if (_nameList != null)
+						{
+							if (!_nameList.Contains(newName) || (oldName == newName && !_isNew))
+							{
+								_newName = newName;
+								DialogResult = DialogResult.OK;
+							}
+							else
+								MessageBox.Show("Entry names must be unique. " + newName + " already exists.", "Must Be Unique", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						}
+						else
+							MessageBox.Show("Entry names must be unique but a name list was not provided by the file plugin.", "File Plugin Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					}
+					else
+					{
+						_newName = newName;
+						DialogResult = DialogResult.OK;
+					}
 				else
-					MessageBox.Show("Entry names must be unique. " + newName + " already exists.", "Must Be Unique", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-			}
+					MessageBox.Show("The name entered contains invalid characters. Valid names must satisfy this regular expression: " + _validNameRegex, "Name is Invalid", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			else
-			{
-				_entry.Name = newName;
-				DialogResult = DialogResult.OK;
-				OnNameSubmitted(new NameFormEventArgs(oldName, newName));
-			}
+				MessageBox.Show("The name entered is too long. Valid names can only be " + _maxLength + " character(s) long.", "Name Too Long", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 		}
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
 			DialogResult = DialogResult.Cancel;
-		}
-
-		protected virtual void OnNameSubmitted(NameFormEventArgs e)
-		{
-			EventHandler<NameFormEventArgs> handler = NameSubmitted;
-			if (handler != null)
-				handler(_entry, e);
-		}
-	}
-
-	public class NameFormEventArgs : EventArgs
-	{
-		public string OldName { get; set; }
-		public string NewName { get; set; }
-
-		public NameFormEventArgs(string oldName, string newName)
-		{
-			OldName = oldName;
-			NewName = newName;
 		}
 	}
 }

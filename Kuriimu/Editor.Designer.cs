@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,13 +46,14 @@
 			this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
-			this.lstEntries = new System.Windows.Forms.ListBox();
+			this.treEntries = new System.Windows.Forms.TreeView();
 			this.tlsEntries = new System.Windows.Forms.ToolStrip();
 			this.tslEntries = new System.Windows.Forms.ToolStripLabel();
 			this.tsbEntryAdd = new System.Windows.Forms.ToolStripButton();
 			this.tsbEntryRename = new System.Windows.Forms.ToolStripButton();
-			this.tsbEntryDelete = new System.Windows.Forms.ToolStripButton();
+			this.tsbEntryRemove = new System.Windows.Forms.ToolStripButton();
 			this.tsbEntryProperties = new System.Windows.Forms.ToolStripButton();
+			this.tsbSortEntries = new System.Windows.Forms.ToolStripButton();
 			this.splContent = new System.Windows.Forms.SplitContainer();
 			this.splText = new System.Windows.Forms.SplitContainer();
 			this.txtEdit = new System.Windows.Forms.TextBox();
@@ -62,6 +64,7 @@
 			this.tlsOriginal = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
 			this.splPreview = new System.Windows.Forms.SplitContainer();
+			this.pnlPreview = new System.Windows.Forms.Panel();
 			this.pbxPreview = new System.Windows.Forms.PictureBox();
 			this.tlsPreview = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
@@ -76,7 +79,7 @@
 			this.tsbFind = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbProperties = new System.Windows.Forms.ToolStripButton();
-			this.pnlPreview = new System.Windows.Forms.Panel();
+			this.imlEntries = new System.Windows.Forms.ImageList(this.components);
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -98,11 +101,11 @@
 			this.splPreview.Panel1.SuspendLayout();
 			this.splPreview.Panel2.SuspendLayout();
 			this.splPreview.SuspendLayout();
+			this.pnlPreview.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).BeginInit();
 			this.tlsPreview.SuspendLayout();
 			this.tlsHexView.SuspendLayout();
 			this.tlsMain.SuspendLayout();
-			this.pnlPreview.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -261,7 +264,7 @@
 			// 
 			// splMain.Panel1
 			// 
-			this.splMain.Panel1.Controls.Add(this.lstEntries);
+			this.splMain.Panel1.Controls.Add(this.treEntries);
 			this.splMain.Panel1.Controls.Add(this.tlsEntries);
 			// 
 			// splMain.Panel2
@@ -272,21 +275,23 @@
 			this.splMain.SplitterWidth = 6;
 			this.splMain.TabIndex = 0;
 			// 
-			// lstEntries
+			// treEntries
 			// 
-			this.lstEntries.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lstEntries.Enabled = false;
-			this.lstEntries.FormattingEnabled = true;
-			this.lstEntries.IntegralHeight = false;
-			this.lstEntries.Location = new System.Drawing.Point(0, 27);
-			this.lstEntries.Name = "lstEntries";
-			this.lstEntries.ScrollAlwaysVisible = true;
-			this.lstEntries.Size = new System.Drawing.Size(256, 578);
-			this.lstEntries.Sorted = true;
-			this.lstEntries.TabIndex = 1;
-			this.lstEntries.SelectedIndexChanged += new System.EventHandler(this.lstEntries_SelectedIndexChanged);
-			this.lstEntries.DoubleClick += new System.EventHandler(this.lstEntries_DoubleClick);
-			this.lstEntries.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstEntries_KeyDown);
+			this.treEntries.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.treEntries.FullRowSelect = true;
+			this.treEntries.HideSelection = false;
+			this.treEntries.Indent = 16;
+			this.treEntries.ItemHeight = 14;
+			this.treEntries.Location = new System.Drawing.Point(0, 27);
+			this.treEntries.Name = "treEntries";
+			this.treEntries.ShowLines = false;
+			this.treEntries.ShowPlusMinus = false;
+			this.treEntries.ShowRootLines = false;
+			this.treEntries.Size = new System.Drawing.Size(256, 578);
+			this.treEntries.TabIndex = 4;
+			this.treEntries.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
+			this.treEntries.DoubleClick += new System.EventHandler(this.treEntries_DoubleClick);
+			this.treEntries.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treEntries_KeyDown);
 			// 
 			// tlsEntries
 			// 
@@ -297,8 +302,9 @@
             this.tslEntries,
             this.tsbEntryAdd,
             this.tsbEntryRename,
-            this.tsbEntryDelete,
-            this.tsbEntryProperties});
+            this.tsbEntryRemove,
+            this.tsbEntryProperties,
+            this.tsbSortEntries});
 			this.tlsEntries.Location = new System.Drawing.Point(0, 0);
 			this.tlsEntries.Name = "tlsEntries";
 			this.tlsEntries.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -333,15 +339,16 @@
 			this.tsbEntryRename.Text = "Rename Entry";
 			this.tsbEntryRename.Click += new System.EventHandler(this.tsbEntryRename_Click);
 			// 
-			// tsbEntryDelete
+			// tsbEntryRemove
 			// 
-			this.tsbEntryDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbEntryDelete.Enabled = false;
-			this.tsbEntryDelete.Image = global::Kuriimu.Properties.Resources.menu_delete;
-			this.tsbEntryDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbEntryDelete.Name = "tsbEntryDelete";
-			this.tsbEntryDelete.Size = new System.Drawing.Size(23, 22);
-			this.tsbEntryDelete.Text = "Delete Entry";
+			this.tsbEntryRemove.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbEntryRemove.Enabled = false;
+			this.tsbEntryRemove.Image = global::Kuriimu.Properties.Resources.menu_delete;
+			this.tsbEntryRemove.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbEntryRemove.Name = "tsbEntryRemove";
+			this.tsbEntryRemove.Size = new System.Drawing.Size(23, 22);
+			this.tsbEntryRemove.Text = "Remove Entry";
+			this.tsbEntryRemove.Click += new System.EventHandler(this.tsbEntryRemove_Click);
 			// 
 			// tsbEntryProperties
 			// 
@@ -353,6 +360,18 @@
 			this.tsbEntryProperties.Size = new System.Drawing.Size(23, 22);
 			this.tsbEntryProperties.Text = "Entry Properties";
 			this.tsbEntryProperties.Click += new System.EventHandler(this.tsbEntryProperties_Click);
+			// 
+			// tsbSortEntries
+			// 
+			this.tsbSortEntries.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbSortEntries.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbSortEntries.Enabled = false;
+			this.tsbSortEntries.Image = global::Kuriimu.Properties.Resources.menu_unsorted;
+			this.tsbSortEntries.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbSortEntries.Name = "tsbSortEntries";
+			this.tsbSortEntries.Size = new System.Drawing.Size(23, 22);
+			this.tsbSortEntries.Text = "Sort Entries";
+			this.tsbSortEntries.Click += new System.EventHandler(this.tsbSortEntries_Click);
 			// 
 			// splContent
 			// 
@@ -494,6 +513,17 @@
 			this.splPreview.SplitterDistance = 442;
 			this.splPreview.SplitterWidth = 6;
 			this.splPreview.TabIndex = 0;
+			// 
+			// pnlPreview
+			// 
+			this.pnlPreview.AutoScroll = true;
+			this.pnlPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.pnlPreview.Controls.Add(this.pbxPreview);
+			this.pnlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnlPreview.Location = new System.Drawing.Point(0, 27);
+			this.pnlPreview.Name = "pnlPreview";
+			this.pnlPreview.Size = new System.Drawing.Size(442, 290);
+			this.pnlPreview.TabIndex = 5;
 			// 
 			// pbxPreview
 			// 
@@ -638,29 +668,28 @@
 			this.tsbProperties.Text = "Properties";
 			this.tsbProperties.Click += new System.EventHandler(this.tsbFileProperties_Click);
 			// 
-			// pnlPreview
+			// imlEntries
 			// 
-			this.pnlPreview.AutoScroll = true;
-			this.pnlPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.pnlPreview.Controls.Add(this.pbxPreview);
-			this.pnlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlPreview.Location = new System.Drawing.Point(0, 27);
-			this.pnlPreview.Name = "pnlPreview";
-			this.pnlPreview.Size = new System.Drawing.Size(442, 290);
-			this.pnlPreview.TabIndex = 5;
+			this.imlEntries.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
+			this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// frmEditor
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1166, 668);
 			this.Controls.Add(this.pnlMain);
 			this.Controls.Add(this.tlsMain);
 			this.Controls.Add(this.mnuMain);
+			this.DoubleBuffered = true;
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "frmEditor";
 			this.Text = "Kuriimu";
-			this.Load += new System.EventHandler(this.Editor_Load);
+			this.Load += new System.EventHandler(this.frmEditor_Load);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmEditor_DragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmEditor_DragEnter);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
 			this.pnlMain.ResumeLayout(false);
@@ -688,6 +717,8 @@
 			this.splPreview.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splPreview)).EndInit();
 			this.splPreview.ResumeLayout(false);
+			this.pnlPreview.ResumeLayout(false);
+			this.pnlPreview.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).EndInit();
 			this.tlsPreview.ResumeLayout(false);
 			this.tlsPreview.PerformLayout();
@@ -695,8 +726,6 @@
 			this.tlsHexView.PerformLayout();
 			this.tlsMain.ResumeLayout(false);
 			this.tlsMain.PerformLayout();
-			this.pnlPreview.ResumeLayout(false);
-			this.pnlPreview.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -710,11 +739,10 @@
 		private System.Windows.Forms.Panel pnlMain;
 		private System.Windows.Forms.SplitContainer splMain;
 		private System.Windows.Forms.ToolStrip tlsEntries;
-		private System.Windows.Forms.ListBox lstEntries;
 		private System.Windows.Forms.ToolStripLabel tslEntries;
 		private System.Windows.Forms.ToolStripButton tsbEntryAdd;
 		private System.Windows.Forms.ToolStripButton tsbEntryRename;
-		private System.Windows.Forms.ToolStripButton tsbEntryDelete;
+		private System.Windows.Forms.ToolStripButton tsbEntryRemove;
 		private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splContent;
 		private System.Windows.Forms.TextBox txtEdit;
@@ -753,5 +781,8 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripButton tsbProperties;
 		private System.Windows.Forms.Panel pnlPreview;
+		private System.Windows.Forms.TreeView treEntries;
+		private System.Windows.Forms.ImageList imlEntries;
+		private System.Windows.Forms.ToolStripButton tsbSortEntries;
 	}
 }
