@@ -1,9 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Windows.Forms;
-using ext_fenceposts.Properties;
+﻿using ext_fenceposts.Properties;
 using file_kup;
 using KuriimuContract;
+using System;
+using System.Text;
+using System.Windows.Forms;
 
 namespace ext_fenceposts
 {
@@ -16,7 +16,7 @@ namespace ext_fenceposts
 
 		public KUP Kup
 		{
-			get { return _kup;  }
+			get { return _kup; }
 			set { _kup = value; }
 		}
 

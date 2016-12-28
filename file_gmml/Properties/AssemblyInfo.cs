@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("file_msbt")]
-[assembly: AssemblyDescription("Message Binary Text File plugin for Kuriimu")]
+[assembly: AssemblyTitle("file_gmm")]
+[assembly: AssemblyDescription("GMM File plugin for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("file_msbt")]
+[assembly: AssemblyProduct("file_gmm")]
 [assembly: AssemblyCopyright("Copyright © IcySon55 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("59e76045-870c-4902-b919-c25ee18f9710")]
+[assembly: Guid("9665286a-f74f-4180-a73c-f427fdf29b2e")]
 
 // Version information for an assembly consists of the following four values:
 //

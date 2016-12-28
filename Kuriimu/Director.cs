@@ -1,14 +1,10 @@
-﻿using System;
+﻿using Kuriimu.Properties;
+using KuriimuContract;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
-using KuriimuContract;
-using Kuriimu.Properties;
 
 namespace Kuriimu
 {
@@ -38,13 +34,15 @@ namespace Kuriimu
 
 		private void btnBrowse_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.InitialDirectory = Application.StartupPath;
-			ofd.Multiselect = false;
-
-			if (ofd.ShowDialog() == DialogResult.OK)
+			using (OpenFileDialog ofd = new OpenFileDialog())
 			{
-				txtFile.Text = ofd.FileName;
+				ofd.InitialDirectory = Application.StartupPath;
+				ofd.Multiselect = false;
+
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					txtFile.Text = ofd.FileName;
+				}
 			}
 		}
 
@@ -55,70 +53,72 @@ namespace Kuriimu
 
 			if (file.Exists)
 			{
-				FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
-				BinaryReaderX br = new BinaryReaderX(fs, ByteOrder.LittleEndian);
-
-				txtResults.Text = string.Empty;
-				uint offset = Convert.ToUInt32(txtOffset.Text.Trim(), 16);
-				uint leneance = Convert.ToUInt32(txtLeneance.Text.Trim());
-
-				uint value = 0;
-				List<uint> pointers = new List<uint>();
-
-				while (br.BaseStream.Position < br.BaseStream.Length - 4)
+				using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
-					bool found = false;
-					uint pointer = (uint)br.BaseStream.Position;
-					value = br.ReadUInt32();
+					BinaryReaderX br = new BinaryReaderX(fs, ByteOrder.LittleEndian);
 
-					if (value == (offset + ram))
-						found = true;
-					else if (value >= (offset + ram - leneance) && value < offset + ram)
-						found = true;
-					else if (value <= (offset + ram + leneance) && value > offset + ram)
-						found = true;
+					txtResults.Text = string.Empty;
+					uint offset = Convert.ToUInt32(txtOffset.Text.Trim(), 16);
+					uint leneance = Convert.ToUInt32(txtLeneance.Text.Trim());
 
-					if (found)
-						pointers.Add(pointer);
-				}
+					uint value = 0;
+					List<uint> pointers = new List<uint>();
 
-				if (pointers.Count > 0)
-				{
-					List<byte> result = new List<byte>();
-					br.BaseStream.Seek(offset, SeekOrigin.Begin);
-					while (br.BaseStream.Position < br.BaseStream.Length)
+					while (br.BaseStream.Position < br.BaseStream.Length - 4)
 					{
-						byte[] unichar = br.ReadBytes(2);
+						bool found = false;
+						uint pointer = (uint)br.BaseStream.Position;
+						value = br.ReadUInt32();
 
-						if (unichar[0] != 0x0 || unichar[1] != 0x0)
-							result.AddRange(unichar);
-						else
-							break;
+						if (value == (offset + ram))
+							found = true;
+						else if (value >= (offset + ram - leneance) && value < offset + ram)
+							found = true;
+						else if (value <= (offset + ram + leneance) && value > offset + ram)
+							found = true;
+
+						if (found)
+							pointers.Add(pointer);
 					}
 
-					string strResult = enc.GetString(result.ToArray());
-
-					txtResults.AppendText("<entry encoding=\"Unicode\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
-					txtResults.AppendText("\r\n");
-
-					foreach (uint p in pointers)
+					if (pointers.Count > 0)
 					{
-						txtResults.AppendText("\t<pointer address=\"" + p.ToString("X2") + "\" />");
+						List<byte> result = new List<byte>();
+						br.BaseStream.Seek(offset, SeekOrigin.Begin);
+						while (br.BaseStream.Position < br.BaseStream.Length)
+						{
+							byte[] unichar = br.ReadBytes(2);
+
+							if (unichar[0] != 0x0 || unichar[1] != 0x0)
+								result.AddRange(unichar);
+							else
+								break;
+						}
+
+						string strResult = enc.GetString(result.ToArray());
+
+						txtResults.AppendText("<entry encoding=\"Unicode\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
 						txtResults.AppendText("\r\n");
+
+						foreach (uint p in pointers)
+						{
+							txtResults.AppendText("\t<pointer address=\"" + p.ToString("X2") + "\" />");
+							txtResults.AppendText("\r\n");
+						}
+
+						txtResults.AppendText("\t<original>" + strResult + "</original>");
+						txtResults.AppendText("\r\n");
+						txtResults.AppendText("\t<edited>" + strResult + "</edited>");
+						txtResults.AppendText("\r\n");
+						txtResults.AppendText("</entry>");
+					}
+					else
+					{
+						txtResults.Text = "No pointers found...";
 					}
 
-					txtResults.AppendText("\t<original>" + strResult + "</original>");
-					txtResults.AppendText("\r\n");
-					txtResults.AppendText("\t<edited>" + strResult + "</edited>");
-					txtResults.AppendText("\r\n");
-					txtResults.AppendText("</entry>");
+					br.Close();
 				}
-				else
-				{
-					txtResults.Text = "No pointers found...";
-				}
-
-				br.Close();
 			}
 		}
 

@@ -1,10 +1,8 @@
-﻿using System;
+﻿using KuriimuContract;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
-using KuriimuContract;
 
 namespace file_msbt
 {
@@ -26,15 +24,12 @@ namespace file_msbt
 
 		private byte paddingChar = 0xAB;
 
-		public List<Entry> Entries { get; set; }
-
 		public MSBT(string filename)
 		{
 			// Initialize Members
 			LBL1.Groups = new List<Group>();
 			LBL1.Labels = new List<Label>();
 			TXT2.Strings = new List<String>();
-			Entries = new List<Entry>();
 
 			FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
 			BinaryReaderX br = new BinaryReaderX(fs);
@@ -97,14 +92,6 @@ namespace file_msbt
 			}
 
 			br.Close();
-
-			// Create the entry objects for Kuriimu
-			foreach (Label label in LBL1.Labels)
-			{
-				Entry entry = new Entry(FileEncoding);
-				entry.EditedLabel = label;
-				Entries.Add(entry);
-			}
 		}
 
 		// Tools
@@ -288,8 +275,6 @@ namespace file_msbt
 			LBL1.Groups[(int)nlbl.Checksum].NumberOfLabels += 1;
 			ATR1.NumberOfAttributes += 1;
 			TXT2.NumberOfStrings += 1;
-
-			Entries.Add(entry);
 		}
 
 		public void RenameEntry(Entry entry, string newName)
@@ -313,8 +298,6 @@ namespace file_msbt
 			ATR1.NumberOfAttributes -= 1;
 			TXT2.Strings.RemoveAt((int)entry.EditedLabel.Index);
 			TXT2.NumberOfStrings -= 1;
-
-			Entries.Remove(entry);
 		}
 
 		// Saving
@@ -587,83 +570,6 @@ namespace file_msbt
 			if (remainder > 0)
 				for (int i = 0; i < 16 - remainder; i++)
 					bw.Write(paddingChar);
-		}
-	}
-
-	public class Entry : IEntry
-	{
-		public Encoding Encoding { get; set; }
-
-		public string Name
-		{
-			get { return EditedLabel.Name; }
-			set { EditedLabel.Name = value; }
-		}
-
-		public Label OriginalLabel { get; set; }
-
-		public byte[] OriginalText
-		{
-			get { return OriginalLabel.String.Text; }
-			set { ; }
-		}
-
-		public string OriginalTextString
-		{
-			get { return Encoding.GetString(OriginalLabel.String.Text); }
-			set { ; }
-		}
-
-		public Label EditedLabel { get; set; }
-
-		public byte[] EditedText
-		{
-			get { return EditedLabel.String.Text; }
-			set { EditedLabel.String.Text = value; }
-		}
-
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedLabel.String.Text); }
-			set { EditedLabel.String.Text = Encoding.GetBytes(value); }
-		}
-
-		public int MaxLength { get; set; }
-
-		public bool IsResizable
-		{
-			get { return true; }
-		}
-
-		public List<ISubEntry> SubEntries { get; set; }
-
-		public Entry()
-		{
-			Encoding = Encoding.Unicode;
-			EditedLabel = new Label();
-			OriginalLabel = new Label();
-			Name = string.Empty;
-			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
-		}
-
-		public Entry(Encoding encoding) : this()
-		{
-			Encoding = encoding;
-		}
-
-		public override string ToString()
-		{
-			return Name == string.Empty ? EditedLabel.String.Index.ToString() : Name;
-		}
-
-		public int CompareTo(IEntry rhs)
-		{
-			int result = Name.CompareTo(rhs.Name);
-			if (result == 0)
-				result = EditedLabel.String.Index.CompareTo(((Entry)rhs).EditedLabel.String.Index);
-			return result;
 		}
 	}
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ext_fenceposts.Properties;
 using KuriimuContract;
 using System.Drawing;
-using ext_fenceposts.Properties;
 using System.Windows.Forms;
 
 namespace ext_fenceposts

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace file_msbt
+﻿namespace file_msbt
 {
 	public static class Tools
 	{

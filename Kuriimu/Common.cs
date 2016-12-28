@@ -1,11 +1,5 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using Microsoft.CSharp;
 
 namespace Kuriimu
 {
@@ -13,21 +7,20 @@ namespace Kuriimu
 	{
 		public static string GetAppMessage()
 		{
-			System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+			Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
-			return string.Format("Kuriimu v{0}.{1}.{2}.{3} built on {4}\r\nCopyright {6} IcySon55\r\n\r\n",
+			return string.Format("Kuriimu v{0}.{1}.{2}.{3} built on {4}\r\nCopyright {5} IcySon55\r\n\r\n",
 				version.Major,
 				version.Minor,
 				version.Build,
 				version.Revision,
 				RetrieveLinkerTimestamp().ToString("MMM dd yyyy hh:mm:ss"),
-				Environment.NewLine,
 				GetCopyrightYears(new DateTime(2016, 1, 1)));
 		}
 
 		public static DateTime RetrieveLinkerTimestamp()
 		{
-			string filePath = System.Reflection.Assembly.GetCallingAssembly().Location;
+			string filePath = Assembly.GetCallingAssembly().Location;
 			const int c_PeHeaderOffset = 60;
 			const int c_LinkerTimestampOffset = 8;
 			byte[] b = new byte[2048];
@@ -37,8 +30,8 @@ namespace Kuriimu
 				s.Read(b, 0, 2048);
 			}
 
-			int i = System.BitConverter.ToInt32(b, c_PeHeaderOffset);
-			int secondsSince1970 = System.BitConverter.ToInt32(b, i + c_LinkerTimestampOffset);
+			int i = BitConverter.ToInt32(b, c_PeHeaderOffset);
+			int secondsSince1970 = BitConverter.ToInt32(b, i + c_LinkerTimestampOffset);
 			DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0);
 			dt = dt.AddSeconds(secondsSince1970);
 			dt = dt.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(dt).Hours);

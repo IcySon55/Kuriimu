@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using Kuriimu.Properties;
+﻿using Kuriimu.Properties;
 using KuriimuContract;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace Kuriimu
 {

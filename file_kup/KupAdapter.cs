@@ -1,11 +1,10 @@
-﻿using System;
+﻿using file_kup.Properties;
+using KuriimuContract;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Xml;
-using KuriimuContract;
-using file_kup.Properties;
 
 namespace file_kup
 {
@@ -17,61 +16,32 @@ namespace file_kup
 		#region Properties
 
 		// Information
-		public string Name
-		{
-			get { return "KUP"; }
-		}
+		public string Name => "KUP";
 
-		public string Description
-		{
-			get { return "Kuriimu Archive"; }
-		}
+		public string Description => "Kuriimu Archive";
 
-		public string Extension
-		{
-			get { return "*.kup"; }
-		}
+		public string Extension => " *.kup";
 
-		public string About
-		{
-			get { return "This is the KUP file adapter for Kuriimu."; }
-		}
+		public string About => "This is the KUP file adapter for Kuriimu.";
 
 		// Feature Support
-		public bool FileHasExtendedProperties
-		{
-			get { return true; }
-		}
+		public bool FileHasExtendedProperties => true;
 
-		public bool CanSave
-		{
-			get { return true; }
-		}
+		public bool CanSave => true;
 
-		public bool CanAddEntries
-		{
-			get { return false; }
-		}
+		public bool CanAddEntries => false;
 
-		public bool CanRemoveEntries
-		{
-			get { return false; }
-		}
+		public bool CanRenameEntries => false;
 
-		public bool EntriesHaveSubEntries
-		{
-			get { return false; }
-		}
+		public bool CanRemoveEntries => false;
 
-		public bool EntriesHaveUniqueNames
-		{
-			get { return false; }
-		}
+		public bool EntriesHaveSubEntries => false;
 
-		public bool EntriesHaveExtendedProperties
-		{
-			get { return true; }
-		}
+		public bool OnlySubEntriesHaveText => false;
+
+		public bool EntriesHaveUniqueNames => false;
+
+		public bool EntriesHaveExtendedProperties => true;
 
 		public FileInfo FileInfo
 		{
@@ -98,9 +68,6 @@ namespace file_kup
 				try
 				{
 					_kup = KUP.Load(_fileInfo.FullName);
-
-					foreach (Entry entry in _kup.Entries)
-						entry.PointerCleanup();
 				}
 				catch (XmlException)
 				{
@@ -157,24 +124,18 @@ namespace file_kup
 		{
 			get
 			{
+				foreach (Entry entry in _kup.Entries)
+					entry.PointerCleanup();
+
 				return _kup.Entries;
 			}
 		}
 
-		public List<string> NameList
-		{
-			get { return null; }
-		}
+		public List<string> NameList => null;
 
-		public string NameFilter
-		{
-			get { return @".*"; }
-		}
+		public string NameFilter => @".*";
 
-		public int NameMaxLength
-		{
-			get { return 0; }
-		}
+		public int NameMaxLength => 0;
 
 		// Features
 		public bool ShowProperties(Icon icon)
@@ -184,10 +145,7 @@ namespace file_kup
 			return properties.HasChanges;
 		}
 
-		public IEntry NewEntry()
-		{
-			return new Entry(_kup.Encoding);
-		}
+		public IEntry NewEntry() => new Entry(_kup.Encoding);
 
 		public bool AddEntry(IEntry entry)
 		{

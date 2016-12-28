@@ -1,11 +1,11 @@
-﻿using System;
+﻿using KuriimuContract;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using KuriimuContract;
 
 namespace file_kup
 {
@@ -100,9 +100,9 @@ namespace file_kup
 					return kup;
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				throw ex;
+				throw;
 			}
 		}
 
@@ -125,9 +125,9 @@ namespace file_kup
 					serializer.Serialize(XmlWriter.Create(xmlIO, xmlSettings), this, namespaces);
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				throw ex;
+				throw;
 			}
 		}
 
@@ -217,7 +217,10 @@ namespace file_kup
 		}
 
 		[XmlIgnore]
-		public List<ISubEntry> SubEntries { get; set; }
+		public List<IEntry> SubEntries { get; set; }
+
+		[XmlIgnore]
+		public bool IsSubEntry { get; set; }
 
 		public Entry()
 		{

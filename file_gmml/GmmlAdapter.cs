@@ -1,46 +1,47 @@
-﻿using file_msbt.Properties;
+﻿using file_gmml.Properties;
 using KuriimuContract;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Xml;
 
-namespace file_msbt
+namespace file_gmml
 {
-	public class MsbtAdapter : IFileAdapter
+	public class GmmlAdapter : IFileAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private MSBT _msbt = null;
+		private GMML _gmm = null;
 		private List<Entry> _entries = null;
 
 		#region Properties
 
 		// Information
-		public string Name => "MSBT";
+		public string Name => "GMML";
 
-		public string Description => "Message Binary Text";
+		public string Description => "GMML Text File";
 
-		public string Extension => " *.msbt";
+		public string Extension => "*.gmm;*.gmml";
 
-		public string About => "This is the MSBT file adapter for Kuriimu.";
+		public string About => "This is the GMML file adapter for Kuriimu.";
 
 		// Feature Support
 		public bool FileHasExtendedProperties => false;
 
 		public bool CanSave => true;
 
-		public bool CanAddEntries => true;
+		public bool CanAddEntries => false;
 
-		public bool CanRenameEntries => true;
+		public bool CanRenameEntries => false;
 
-		public bool CanRemoveEntries => true;
+		public bool CanRemoveEntries => false;
 
-		public bool EntriesHaveSubEntries => false;
+		public bool EntriesHaveSubEntries => true;
 
-		public bool OnlySubEntriesHaveText => false;
+		public bool OnlySubEntriesHaveText => true;
 
-		public bool EntriesHaveUniqueNames => true;
+		public bool EntriesHaveUniqueNames => false;
 
 		public bool EntriesHaveExtendedProperties => false;
 
@@ -68,7 +69,11 @@ namespace file_msbt
 			{
 				try
 				{
-					_msbt = new MSBT(_fileInfo.FullName);
+					_gmm = GMML.Load(_fileInfo.FullName);
+				}
+				catch (XmlException)
+				{
+					result = LoadResult.TypeMismatch;
 				}
 				catch (Exception)
 				{
@@ -90,7 +95,7 @@ namespace file_msbt
 
 			try
 			{
-				_msbt.Save(_fileInfo.FullName);
+				_gmm.Save(_fileInfo.FullName);
 			}
 			catch (Exception)
 			{
@@ -106,7 +111,7 @@ namespace file_msbt
 
 			try
 			{
-				new MSBT(filename);
+				GMML.Load(filename);
 			}
 			catch (Exception)
 			{
@@ -123,85 +128,38 @@ namespace file_msbt
 			{
 				_entries = new List<Entry>();
 
-				// Create the entry objects for Kuriimu
-				foreach (Label label in _msbt.LBL1.Labels)
+				foreach (Row row in _gmm.Body.Rows)
 				{
-					Entry entry = new Entry(_msbt.FileEncoding);
-					entry.EditedLabel = label;
+					Entry entry = new Entry(row);
 					_entries.Add(entry);
+
+					foreach (Language lang in row.Languages)
+					{
+						Entry subEntry = new Entry(lang);
+						entry.SubEntries.Add(subEntry);
+					}
 				}
 
 				return _entries;
 			}
 		}
 
-		public List<string> NameList
-		{
-			get
-			{
-				List<string> names = new List<string>();
-				foreach (Entry entry in Entries)
-					names.Add(entry.Name);
-				return names;
-			}
-		}
+		public List<string> NameList => null;
 
-		public string NameFilter => MSBT.LabelFilter;
+		public string NameFilter => @".*";
 
-		public int NameMaxLength => MSBT.LabelMaxLength;
+		public int NameMaxLength => 0;
 
 		// Features
 		public bool ShowProperties(Icon icon) => false;
 
-		public IEntry NewEntry() => new Entry(_msbt.FileEncoding);
+		public IEntry NewEntry() => null;
 
-		public bool AddEntry(IEntry entry)
-		{
-			bool result = true;
+		public bool AddEntry(IEntry entry) => false;
 
-			try
-			{
-				_msbt.AddEntry((Entry)entry);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
+		public bool RenameEntry(IEntry entry, string name) => false;
 
-			return result;
-		}
-
-		public bool RenameEntry(IEntry entry, string newName)
-		{
-			bool result = true;
-
-			try
-			{
-				_msbt.RenameEntry((Entry)entry, newName);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
-		public bool RemoveEntry(IEntry entry)
-		{
-			bool result = true;
-
-			try
-			{
-				_msbt.RemoveEntry((Entry)entry);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
+		public bool RemoveEntry(IEntry entry) => false;
 
 		public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
 
@@ -223,74 +181,90 @@ namespace file_msbt
 
 		public string Name
 		{
-			get { return EditedLabel.Name; }
-			set { EditedLabel.Name = value; }
+			get { return IsSubEntry ? EditedLanguage.Name : Row.Comment; }
+			set
+			{
+				if (IsSubEntry)
+					EditedLanguage.Name = value;
+				else
+					Row.Comment = value;
+			}
 		}
 
 		public byte[] OriginalText
 		{
-			get { return OriginalLabel.String.Text; }
+			get { return Encoding.GetBytes(OriginalLanguage.Text); }
 			set {; }
 		}
 
 		public string OriginalTextString
 		{
-			get { return Encoding.GetString(OriginalLabel.String.Text); }
+			get { return Encoding.GetString(OriginalText); }
 			set {; }
 		}
 
 		public byte[] EditedText
 		{
-			get { return EditedLabel.String.Text; }
-			set { EditedLabel.String.Text = value; }
+			get { return Encoding.GetBytes(EditedLanguage.Text); }
+			set { EditedLanguage.Text = Encoding.GetString(value); }
 		}
 
 		public string EditedTextString
 		{
-			get { return Encoding.GetString(EditedLabel.String.Text); }
-			set { EditedLabel.String.Text = Encoding.GetBytes(value); }
+			get { return Encoding.GetString(EditedText); }
+			set { EditedText = Encoding.GetBytes(value); }
 		}
 
 		public int MaxLength { get; set; }
 
 		public bool IsResizable
 		{
-			get { return true; }
+			get { return MaxLength == 0; }
 		}
 
 		public List<IEntry> SubEntries { get; set; }
 		public bool IsSubEntry { get; set; }
 
-		public Label OriginalLabel { get; set; }
-		public Label EditedLabel { get; set; }
+		public Row Row { get; set; }
+		public Language OriginalLanguage { get; set; }
+		public Language EditedLanguage { get; set; }
 
 		public Entry()
 		{
 			Encoding = Encoding.Unicode;
-			EditedLabel = new Label();
-			OriginalLabel = new Label();
+			Row = new Row();
+			OriginalLanguage = new Language();
+			EditedLanguage = new Language();
 			Name = string.Empty;
 			MaxLength = 0;
 			OriginalText = new byte[] { };
 			EditedText = new byte[] { };
 			SubEntries = new List<IEntry>();
+			IsSubEntry = false;
 		}
 
-		public Entry(Encoding encoding) : this()
+		public Entry(Row row) : this()
 		{
-			Encoding = encoding;
+			Row = row;
+			IsSubEntry = false;
+		}
+
+		public Entry(Language editedLanguage) : this()
+		{
+			EditedLanguage = editedLanguage;
+			IsSubEntry = true;
 		}
 
 		public override string ToString()
 		{
-			return Name == string.Empty ? EditedLabel.String.Index.ToString() : Name;
+			return IsSubEntry ? EditedLanguage.Name : Name == string.Empty ? Row.IDString : Name;
 		}
 
 		public int CompareTo(IEntry rhs)
 		{
 			int result = Name.CompareTo(rhs.Name);
 			if (result == 0)
-				result = EditedLabel.String.Index.CompareTo(((Entry)rhs).EditedLabel.String.Index);
+				result = Row.ID.CompareTo(((Entry)rhs).Row.ID);
 			return result;
 		}
 	}

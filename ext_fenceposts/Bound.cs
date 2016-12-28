@@ -1,7 +1,7 @@
-﻿using System;
-using System.Windows.Forms;
-using ext_fenceposts.Properties;
+﻿using ext_fenceposts.Properties;
 using file_kup;
+using System;
+using System.Windows.Forms;
 
 namespace ext_fenceposts
 {
@@ -14,7 +14,7 @@ namespace ext_fenceposts
 
 		public Bound Bound
 		{
-			get { return _bound;  }
+			get { return _bound; }
 			set { _bound = value; }
 		}
 

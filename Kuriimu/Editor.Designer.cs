@@ -289,6 +289,7 @@
 			this.treEntries.ShowRootLines = false;
 			this.treEntries.Size = new System.Drawing.Size(256, 578);
 			this.treEntries.TabIndex = 4;
+			this.treEntries.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
 			this.treEntries.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
 			this.treEntries.DoubleClick += new System.EventHandler(this.treEntries_DoubleClick);
 			this.treEntries.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treEntries_KeyDown);

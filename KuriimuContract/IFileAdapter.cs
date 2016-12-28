@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.IO;
+using System.Text;
 
 namespace KuriimuContract
 {
@@ -19,8 +18,10 @@ namespace KuriimuContract
 		bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
 		bool CanSave { get; } // Is saving supported?
 		bool CanAddEntries { get; } // Is adding entries supported?
+		bool CanRenameEntries { get; } // Is renaming entries supported?
 		bool CanRemoveEntries { get; } // Is removing entries supported?
 		bool EntriesHaveSubEntries { get; } // Do entries contain multiple text values?
+		bool OnlySubEntriesHaveText { get; } // Set this to true if only the sub entries contain text data.
 		bool EntriesHaveUniqueNames { get; } // Must entry names be unique?
 		bool EntriesHaveExtendedProperties { get; } // Entries provides an extended properties dialog?
 
@@ -60,21 +61,8 @@ namespace KuriimuContract
 		int MaxLength { get; }
 		bool IsResizable { get; }
 
-		List<ISubEntry> SubEntries { get; }
-
-		string ToString();
-	}
-
-	public interface ISubEntry : IComparable<ISubEntry>
-	{
-		Encoding Encoding { get; set; }
-		byte[] OriginalText { get; set; }
-		string OriginalTextString { get; }
-		byte[] EditedText { get; set; }
-		string EditedTextString { get; }
-
-		int MaxLength { get; }
-		bool IsResizable { get; }
+		List<IEntry> SubEntries { get; }
+		bool IsSubEntry { get; }
 
 		string ToString();
 	}

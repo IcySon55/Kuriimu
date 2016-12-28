@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using Kuriimu.Properties;
+﻿using Kuriimu.Properties;
 using KuriimuContract;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Kuriimu
 {
@@ -48,6 +43,8 @@ namespace Kuriimu
 		{
 			List<IEntry> matches = new List<IEntry>();
 
+			lstResults.BeginUpdate();
+
 			lstResults.Items.Clear();
 
 			if (txtFindText.Text.Trim() != string.Empty && Entries != null)
@@ -57,25 +54,38 @@ namespace Kuriimu
 					if (chkMatchCase.Checked)
 					{
 						if (entry.EditedTextString.Contains(txtFindText.Text) || entry.OriginalTextString.Contains(txtFindText.Text))
-							matches.Add(entry);
+							lstResults.Items.Add(new ListItem(entry.ToString(), entry));
 					}
 					else
 					{
-						if (entry.EditedTextString.ToLower().Contains(txtFindText.Text) || entry.OriginalTextString.ToLower().Contains(txtFindText.Text))
-							matches.Add(entry);
+						if (entry.EditedTextString.ToLower().Contains(txtFindText.Text.ToLower()) || entry.OriginalTextString.ToLower().Contains(txtFindText.Text.ToLower()))
+							lstResults.Items.Add(new ListItem(entry.ToString(), entry));
+					}
+
+					foreach (IEntry subEntry in entry.SubEntries)
+					{
+						if (chkMatchCase.Checked)
+						{
+							if (subEntry.EditedTextString.Contains(txtFindText.Text) || subEntry.OriginalTextString.Contains(txtFindText.Text))
+								lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
+						}
+						else
+						{
+							if (subEntry.EditedTextString.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalTextString.ToLower().Contains(txtFindText.Text.ToLower()))
+								lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
+						}
 					}
 				}
 			}
 
-			foreach (IEntry entry in matches)
-				lstResults.Items.Add(new ListItem(entry.ToString(), entry));
+			lstResults.EndUpdate();
 
 			tslResultCount.Text = matches.Count > 0 ? "Found " + matches.Count + " matches" : string.Empty;
 		}
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
-			Close();
+			DialogResult = DialogResult.Cancel;
 		}
 
 		private void txtFindText_TextChanged(object sender, EventArgs e)
@@ -95,7 +105,7 @@ namespace Kuriimu
 			if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
 			{
 				Selected = (IEntry)((ListItem)lstResults.SelectedItem).Value;
-				Close();
+				DialogResult = DialogResult.OK;
 			}
 		}
 

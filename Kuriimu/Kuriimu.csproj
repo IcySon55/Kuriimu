@@ -69,6 +69,9 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox, Version=1.6.0.38064, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -222,7 +225,7 @@
     <PostBuildEvent>del "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar"
 del "$(TargetDir)\plugins\KuriimuContract.*"
 cd "$(TargetDir)"
-"C:\Program Files\WinRAR\rar.exe" a "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar" $(TargetFileName) KuriimuContract.dll Be.Windows.Forms.HexBox.dll "plugins\*.dll"</PostBuildEvent>
+"C:\Program Files\WinRAR\rar.exe" a "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar" $(TargetFileName) "*.dll" "plugins\*.dll"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using game_rocket_slime_3ds.Properties;
+﻿using game_rocket_slime_3ds.Properties;
 using KuriimuContract;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System;
+using System.Text;
 
 namespace game_rocket_slime_3ds
 {
@@ -60,7 +60,7 @@ namespace game_rocket_slime_3ds
 				_encoding = encoding;
 			}
 		}
-		
+
 		public string GetString(byte[] text, Encoding encoding)
 		{
 			Initialize(encoding);

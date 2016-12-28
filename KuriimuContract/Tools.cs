@@ -1,10 +1,10 @@
-﻿using System;
+﻿using KuriimuContract.Properties;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
-using System.Windows.Forms;
-using KuriimuContract.Properties;
 using System.Text;
+using System.Windows.Forms;
 
 namespace KuriimuContract
 {
@@ -72,10 +72,18 @@ namespace KuriimuContract
 			foreach (TreeNode node in tre.Nodes)
 			{
 				if (node.Tag == entry)
-				{
 					result = node;
+
+				if (result == null)
+					foreach (TreeNode subNode in node.Nodes)
+						if (subNode.Tag == entry)
+						{
+							result = subNode;
+							break;
+						}
+
+				if (result != null)
 					break;
-				}
 			}
 
 			return result;
@@ -83,14 +91,26 @@ namespace KuriimuContract
 
 		public static void SelectNodeByIEntry(this TreeView tre, IEntry entry)
 		{
+			TreeNode result = null;
+
 			foreach (TreeNode node in tre.Nodes)
 			{
 				if (node.Tag == entry)
-				{
-					tre.SelectedNode = node;
+					result = node;
+
+				if (result == null)
+					foreach (TreeNode subNode in node.Nodes)
+						if (subNode.Tag == entry)
+						{
+							result = subNode;
+							break;
+						}
+
+				if (result != null)
 					break;
-				}
 			}
+
+			tre.SelectedNode = result;
 		}
 
 		public static void DoubleBuffer(Control ctrl, bool doubleBuffered)

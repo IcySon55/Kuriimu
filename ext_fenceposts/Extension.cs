@@ -1,13 +1,13 @@
-﻿using System;
+﻿using ext_fenceposts.Properties;
+using file_kup;
+using KuriimuContract;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using ext_fenceposts.Properties;
-using file_kup;
-using KuriimuContract;
 
 namespace ext_fenceposts
 {
@@ -534,7 +534,7 @@ namespace ext_fenceposts
 		{
 			string[] items = e.UserState.ToString().Split('|');
 
-			switch(items[0])
+			switch (items[0])
 			{
 				case "TOP":
 					prgTop.Value = Math.Max(Math.Min(e.ProgressPercentage, prgTop.Maximum), 0);
@@ -547,7 +547,7 @@ namespace ext_fenceposts
 						lstStatus.Items.Add(new ListItem(items[1], items[2]));
 					else
 						lstStatus.Items.Add(items[1]);
-					if(lstStatus.Items.Count > 0)
+					if (lstStatus.Items.Count > 0)
 						lstStatus.SelectedIndex = lstStatus.Items.Count - 1;
 					break;
 			}
@@ -713,7 +713,7 @@ namespace ext_fenceposts
 					break;
 				case "STATUS":
 					lstStatus.Items.Add(items[1]);
-					if(lstStatus.Items.Count > 0)
+					if (lstStatus.Items.Count > 0)
 						lstStatus.SelectedIndex = lstStatus.Items.Count - 1;
 					break;
 			}

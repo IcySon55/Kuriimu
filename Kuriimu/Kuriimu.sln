@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8} = {9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}
@@ -16,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_fenceposts", "..\ext_fenceposts\ext_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_msbt", "..\file_msbt\file_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmml", "..\file_gmml\file_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,10 @@ Global
 		{AF05447B-3CF5-4473-983B-7908F96C7128}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF05447B-3CF5-4473-983B-7908F96C7128}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF05447B-3CF5-4473-983B-7908F96C7128}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

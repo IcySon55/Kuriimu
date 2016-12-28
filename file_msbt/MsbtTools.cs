@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Xml;
-
-namespace file_msbt
+﻿namespace file_msbt
 {
 	class MsbtTools
 	{
