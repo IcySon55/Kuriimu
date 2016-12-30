@@ -6,7 +6,7 @@ using System.Text;
 
 namespace file_msbt
 {
-	public class MSBT
+	public sealed class MSBT
 	{
 		public const string LabelFilter = @"^[a-zA-Z0-9_]+$";
 		public const int LabelMaxLength = 64;
@@ -256,47 +256,47 @@ namespace file_msbt
 		}
 
 		// Manipulation
-		public void AddEntry(Entry entry)
+		public Label AddLabel(string name)
 		{
 			String nstr = new String();
 			nstr.Text = new byte[] { };
 			TXT2.Strings.Add(nstr);
-			entry.EditedLabel.String = nstr;
 
 			Label nlbl = new Label();
-			nlbl.Length = (uint)entry.Name.Trim().Length;
-			nlbl.Name = entry.Name.Trim();
+			nlbl.Length = (uint)name.Trim().Length;
+			nlbl.Name = name.Trim();
 			nlbl.Index = (uint)TXT2.Strings.IndexOf(nstr);
-			nlbl.Checksum = LabelChecksum(entry.Name.Trim());
+			nlbl.Checksum = LabelChecksum(name.Trim());
 			nlbl.String = nstr;
 			LBL1.Labels.Add(nlbl);
-			entry.EditedLabel = nlbl;
 
 			LBL1.Groups[(int)nlbl.Checksum].NumberOfLabels += 1;
 			ATR1.NumberOfAttributes += 1;
 			TXT2.NumberOfStrings += 1;
+
+			return nlbl;
 		}
 
-		public void RenameEntry(Entry entry, string newName)
+		public void RenameLabel(Label label, string newName)
 		{
-			entry.EditedLabel.Length = (uint)Encoding.ASCII.GetBytes(newName.Trim()).Length;
-			entry.EditedLabel.Name = newName.Trim();
-			LBL1.Groups[(int)entry.EditedLabel.Checksum].NumberOfLabels -= 1;
-			entry.EditedLabel.Checksum = LabelChecksum(newName.Trim());
-			LBL1.Groups[(int)entry.EditedLabel.Checksum].NumberOfLabels += 1;
+			label.Length = (uint)Encoding.ASCII.GetBytes(newName.Trim()).Length;
+			label.Name = newName.Trim();
+			LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
+			label.Checksum = LabelChecksum(newName.Trim());
+			LBL1.Groups[(int)label.Checksum].NumberOfLabels += 1;
 		}
 
-		public void RemoveEntry(Entry entry)
+		public void RemoveLabel(Label label)
 		{
-			int textIndex = TXT2.Strings.IndexOf(entry.EditedLabel.String);
+			int textIndex = TXT2.Strings.IndexOf(label.String);
 			for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				if (LBL1.Labels[i].Index > textIndex)
 					LBL1.Labels[i].Index -= 1;
 
-			LBL1.Groups[(int)entry.EditedLabel.Checksum].NumberOfLabels -= 1;
-			LBL1.Labels.Remove(entry.EditedLabel);
+			LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
+			LBL1.Labels.Remove(label);
 			ATR1.NumberOfAttributes -= 1;
-			TXT2.Strings.RemoveAt((int)entry.EditedLabel.Index);
+			TXT2.Strings.RemoveAt((int)label.Index);
 			TXT2.NumberOfStrings -= 1;
 		}
 

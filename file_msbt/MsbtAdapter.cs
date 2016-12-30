@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace file_msbt
 {
-	public class MsbtAdapter : IFileAdapter
+	public sealed class MsbtAdapter : IFileAdapter
 	{
 		private FileInfo _fileInfo = null;
 		private MSBT _msbt = null;
+		private MSBT _msbtBackup = null;
 		private List<Entry> _entries = null;
 
 		#region Properties
@@ -69,6 +72,17 @@ namespace file_msbt
 				try
 				{
 					_msbt = new MSBT(_fileInfo.FullName);
+
+					string backupFilePath = _fileInfo.FullName + ".bak";
+					if (File.Exists(backupFilePath))
+					{
+						_msbtBackup = new MSBT(backupFilePath);
+					}
+					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+						File.Copy(_fileInfo.FullName, backupFilePath);
+						_msbtBackup = new MSBT(backupFilePath);
+					}
 				}
 				catch (Exception)
 				{
@@ -121,30 +135,30 @@ namespace file_msbt
 		{
 			get
 			{
-				_entries = new List<Entry>();
-
-				// Create the entry objects for Kuriimu
-				foreach (Label label in _msbt.LBL1.Labels)
+				if (_entries == null)
 				{
-					Entry entry = new Entry(_msbt.FileEncoding);
-					entry.EditedLabel = label;
-					_entries.Add(entry);
+					_entries = new List<Entry>();
+
+					foreach (Label label in _msbt.LBL1.Labels)
+					{
+						if (_msbtBackup == null)
+						{
+							Entry entry = new Entry(_msbt.FileEncoding, label);
+							_entries.Add(entry);
+						}
+						else
+						{
+							Entry entry = new Entry(_msbt.FileEncoding, label, _msbtBackup.LBL1.Labels.FirstOrDefault(o => o.Name == label.Name));
+							_entries.Add(entry);
+						}
+					}
 				}
 
 				return _entries;
 			}
 		}
 
-		public List<string> NameList
-		{
-			get
-			{
-				List<string> names = new List<string>();
-				foreach (Entry entry in Entries)
-					names.Add(entry.Name);
-				return names;
-			}
-		}
+		public IEnumerable<string> NameList => Entries?.Select(o => o.Name);
 
 		public string NameFilter => MSBT.LabelFilter;
 
@@ -161,7 +175,9 @@ namespace file_msbt
 
 			try
 			{
-				_msbt.AddEntry((Entry)entry);
+				Entry ent = (Entry)entry;
+				ent.EditedLabel = _msbt.AddLabel(entry.Name);
+				_entries.Add((Entry)entry);
 			}
 			catch (Exception)
 			{
@@ -177,7 +193,8 @@ namespace file_msbt
 
 			try
 			{
-				_msbt.RenameEntry((Entry)entry, newName);
+				Entry ent = (Entry)entry;
+				_msbt.RenameLabel(ent.EditedLabel, newName);
 			}
 			catch (Exception)
 			{
@@ -193,7 +210,9 @@ namespace file_msbt
 
 			try
 			{
-				_msbt.RemoveEntry((Entry)entry);
+				Entry ent = (Entry)entry;
+				_msbt.RemoveLabel(ent.EditedLabel);
+				_entries.Remove(ent);
 			}
 			catch (Exception)
 			{
@@ -217,7 +236,7 @@ namespace file_msbt
 		}
 	}
 
-	public class Entry : IEntry
+	public sealed class Entry : IEntry
 	{
 		public Encoding Encoding { get; set; }
 
@@ -253,16 +272,13 @@ namespace file_msbt
 
 		public int MaxLength { get; set; }
 
-		public bool IsResizable
-		{
-			get { return true; }
-		}
+		public bool IsResizable => true;
 
 		public List<IEntry> SubEntries { get; set; }
 		public bool IsSubEntry { get; set; }
 
-		public Label OriginalLabel { get; set; }
 		public Label EditedLabel { get; set; }
+		public Label OriginalLabel { get; }
 
 		public Entry()
 		{
@@ -279,6 +295,18 @@ namespace file_msbt
 		public Entry(Encoding encoding) : this()
 		{
 			Encoding = encoding;
+		}
+
+		public Entry(Encoding encoding, Label editedLabel) : this(encoding)
+		{
+			if (editedLabel != null)
+				EditedLabel = editedLabel;
+		}
+
+		public Entry(Encoding encoding, Label editedLabel, Label originalLabel) : this(encoding, editedLabel)
+		{
+			if (originalLabel != null)
+				OriginalLabel = originalLabel;
 		}
 
 		public override string ToString()

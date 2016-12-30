@@ -2,6 +2,7 @@
 using KuriimuContract;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -11,7 +12,7 @@ namespace Kuriimu
 	{
 		private IEntry _entry = null;
 		private bool _namesMustBeUnique = false;
-		private List<string> _nameList = null;
+		private IEnumerable<string> _nameList = null;
 		private string _validNameRegex = ".*";
 		private int _maxLength = 0;
 		private bool _isNew = false;
@@ -31,7 +32,7 @@ namespace Kuriimu
 			set { _namesMustBeUnique = value; }
 		}
 
-		public List<string> NameList
+		public IEnumerable<string> NameList
 		{
 			set { _nameList = value; }
 		}
@@ -53,7 +54,7 @@ namespace Kuriimu
 
 		#endregion
 
-		public frmName(IEntry entry, bool namesMustBeUnique = false, List<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
+		public frmName(IEntry entry, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
 		{
 			InitializeComponent();
 

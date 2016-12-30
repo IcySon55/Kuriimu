@@ -426,7 +426,6 @@
 			this.txtEdit.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.txtEdit.Size = new System.Drawing.Size(442, 255);
 			this.txtEdit.TabIndex = 0;
-			this.txtEdit.TextChanged += new System.EventHandler(this.txtEdit_TextChanged);
 			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyDown);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
 			this.txtEdit.MouseUp += new System.Windows.Forms.MouseEventHandler(this.txtEdit_MouseUp);

@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace file_gmml
 {
 	[XmlRoot("gmml")]
-	public class GMML
+	public sealed class GMML
 	{
 		#region Properties
 
@@ -142,7 +142,7 @@ namespace file_gmml
 	//	}
 	//}
 
-	public class Body
+	public sealed class Body
 	{
 		[XmlAttribute("language")]
 		public string Language { get; set; }
@@ -326,7 +326,7 @@ namespace file_gmml
 
 	#region Rows
 
-	public class Row
+	public sealed class Row
 	{
 		[XmlIgnore]
 		public int ID { get; set; }
@@ -357,7 +357,7 @@ namespace file_gmml
 		}
 	}
 
-	public class Language
+	public sealed class Language
 	{
 		[XmlAttribute("name")]
 		public string Name { get; set; }

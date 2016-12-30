@@ -339,9 +339,14 @@ namespace Kuriimu
 		// Utilities
 		private void UpdateTextView()
 		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-			if (_gameHandler != null)
+			if (entry == null)
+			{
+				txtEdit.Text = string.Empty;
+				txtOriginal.Text = string.Empty;
+			}
+			else if (_gameHandler != null)
 			{
 				txtEdit.Text = _gameHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
 				txtOriginal.Text = _gameHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
@@ -352,15 +357,15 @@ namespace Kuriimu
 				txtOriginal.Text = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
 			}
 
-			if (!entry.IsResizable)
+			if (entry != null && !entry.IsResizable)
 				txtEdit.MaxLength = entry.MaxLength;
 		}
 
 		private void UpdatePreview()
 		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-			if (_gameHandler != null)
+			if (entry != null && _gameHandler != null)
 			{
 				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText, entry.Encoding);
 			}
@@ -374,11 +379,14 @@ namespace Kuriimu
 
 			try
 			{
-				IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-				MemoryStream strm = new MemoryStream(entry.EditedText);
+				IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-				dfbp = new DynamicFileByteProvider(strm);
-				dfbp.Changed += new EventHandler(hbxEdit_Changed);
+				if (entry != null)
+				{
+					MemoryStream strm = new MemoryStream(entry.EditedText);
+					dfbp = new DynamicFileByteProvider(strm);
+					dfbp.Changed += new EventHandler(hbxEdit_Changed);
+				}
 			}
 			catch (Exception)
 			{ }
@@ -414,9 +422,10 @@ namespace Kuriimu
 				tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
 			}
 
+			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+
 			if (_fileAdapter != null && itemSelected)
 			{
-				IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 
 				tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
 				tsbEntryRename.Enabled = itemSelected && _fileAdapter.CanRenameEntries && !entry.IsSubEntry;
@@ -425,21 +434,27 @@ namespace Kuriimu
 				tsbSortEntries.Enabled = _fileOpen;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 				treEntries.Enabled = _fileOpen;
+			}
 
-				if (_fileAdapter.OnlySubEntriesHaveText)
-				{
-					txtEdit.Enabled = entry.IsSubEntry;
-					if (!entry.IsSubEntry)
-						txtEdit.Text = "Please select a sub entry to edit the text.";
-					txtOriginal.Enabled = txtOriginal.Text.Trim().Length > 0 && entry.IsSubEntry;
-					hbxHexView.Enabled = entry.IsSubEntry;
-				}
-				else
-				{
-					txtEdit.Enabled = itemSelected;
-					txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
-					hbxHexView.Enabled = itemSelected;
-				}
+			if (_fileAdapter != null && itemSelected && _fileAdapter.OnlySubEntriesHaveText)
+			{
+				txtEdit.Enabled = entry.IsSubEntry;
+				if (!entry.IsSubEntry)
+					txtEdit.Text = "Please select a sub entry to edit the text.";
+				txtOriginal.Enabled = txtOriginal.Text.Trim().Length > 0 && entry.IsSubEntry;
+				hbxHexView.Enabled = entry.IsSubEntry;
+			}
+			else if (_fileAdapter != null && itemSelected)
+			{
+				txtEdit.Enabled = itemSelected;
+				txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
+				hbxHexView.Enabled = itemSelected;
+			}
+			else
+			{
+				UpdateTextView();
+				UpdatePreview();
+				UpdateHexView();
 			}
 
 			tsbGameSelect.Enabled = itemSelected;
@@ -461,10 +476,12 @@ namespace Kuriimu
 			{
 				_hasChanges = true;
 				entry.Name = name.NewName;
-				_fileAdapter.AddEntry(entry);
-				LoadEntries();
-				treEntries.SelectNodeByIEntry(entry);
-				UpdateForm();
+				if (_fileAdapter.AddEntry(entry))
+				{
+					LoadEntries();
+					treEntries.SelectNodeByIEntry(entry);
+					UpdateForm();
+				}
 			}
 		}
 
@@ -593,6 +610,7 @@ namespace Kuriimu
 		{
 			if (e.Control & e.KeyCode == Keys.A)
 				txtEdit.SelectAll();
+			SelectInHex();
 		}
 
 		private void txtEdit_MouseUp(object sender, MouseEventArgs e)
@@ -600,43 +618,53 @@ namespace Kuriimu
 			SelectInHex();
 		}
 
-		private void txtEdit_TextChanged(object sender, EventArgs e)
-		{
-			SelectInHex();
-		}
-
 		private void SelectInHex()
 		{
-			// Magic that is not perfect
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-			int selectionStart = txtEdit.SelectionStart * (entry.Encoding.IsSingleByte ? 1 : 2);
-			int selectionLength = txtEdit.SelectionLength * (entry.Encoding.IsSingleByte ? 1 : 2);
+			// Magic
+			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-			if (_gameHandler != null)
-				selectionLength = entry.Encoding.GetString(_gameHandler.GetBytes(txtEdit.SelectedText.Replace("<null>", "\0"), entry.Encoding)).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
-			else
-				selectionLength = txtEdit.SelectedText.Replace("<null>", "\0").Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+			if (entry != null)
+			{
+				int selectionStart = 0;
+				int selectionLength = 0;
 
-			hbxHexView.SelectionStart = selectionStart;
-			hbxHexView.SelectionLength = selectionLength;
+				string startToSelection = txtEdit.Text.Substring(0, txtEdit.SelectionStart);
+				if (_gameHandler != null)
+					selectionStart = entry.Encoding.GetString(_gameHandler.GetBytes(startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding)).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+				else
+					selectionStart = startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n").Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+
+				if (_gameHandler != null)
+					selectionLength = entry.Encoding.GetString(_gameHandler.GetBytes(txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding)).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+				else
+					selectionLength = txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n").Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+
+				hbxHexView.SelectionStart = selectionStart;
+				hbxHexView.SelectionLength = selectionLength;
+			}
 		}
 
 		protected void hbxEdit_Changed(object sender, EventArgs e)
 		{
 			DynamicFileByteProvider dfbp = (DynamicFileByteProvider)sender;
 
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-			List<byte> bytes = new List<byte>();
-			for (int i = 0; i < (int)dfbp.Length; i++)
-				bytes.Add(dfbp.ReadByte(i));
-			entry.EditedText = bytes.ToArray();
+			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-			UpdateTextView();
+			if (entry != null)
+			{
+				List<byte> bytes = new List<byte>();
+				for (int i = 0; i < (int)dfbp.Length; i++)
+					bytes.Add(dfbp.ReadByte(i));
+				entry.EditedText = bytes.ToArray();
 
-			if (txtEdit.Text != txtOriginal.Text)
-				_hasChanges = true;
+				UpdateTextView();
 
-			UpdateForm();
+				if (txtEdit.Text != txtOriginal.Text)
+					_hasChanges = true;
+
+				UpdatePreview();
+				UpdateForm();
+			}
 		}
 	}
 }

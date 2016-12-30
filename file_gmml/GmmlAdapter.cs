@@ -4,15 +4,18 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace file_gmml
 {
-	public class GmmlAdapter : IFileAdapter
+	public sealed class GmmlAdapter : IFileAdapter
 	{
 		private FileInfo _fileInfo = null;
 		private GMML _gmm = null;
+		private GMML _gmmBackup = null;
 		private List<Entry> _entries = null;
 
 		#region Properties
@@ -70,6 +73,17 @@ namespace file_gmml
 				try
 				{
 					_gmm = GMML.Load(_fileInfo.FullName);
+
+					string backupFilePath = _fileInfo.FullName + ".bak";
+					if (File.Exists(backupFilePath))
+					{
+						_gmmBackup = GMML.Load(backupFilePath);
+					}
+					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+						File.Copy(_fileInfo.FullName, backupFilePath);
+						_gmmBackup = GMML.Load(backupFilePath);
+					}
 				}
 				catch (XmlException)
 				{
@@ -126,17 +140,28 @@ namespace file_gmml
 		{
 			get
 			{
-				_entries = new List<Entry>();
-
-				foreach (Row row in _gmm.Body.Rows)
+				if (_entries == null)
 				{
-					Entry entry = new Entry(row);
-					_entries.Add(entry);
+					_entries = new List<Entry>();
 
-					foreach (Language lang in row.Languages)
+					foreach (Row row in _gmm.Body.Rows)
 					{
-						Entry subEntry = new Entry(lang);
-						entry.SubEntries.Add(subEntry);
+						Entry entry = new Entry(row);
+						_entries.Add(entry);
+
+						foreach (Language lang in row.Languages)
+						{
+							if (_gmmBackup == null)
+							{
+								Entry subEntry = new Entry(lang);
+								entry.SubEntries.Add(subEntry);
+							}
+							else
+							{
+								Entry subEntry = new Entry(lang, _gmmBackup.Body.Rows.FirstOrDefault(o => o.ID == row.ID).Languages.FirstOrDefault(j => j.Name == lang.Name));
+								entry.SubEntries.Add(subEntry);
+							}
+						}
 					}
 				}
 
@@ -144,7 +169,7 @@ namespace file_gmml
 			}
 		}
 
-		public List<string> NameList => null;
+		public IEnumerable<string> NameList => _gmm?.Body.Rows.Select(o => o.Comment);
 
 		public string NameFilter => @".*";
 
@@ -175,7 +200,7 @@ namespace file_gmml
 		}
 	}
 
-	public class Entry : IEntry
+	public sealed class Entry : IEntry
 	{
 		public Encoding Encoding { get; set; }
 
@@ -217,10 +242,7 @@ namespace file_gmml
 
 		public int MaxLength { get; set; }
 
-		public bool IsResizable
-		{
-			get { return MaxLength == 0; }
-		}
+		public bool IsResizable => true;
 
 		public List<IEntry> SubEntries { get; set; }
 		public bool IsSubEntry { get; set; }
@@ -246,13 +268,19 @@ namespace file_gmml
 		public Entry(Row row) : this()
 		{
 			Row = row;
-			IsSubEntry = false;
 		}
 
 		public Entry(Language editedLanguage) : this()
 		{
-			EditedLanguage = editedLanguage;
+			if (editedLanguage != null)
+				EditedLanguage = editedLanguage;
 			IsSubEntry = true;
+		}
+
+		public Entry(Language editedLanguage, Language originalLanguage) : this(editedLanguage)
+		{
+			if (originalLanguage != null)
+				OriginalLanguage = originalLanguage;
 		}
 
 		public override string ToString()

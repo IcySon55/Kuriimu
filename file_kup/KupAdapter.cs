@@ -68,6 +68,9 @@ namespace file_kup
 				try
 				{
 					_kup = KUP.Load(_fileInfo.FullName);
+
+					foreach (Entry entry in _kup.Entries)
+						entry.PointerCleanup();
 				}
 				catch (XmlException)
 				{
@@ -124,14 +127,11 @@ namespace file_kup
 		{
 			get
 			{
-				foreach (Entry entry in _kup.Entries)
-					entry.PointerCleanup();
-
 				return _kup.Entries;
 			}
 		}
 
-		public List<string> NameList => null;
+		public IEnumerable<string> NameList => null;
 
 		public string NameFilter => @".*";
 

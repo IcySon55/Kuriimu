@@ -9,7 +9,7 @@ namespace file_msbt
 		Unicode = 0x01
 	}
 
-	public class Header
+	public sealed class Header
 	{
 		public string Identifier; // MsgStdBn
 		public byte[] ByteOrderMark;
@@ -24,14 +24,14 @@ namespace file_msbt
 		public UInt32 FileSizeOffset;
 	}
 
-	public class Section
+	public abstract class Section
 	{
 		public string Identifier;
 		public UInt32 SectionSize; // Begins after Unknown1
 		public byte[] Padding1; // Always 0x0000 0000
 	}
 
-	public class LBL1 : Section
+	public sealed class LBL1 : Section
 	{
 		public UInt32 NumberOfGroups;
 
@@ -39,13 +39,13 @@ namespace file_msbt
 		public List<Label> Labels;
 	}
 
-	public class Group
+	public sealed class Group
 	{
 		public UInt32 NumberOfLabels;
 		public UInt32 Offset;
 	}
 
-	public class Label
+	public sealed class Label
 	{
 		public UInt32 Length { get; set; }
 		public string Name { get; set; }
@@ -76,35 +76,35 @@ namespace file_msbt
 		}
 	}
 
-	public class NLI1 : Section
+	public sealed class NLI1 : Section
 	{
 		public byte[] Unknown2; // Tons of unknown data
 	}
 
-	public class ATO1 : Section
+	public sealed class ATO1 : Section
 	{
 		public byte[] Unknown2; // Large collection of 0xFF
 	}
 
-	public class ATR1 : Section
+	public sealed class ATR1 : Section
 	{
 		public UInt32 NumberOfAttributes;
 		public byte[] Unknown2; // Tons of unknown data
 	}
 
-	public class TSY1 : Section
+	public sealed class TSY1 : Section
 	{
 		public byte[] Unknown2; // Tons of unknown data
 	}
 
-	public class TXT2 : Section
+	public sealed class TXT2 : Section
 	{
 		public UInt32 NumberOfStrings;
 
 		public List<String> Strings;
 	}
 
-	public class String
+	public sealed class String
 	{
 		public byte[] Text { get; set; }
 
@@ -117,7 +117,7 @@ namespace file_msbt
 		}
 	}
 
-	public class InvalidMSBTException : Exception
+	public sealed class InvalidMSBTException : Exception
 	{
 		public InvalidMSBTException(string message) : base(message) { }
 	}

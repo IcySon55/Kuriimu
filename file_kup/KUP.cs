@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 namespace file_kup
 {
 	[XmlRoot("kup")]
-	public class KUP
+	public sealed class KUP
 	{
 		#region Properties
 
@@ -140,7 +140,7 @@ namespace file_kup
 		}
 	}
 
-	public class Entry : IEntry
+	public sealed class Entry : IEntry
 	{
 		[XmlIgnore]
 		public Encoding Encoding { get; set; }
@@ -211,10 +211,7 @@ namespace file_kup
 		[XmlAttribute("max_length")]
 		public int MaxLength { get; set; }
 
-		public bool IsResizable
-		{
-			get { return MaxLength == 0; }
-		}
+		public bool IsResizable => MaxLength == 0;
 
 		[XmlIgnore]
 		public List<IEntry> SubEntries { get; set; }
@@ -281,7 +278,7 @@ namespace file_kup
 		}
 	}
 
-	public class Bound
+	public sealed class Bound : IComparable<Bound>
 	{
 		[XmlIgnore]
 		public long StartLong { get; set; }
@@ -339,23 +336,22 @@ namespace file_kup
 			Sequence = 0;
 		}
 
-		public long SpaceRemaining
-		{
-			get { return EndLong - NextAvailableOffset; }
-		}
+		public long SpaceRemaining => EndLong - NextAvailableOffset;
 
-		public bool Full
-		{
-			get { return SpaceRemaining <= 0; }
-		}
+		public bool Full => SpaceRemaining <= 0;
 
 		public override string ToString()
 		{
 			return "From " + Start + " to " + End;
 		}
+
+		public int CompareTo(Bound rhs)
+		{
+			return StartLong.CompareTo(rhs.StartLong);
+		}
 	}
 
-	public class Pointer : IEquatable<Pointer>
+	public sealed class Pointer : IEquatable<Pointer>
 	{
 		[XmlIgnore]
 		public long AddressLong { get; set; }

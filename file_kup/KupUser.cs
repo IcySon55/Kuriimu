@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace file_kup
 {
 	[XmlRoot("kupUser")]
-	public class KupUser
+	public sealed class KupUser
 	{
 		#region Properties
 

@@ -33,7 +33,7 @@ namespace KuriimuContract
 
 		// Entries
 		IEnumerable<IEntry> Entries { get; }
-		List<string> NameList { get; }
+		IEnumerable<string> NameList { get; }
 		string NameFilter { get; } // This must be a regular expression that the incoming names must match. Use @".*" to accept any charcter.
 		int NameMaxLength { get; }
 
