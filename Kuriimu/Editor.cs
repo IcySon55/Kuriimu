@@ -232,6 +232,7 @@ namespace Kuriimu
 			SaveFileDialog sfd = new SaveFileDialog();
 			DialogResult dr = DialogResult.OK;
 
+			sfd.FileName = _fileAdapter.FileInfo.Name;
 			sfd.Filter = _fileAdapter.Description + " (" + _fileAdapter.Extension + ")|" + _fileAdapter.Extension;
 
 			if (_fileAdapter.FileInfo == null || saveAs)

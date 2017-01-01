@@ -77,7 +77,7 @@ namespace file_gmd
 					BinaryWriterX bw = new BinaryWriterX(fs);
 
 					// Header
-					bw.WriteASCII(Header.Identifier);
+					bw.WriteASCII(Header.Identifier + "\0");
 					bw.Write(Header.Unknown1);
 					bw.Write(Header.Unknown2);
 					bw.Write(Header.Unknown3);
@@ -104,7 +104,7 @@ namespace file_gmd
 					foreach (Label label in Labels)
 					{
 						bw.WriteASCII(label.Name);
-						bw.Write(0x0);
+						bw.Write(new byte[] { 0x0 });
 					}
 
 					// Read in the text data
@@ -112,7 +112,7 @@ namespace file_gmd
 					foreach (Label label in Labels)
 					{
 						bw.Write(label.Text);
-						bw.Write(0x0);
+						bw.Write(new byte[] { 0x0 });
 						dataSize += (uint)label.Text.Length + 1;
 					}
 
