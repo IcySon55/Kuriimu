@@ -39,6 +39,8 @@ namespace file_msbt
 
 		public bool CanRemoveEntries => true;
 
+		public bool CanSortEntries => true;
+
 		public bool EntriesHaveSubEntries => false;
 
 		public bool OnlySubEntriesHaveText => false;
@@ -66,6 +68,7 @@ namespace file_msbt
 			LoadResult result = LoadResult.Success;
 
 			_fileInfo = new FileInfo(filename);
+			_entries = null;
 
 			if (_fileInfo.Exists)
 			{
@@ -82,6 +85,10 @@ namespace file_msbt
 					{
 						File.Copy(_fileInfo.FullName, backupFilePath);
 						_msbtBackup = new MSBT(backupFilePath);
+					}
+					else
+					{
+						_msbtBackup = null;
 					}
 				}
 				catch (Exception)

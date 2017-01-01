@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Be.Windows.Forms.HexBox.dll" />
+    <None Include="images\menu-visible.png" />
     <None Include="images\menu-unsorted.png" />
     <None Include="images\menu-sorted.png" />
     <None Include="images\btn-editor.png" />
@@ -187,6 +188,7 @@
     <None Include="images\menu-manage.png" />
     <None Include="images\menu-gbatemp.png" />
     <None Include="images\menu-git.png" />
+    <None Include="images\menu-invisible.png" />
     <Content Include="images\menu-open.png" />
     <None Include="images\menu-properties.png" />
     <Content Include="images\menu-save-as.png" />

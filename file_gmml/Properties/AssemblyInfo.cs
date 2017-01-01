@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("file_gmm")]
-[assembly: AssemblyDescription("GMM File plugin for Kuriimu")]
+[assembly: AssemblyDescription("GMML File plugin for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("file_gmm")]
-[assembly: AssemblyCopyright("Copyright © IcySon55 2016")]
+[assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

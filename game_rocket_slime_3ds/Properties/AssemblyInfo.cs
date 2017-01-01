@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("game_rocket_slime_3ds")]
-[assembly: AssemblyCopyright("Copyright © IcySon55 2016")]
+[assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

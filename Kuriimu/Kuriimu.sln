@@ -4,10 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8} = {9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}
-		{76791481-35E8-41C0-A01C-F0FC66416A20} = {76791481-35E8-41C0-A01C-F0FC66416A20}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuContract", "..\KuriimuContract\KuriimuContract.csproj", "{51E474F7-1497-4C30-BC18-C357C884B8B2}"
 EndProject
@@ -20,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_msbt", "..\file_msbt\file_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmml", "..\file_gmml\file_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmd", "..\file_gmd\file_gmd.csproj", "{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +53,10 @@ Global
 		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9665286A-F74F-4180-A73C-F427FDF29B2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

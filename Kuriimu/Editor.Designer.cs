@@ -68,6 +68,7 @@
 			this.pbxPreview = new System.Windows.Forms.PictureBox();
 			this.tlsPreview = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+			this.tsbPreviewEnabled = new System.Windows.Forms.ToolStripButton();
 			this.hbxHexView = new Be.Windows.Forms.HexBox();
 			this.tlsHexView = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
@@ -540,7 +541,8 @@
 			this.tlsPreview.BackColor = System.Drawing.Color.Transparent;
 			this.tlsPreview.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel2});
+            this.toolStripLabel2,
+            this.tsbPreviewEnabled});
 			this.tlsPreview.Location = new System.Drawing.Point(0, 0);
 			this.tlsPreview.Name = "tlsPreview";
 			this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -552,6 +554,17 @@
 			this.toolStripLabel2.Name = "toolStripLabel2";
 			this.toolStripLabel2.Size = new System.Drawing.Size(51, 22);
 			this.toolStripLabel2.Text = "Preview:";
+			// 
+			// tsbPreviewEnabled
+			// 
+			this.tsbPreviewEnabled.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPreviewEnabled.Enabled = false;
+			this.tsbPreviewEnabled.Image = global::Kuriimu.Properties.Resources.menu_invisible;
+			this.tsbPreviewEnabled.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPreviewEnabled.Name = "tsbPreviewEnabled";
+			this.tsbPreviewEnabled.Size = new System.Drawing.Size(23, 22);
+			this.tsbPreviewEnabled.Text = "Enable Preview";
+			this.tsbPreviewEnabled.Click += new System.EventHandler(this.tsbPreviewEnabled_Click);
 			// 
 			// hbxHexView
 			// 
@@ -784,5 +797,6 @@
 		private System.Windows.Forms.TreeView treEntries;
 		private System.Windows.Forms.ImageList imlEntries;
 		private System.Windows.Forms.ToolStripButton tsbSortEntries;
+		private System.Windows.Forms.ToolStripButton tsbPreviewEnabled;
 	}
 }

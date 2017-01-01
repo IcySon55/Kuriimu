@@ -13,27 +13,27 @@ namespace file_msbt
 	{
 		public string Identifier; // MsgStdBn
 		public byte[] ByteOrderMark;
-		public UInt16 Unknown1; // Always 0x0000
+		public ushort Unknown1; // Always 0x0000
 		public EncodingByte EncodingByte;
 		public byte Unknown2; // Always 0x03
-		public UInt16 NumberOfSections;
-		public UInt16 Unknown3; // Always 0x0000
-		public UInt32 FileSize;
+		public ushort NumberOfSections;
+		public ushort Unknown3; // Always 0x0000
+		public uint FileSize;
 		public byte[] Unknown4; // Always 0x0000 0000 0000 0000 0000
 
-		public UInt32 FileSizeOffset;
+		public uint FileSizeOffset;
 	}
 
 	public abstract class Section
 	{
 		public string Identifier;
-		public UInt32 SectionSize; // Begins after Unknown1
+		public uint SectionSize; // Begins after Unknown1
 		public byte[] Padding1; // Always 0x0000 0000
 	}
 
 	public sealed class LBL1 : Section
 	{
-		public UInt32 NumberOfGroups;
+		public uint NumberOfGroups;
 
 		public List<Group> Groups;
 		public List<Label> Labels;
@@ -41,17 +41,17 @@ namespace file_msbt
 
 	public sealed class Group
 	{
-		public UInt32 NumberOfLabels;
-		public UInt32 Offset;
+		public uint NumberOfLabels;
+		public uint Offset;
 	}
 
 	public sealed class Label
 	{
-		public UInt32 Length { get; set; }
+		public uint Length { get; set; }
 		public string Name { get; set; }
-		public UInt32 Index { get; set; }
+		public uint Index { get; set; }
 
-		public UInt32 Checksum { get; set; }
+		public uint Checksum { get; set; }
 		public String String { get; set; }
 
 		public byte[] Text
@@ -88,7 +88,7 @@ namespace file_msbt
 
 	public sealed class ATR1 : Section
 	{
-		public UInt32 NumberOfAttributes;
+		public uint NumberOfAttributes;
 		public byte[] Unknown2; // Tons of unknown data
 	}
 
@@ -99,7 +99,7 @@ namespace file_msbt
 
 	public sealed class TXT2 : Section
 	{
-		public UInt32 NumberOfStrings;
+		public uint NumberOfStrings;
 
 		public List<String> Strings;
 	}
@@ -108,7 +108,7 @@ namespace file_msbt
 	{
 		public byte[] Text { get; set; }
 
-		public UInt32 Index { get; set; }
+		public uint Index { get; set; }
 
 		public String()
 		{

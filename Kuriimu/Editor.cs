@@ -208,6 +208,9 @@ namespace Kuriimu
 						}
 
 						LoadEntries();
+						UpdateTextView();
+						UpdatePreview();
+						UpdateHexView();
 						Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
 						Settings.Default.Save();
 						Settings.Default.Reload();
@@ -365,10 +368,8 @@ namespace Kuriimu
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-			if (entry != null && _gameHandler != null)
-			{
+			if (entry != null && _gameHandler != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
 				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText, entry.Encoding);
-			}
 			else
 				pbxPreview.Image = null;
 		}
@@ -398,20 +399,26 @@ namespace Kuriimu
 		{
 			Text = Settings.Default.ApplicationName + " Editor " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
+			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+
 			if (_fileOpen)
 				tslEntries.Text = (_fileAdapter.Entries?.Count() + " Entries").Trim();
 			else
 				tslEntries.Text = "Entries";
 
-			bool itemSelected = treEntries.SelectedNode != null;
-
-			splMain.Enabled = _fileOpen;
-			splContent.Enabled = _fileOpen;
-			splText.Enabled = _fileOpen;
-			splPreview.Enabled = _fileOpen;
-
 			if (_fileAdapter != null)
 			{
+				bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
+				bool canAdd = _fileOpen && _fileAdapter.CanAddEntries;
+				bool canRename = itemSelected && _fileAdapter.CanRenameEntries && (_fileAdapter.OnlySubEntriesHaveText && entry.IsSubEntry || !_fileAdapter.OnlySubEntriesHaveText);
+				bool canRemove = itemSelected && _fileAdapter.CanRemoveEntries && !entry.IsSubEntry;
+
+				splMain.Enabled = _fileOpen;
+				splContent.Enabled = _fileOpen;
+				splText.Enabled = _fileOpen;
+				splPreview.Enabled = _fileOpen;
+
+				// Menu
 				saveToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
 				tsbSave.Enabled = _fileOpen && _fileAdapter.CanSave;
 				saveAsToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
@@ -420,44 +427,36 @@ namespace Kuriimu
 				tsbFind.Enabled = _fileOpen;
 				propertiesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
 				tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
-			}
 
-			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-
-			if (_fileAdapter != null && itemSelected)
-			{
-
-				tsbEntryAdd.Enabled = _fileOpen && _fileAdapter.CanAddEntries;
-				tsbEntryRename.Enabled = itemSelected && _fileAdapter.CanRenameEntries && !entry.IsSubEntry;
-				tsbEntryRemove.Enabled = _fileOpen && _fileAdapter.CanRemoveEntries && !entry.IsSubEntry;
-				tsbEntryProperties.Enabled = _fileAdapter.EntriesHaveExtendedProperties && itemSelected && !entry.IsSubEntry;
-				tsbSortEntries.Enabled = _fileOpen;
+				// Toolbar
+				tsbEntryAdd.Enabled = canAdd;
+				tsbEntryRename.Enabled = canRename;
+				tsbEntryRemove.Enabled = canRemove;
+				tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
+				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
+				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_visible : Resources.menu_invisible;
+				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
+
 				treEntries.Enabled = _fileOpen;
-			}
+				if (itemSelected && _fileAdapter.OnlySubEntriesHaveText)
+				{
+					txtEdit.Enabled = entry.IsSubEntry;
+					if (!entry.IsSubEntry)
+						txtEdit.Text = "Please select a sub entry to edit the text.";
+					txtOriginal.Enabled = entry.IsSubEntry && txtOriginal.Text.Trim().Length > 0;
+					hbxHexView.Enabled = entry.IsSubEntry;
+				}
+				else
+				{
+					txtEdit.Enabled = itemSelected;
+					txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
+					hbxHexView.Enabled = itemSelected;
+				}
 
-			if (_fileAdapter != null && itemSelected && _fileAdapter.OnlySubEntriesHaveText)
-			{
-				txtEdit.Enabled = entry.IsSubEntry;
-				if (!entry.IsSubEntry)
-					txtEdit.Text = "Please select a sub entry to edit the text.";
-				txtOriginal.Enabled = txtOriginal.Text.Trim().Length > 0 && entry.IsSubEntry;
-				hbxHexView.Enabled = entry.IsSubEntry;
+				tsbGameSelect.Enabled = itemSelected;
 			}
-			else if (_fileAdapter != null && itemSelected)
-			{
-				txtEdit.Enabled = itemSelected;
-				txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
-				hbxHexView.Enabled = itemSelected;
-			}
-			else
-			{
-				UpdateTextView();
-				UpdatePreview();
-				UpdateHexView();
-			}
-
-			tsbGameSelect.Enabled = itemSelected;
 		}
 
 		private string FileName()
@@ -474,10 +473,10 @@ namespace Kuriimu
 
 			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 			{
-				_hasChanges = true;
 				entry.Name = name.NewName;
 				if (_fileAdapter.AddEntry(entry))
 				{
+					_hasChanges = true;
 					LoadEntries();
 					treEntries.SelectNodeByIEntry(entry);
 					UpdateForm();
@@ -493,10 +492,12 @@ namespace Kuriimu
 
 			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 			{
-				_hasChanges = true;
 				if (_fileAdapter.RenameEntry(entry, name.NewName))
+				{
+					_hasChanges = true;
 					treEntries.FindNodeByIEntry(entry).Text = name.NewName;
-				UpdateForm();
+					UpdateForm();
+				}
 			}
 		}
 
@@ -506,12 +507,14 @@ namespace Kuriimu
 
 			if (MessageBox.Show("Are you sure you want to remove " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 			{
-				_hasChanges = true;
-				TreeNode nextNode = treEntries.SelectedNode.NextNode;
-				_fileAdapter.RemoveEntry(entry);
-				UpdateEntries();
-				treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
-				treEntries.SelectedNode = nextNode;
+				if (_fileAdapter.RemoveEntry(entry))
+				{
+					_hasChanges = true;
+					TreeNode nextNode = treEntries.SelectedNode.NextNode;
+					UpdateEntries();
+					treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
+					treEntries.SelectedNode = nextNode;
+				}
 			}
 		}
 
@@ -546,9 +549,18 @@ namespace Kuriimu
 
 			UpdateTextView();
 			UpdatePreview();
+			UpdateForm();
 
 			Settings.Default.SelectedGameHandler = tsi.Text;
 			Settings.Default.Save();
+		}
+
+		private void tsbPreviewEnabled_Click(object sender, EventArgs e)
+		{
+			Settings.Default.PreviewEnabled = !Settings.Default.PreviewEnabled;
+			Settings.Default.Save();
+			UpdatePreview();
+			UpdateForm();
 		}
 
 		// List

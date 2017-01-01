@@ -76,6 +76,35 @@ namespace KuriimuContract
 				return BitConverter.ToUInt64(base.ReadBytes(8).Reverse().ToArray(), 0);
 		}
 
+		// Custom Methods
+		public byte[] ReadBytesUntil(byte stop)
+		{
+			List<byte> result = new List<byte>();
+
+			byte b = ReadByte();
+			while (b != stop && BaseStream.Position < BaseStream.Length)
+			{
+				result.Add(b);
+				b = ReadByte();
+			}
+
+			return result.ToArray();
+		}
+
+		public string ReadASCIIStringUntil(byte stop)
+		{
+			string result = string.Empty;
+
+			byte b = ReadByte();
+			while (b != stop && BaseStream.Position < BaseStream.Length)
+			{
+				result += (char)b;
+				b = ReadByte();
+			}
+
+			return result;
+		}
+
 		public string ReadString(int length)
 		{
 			return Encoding.ASCII.GetString(ReadBytes(length)).TrimEnd('\0');

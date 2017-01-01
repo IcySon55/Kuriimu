@@ -17,15 +17,13 @@ namespace game_rocket_slime_3ds
 
 		#region Properties
 
-		public string Name
-		{
-			get { return "Rocket Slime 3DS"; }
-		}
+		// Information
+		public string Name => "Rocket Slime 3DS";
 
-		public Image Icon
-		{
-			get { return Resources.icon; }
-		}
+		public Image Icon => Resources.icon;
+
+		// Feature Support
+		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
 

@@ -20,6 +20,7 @@ namespace KuriimuContract
 		bool CanAddEntries { get; } // Is adding entries supported?
 		bool CanRenameEntries { get; } // Is renaming entries supported?
 		bool CanRemoveEntries { get; } // Is removing entries supported?
+		bool CanSortEntries { get; } // Should the option to sort entries even be allowed?
 		bool EntriesHaveSubEntries { get; } // Do entries contain multiple text values?
 		bool OnlySubEntriesHaveText { get; } // Set this to true if only the sub entries contain text data.
 		bool EntriesHaveUniqueNames { get; } // Must entry names be unique?

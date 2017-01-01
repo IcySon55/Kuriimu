@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace file_gmml.Properties {
+namespace file_gmd.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,22 +25,10 @@ namespace file_gmml.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("GMML")]
+        [global::System.Configuration.DefaultSettingValueAttribute("GMD")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool SortEntries {
-            get {
-                return ((bool)(this["SortEntries"]));
-            }
-            set {
-                this["SortEntries"] = value;
             }
         }
     }

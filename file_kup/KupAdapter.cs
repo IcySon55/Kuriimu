@@ -31,9 +31,11 @@ namespace file_kup
 
 		public bool CanAddEntries => false;
 
-		public bool CanRenameEntries => false;
+		public bool CanRenameEntries => true;
 
 		public bool CanRemoveEntries => false;
+
+		public bool CanSortEntries => true;
 
 		public bool EntriesHaveSubEntries => false;
 

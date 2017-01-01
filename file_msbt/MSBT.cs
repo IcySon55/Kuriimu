@@ -52,7 +52,7 @@ namespace file_msbt
 			Header.Unknown2 = br.ReadByte();
 			Header.NumberOfSections = br.ReadUInt16();
 			Header.Unknown3 = br.ReadUInt16();
-			Header.FileSizeOffset = (UInt32)br.BaseStream.Position; // Record offset for future use
+			Header.FileSizeOffset = (uint)br.BaseStream.Position; // Record offset for future use
 			Header.FileSize = br.ReadUInt32();
 			Header.Unknown4 = br.ReadBytes(10);
 
@@ -184,7 +184,7 @@ namespace file_msbt
 			ATR1.SectionSize = br.ReadUInt32();
 			ATR1.Padding1 = br.ReadBytes(8);
 			ATR1.NumberOfAttributes = br.ReadUInt32();
-			ATR1.Unknown2 = br.ReadBytes((int)ATR1.SectionSize - sizeof(UInt32)); // Read in the entire section at once since we don't know what it's for
+			ATR1.Unknown2 = br.ReadBytes((int)ATR1.SectionSize - sizeof(uint)); // Read in the entire section at once since we don't know what it's for
 
 			PaddingSeek(br);
 		}
@@ -207,13 +207,13 @@ namespace file_msbt
 			long startOfStrings = br.BaseStream.Position;
 			TXT2.NumberOfStrings = br.ReadUInt32();
 
-			List<UInt32> offsets = new List<UInt32>();
+			List<uint> offsets = new List<uint>();
 			for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				offsets.Add(br.ReadUInt32());
 			for (int i = 0; i < TXT2.NumberOfStrings; i++)
 			{
 				String str = new String();
-				UInt32 nextOffset = (i + 1 < offsets.Count) ? ((UInt32)startOfStrings + offsets[i + 1]) : ((UInt32)startOfStrings + TXT2.SectionSize);
+				uint nextOffset = (i + 1 < offsets.Count) ? ((uint)startOfStrings + offsets[i + 1]) : ((uint)startOfStrings + TXT2.SectionSize);
 
 				br.BaseStream.Seek(startOfStrings + offsets[i], SeekOrigin.Begin);
 
@@ -343,7 +343,7 @@ namespace file_msbt
 				// Update FileSize
 				long fileSize = bw.BaseStream.Position;
 				bw.BaseStream.Seek(Header.FileSizeOffset, SeekOrigin.Begin);
-				bw.Write((UInt32)fileSize);
+				bw.Write((uint)fileSize);
 
 				bw.Close();
 			}
@@ -360,23 +360,23 @@ namespace file_msbt
 			try
 			{
 				// Calculate Section Size
-				UInt32 newSize = sizeof(UInt32);
+				uint newSize = sizeof(uint);
 
 				foreach (Group grp in LBL1.Groups)
-					newSize += (UInt32)(sizeof(UInt32) + sizeof(UInt32));
+					newSize += (uint)(sizeof(uint) + sizeof(uint));
 
 				foreach (Label lbl in LBL1.Labels)
-					newSize += (UInt32)(sizeof(byte) + lbl.Name.Length + sizeof(UInt32));
+					newSize += (uint)(sizeof(byte) + lbl.Name.Length + sizeof(uint));
 
 				// Calculate Group Offsets
-				UInt32 offsetsLength = LBL1.NumberOfGroups * sizeof(UInt32) * 2 + sizeof(UInt32);
-				UInt32 runningTotal = 0;
+				uint offsetsLength = LBL1.NumberOfGroups * sizeof(uint) * 2 + sizeof(uint);
+				uint runningTotal = 0;
 				for (int i = 0; i < LBL1.Groups.Count; i++)
 				{
 					LBL1.Groups[i].Offset = offsetsLength + runningTotal;
 					foreach (Label lbl in LBL1.Labels)
 						if (lbl.Checksum == i)
-							runningTotal += (UInt32)(sizeof(byte) + lbl.Name.Length + sizeof(UInt32));
+							runningTotal += (uint)(sizeof(byte) + lbl.Name.Length + sizeof(uint));
 				}
 
 				// Write
@@ -514,10 +514,10 @@ namespace file_msbt
 			try
 			{
 				// Calculate Section Size
-				UInt32 newSize = (UInt32)(TXT2.NumberOfStrings * sizeof(UInt32) + sizeof(UInt32));
+				uint newSize = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
 
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
-					newSize += (UInt32)((String)TXT2.Strings[i]).Text.Length;
+					newSize += (uint)TXT2.Strings[i].Text.Length;
 
 				bw.WriteASCII(TXT2.Identifier);
 				bw.Write(newSize);
@@ -525,29 +525,29 @@ namespace file_msbt
 				long startOfStrings = bw.BaseStream.Position;
 				bw.Write(TXT2.NumberOfStrings);
 
-				List<UInt32> offsets = new List<UInt32>();
-				UInt32 offsetsLength = TXT2.NumberOfStrings * sizeof(UInt32) + sizeof(UInt32);
-				UInt32 runningTotal = 0;
+				List<uint> offsets = new List<uint>();
+				uint offsetsLength = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
+				uint runningTotal = 0;
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					offsets.Add(offsetsLength + runningTotal);
-					runningTotal += (UInt32)((String)TXT2.Strings[i]).Text.Length;
+					runningTotal += (uint)TXT2.Strings[i].Text.Length;
 				}
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					bw.Write(offsets[i]);
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					if (Header.EncodingByte == EncodingByte.UTF8)
-						bw.Write(((String)TXT2.Strings[i]).Text);
+						bw.Write(TXT2.Strings[i].Text);
 					else
 					{
 						if (Header.ByteOrderMark[0] == 0xFF)
-							bw.Write(((String)TXT2.Strings[i]).Text);
+							bw.Write(TXT2.Strings[i].Text);
 						else
-							for (int j = 0; j < ((String)TXT2.Strings[i]).Text.Length; j += 2)
+							for (int j = 0; j < TXT2.Strings[i].Text.Length; j += 2)
 							{
-								bw.Write(((String)TXT2.Strings[i]).Text[j + 1]);
-								bw.Write(((String)TXT2.Strings[i]).Text[j]);
+								bw.Write(TXT2.Strings[i].Text[j + 1]);
+								bw.Write(TXT2.Strings[i].Text[j]);
 							}
 					}
 				}
