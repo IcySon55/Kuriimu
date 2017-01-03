@@ -9,15 +9,9 @@ namespace ext_fenceposts
 	{
 		#region Properties
 
-		public string Name
-		{
-			get { return Settings.Default.PluginName; }
-		}
+		public string Name => Settings.Default.PluginName;
 
-		public Image Icon
-		{
-			get { return Resources.icon; }
-		}
+		public Image Icon => Resources.icon;
 
 		#endregion
 

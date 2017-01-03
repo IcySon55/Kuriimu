@@ -230,6 +230,7 @@ namespace file_kup
 			Pointers = new List<Pointer>();
 			OriginalText = new byte[] { };
 			EditedText = new byte[] { };
+			SubEntries = new List<IEntry>();
 		}
 
 		public Entry(Encoding encoding) : this()
