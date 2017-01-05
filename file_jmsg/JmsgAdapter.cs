@@ -35,7 +35,7 @@ namespace file_jmsg
 
 		public bool CanAddEntries => false;
 
-		public bool CanRenameEntries => true;
+		public bool CanRenameEntries => false;
 
 		public bool CanRemoveEntries => false;
 
