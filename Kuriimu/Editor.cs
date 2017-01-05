@@ -362,7 +362,7 @@ namespace Kuriimu
 			}
 
 			if (entry != null && !entry.IsResizable)
-				txtEdit.MaxLength = entry.MaxLength;
+				txtEdit.MaxLength = entry.MaxLength == 0 ? int.MaxValue : entry.MaxLength;
 		}
 
 		private void UpdatePreview()

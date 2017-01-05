@@ -26,72 +26,69 @@ namespace file_msbt
 
 		public MSBT(string filename)
 		{
-			// Initialize Members
-			LBL1.Groups = new List<Group>();
-			LBL1.Labels = new List<Label>();
-			TXT2.Strings = new List<String>();
-
-			FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-			BinaryReaderX br = new BinaryReaderX(fs);
-
-			// Header
-			Header.Identifier = br.ReadString(8);
-			if (Header.Identifier != "MsgStdBn")
-				throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
-
-			// Byte Order
-			Header.ByteOrderMark = br.ReadBytes(2);
-			br.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
-
-			Header.Unknown1 = br.ReadUInt16();
-
-			// Encoding
-			Header.EncodingByte = (EncodingByte)br.ReadByte();
-			FileEncoding = (Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Encoding.Unicode);
-
-			Header.Unknown2 = br.ReadByte();
-			Header.NumberOfSections = br.ReadUInt16();
-			Header.Unknown3 = br.ReadUInt16();
-			Header.FileSizeOffset = (uint)br.BaseStream.Position; // Record offset for future use
-			Header.FileSize = br.ReadUInt32();
-			Header.Unknown4 = br.ReadBytes(10);
-
-			if (Header.FileSize != br.BaseStream.Length)
-				throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
-
-			SectionOrder.Clear();
-			for (int i = 0; i < Header.NumberOfSections; i++)
+			using (FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				switch (br.PeekString())
-				{
-					case "LBL1":
-						ReadLBL1(br);
-						SectionOrder.Add("LBL1");
-						break;
-					case "NLI1":
-						ReadNLI1(br);
-						SectionOrder.Add("NLI1");
-						break;
-					case "ATO1":
-						ReadATO1(br);
-						SectionOrder.Add("ATO1");
-						break;
-					case "ATR1":
-						ReadATR1(br);
-						SectionOrder.Add("ATR1");
-						break;
-					case "TSY1":
-						ReadTSY1(br);
-						SectionOrder.Add("TSY1");
-						break;
-					case "TXT2":
-						ReadTXT2(br);
-						SectionOrder.Add("TXT2");
-						break;
-				}
-			}
+				BinaryReaderX br = new BinaryReaderX(fs);
 
-			br.Close();
+				// Header
+				Header.Identifier = br.ReadString(8);
+				if (Header.Identifier != "MsgStdBn")
+					throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
+
+				// Byte Order
+				Header.ByteOrderMark = br.ReadBytes(2);
+				br.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+
+				Header.Unknown1 = br.ReadUInt16();
+
+				// Encoding
+				Header.EncodingByte = (EncodingByte)br.ReadByte();
+				FileEncoding = (Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Encoding.Unicode);
+
+				Header.Unknown2 = br.ReadByte();
+				Header.NumberOfSections = br.ReadUInt16();
+				Header.Unknown3 = br.ReadUInt16();
+				Header.FileSizeOffset = (uint)br.BaseStream.Position; // Record offset for future use
+				Header.FileSize = br.ReadUInt32();
+				Header.Unknown4 = br.ReadBytes(10);
+
+				if (Header.FileSize != br.BaseStream.Length)
+					throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
+
+				SectionOrder.Clear();
+				for (int i = 0; i < Header.NumberOfSections; i++)
+				{
+					switch (br.PeekString())
+					{
+						case "LBL1":
+							ReadLBL1(br);
+							SectionOrder.Add("LBL1");
+							break;
+						case "NLI1":
+							ReadNLI1(br);
+							SectionOrder.Add("NLI1");
+							break;
+						case "ATO1":
+							ReadATO1(br);
+							SectionOrder.Add("ATO1");
+							break;
+						case "ATR1":
+							ReadATR1(br);
+							SectionOrder.Add("ATR1");
+							break;
+						case "TSY1":
+							ReadTSY1(br);
+							SectionOrder.Add("TSY1");
+							break;
+						case "TXT2":
+							ReadTXT2(br);
+							SectionOrder.Add("TXT2");
+							break;
+					}
+				}
+
+				br.Close();
+			}
 		}
 
 		// Tools
@@ -218,7 +215,7 @@ namespace file_msbt
 				br.BaseStream.Seek(startOfStrings + offsets[i], SeekOrigin.Begin);
 
 				List<byte> result = new List<byte>();
-				while (br.BaseStream.Position < nextOffset && br.BaseStream.Position < Header.FileSize)
+				while (br.BaseStream.Position < nextOffset - (FileEncoding == Encoding.UTF8 ? 1 : 2) && br.BaseStream.Position < Header.FileSize)
 				{
 					if (Header.EncodingByte == EncodingByte.UTF8)
 						result.Add(br.ReadByte());
@@ -236,6 +233,8 @@ namespace file_msbt
 				str.Index = (uint)i;
 				TXT2.Strings.Add(str);
 			}
+
+			br.BaseStream.Seek((FileEncoding == Encoding.UTF8 ? 1 : 2), SeekOrigin.Current);
 
 			// Tie in LBL1 labels
 			foreach (Label lbl in LBL1.Labels)
@@ -307,45 +306,49 @@ namespace file_msbt
 
 			try
 			{
-				FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
-				BinaryWriterX bw = new BinaryWriterX(fs);
-
-				// Byte Order
-				bw.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
-
-				// Header
-				bw.WriteASCII(Header.Identifier);
-				bw.Write(Header.ByteOrderMark);
-				bw.Write(Header.Unknown1);
-				bw.Write((byte)Header.EncodingByte);
-				bw.Write(Header.Unknown2);
-				bw.Write(Header.NumberOfSections);
-				bw.Write(Header.Unknown3);
-				bw.Write(Header.FileSize);
-				bw.Write(Header.Unknown4);
-
-				foreach (string section in SectionOrder)
+				using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None))
 				{
-					if (section == "LBL1")
-						WriteLBL1(bw);
-					else if (section == "NLI1")
-						WriteNLI1(bw);
-					else if (section == "ATO1")
-						WriteATO1(bw);
-					else if (section == "ATR1")
-						WriteATR1(bw);
-					else if (section == "TSY1")
-						WriteTSY1(bw);
-					else if (section == "TXT2")
-						WriteTXT2(bw);
+					BinaryWriterX bw = new BinaryWriterX(fs);
+
+					// Byte Order
+					bw.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+
+					// Header
+					bw.WriteASCII(Header.Identifier);
+					bw.Write(Header.ByteOrderMark);
+					bw.Write(Header.Unknown1);
+					bw.Write((byte)Header.EncodingByte);
+					bw.Write(Header.Unknown2);
+					bw.Write(Header.NumberOfSections);
+					bw.Write(Header.Unknown3);
+					bw.Write(Header.FileSize);
+					bw.Write(Header.Unknown4);
+
+					foreach (string section in SectionOrder)
+					{
+						if (section == "LBL1")
+							WriteLBL1(bw);
+						else if (section == "NLI1")
+							WriteNLI1(bw);
+						else if (section == "ATO1")
+							WriteATO1(bw);
+						else if (section == "ATR1")
+							WriteATR1(bw);
+						else if (section == "TSY1")
+							WriteTSY1(bw);
+						else if (section == "TXT2")
+							WriteTXT2(bw);
+					}
+
+					// Update FileSize
+					long fileSize = bw.BaseStream.Position;
+					bw.BaseStream.Seek(Header.FileSizeOffset, SeekOrigin.Begin);
+					bw.Write((uint)fileSize);
+
+					bw.Close();
+
+					result = true;
 				}
-
-				// Update FileSize
-				long fileSize = bw.BaseStream.Position;
-				bw.BaseStream.Seek(Header.FileSizeOffset, SeekOrigin.Begin);
-				bw.Write((uint)fileSize);
-
-				bw.Close();
 			}
 			catch (Exception)
 			{ }
@@ -517,7 +520,7 @@ namespace file_msbt
 				uint newSize = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
 
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
-					newSize += (uint)TXT2.Strings[i].Text.Length;
+					newSize += (uint)TXT2.Strings[i].Text.Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
 
 				bw.WriteASCII(TXT2.Identifier);
 				bw.Write(newSize);
@@ -531,14 +534,17 @@ namespace file_msbt
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					offsets.Add(offsetsLength + runningTotal);
-					runningTotal += (uint)TXT2.Strings[i].Text.Length;
+					runningTotal += (uint)TXT2.Strings[i].Text.Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
 				}
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					bw.Write(offsets[i]);
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					if (Header.EncodingByte == EncodingByte.UTF8)
+					{
 						bw.Write(TXT2.Strings[i].Text);
+						bw.Write((byte)0x0);
+					}
 					else
 					{
 						if (Header.ByteOrderMark[0] == 0xFF)
@@ -549,6 +555,7 @@ namespace file_msbt
 								bw.Write(TXT2.Strings[i].Text[j + 1]);
 								bw.Write(TXT2.Strings[i].Text[j]);
 							}
+						bw.Write(new byte[] { 0x0, 0x0 });
 					}
 				}
 

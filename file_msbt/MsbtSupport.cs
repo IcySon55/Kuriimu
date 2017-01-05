@@ -37,6 +37,12 @@ namespace file_msbt
 
 		public List<Group> Groups;
 		public List<Label> Labels;
+
+		public LBL1()
+		{
+			Groups = new List<Group>();
+			Labels = new List<Label>();
+		}
 	}
 
 	public sealed class Group
@@ -102,6 +108,11 @@ namespace file_msbt
 		public uint NumberOfStrings;
 
 		public List<String> Strings;
+
+		public TXT2()
+		{
+			Strings = new List<String>();
+		}
 	}
 
 	public sealed class String

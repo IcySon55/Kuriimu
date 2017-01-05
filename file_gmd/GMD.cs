@@ -121,6 +121,8 @@ namespace file_gmd
 					bw.Write(dataSize);
 
 					bw.Close();
+
+					result = true;
 				}
 			}
 			catch (Exception)
