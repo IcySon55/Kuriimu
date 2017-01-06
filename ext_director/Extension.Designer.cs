@@ -1,6 +1,6 @@
-﻿namespace Kuriimu
+﻿namespace ext_director
 {
-	partial class frmDirector
+	partial class frmExtension
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -34,6 +34,7 @@
 			this.btnLookup = new System.Windows.Forms.Button();
 			this.txtResults = new System.Windows.Forms.TextBox();
 			this.txtLeneance = new System.Windows.Forms.TextBox();
+			this.txtShift = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// txtFile
@@ -58,7 +59,7 @@
 			// 
 			this.txtOffset.Location = new System.Drawing.Point(12, 38);
 			this.txtOffset.Name = "txtOffset";
-			this.txtOffset.Size = new System.Drawing.Size(305, 20);
+			this.txtOffset.Size = new System.Drawing.Size(203, 20);
 			this.txtOffset.TabIndex = 2;
 			this.txtOffset.TextChanged += new System.EventHandler(this.txtOffset_TextChanged);
 			// 
@@ -89,11 +90,20 @@
 			this.txtLeneance.TabIndex = 5;
 			this.txtLeneance.TextChanged += new System.EventHandler(this.txtLeneance_TextChanged);
 			// 
-			// frmDirector
+			// txtShift
+			// 
+			this.txtShift.Location = new System.Drawing.Point(221, 38);
+			this.txtShift.Name = "txtShift";
+			this.txtShift.Size = new System.Drawing.Size(96, 20);
+			this.txtShift.TabIndex = 6;
+			this.txtShift.TextChanged += new System.EventHandler(this.txtShift_TextChanged);
+			// 
+			// frmExtension
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(531, 384);
+			this.Controls.Add(this.txtShift);
 			this.Controls.Add(this.txtLeneance);
 			this.Controls.Add(this.txtResults);
 			this.Controls.Add(this.btnLookup);
@@ -102,7 +112,7 @@
 			this.Controls.Add(this.txtFile);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
-			this.Name = "frmDirector";
+			this.Name = "frmExtension";
 			this.Text = "Director";
 			this.Load += new System.EventHandler(this.Director_Load);
 			this.ResumeLayout(false);
@@ -118,5 +128,6 @@
 		private System.Windows.Forms.Button btnLookup;
 		private System.Windows.Forms.TextBox txtResults;
 		private System.Windows.Forms.TextBox txtLeneance;
+		private System.Windows.Forms.TextBox txtShift;
 	}
 }

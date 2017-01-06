@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kuriimu.Properties {
+namespace ext_director.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,100 +25,67 @@ namespace Kuriimu.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
-        public string PluginDirectory {
+        [global::System.Configuration.DefaultSettingValueAttribute("Director")]
+        public string PluginName {
             get {
-                return ((string)(this["PluginDirectory"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastDirectory {
-            get {
-                return ((string)(this["LastDirectory"]));
-            }
-            set {
-                this["LastDirectory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Kuriimu")]
-        public string ApplicationName {
-            get {
-                return ((string)(this["ApplicationName"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FindWhat {
-            get {
-                return ((string)(this["FindWhat"]));
-            }
-            set {
-                this["FindWhat"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FindMatchCase {
-            get {
-                return ((bool)(this["FindMatchCase"]));
-            }
-            set {
-                this["FindMatchCase"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int FindSelectedIndex {
-            get {
-                return ((int)(this["FindSelectedIndex"]));
-            }
-            set {
-                this["FindSelectedIndex"] = value;
+                return ((string)(this["PluginName"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("v1.0.0")]
-        public string ApplicationVersion {
+        public string PluginVersion {
             get {
-                return ((string)(this["ApplicationVersion"]));
+                return ((string)(this["PluginVersion"]));
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SelectedGameHandler {
+        public string DirectorFile {
             get {
-                return ((string)(this["SelectedGameHandler"]));
+                return ((string)(this["DirectorFile"]));
             }
             set {
-                this["SelectedGameHandler"] = value;
+                this["DirectorFile"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool PreviewEnabled {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorOffset {
             get {
-                return ((bool)(this["PreviewEnabled"]));
+                return ((string)(this["DirectorOffset"]));
             }
             set {
-                this["PreviewEnabled"] = value;
+                this["DirectorOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorLeneance {
+            get {
+                return ((string)(this["DirectorLeneance"]));
+            }
+            set {
+                this["DirectorLeneance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorShift {
+            get {
+                return ((string)(this["DirectorShift"]));
+            }
+            set {
+                this["DirectorShift"] = value;
             }
         }
     }

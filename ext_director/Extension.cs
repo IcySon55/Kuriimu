@@ -1,4 +1,4 @@
-﻿using Kuriimu.Properties;
+﻿using ext_director.Properties;
 using KuriimuContract;
 using System;
 using System.Collections.Generic;
@@ -6,24 +6,23 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Kuriimu
+namespace ext_director
 {
-	public partial class frmDirector : Form
+	public partial class frmExtension : Form
 	{
-		private uint ram = 0x100000; // 3DS
-
-		public frmDirector()
+		public frmExtension()
 		{
 			InitializeComponent();
 		}
 
 		private void Director_Load(object sender, EventArgs e)
 		{
-			Text = Settings.Default.ApplicationName + " Director " + Settings.Default.ApplicationVersion;
-			Icon = Properties.Resources.kuriimu;
+			Text = Settings.Default.PluginName + " " + Settings.Default.PluginVersion;
+			Icon = Resources.director;
 
 			txtFile.Text = Settings.Default.DirectorFile;
 			txtOffset.Text = Settings.Default.DirectorOffset;
+			txtShift.Text = Settings.Default.DirectorShift;
 			txtLeneance.Text = Settings.Default.DirectorLeneance;
 
 			if (txtOffset.Text.Trim().Length == 0)
@@ -70,15 +69,21 @@ namespace Kuriimu
 						uint pointer = (uint)br.BaseStream.Position;
 						value = br.ReadUInt32();
 
-						if (value == (offset + ram))
-							found = true;
-						else if (value >= (offset + ram - leneance) && value < offset + ram)
-							found = true;
-						else if (value <= (offset + ram + leneance) && value > offset + ram)
-							found = true;
+						if (value < br.BaseStream.Length - 4)
+						{
+							uint shift = 0;
+							uint.TryParse(Settings.Default.DirectorShift, out shift);
 
-						if (found)
-							pointers.Add(pointer);
+							if (value == (offset + shift))
+								found = true;
+							else if (value >= (offset + shift - leneance) && value < offset + shift)
+								found = true;
+							else if (value <= (offset + shift + leneance) && value > offset + shift)
+								found = true;
+
+							if (found)
+								pointers.Add(pointer);
+						}
 					}
 
 					if (pointers.Count > 0)
@@ -97,7 +102,7 @@ namespace Kuriimu
 
 						string strResult = enc.GetString(result.ToArray());
 
-						txtResults.AppendText("<entry encoding=\"Unicode\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
+						txtResults.AppendText("<entry encoding=\"" + enc.EncodingName + "\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
 						txtResults.AppendText("\r\n");
 
 						foreach (uint p in pointers)
@@ -124,19 +129,25 @@ namespace Kuriimu
 
 		private void txtFile_TextChanged(object sender, EventArgs e)
 		{
-			Settings.Default.DirectorFile = txtFile.Text;
+			Settings.Default.DirectorFile = txtFile.Text.Trim();
 			Settings.Default.Save();
 		}
 
 		private void txtOffset_TextChanged(object sender, EventArgs e)
 		{
-			Settings.Default.DirectorOffset = txtOffset.Text;
+			Settings.Default.DirectorOffset = txtOffset.Text.Trim();
+			Settings.Default.Save();
+		}
+
+		private void txtShift_TextChanged(object sender, EventArgs e)
+		{
+			Settings.Default.DirectorShift = txtShift.Text.Trim();
 			Settings.Default.Save();
 		}
 
 		private void txtLeneance_TextChanged(object sender, EventArgs e)
 		{
-			Settings.Default.DirectorLeneance = txtLeneance.Text;
+			Settings.Default.DirectorLeneance = txtLeneance.Text.Trim();
 			Settings.Default.Save();
 		}
 	}

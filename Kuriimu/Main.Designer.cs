@@ -59,6 +59,7 @@
 			// 
 			// btnDirector
 			// 
+			this.btnDirector.Enabled = false;
 			this.btnDirector.Image = global::Kuriimu.Properties.Resources.btn_director;
 			this.btnDirector.Location = new System.Drawing.Point(252, 32);
 			this.btnDirector.Name = "btnDirector";
@@ -67,9 +68,8 @@
 			this.btnDirector.Text = "Director";
 			this.btnDirector.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
 			this.btnDirector.UseVisualStyleBackColor = true;
-			this.btnDirector.Click += new System.EventHandler(this.btnDirector_Click);
 			// 
-			// Main
+			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -79,7 +79,7 @@
 			this.Controls.Add(this.btnDumping);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
-			this.Name = "Main";
+			this.Name = "frmMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Kuriimu";
 			this.Load += new System.EventHandler(this.Main_Load);

@@ -32,11 +32,5 @@ namespace Kuriimu
 			if (dSelect.ShowDialog() == DialogResult.OK)
 				dSelect.Extension.Show();
 		}
-
-		private void btnDirector_Click(object sender, EventArgs e)
-		{
-			frmDirector director = new frmDirector();
-			director.Show();
-		}
 	}
 }

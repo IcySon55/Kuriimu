@@ -1,11 +1,11 @@
-﻿using ext_fenceposts.Properties;
+﻿using ext_director.Properties;
 using KuriimuContract;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ext_fenceposts
+namespace ext_director
 {
-	public sealed class Fenceposts : IExtension
+	public sealed class Director : IExtension
 	{
 		#region Properties
 
