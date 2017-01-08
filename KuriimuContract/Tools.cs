@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -50,20 +51,19 @@ namespace KuriimuContract
 
 		public static void LoadSupportedEncodings(ComboBox cmb, Encoding encoding)
 		{
-			List<ListItem> items = new List<ListItem>();
-			foreach (EncodingInfo enc in Encoding.GetEncodings())
-			{
-				string name = enc.GetEncoding().EncodingName;
-				if (name.Contains("ASCII") || name.Contains("Shift-JIS") || (name.Contains("Unicode") && !name.Contains("32")))
-					items.Add(new ListItem(name.Replace("US-", ""), enc.GetEncoding()));
-			}
-			items.Sort();
-
 			cmb.DisplayMember = "Text";
 			cmb.ValueMember = "Value";
-			cmb.DataSource = items;
-			cmb.SelectedValue = encoding;
-		}
+            cmb.DataSource = (from enc in Encoding.GetEncodings()
+                              let name = enc.DisplayName
+                              where name.Contains("ASCII")
+                                 || name.Contains("Shift-JIS")
+                                 || (name.Contains("Unicode") && !name.Contains("32"))
+                              let newname = name.Replace("US-", "")
+                              orderby newname
+                              select new ListItem(newname, enc.GetEncoding()))
+                              .ToList();
+            cmb.SelectedValue = encoding;
+        }
 
 		public static TreeNode FindNodeByIEntry(this TreeView tre, IEntry entry)
 		{

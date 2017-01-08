@@ -1,52 +1,19 @@
-﻿using System;
-
-namespace KuriimuContract
+﻿namespace KuriimuContract
 {
-	public class ListItem : IComparable<ListItem>
+	public class ListItem
 	{
-		private string _text = string.Empty;
-		private object _value = null;
-
-		public string Text
-		{
-			get
-			{
-				return _text;
-			}
-			set
-			{
-				_text = value;
-			}
-		}
-
-		public object Value
-		{
-			get
-			{
-				return _value;
-			}
-			set
-			{
-				_value = value;
-			}
-		}
-
-		public ListItem() { }
+		public string Text { get; }
+		public object Value { get; }
 
 		public ListItem(string text, object value)
 		{
-			_text = text;
-			_value = value;
+			Text = text;
+			Value = value;
 		}
 
 		public override string ToString()
 		{
 			return Text;
-		}
-
-		public int CompareTo(ListItem rhs)
-		{
-			return Text.CompareTo(rhs.Text);
 		}
 	}
 }
