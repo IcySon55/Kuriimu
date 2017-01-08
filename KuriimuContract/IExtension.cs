@@ -7,6 +7,5 @@ namespace KuriimuContract
 		string Name { get; }
 		Image Icon { get; }
 		void Show();
-		string ToString();
 	}
 }
