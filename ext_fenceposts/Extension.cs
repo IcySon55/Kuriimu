@@ -565,13 +565,6 @@ namespace ext_fenceposts
 		}
 
 		// Injector
-		private int SortEntriesForInjection(IEntry lhs, IEntry rhs)
-		{
-			int result = lhs.EditedText.Length.CompareTo(rhs.EditedText.Length);
-			if (result == 0)
-				result = lhs.EditedTextString.CompareTo(rhs.EditedTextString);
-			return result;
-		}
 
 		private void workerInjector_DoWork(object sender, DoWorkEventArgs e)
 		{
@@ -580,8 +573,7 @@ namespace ext_fenceposts
 			// Sort Entries
 			if (_kup.OptimizeStrings)
 			{
-				_kup.Entries.Sort(SortEntriesForInjection);
-				_kup.Entries.Reverse();
+                _kup.Entries = _kup.Entries.OrderByDescending(x => x.EditedText.Length).ToList();
 			}
 
 			// Bound Setup
