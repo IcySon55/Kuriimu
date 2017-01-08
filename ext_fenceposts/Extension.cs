@@ -502,7 +502,7 @@ namespace ext_fenceposts
 
 									if (matched)
 									{
-										if (Array.Equals(entry.EditedText, entry.OriginalText))
+										if (entry.EditedText.SequenceEqual(entry.OriginalText))
 											entry.EditedText = result.ToArray();
 										entry.OriginalText = result.ToArray();
 									}
