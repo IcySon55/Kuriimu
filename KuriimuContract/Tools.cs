@@ -11,25 +11,18 @@ namespace KuriimuContract
 {
 	public static class Tools
 	{
-		public static string LoadFileFilters(Dictionary<string, IFileAdapter> fileAdapters)
+		public static string LoadFileFilters(IEnumerable<IFileAdapter> fileAdapters)
 		{
-			List<string> extensions = new List<string>();
-			List<string> types = new List<string>();
+			var alltypes = fileAdapters.Select(x => new { x.Description, Ext = x.Extension.ToLower() }).ToList();
 
-			// All Supported
-			foreach (string key in fileAdapters.Keys)
-				extensions.Add(fileAdapters[key].Extension.ToLower());
-			types.Add("All Supported Files (" + string.Join(";", extensions.ToArray()) + ")|" + string.Join(";", extensions.ToArray()));
+			// Add two special cases at start and end
+			alltypes.Insert(0, new { Description = "All Supported Files", Ext = string.Join(";", alltypes.Select(x => x.Ext)) });
+			alltypes.Add(new { Description = "All Files", Ext = "*.*" });
 
-			// Individual
-			foreach (string key in fileAdapters.Keys)
-				types.Add(fileAdapters[key].Description + " (" + fileAdapters[key].Extension.ToLower() + ")|" + fileAdapters[key].Extension.ToLower());
-			types.Add("All Files (*.*)|*.*");
-
-			return string.Join("|", types.ToArray());
+			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Ext})|{x.Ext}"));
 		}
 
-		public static Dictionary<string, IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
+		public static List<IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();
 			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", noGameIcon, selectedIndexChanged);
@@ -37,12 +30,11 @@ namespace KuriimuContract
 			tsb.Text = tsiNoGame.Text;
 			tsb.Image = tsiNoGame.Image;
 
-			Dictionary<string, IGameHandler> gameHandlers = new Dictionary<string, IGameHandler>();
-			foreach (IGameHandler gameHandler in PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"))
+			var gameHandlers = PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll").ToList();
+			foreach (IGameHandler gameHandler in gameHandlers)
 			{
-				gameHandlers.Add(gameHandler.Name, gameHandler);
-
 				ToolStripMenuItem tsiGameHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, selectedIndexChanged);
+				tsiGameHandler.Tag = gameHandler;
 				tsb.DropDownItems.Add(tsiGameHandler);
 			}
 

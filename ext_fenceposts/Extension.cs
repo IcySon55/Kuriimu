@@ -21,7 +21,7 @@ namespace ext_fenceposts
 		private KUP _kup = null;
 		private KupUser _kupUser = null;
 		private Dictionary<long, long> _pointers = null;
-		private Dictionary<string, IGameHandler> _gameHandlers = null;
+		private List<IGameHandler> _gameHandlers = null;
 
 		private BackgroundWorker _workerDumper = new BackgroundWorker();
 		private BackgroundWorker _workerInjector = new BackgroundWorker();
@@ -111,10 +111,7 @@ namespace ext_fenceposts
 		{
 			ToolStripItem tsi = (ToolStripItem)sender;
 
-			if (tsi.Text == "No Game")
-				_gameHandler = null;
-			else
-				_gameHandler = _gameHandlers[((ToolStripItem)sender).Text];
+			_gameHandler = tsi.Tag as IGameHandler;
 
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;

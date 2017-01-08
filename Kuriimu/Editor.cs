@@ -16,8 +16,8 @@ namespace Kuriimu
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
 
-		private Dictionary<string, IFileAdapter> _fileAdapters = null;
-		private Dictionary<string, IGameHandler> _gameHandlers = null;
+		private List<IFileAdapter> _fileAdapters = null;
+		private List<IGameHandler> _gameHandlers = null;
 
 		private IEnumerable<IEntry> _entries = null;
 
@@ -33,9 +33,7 @@ namespace Kuriimu
 			// Load Plugins
 			Console.WriteLine("Loading plugins...");
 
-			_fileAdapters = new Dictionary<string, IFileAdapter>();
-			foreach (IFileAdapter fileAdapter in PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll"))
-				_fileAdapters.Add(fileAdapter.Name, fileAdapter);
+			_fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();
 
 			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 
@@ -194,10 +192,7 @@ namespace Kuriimu
 							{
 								if (tsi.Text == Settings.Default.SelectedGameHandler)
 								{
-									if (tsi.Text == "No Game")
-										_gameHandler = null;
-									else
-										_gameHandler = _gameHandlers[tsi.Text];
+									_gameHandler = tsi.Tag as IGameHandler;
 
 									tsbGameSelect.Text = tsi.Text;
 									tsbGameSelect.Image = tsi.Image;
@@ -266,7 +261,7 @@ namespace Kuriimu
 			try
 			{
 				// reduces the number of exceptions thrown by first testing the adapters with a matching extension
-				result = (from adapter in _fileAdapters.Values
+				result = (from adapter in _fileAdapters
 						  let exts = adapter.Extension.Split(';')
 						  let matchExt = exts.Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))
 						  orderby matchExt descending
@@ -540,10 +535,7 @@ namespace Kuriimu
 		{
 			ToolStripItem tsi = (ToolStripItem)sender;
 
-			if (tsi.Text == "No Game")
-				_gameHandler = null;
-			else
-				_gameHandler = _gameHandlers[((ToolStripItem)sender).Text];
+			_gameHandler = tsi.Tag as IGameHandler;
 
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;
