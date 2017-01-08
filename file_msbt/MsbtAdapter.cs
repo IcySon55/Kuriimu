@@ -24,7 +24,7 @@ namespace file_msbt
 
 		public string Description => "Message Binary Text";
 
-		public string Extension => " *.msbt";
+		public string Extension => "*.msbt";
 
 		public string About => "This is the MSBT file adapter for Kuriimu.";
 

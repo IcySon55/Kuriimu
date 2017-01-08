@@ -23,7 +23,7 @@ namespace file_gmd
 
 		public string Description => "Game Message Data";
 
-		public string Extension => " *.gmd";
+		public string Extension => "*.gmd";
 
 		public string About => "This is the GMD file adapter for Kuriimu.";
 

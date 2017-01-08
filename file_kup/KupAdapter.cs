@@ -20,7 +20,7 @@ namespace file_kup
 
 		public string Description => "Kuriimu Archive";
 
-		public string Extension => " *.kup";
+		public string Extension => "*.kup";
 
 		public string About => "This is the KUP file adapter for Kuriimu.";
 
