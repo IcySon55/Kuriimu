@@ -573,7 +573,7 @@ namespace ext_fenceposts
 			// Sort Entries
 			if (_kup.OptimizeStrings)
 			{
-                _kup.Entries = _kup.Entries.OrderByDescending(x => x.EditedText.Length).ToList();
+				_kup.Entries = _kup.Entries.OrderByDescending(x => x.EditedText.Length).ToList();
 			}
 
 			// Bound Setup

@@ -53,17 +53,17 @@ namespace KuriimuContract
 		{
 			cmb.DisplayMember = "Text";
 			cmb.ValueMember = "Value";
-            cmb.DataSource = (from enc in Encoding.GetEncodings()
-                              let name = enc.DisplayName
-                              where name.Contains("ASCII")
-                                 || name.Contains("Shift-JIS")
-                                 || (name.Contains("Unicode") && !name.Contains("32"))
-                              let newname = name.Replace("US-", "")
-                              orderby newname
-                              select new ListItem(newname, enc.GetEncoding()))
-                              .ToList();
-            cmb.SelectedValue = encoding;
-        }
+			cmb.DataSource = (from enc in Encoding.GetEncodings()
+							  let name = enc.DisplayName
+							  where name.Contains("ASCII")
+								 || name.Contains("Shift-JIS")
+								 || (name.Contains("Unicode") && !name.Contains("32"))
+							  let newname = name.Replace("US-", "")
+							  orderby newname
+							  select new ListItem(newname, enc.GetEncoding()))
+			.ToList();
+			cmb.SelectedValue = encoding;
+		}
 
 		public static TreeNode FindNodeByIEntry(this TreeView tre, IEntry entry)
 		{
