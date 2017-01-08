@@ -265,14 +265,14 @@ namespace Kuriimu
 
 			try
 			{
-				foreach (string key in _fileAdapters.Keys)
-				{
-					if (_fileAdapters[key].Identify(filename))
-					{
-						result = _fileAdapters[key];
-						break;
-					}
-				}
+				// reduces the number of exceptions thrown by first testing the adapters with a matching extension
+				result = (from adapter in _fileAdapters.Values
+						  let exts = adapter.Extension.Split(';')
+						  let matchExt = exts.Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))
+						  orderby matchExt descending
+						  where adapter.Identify(filename)
+						  select adapter)
+						  .FirstOrDefault();
 
 				if (result == null)
 					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
