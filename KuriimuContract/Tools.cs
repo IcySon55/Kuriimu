@@ -53,7 +53,7 @@ namespace KuriimuContract
 							  let newname = name.Replace("US-", "")
 							  orderby newname
 							  select new ListItem(newname, enc.GetEncoding()))
-			.ToList();
+							  .ToList();
 			cmb.SelectedValue = encoding;
 		}
 
