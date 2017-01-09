@@ -12,24 +12,26 @@ namespace KuriimuContract
 		{
 			if (!Directory.Exists(path))
 			{
-				yield break;
+				return null;
 			}
 
-			var instances = from dllFile in Directory.GetFiles(path, filter)
-							let an = AssemblyName.GetAssemblyName(dllFile)
-							let assembly = Assembly.Load(an)
-							where assembly != null
-							from type in assembly.GetTypes()
-							where !type.IsInterface
-							where !type.IsAbstract
-							where type.GetInterface(typeof(T).FullName) != null
-							select new { assembly.FullName, Instance = (T)Activator.CreateInstance(type) };
+			var instances = (from dllFile in Directory.GetFiles(path, filter)
+							 let an = AssemblyName.GetAssemblyName(dllFile)
+							 let assembly = Assembly.Load(an)
+							 where assembly != null
+							 from type in assembly.GetTypes()
+							 where !type.IsInterface
+							 where !type.IsAbstract
+							 where type.GetInterface(typeof(T).FullName) != null
+							 select new { assembly.FullName, Instance = (T)Activator.CreateInstance(type) })
+							 .ToList();
 
 			foreach (var item in instances)
 			{
 				Console.WriteLine("Loaded " + item.FullName);
-				yield return item.Instance;
 			}
+
+			return instances.Select(inst => inst.Instance);
 		}
 	}
 }
