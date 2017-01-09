@@ -31,6 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,6 +41,9 @@
 			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.tolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.extensionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.noExtensionsLoadedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,6 +77,7 @@
 			this.tlsHexView = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
 			this.tlsMain = new System.Windows.Forms.ToolStrip();
+			this.tsbNew = new System.Windows.Forms.ToolStripButton();
 			this.tsbOpen = new System.Windows.Forms.ToolStripButton();
 			this.tsbSave = new System.Windows.Forms.ToolStripButton();
 			this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
@@ -114,6 +119,8 @@
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.tolsToolStripMenuItem,
+            this.extensionsToolStripMenuItem,
             this.aboutToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
@@ -124,6 +131,7 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
@@ -133,12 +141,21 @@
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
 			// 
+			// newToolStripMenuItem
+			// 
+			this.newToolStripMenuItem.Enabled = false;
+			this.newToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_new;
+			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.newToolStripMenuItem.Text = "&New";
+			// 
 			// openToolStripMenuItem
 			// 
 			this.openToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -148,7 +165,7 @@
 			this.saveToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -158,21 +175,21 @@
 			this.saveAsToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave As...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -210,6 +227,27 @@
 			this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.propertiesToolStripMenuItem.Text = "&Properties";
 			this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
+			// 
+			// tolsToolStripMenuItem
+			// 
+			this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
+			this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+			this.tolsToolStripMenuItem.Text = "&Tools";
+			// 
+			// extensionsToolStripMenuItem
+			// 
+			this.extensionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.noExtensionsLoadedToolStripMenuItem});
+			this.extensionsToolStripMenuItem.Name = "extensionsToolStripMenuItem";
+			this.extensionsToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+			this.extensionsToolStripMenuItem.Text = "E&xtensions";
+			// 
+			// noExtensionsLoadedToolStripMenuItem
+			// 
+			this.noExtensionsLoadedToolStripMenuItem.Enabled = false;
+			this.noExtensionsLoadedToolStripMenuItem.Name = "noExtensionsLoadedToolStripMenuItem";
+			this.noExtensionsLoadedToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+			this.noExtensionsLoadedToolStripMenuItem.Text = "No extensions loaded";
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -559,7 +597,7 @@
 			// 
 			this.tsbPreviewEnabled.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.tsbPreviewEnabled.Enabled = false;
-			this.tsbPreviewEnabled.Image = global::Kuriimu.Properties.Resources.menu_invisible;
+			this.tsbPreviewEnabled.Image = global::Kuriimu.Properties.Resources.menu_preview_invisible;
 			this.tsbPreviewEnabled.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbPreviewEnabled.Name = "tsbPreviewEnabled";
 			this.tsbPreviewEnabled.Size = new System.Drawing.Size(23, 22);
@@ -604,6 +642,7 @@
 			this.tlsMain.BackColor = System.Drawing.Color.Transparent;
 			this.tlsMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsbNew,
             this.tsbOpen,
             this.tsbSave,
             this.tsbSaveAs,
@@ -616,6 +655,16 @@
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
 			this.tlsMain.Size = new System.Drawing.Size(1166, 27);
 			this.tlsMain.TabIndex = 2;
+			// 
+			// tsbNew
+			// 
+			this.tsbNew.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbNew.Enabled = false;
+			this.tsbNew.Image = global::Kuriimu.Properties.Resources.menu_new;
+			this.tsbNew.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbNew.Name = "tsbNew";
+			this.tsbNew.Size = new System.Drawing.Size(23, 22);
+			this.tsbNew.Text = "New";
 			// 
 			// tsbOpen
 			// 
@@ -798,5 +847,10 @@
 		private System.Windows.Forms.ImageList imlEntries;
 		private System.Windows.Forms.ToolStripButton tsbSortEntries;
 		private System.Windows.Forms.ToolStripButton tsbPreviewEnabled;
+		private System.Windows.Forms.ToolStripMenuItem extensionsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem tolsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem noExtensionsLoadedToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton tsbNew;
 	}
 }

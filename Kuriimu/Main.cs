@@ -10,7 +10,7 @@ namespace Kuriimu
 		{
 			InitializeComponent();
 
-			ClientSize = new Size(32 + (104 * 3) + (6 * 2) + 32, 32 + 104 + 32);
+			ClientSize = new Size(32 + (104 * 2) + (6 * 2) + 32, 32 + 104 + 32);
 			Console.Write(Common.GetAppMessage());
 		}
 
