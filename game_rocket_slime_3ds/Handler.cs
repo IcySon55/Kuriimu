@@ -5,15 +5,34 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Text;
 
 namespace game_rocket_slime_3ds
 {
 	public class Handler : IGameHandler
 	{
-		Dictionary<string, string> _pairs = null;
+		Dictionary<string, string> _pairs = new Dictionary<string, string> {
+			["<prompt>"] ="\x1F\x20",
+			["<player>"] ="\x1F\x05",
+			["<name>"] ="\x1F\x02",
+			["</name>"] ="\x02",
+			["<top?>"] ="\x1F\x100",
+			["<middle?>"] ="\x1F\x103",
+			["<bottom?>"] ="\x1F\x200",
+			["<u1>"] ="\x1F\x00",
+			["<next>"] ="\x1F\x15",
+			["<end>"] ="\x1F\x115",
+			["<u3>"] ="\x17",
+    
+			// Color
+			["<color-default>"] = "\x13\x00",
+			["<color-red>"] = "\x13\x01",
+			["<color-???>"] = "\x13\x02",
+			["<color-blue>"] = "\x13\x03"
+		};
+
 		Dictionary<char, BitFont> _font = null;
-		Encoding _encoding = Encoding.Unicode;
 
 		#region Properties
 
@@ -32,62 +51,17 @@ namespace game_rocket_slime_3ds
 			InitializeFont();
 		}
 
-		private void Initialize(Encoding encoding)
+		public string GetKuriimuString(string rawString)
 		{
-			if (_encoding != encoding || _pairs == null)
-			{
-				_pairs = new Dictionary<string, string>();
-				_pairs.Add("<prompt>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x20, 0x00 }));
-				_pairs.Add("<player>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x05, 0x00 }));
-				_pairs.Add("<name>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x02, 0x00 }));
-				_pairs.Add("</name>", encoding.GetString(new byte[] { 0x02, 0x00 }));
-				_pairs.Add("<top?>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x00, 0x01 }));
-				_pairs.Add("<middle?>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x03, 0x01 }));
-				_pairs.Add("<bottom?>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x00, 0x02 }));
-				_pairs.Add("<u1>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x00, 0x00 }));
-				_pairs.Add("<next>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x15, 0x00 }));
-				_pairs.Add("<end>", encoding.GetString(new byte[] { 0x1F, 0x00, 0x15, 0x01 }));
-				_pairs.Add("<u3>", encoding.GetString(new byte[] { 0x17, 0x00 }));
-
-				// Color
-				_pairs.Add("<color-default>", encoding.GetString(new byte[] { 0x13, 0x00, 0x00, 0x00 }));
-				_pairs.Add("<color-red>", encoding.GetString(new byte[] { 0x13, 0x00, 0x01, 0x00 }));
-				_pairs.Add("<color-???>", encoding.GetString(new byte[] { 0x13, 0x00, 0x02, 0x00 }));
-				_pairs.Add("<color-blue>", encoding.GetString(new byte[] { 0x13, 0x00, 0x03, 0x00 }));
-
-				_encoding = encoding;
-			}
+			return _pairs.Aggregate(rawString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		public string GetString(byte[] text, Encoding encoding)
+		public string GetRawString(string kuriimuString)
 		{
-			Initialize(encoding);
-
-			string result = encoding.GetString(text);
-
-			if (_pairs != null)
-				foreach (string key in _pairs.Keys)
-				{
-					result = result.Replace(_pairs[key], key);
-				}
-
-			return result;
+			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		public byte[] GetBytes(string text, Encoding encoding)
-		{
-			Initialize(encoding);
-
-			if (_pairs != null)
-				foreach (string key in _pairs.Keys)
-				{
-					text = text.Replace(key, _pairs[key]);
-				}
-
-			return encoding.GetBytes(text);
-		}
-
-		public Bitmap GeneratePreview(byte[] text, Encoding encoding)
+		public Bitmap GeneratePreview(string rawString)
 		{
 			Bitmap img = new Bitmap(Resources.blank_top);
 
@@ -98,7 +72,7 @@ namespace game_rocket_slime_3ds
 			Rectangle rectName = new Rectangle(33, 3, 114, 15);
 			Rectangle rectText = new Rectangle(32, 21, 366, 60);
 
-			string str = encoding.GetString(text).Replace(_pairs["<player>"], "Player");
+			string str = rawString.Replace(_pairs["<player>"], "Player");
 			double sDefault = 1.06;
 			double sName = 0.86;
 			double sCurrent = sDefault;

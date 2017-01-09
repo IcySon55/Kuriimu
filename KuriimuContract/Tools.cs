@@ -25,12 +25,9 @@ namespace KuriimuContract
 		public static List<IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();
-			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", noGameIcon, selectedIndexChanged);
-			tsb.DropDownItems.Add(tsiNoGame);
-			tsb.Text = tsiNoGame.Text;
-			tsb.Image = tsiNoGame.Image;
 
-			var gameHandlers = PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll").ToList();
+			var gameHandlers = new List<IGameHandler> { new DefaultGameHandler { Icon = noGameIcon } };
+			gameHandlers.AddRange(PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"));
 			foreach (IGameHandler gameHandler in gameHandlers)
 			{
 				ToolStripMenuItem tsiGameHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, selectedIndexChanged);

@@ -452,12 +452,7 @@ namespace ext_fenceposts
 									_kup.Entries.Add(entry);
 								}
 
-								string str = entry.OriginalTextString;
-
-								if (_gameHandler != null)
-									str = _gameHandler.GetString(entry.OriginalText, _kup.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
-								else
-									str = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
+								string str = _gameHandler.GetKuriimuString(entry.OriginalTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
 
 								if (Regex.Matches(str, "<null>").Count > 0)
 									_workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);

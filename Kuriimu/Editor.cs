@@ -186,21 +186,14 @@ namespace Kuriimu
 						_hasChanges = false;
 
 						// Select Game Handler
-						if (Settings.Default.SelectedGameHandler != string.Empty)
-						{
-							foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
-							{
-								if (tsi.Text == Settings.Default.SelectedGameHandler)
-								{
-									_gameHandler = tsi.Tag as IGameHandler;
+						var tsi = (from ToolStripItem x in tsbGameSelect.DropDownItems
+								   where x.Text == Settings.Default.SelectedGameHandler
+								   select x)
+								   .FirstOrDefault() ?? tsbGameSelect.DropDownItems[0];
+						_gameHandler = tsi.Tag as IGameHandler;
 
-									tsbGameSelect.Text = tsi.Text;
-									tsbGameSelect.Image = tsi.Image;
-
-									break;
-								}
-							}
-						}
+						tsbGameSelect.Text = tsi.Text;
+						tsbGameSelect.Image = tsi.Image;
 
 						LoadEntries();
 						UpdateTextView();
@@ -345,15 +338,10 @@ namespace Kuriimu
 				txtEdit.Text = string.Empty;
 				txtOriginal.Text = string.Empty;
 			}
-			else if (_gameHandler != null)
-			{
-				txtEdit.Text = _gameHandler.GetString(entry.EditedText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
-				txtOriginal.Text = _gameHandler.GetString(entry.OriginalText, entry.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
-			}
 			else
 			{
-				txtEdit.Text = entry.EditedTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
-				txtOriginal.Text = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtEdit.Text = _gameHandler.GetKuriimuString(entry.EditedTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtOriginal.Text = _gameHandler.GetKuriimuString(entry.OriginalTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
 			}
 
 			if (entry != null && !entry.IsResizable)
@@ -364,8 +352,8 @@ namespace Kuriimu
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
-			if (entry != null && _gameHandler != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText, entry.Encoding);
+			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
+				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedTextString);
 			else
 				pbxPreview.Image = null;
 		}
@@ -431,7 +419,7 @@ namespace Kuriimu
 				tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
 				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
-				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
+				tsbPreviewEnabled.Enabled = _gameHandler.HandlerCanGeneratePreviews;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 
@@ -588,18 +576,9 @@ namespace Kuriimu
 			string next = string.Empty;
 			string previous = string.Empty;
 
-			if (_gameHandler != null)
-			{
-				previous = _gameHandler.GetString(entry.EditedText, entry.Encoding);
-				next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n");
-				entry.EditedText = _gameHandler.GetBytes(next, entry.Encoding);
-			}
-			else
-			{
-				previous = entry.EditedTextString;
-				next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n");
-				entry.EditedText = entry.Encoding.GetBytes(next);
-			}
+			previous = _gameHandler.GetKuriimuString(entry.EditedTextString);
+			next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n");
+			entry.EditedText = entry.Encoding.GetBytes(_gameHandler.GetRawString(next));
 
 			UpdatePreview();
 			UpdateHexView();
@@ -634,15 +613,9 @@ namespace Kuriimu
 				int selectionLength = 0;
 
 				string startToSelection = txtEdit.Text.Substring(0, txtEdit.SelectionStart);
-				if (_gameHandler != null)
-					selectionStart = entry.Encoding.GetString(_gameHandler.GetBytes(startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding)).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
-				else
-					selectionStart = startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n").Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+				selectionStart = _gameHandler.GetRawString(startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n")).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
 
-				if (_gameHandler != null)
-					selectionLength = entry.Encoding.GetString(_gameHandler.GetBytes(txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n"), entry.Encoding)).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
-				else
-					selectionLength = txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n").Length * (entry.Encoding.IsSingleByte ? 1 : 2);
+				selectionLength = _gameHandler.GetRawString(txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n")).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
 
 				hbxHexView.SelectionStart = selectionStart;
 				hbxHexView.SelectionLength = selectionLength;
