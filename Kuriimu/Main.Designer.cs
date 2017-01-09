@@ -30,7 +30,6 @@
 		{
 			this.btnDumping = new System.Windows.Forms.Button();
 			this.btnEditor = new System.Windows.Forms.Button();
-			this.btnDirector = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnDumping
@@ -57,24 +56,11 @@
 			this.btnEditor.UseVisualStyleBackColor = true;
 			this.btnEditor.Click += new System.EventHandler(this.btnEditor_Click);
 			// 
-			// btnDirector
-			// 
-			this.btnDirector.Enabled = false;
-			this.btnDirector.Image = global::Kuriimu.Properties.Resources.btn_director;
-			this.btnDirector.Location = new System.Drawing.Point(252, 32);
-			this.btnDirector.Name = "btnDirector";
-			this.btnDirector.Size = new System.Drawing.Size(104, 104);
-			this.btnDirector.TabIndex = 3;
-			this.btnDirector.Text = "Director";
-			this.btnDirector.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.btnDirector.UseVisualStyleBackColor = true;
-			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(395, 170);
-			this.Controls.Add(this.btnDirector);
+			this.ClientSize = new System.Drawing.Size(291, 170);
 			this.Controls.Add(this.btnEditor);
 			this.Controls.Add(this.btnDumping);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -91,6 +77,5 @@
 
 		private System.Windows.Forms.Button btnDumping;
 		private System.Windows.Forms.Button btnEditor;
-		private System.Windows.Forms.Button btnDirector;
 	}
 }
