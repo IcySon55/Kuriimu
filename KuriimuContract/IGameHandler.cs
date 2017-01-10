@@ -18,14 +18,16 @@ namespace KuriimuContract
 		Bitmap GeneratePreview(string rawString);
 	}
 
-	class DefaultGameHandler : IGameHandler
+	public sealed class DefaultGameHandler : IGameHandler
 	{
 		public string Name => "No Game";
-		public Image Icon { get; set; }
+		public Image Icon { get; }
 
 		public bool HandlerCanGeneratePreviews => false;
 		public string GetKuriimuString(string rawString) => rawString;
 		public string GetRawString(string kuriimuString) => kuriimuString;
 		public Bitmap GeneratePreview(string rawString) => null;
+
+		public DefaultGameHandler(Image icon) { Icon = icon; }
 	}
 }

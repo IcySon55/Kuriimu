@@ -12,19 +12,20 @@ namespace game_rocket_slime_3ds
 {
 	public class Handler : IGameHandler
 	{
-		Dictionary<string, string> _pairs = new Dictionary<string, string> {
-			["<prompt>"] ="\x1F\x20",
-			["<player>"] ="\x1F\x05",
-			["<name>"] ="\x1F\x02",
-			["</name>"] ="\x02",
-			["<top?>"] ="\x1F\x100",
-			["<middle?>"] ="\x1F\x103",
-			["<bottom?>"] ="\x1F\x200",
-			["<u1>"] ="\x1F\x00",
-			["<next>"] ="\x1F\x15",
-			["<end>"] ="\x1F\x115",
-			["<u3>"] ="\x17",
-    
+		Dictionary<string, string> _pairs = new Dictionary<string, string>
+		{
+			["<prompt>"] = "\x1F\x20",
+			["<player>"] = "\x1F\x05",
+			["<name>"] = "\x1F\x02",
+			["</name>"] = "\x02",
+			["<top?>"] = "\x1F\x100",
+			["<middle?>"] = "\x1F\x103",
+			["<bottom?>"] = "\x1F\x200",
+			["<u1>"] = "\x1F\x00",
+			["<next>"] = "\x1F\x15",
+			["<end>"] = "\x1F\x115",
+			["<u3>"] = "\x17",
+
 			// Color
 			["<color-default>"] = "\x13\x00",
 			["<color-red>"] = "\x13\x01",

@@ -13,20 +13,20 @@ namespace KuriimuContract
 	{
 		public static string LoadFileFilters(IEnumerable<IFileAdapter> fileAdapters)
 		{
-			var alltypes = fileAdapters.Select(x => new { x.Description, Ext = x.Extension.ToLower() }).ToList();
+			var alltypes = fileAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
 
 			// Add two special cases at start and end
-			alltypes.Insert(0, new { Description = "All Supported Files", Ext = string.Join(";", alltypes.Select(x => x.Ext)) });
-			alltypes.Add(new { Description = "All Files", Ext = "*.*" });
+			alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension)) });
+			alltypes.Add(new { Description = "All Files", Extension = "*.*" });
 
-			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Ext})|{x.Ext}"));
+			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
 		}
 
 		public static List<IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();
 
-			var gameHandlers = new List<IGameHandler> { new DefaultGameHandler { Icon = noGameIcon } };
+			List<IGameHandler> gameHandlers = new List<IGameHandler> { new DefaultGameHandler(noGameIcon) };
 			gameHandlers.AddRange(PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"));
 			foreach (IGameHandler gameHandler in gameHandlers)
 			{
@@ -40,17 +40,18 @@ namespace KuriimuContract
 
 		public static void LoadSupportedEncodings(ComboBox cmb, Encoding encoding)
 		{
+			List<ListItem> items = new List<ListItem>();
+			foreach (EncodingInfo enc in Encoding.GetEncodings())
+			{
+				string name = enc.GetEncoding().EncodingName;
+				if (name.Contains("ASCII") || name.Contains("Shift-JIS") || (name.Contains("Unicode") && !name.Contains("32")))
+					items.Add(new ListItem(name.Replace("US-", ""), enc.GetEncoding()));
+			}
+			items.Sort();
+
 			cmb.DisplayMember = "Text";
 			cmb.ValueMember = "Value";
-			cmb.DataSource = (from enc in Encoding.GetEncodings()
-							  let name = enc.DisplayName
-							  where name.Contains("ASCII")
-								 || name.Contains("Shift-JIS")
-								 || (name.Contains("Unicode") && !name.Contains("32"))
-							  let newname = name.Replace("US-", "")
-							  orderby newname
-							  select new ListItem(newname, enc.GetEncoding()))
-							  .ToList();
+			cmb.DataSource = items;
 			cmb.SelectedValue = encoding;
 		}
 

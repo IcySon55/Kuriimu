@@ -564,12 +564,7 @@ namespace ext_fenceposts
 
 			// Sort Entries
 			if (_kup.OptimizeStrings)
-			{
-				_kup.Entries = (from entry in _kup.Entries
-								orderby entry.EditedText.Length descending, entry.EditedTextString descending
-								select entry)
-								.ToList();
-			}
+				_kup.Entries = _kup.Entries.Select(o => o).OrderByDescending(o => o.EditedText.Length).ThenBy(o => o.EditedTextString).ToList();
 
 			// Bound Setup
 			foreach (Bound bound in _kup.StringBounds)

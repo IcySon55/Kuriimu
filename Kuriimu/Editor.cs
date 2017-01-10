@@ -18,6 +18,7 @@ namespace Kuriimu
 
 		private List<IFileAdapter> _fileAdapters = null;
 		private List<IGameHandler> _gameHandlers = null;
+		private List<IExtension> _extensions = null;
 
 		private IEnumerable<IEntry> _entries = null;
 
@@ -31,13 +32,11 @@ namespace Kuriimu
 			Icon = Resources.kuriimu;
 
 			// Load Plugins
-			Console.WriteLine("Loading plugins...");
-
 			_fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();
-
 			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
+			_extensions = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll").ToList();
 
-			Tools.DoubleBuffer((Control)treEntries, true);
+			Tools.DoubleBuffer(treEntries, true);
 
 			UpdateForm();
 		}
@@ -186,14 +185,16 @@ namespace Kuriimu
 						_hasChanges = false;
 
 						// Select Game Handler
-						var tsi = (from ToolStripItem x in tsbGameSelect.DropDownItems
-								   where x.Text == Settings.Default.SelectedGameHandler
-								   select x)
-								   .FirstOrDefault() ?? tsbGameSelect.DropDownItems[0];
-						_gameHandler = tsi.Tag as IGameHandler;
-
-						tsbGameSelect.Text = tsi.Text;
-						tsbGameSelect.Image = tsi.Image;
+						foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+							if (tsi.Text == Settings.Default.SelectedGameHandler)
+							{
+								_gameHandler = (IGameHandler)tsi.Tag;
+								tsbGameSelect.Text = tsi.Text;
+								tsbGameSelect.Image = tsi.Image;
+								break;
+							}
+						if (_gameHandler == null)
+							_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
 
 						LoadEntries();
 						UpdateTextView();
@@ -201,7 +202,6 @@ namespace Kuriimu
 						UpdateHexView();
 						Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
 						Settings.Default.Save();
-						Settings.Default.Reload();
 					}
 				}
 				catch (Exception ex)
@@ -234,7 +234,6 @@ namespace Kuriimu
 				_fileAdapter.FileInfo = new FileInfo(sfd.FileName);
 				Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
 				Settings.Default.Save();
-				Settings.Default.Reload();
 			}
 
 			if (dr == DialogResult.OK)
@@ -255,12 +254,11 @@ namespace Kuriimu
 			{
 				// reduces the number of exceptions thrown by first testing the adapters with a matching extension
 				result = (from adapter in _fileAdapters
-						  let exts = adapter.Extension.Split(';')
-						  let matchExt = exts.Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))
-						  orderby matchExt descending
-						  where adapter.Identify(filename)
-						  select adapter)
-						  .FirstOrDefault();
+							 let exts = adapter.Extension.Split(';')
+							 let matchExt = exts.Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))
+							 orderby matchExt descending
+							 where adapter.Identify(filename)
+							 select adapter).FirstOrDefault();
 
 				if (result == null)
 					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -522,9 +520,7 @@ namespace Kuriimu
 		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			ToolStripItem tsi = (ToolStripItem)sender;
-
-			_gameHandler = tsi.Tag as IGameHandler;
-
+			_gameHandler = (IGameHandler)tsi.Tag;
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;
 
@@ -614,7 +610,6 @@ namespace Kuriimu
 
 				string startToSelection = txtEdit.Text.Substring(0, txtEdit.SelectionStart);
 				selectionStart = _gameHandler.GetRawString(startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n")).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
-
 				selectionLength = _gameHandler.GetRawString(txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n")).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
 
 				hbxHexView.SelectionStart = selectionStart;
