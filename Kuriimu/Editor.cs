@@ -178,9 +178,8 @@ namespace Kuriimu
 				try
 				{
 					_fileAdapter = SelectFileAdapter(filename);
-					if (_fileAdapter != null)
+					if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
 					{
-						_fileAdapter.Load(filename);
 						_fileOpen = true;
 						_hasChanges = false;
 
@@ -200,9 +199,10 @@ namespace Kuriimu
 						UpdateTextView();
 						UpdatePreview();
 						UpdateHexView();
-						Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
-						Settings.Default.Save();
 					}
+
+					Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
+					Settings.Default.Save();
 				}
 				catch (Exception ex)
 				{

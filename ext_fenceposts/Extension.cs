@@ -494,7 +494,7 @@ namespace ext_fenceposts
 
 									if (matched)
 									{
-										if (entry.EditedText.SequenceEqual(entry.OriginalText))
+										if (entry.EditedTextString == entry.OriginalTextString)
 											entry.EditedText = result.ToArray();
 										entry.OriginalText = result.ToArray();
 									}
