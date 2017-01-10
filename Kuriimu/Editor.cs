@@ -252,13 +252,16 @@ namespace Kuriimu
 
 			try
 			{
-				// reduces the number of exceptions thrown by first testing the adapters with a matching extension
-				result = (from adapter in _fileAdapters
-							 let exts = adapter.Extension.Split(';')
-							 let matchExt = exts.Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))
-							 orderby matchExt descending
-							 where adapter.Identify(filename)
-							 select adapter).FirstOrDefault();
+				// first look for adapters whose extension matches that of our filename
+				List<IFileAdapter> matchingAdapters = _fileAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+
+				result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
+
+				if (result == null)
+				{
+					// if none of them match, then try all other adapters
+					result = _fileAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
+				}
 
 				if (result == null)
 					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
