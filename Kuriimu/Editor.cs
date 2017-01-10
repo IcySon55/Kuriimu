@@ -419,7 +419,7 @@ namespace Kuriimu
 				tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
 				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
-				tsbPreviewEnabled.Enabled = _gameHandler.HandlerCanGeneratePreviews;
+				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 
