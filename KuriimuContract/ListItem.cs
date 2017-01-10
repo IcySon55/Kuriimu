@@ -18,9 +18,9 @@ namespace KuriimuContract
 			return Text;
 		}
 
-		public int CompareTo(ListItem other)
+		public int CompareTo(ListItem rhs)
 		{
-			return Text.CompareTo(other.Text);
+			return Text.CompareTo(rhs.Text);
 		}
 	}
 }
