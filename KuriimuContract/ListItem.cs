@@ -1,6 +1,8 @@
-﻿namespace KuriimuContract
+﻿using System;
+
+namespace KuriimuContract
 {
-	public class ListItem
+	public class ListItem : IComparable<ListItem>
 	{
 		public string Text { get; }
 		public object Value { get; }
@@ -14,6 +16,11 @@
 		public override string ToString()
 		{
 			return Text;
+		}
+
+		public int CompareTo(ListItem rhs)
+		{
+			return Text.CompareTo(rhs.Text);
 		}
 	}
 }
