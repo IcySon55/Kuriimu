@@ -217,10 +217,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>del "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar"
-del "$(TargetDir)\plugins\KuriimuContract.*"
-cd "$(TargetDir)"
-"C:\Program Files\WinRAR\rar.exe" a "D:\Abyss Web Server\htdocs\kuriimu\kuriimu-beta.rar" $(TargetFileName) "*.dll" "-xplugins\file_gmd.dll" "-xplugins\ext_dgs_gui.dll" "plugins\*.dll"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
