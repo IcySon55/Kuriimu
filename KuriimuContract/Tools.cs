@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -10,38 +11,27 @@ namespace KuriimuContract
 {
 	public static class Tools
 	{
-		public static string LoadFileFilters(Dictionary<string, IFileAdapter> fileAdapters)
+		public static string LoadFileFilters(IEnumerable<IFileAdapter> fileAdapters)
 		{
-			List<string> extensions = new List<string>();
-			List<string> types = new List<string>();
+			var alltypes = fileAdapters.Select(x => new { x.Description, Ext = x.Extension.ToLower() }).ToList();
 
-			// All Supported
-			foreach (string key in fileAdapters.Keys)
-				extensions.Add(fileAdapters[key].Extension.ToLower());
-			types.Add("All Supported Files (" + string.Join(";", extensions.ToArray()) + ")|" + string.Join(";", extensions.ToArray()));
+			// Add two special cases at start and end
+			alltypes.Insert(0, new { Description = "All Supported Files", Ext = string.Join(";", alltypes.Select(x => x.Ext)) });
+			alltypes.Add(new { Description = "All Files", Ext = "*.*" });
 
-			// Individual
-			foreach (string key in fileAdapters.Keys)
-				types.Add(fileAdapters[key].Description + " (" + fileAdapters[key].Extension.ToLower() + ")|" + fileAdapters[key].Extension.ToLower());
-			types.Add("All Files (*.*)|*.*");
-
-			return string.Join("|", types.ToArray());
+			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Ext})|{x.Ext}"));
 		}
 
-		public static Dictionary<string, IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
+		public static List<IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();
-			ToolStripMenuItem tsiNoGame = new ToolStripMenuItem("No Game", noGameIcon, selectedIndexChanged);
-			tsb.DropDownItems.Add(tsiNoGame);
-			tsb.Text = tsiNoGame.Text;
-			tsb.Image = tsiNoGame.Image;
 
-			Dictionary<string, IGameHandler> gameHandlers = new Dictionary<string, IGameHandler>();
-			foreach (IGameHandler gameHandler in PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"))
+			var gameHandlers = new List<IGameHandler> { new DefaultGameHandler { Icon = noGameIcon } };
+			gameHandlers.AddRange(PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"));
+			foreach (IGameHandler gameHandler in gameHandlers)
 			{
-				gameHandlers.Add(gameHandler.Name, gameHandler);
-
 				ToolStripMenuItem tsiGameHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, selectedIndexChanged);
+				tsiGameHandler.Tag = gameHandler;
 				tsb.DropDownItems.Add(tsiGameHandler);
 			}
 
@@ -50,18 +40,17 @@ namespace KuriimuContract
 
 		public static void LoadSupportedEncodings(ComboBox cmb, Encoding encoding)
 		{
-			List<ListItem> items = new List<ListItem>();
-			foreach (EncodingInfo enc in Encoding.GetEncodings())
-			{
-				string name = enc.GetEncoding().EncodingName;
-				if (name.Contains("ASCII") || name.Contains("Shift-JIS") || (name.Contains("Unicode") && !name.Contains("32")))
-					items.Add(new ListItem(name.Replace("US-", ""), enc.GetEncoding()));
-			}
-			items.Sort();
-
 			cmb.DisplayMember = "Text";
 			cmb.ValueMember = "Value";
-			cmb.DataSource = items;
+			cmb.DataSource = (from enc in Encoding.GetEncodings()
+							  let name = enc.DisplayName
+							  where name.Contains("ASCII")
+								 || name.Contains("Shift-JIS")
+								 || (name.Contains("Unicode") && !name.Contains("32"))
+							  let newname = name.Replace("US-", "")
+							  orderby newname
+							  select new ListItem(newname, enc.GetEncoding()))
+							  .ToList();
 			cmb.SelectedValue = encoding;
 		}
 

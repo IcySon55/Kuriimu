@@ -28,19 +28,16 @@ namespace Kuriimu
 			// Load Dumpers
 			Console.WriteLine("Loading extensions...");
 
-			var extensions = new Dictionary<string, IExtension>();
-			foreach (IExtension extension in PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll"))
-				extensions.Add(extension.Name, extension);
+			var extensions = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll");
 
 			// Populate List
 			int index = 0;
 			imgList.TransparentColor = Color.Transparent;
-			foreach (string key in extensions.Keys)
+			foreach (var extension in extensions)
 			{
-				IExtension extension = extensions[key];
 				imgList.Images.Add(extension.Icon);
 				imgList.Images.SetKeyName(index, extension.Name);
-				TreeNode node = new TreeNode(extensions[key].Name, index, index);
+				TreeNode node = new TreeNode(extension.Name, index, index);
 				node.Tag = extension;
 				treExtensions.Nodes.Add(node);
 				index++;

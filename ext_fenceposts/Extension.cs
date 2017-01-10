@@ -21,7 +21,7 @@ namespace ext_fenceposts
 		private KUP _kup = null;
 		private KupUser _kupUser = null;
 		private Dictionary<long, long> _pointers = null;
-		private Dictionary<string, IGameHandler> _gameHandlers = null;
+		private List<IGameHandler> _gameHandlers = null;
 
 		private BackgroundWorker _workerDumper = new BackgroundWorker();
 		private BackgroundWorker _workerInjector = new BackgroundWorker();
@@ -111,10 +111,7 @@ namespace ext_fenceposts
 		{
 			ToolStripItem tsi = (ToolStripItem)sender;
 
-			if (tsi.Text == "No Game")
-				_gameHandler = null;
-			else
-				_gameHandler = _gameHandlers[((ToolStripItem)sender).Text];
+			_gameHandler = tsi.Tag as IGameHandler;
 
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;
@@ -455,12 +452,7 @@ namespace ext_fenceposts
 									_kup.Entries.Add(entry);
 								}
 
-								string str = entry.OriginalTextString;
-
-								if (_gameHandler != null)
-									str = _gameHandler.GetString(entry.OriginalText, _kup.Encoding).Replace("\0", "<null>").Replace("\n", "\r\n");
-								else
-									str = entry.OriginalTextString.Replace("\0", "<null>").Replace("\n", "\r\n");
+								string str = _gameHandler.GetKuriimuString(entry.OriginalTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
 
 								if (Regex.Matches(str, "<null>").Count > 0)
 									_workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);
@@ -502,7 +494,7 @@ namespace ext_fenceposts
 
 									if (matched)
 									{
-										if (Array.Equals(entry.EditedText, entry.OriginalText))
+										if (entry.EditedText.SequenceEqual(entry.OriginalText))
 											entry.EditedText = result.ToArray();
 										entry.OriginalText = result.ToArray();
 									}
@@ -565,13 +557,6 @@ namespace ext_fenceposts
 		}
 
 		// Injector
-		private int SortEntriesForInjection(IEntry lhs, IEntry rhs)
-		{
-			int result = lhs.EditedText.Length.CompareTo(rhs.EditedText.Length);
-			if (result == 0)
-				result = lhs.EditedTextString.CompareTo(rhs.EditedTextString);
-			return result;
-		}
 
 		private void workerInjector_DoWork(object sender, DoWorkEventArgs e)
 		{
@@ -580,8 +565,10 @@ namespace ext_fenceposts
 			// Sort Entries
 			if (_kup.OptimizeStrings)
 			{
-				_kup.Entries.Sort(SortEntriesForInjection);
-				_kup.Entries.Reverse();
+				_kup.Entries = (from entry in _kup.Entries
+								orderby entry.EditedText.Length descending, entry.EditedTextString descending
+								select entry)
+								.ToList();
 			}
 
 			// Bound Setup

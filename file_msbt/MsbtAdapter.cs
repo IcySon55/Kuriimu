@@ -24,7 +24,7 @@ namespace file_msbt
 
 		public string Description => "Message Binary Text";
 
-		public string Extension => " *.msbt";
+		public string Extension => "*.msbt";
 
 		public string About => "This is the MSBT file adapter for Kuriimu.";
 
@@ -144,20 +144,19 @@ namespace file_msbt
 			{
 				if (_entries == null)
 				{
-					_entries = new List<Entry>();
-
-					foreach (Label label in _msbt.LBL1.Labels)
+					if (_msbtBackup == null)
 					{
-						if (_msbtBackup == null)
-						{
-							Entry entry = new Entry(_msbt.FileEncoding, label);
-							_entries.Add(entry);
-						}
-						else
-						{
-							Entry entry = new Entry(_msbt.FileEncoding, label, _msbtBackup.LBL1.Labels.FirstOrDefault(o => o.Name == label.Name));
-							_entries.Add(entry);
-						}
+						_entries = (from label in _msbt.LBL1.Labels
+									orderby label.Index
+									select new Entry(_msbt.FileEncoding, label))
+									.ToList();
+					}
+					else
+					{
+						_entries = (from label in _msbt.LBL1.Labels
+									orderby label.Index
+									select new Entry(_msbt.FileEncoding, label, _msbtBackup.LBL1.Labels.FirstOrDefault(o => o.Name == label.Name)))
+									.ToList();
 					}
 				}
 

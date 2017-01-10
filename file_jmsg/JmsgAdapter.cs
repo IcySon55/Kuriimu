@@ -24,7 +24,7 @@ namespace file_jmsg
 
 		public string Description => "Japanese Message";
 
-		public string Extension => " *.jmsg";
+		public string Extension => "*.jmsg";
 
 		public string About => "This is the JMSG file adapter for Kuriimu.";
 
