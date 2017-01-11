@@ -145,19 +145,9 @@ namespace file_msbt
 				if (_entries == null)
 				{
 					if (_msbtBackup == null)
-					{
-						_entries = (from label in _msbt.LBL1.Labels
-									orderby label.Index
-									select new Entry(_msbt.FileEncoding, label))
-									.ToList();
-					}
+						_entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(_msbt.FileEncoding, o)).ToList();
 					else
-					{
-						_entries = (from label in _msbt.LBL1.Labels
-									orderby label.Index
-									select new Entry(_msbt.FileEncoding, label, _msbtBackup.LBL1.Labels.FirstOrDefault(o => o.Name == label.Name)))
-									.ToList();
-					}
+						_entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(_msbt.FileEncoding, o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
 				}
 
 				return _entries;
