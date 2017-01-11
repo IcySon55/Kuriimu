@@ -328,20 +328,8 @@ namespace file_gmml
 
 	public sealed class Row
 	{
-		[XmlIgnore]
-		public int ID { get; set; }
-
 		[XmlAttribute("id")]
-		public string IDString
-		{
-			get { return ID.ToString("0000"); }
-			set
-			{
-				int id = 0;
-				int.TryParse(value, out id);
-				ID = id;
-			}
-		}
+		public string ID { get; set; }
 
 		[XmlElement("comment")]
 		public string Comment { get; set; }
@@ -351,9 +339,14 @@ namespace file_gmml
 
 		public Row()
 		{
-			ID = 0;
+			ID = "0000";
 			Comment = string.Empty;
 			Languages = new List<Language>();
+		}
+
+		public bool ShouldSerializeComment()
+		{
+			return Comment.Length > 0;
 		}
 	}
 

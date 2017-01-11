@@ -213,13 +213,11 @@ namespace file_gmml
 
 		public string Name
 		{
-			get { return IsSubEntry ? EditedLanguage.Name : Row.Comment; }
+			get { return IsSubEntry ? EditedLanguage.Name : Row.Comment == string.Empty ? Row.ID : Row.Comment; }
 			set
 			{
 				if (IsSubEntry)
 					EditedLanguage.Name = value;
-				else
-					Row.Comment = value;
 			}
 		}
 
@@ -292,7 +290,7 @@ namespace file_gmml
 
 		public override string ToString()
 		{
-			return IsSubEntry ? EditedLanguage.Name : Name == string.Empty ? Row.IDString : Name;
+			return IsSubEntry ? EditedLanguage.Name : Name == string.Empty ? Row.ID : Name;
 		}
 
 		public int CompareTo(IEntry rhs)
