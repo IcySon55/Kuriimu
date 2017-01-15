@@ -30,14 +30,14 @@ namespace KuriimuContract
 			{
 				Color result = fontMap.GetPixel(i, 0);
 
-				if (!readingWidth && EqualARGB(result, Color.White))
+				if (!readingWidth && EqualRGB(result, Color.White))
 					xIndent++;
-				else if (!readingWidth && EqualARGB(result, Color.Black))
+				else if (!readingWidth && EqualRGB(result, Color.Black))
 					readingWidth = true;
-				else if (readingWidth && EqualARGB(result, Color.White))
+				else if (readingWidth && EqualRGB(result, Color.White))
 					break;
 
-				if (readingWidth && EqualARGB(result, Color.Black))
+				if (readingWidth && EqualRGB(result, Color.Black))
 					CharacterWidth++;
 			}
 
@@ -48,16 +48,16 @@ namespace KuriimuContract
 			{
 				Color result = fontMap.GetPixel(0, i);
 
-				if (!readingBaseline && !readingHeight && EqualARGB(result, Color.White))
+				if (!readingBaseline && !readingHeight && EqualRGB(result, Color.White))
 					yIndent++;
-				else if (!readingBaseline && !readingHeight && EqualARGB(result, Color.Black))
+				else if (!readingBaseline && !readingHeight && EqualRGB(result, Color.Black))
 					readingBaseline = true;
-				else if (readingBaseline && !readingHeight && EqualARGB(result, Color.White))
+				else if (readingBaseline && !readingHeight && EqualRGB(result, Color.White))
 					readingHeight = true;
-				else if (readingBaseline && readingHeight && EqualARGB(result, Color.White))
+				else if (readingBaseline && readingHeight && EqualRGB(result, Color.White))
 					break;
 
-				if (readingBaseline && !readingHeight && EqualARGB(result, Color.Black))
+				if (readingBaseline && !readingHeight && EqualRGB(result, Color.Black))
 				{
 					Baseline++;
 					CharacterHeight++;
@@ -86,9 +86,9 @@ namespace KuriimuContract
 				{
 					Color result = fontMap.GetPixel(j, y + kerningOffset);
 
-					if (width == 0 && EqualARGB(result, Color.White))
+					if (width == 0 && EqualRGB(result, Color.White))
 						offset++;
-					if (EqualARGB(result, Color.Red))
+					if (EqualRGB(result, Color.Red))
 						width++;
 				}
 
@@ -121,7 +121,7 @@ namespace KuriimuContract
 			for (int i = 0; i < colorized.Width * colorized.Height; i++)
 			{
 				int cx = i % colorized.Width;
-				int cy = i / colorized.Height;
+				int cy = i / colorized.Width;
 
 				Color c = colorized.GetPixel(cx, cy);
 
@@ -146,7 +146,7 @@ namespace KuriimuContract
 			return (int)Math.Round(width * scale);
 		}
 
-		private bool EqualARGB(Color lhs, Color rhs)
+		private bool EqualRGB(Color lhs, Color rhs)
 		{
 			return (lhs.R == rhs.R && lhs.G == rhs.G && lhs.B == rhs.B);
 		}
