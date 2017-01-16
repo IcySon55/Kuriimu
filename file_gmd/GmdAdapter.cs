@@ -36,7 +36,7 @@ namespace file_gmd
 
 		public bool CanRenameEntries => false;
 
-		public bool CanRemoveEntries => false;
+		public bool CanDeleteEntries => false;
 
 		public bool CanSortEntries => false;
 
@@ -210,7 +210,7 @@ namespace file_gmd
 			return result;
 		}
 
-		public bool RemoveEntry(IEntry entry)
+		public bool DeleteEntry(IEntry entry)
 		{
 			bool result = true;
 

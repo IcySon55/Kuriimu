@@ -33,7 +33,7 @@ namespace file_kup
 
 		public bool CanRenameEntries => true;
 
-		public bool CanRemoveEntries => false;
+		public bool CanDeleteEntries => false;
 
 		public bool CanSortEntries => true;
 
@@ -181,7 +181,7 @@ namespace file_kup
 			return result;
 		}
 
-		public bool RemoveEntry(IEntry entry)
+		public bool DeleteEntry(IEntry entry)
 		{
 			bool result = true;
 

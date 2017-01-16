@@ -19,7 +19,7 @@ namespace KuriimuContract
 		bool CanSave { get; } // Is saving supported?
 		bool CanAddEntries { get; } // Is adding entries supported?
 		bool CanRenameEntries { get; } // Is renaming entries supported?
-		bool CanRemoveEntries { get; } // Is removing entries supported?
+		bool CanDeleteEntries { get; } // Is deleting entries supported?
 		bool CanSortEntries { get; } // Should the option to sort entries even be allowed?
 		bool EntriesHaveSubEntries { get; } // Do entries contain multiple text values?
 		bool OnlySubEntriesHaveText { get; } // Set this to true if only the sub entries contain text data.
@@ -43,7 +43,7 @@ namespace KuriimuContract
 		IEntry NewEntry();
 		bool AddEntry(IEntry entry);
 		bool RenameEntry(IEntry entry, string newName);
-		bool RemoveEntry(IEntry entry);
+		bool DeleteEntry(IEntry entry);
 		bool ShowEntryProperties(IEntry entry, Icon icon);
 
 		// Settings

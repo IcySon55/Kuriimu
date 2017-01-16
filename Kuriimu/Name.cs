@@ -69,7 +69,7 @@ namespace Kuriimu
 		private void Name_Load(object sender, EventArgs e)
 		{
 			if (_isNew)
-				Text = "New Entry";
+				Text = "Add Entry";
 			else
 				Text = "Rename Entry";
 			Icon = Resources.kuriimu;

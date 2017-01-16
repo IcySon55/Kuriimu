@@ -37,7 +37,7 @@ namespace file_msbt
 
 		public bool CanRenameEntries => true;
 
-		public bool CanRemoveEntries => true;
+		public bool CanDeleteEntries => true;
 
 		public bool CanSortEntries => true;
 
@@ -200,7 +200,7 @@ namespace file_msbt
 			return result;
 		}
 
-		public bool RemoveEntry(IEntry entry)
+		public bool DeleteEntry(IEntry entry)
 		{
 			bool result = true;
 

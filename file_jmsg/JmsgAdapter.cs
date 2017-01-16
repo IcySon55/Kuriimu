@@ -37,7 +37,7 @@ namespace file_jmsg
 
 		public bool CanRenameEntries => false;
 
-		public bool CanRemoveEntries => false;
+		public bool CanDeleteEntries => false;
 
 		public bool CanSortEntries => true;
 
@@ -195,7 +195,7 @@ namespace file_jmsg
 			return result;
 		}
 
-		public bool RemoveEntry(IEntry entry) => false;
+		public bool DeleteEntry(IEntry entry) => false;
 
 		public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
 

@@ -12,6 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj",
 		{76791481-35E8-41C0-A01C-F0FC66416A20} = {76791481-35E8-41C0-A01C-F0FC66416A20}
 		{AD39D297-4420-4044-ACB4-21B22076B213} = {AD39D297-4420-4044-ACB4-21B22076B213}
 		{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B} = {12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}
+		{05E492D3-00B6-475A-BC9E-A22237864C52} = {05E492D3-00B6-475A-BC9E-A22237864C52}
 		{E51106FF-3D0B-499F-B9CA-A3A44F37FC13} = {E51106FF-3D0B-499F-B9CA-A3A44F37FC13}
 	EndProjectSection
 EndProject
@@ -32,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_jmsg", "..\file_jmsg\file_jmsg.csproj", "{AD39D297-4420-4044-ACB4-21B22076B213}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_director", "..\ext_director\ext_director.csproj", "{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_great_detective_pikachu", "..\game_great_detective_pikachu\game_great_detective_pikachu.csproj", "{05E492D3-00B6-475A-BC9E-A22237864C52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +82,10 @@ Global
 		{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05E492D3-00B6-475A-BC9E-A22237864C52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05E492D3-00B6-475A-BC9E-A22237864C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05E492D3-00B6-475A-BC9E-A22237864C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05E492D3-00B6-475A-BC9E-A22237864C52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

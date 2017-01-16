@@ -22,7 +22,7 @@ namespace Kuriimu
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new frmMain(args));
+			Application.Run(new frmEditor(args));
 
 #if DEBUG
 			FreeConsole();

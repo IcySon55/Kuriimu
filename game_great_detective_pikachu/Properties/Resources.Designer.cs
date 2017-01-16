@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kuriimu.Properties {
+namespace game_great_detective_pikachu.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Kuriimu.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kuriimu.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("game_great_detective_pikachu.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,9 +63,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btn_director {
+        internal static System.Drawing.Bitmap background1 {
             get {
-                object obj = ResourceManager.GetObject("btn_director", resourceCulture);
+                object obj = ResourceManager.GetObject("background1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btn_editor {
+        internal static System.Drawing.Bitmap face_icon_pikachu {
             get {
-                object obj = ResourceManager.GetObject("btn_editor", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_pikachu", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,49 +83,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap btn_extensions {
+        internal static System.Drawing.Bitmap face_icon_pikachu_angry {
             get {
-                object obj = ResourceManager.GetObject("btn_extensions", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon find {
-            get {
-                object obj = ResourceManager.GetObject("find", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap game_none {
-            get {
-                object obj = ResourceManager.GetObject("game_none", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon kuriimu {
-            get {
-                object obj = ResourceManager.GetObject("kuriimu", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_about {
-            get {
-                object obj = ResourceManager.GetObject("menu_about", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_pikachu_angry", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -133,9 +93,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_add {
+        internal static System.Drawing.Bitmap face_icon_pikachu_glad {
             get {
-                object obj = ResourceManager.GetObject("menu_add", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_pikachu_glad", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,9 +103,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_delete {
+        internal static System.Drawing.Bitmap face_icon_pikachu_sad {
             get {
-                object obj = ResourceManager.GetObject("menu_delete", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_pikachu_sad", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -153,9 +113,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_exit {
+        internal static System.Drawing.Bitmap face_icon_pikachu_serious {
             get {
-                object obj = ResourceManager.GetObject("menu_exit", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_pikachu_serious", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -163,9 +123,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_field_properties {
+        internal static System.Drawing.Bitmap face_icon_pikachu_surprised {
             get {
-                object obj = ResourceManager.GetObject("menu_field_properties", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_pikachu_surprised", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -173,9 +133,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_find {
+        internal static System.Drawing.Bitmap face_icon_tim {
             get {
-                object obj = ResourceManager.GetObject("menu_find", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_tim", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +143,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_gbatemp {
+        internal static System.Drawing.Bitmap face_icon_tim_angry {
             get {
-                object obj = ResourceManager.GetObject("menu_gbatemp", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_tim_angry", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,9 +153,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_git {
+        internal static System.Drawing.Bitmap face_icon_tim_glad {
             get {
-                object obj = ResourceManager.GetObject("menu_git", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_tim_glad", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,9 +163,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_manage {
+        internal static System.Drawing.Bitmap face_icon_tim_sad {
             get {
-                object obj = ResourceManager.GetObject("menu_manage", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_tim_sad", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -213,9 +173,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_new {
+        internal static System.Drawing.Bitmap face_icon_tim_serious {
             get {
-                object obj = ResourceManager.GetObject("menu_new", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_tim_serious", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -223,9 +183,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_open {
+        internal static System.Drawing.Bitmap face_icon_tim_surprised {
             get {
-                object obj = ResourceManager.GetObject("menu_open", resourceCulture);
+                object obj = ResourceManager.GetObject("face_icon_tim_surprised", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -233,9 +193,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_preview_invisible {
+        internal static System.Drawing.Bitmap icon {
             get {
-                object obj = ResourceManager.GetObject("menu_preview_invisible", resourceCulture);
+                object obj = ResourceManager.GetObject("icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -243,9 +203,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_preview_visible {
+        internal static System.Drawing.Bitmap MainFont {
             get {
-                object obj = ResourceManager.GetObject("menu_preview_visible", resourceCulture);
+                object obj = ResourceManager.GetObject("MainFont", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -253,9 +213,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_properties {
+        internal static System.Drawing.Bitmap top_speaker {
             get {
-                object obj = ResourceManager.GetObject("menu_properties", resourceCulture);
+                object obj = ResourceManager.GetObject("top_speaker", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -263,49 +223,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_save {
+        internal static System.Drawing.Bitmap top_speaker_bg {
             get {
-                object obj = ResourceManager.GetObject("menu_save", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_save_as {
-            get {
-                object obj = ResourceManager.GetObject("menu_save_as", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_sorted {
-            get {
-                object obj = ResourceManager.GetObject("menu_sorted", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_unsorted {
-            get {
-                object obj = ResourceManager.GetObject("menu_unsorted", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap preview_background {
-            get {
-                object obj = ResourceManager.GetObject("preview_background", resourceCulture);
+                object obj = ResourceManager.GetObject("top_speaker_bg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

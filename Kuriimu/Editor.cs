@@ -22,25 +22,29 @@ namespace Kuriimu
 
 		private IEnumerable<IEntry> _entries = null;
 
-		public frmEditor()
+		public frmEditor(string[] args)
 		{
 			InitializeComponent();
-		}
-
-		private void frmEditor_Load(object sender, EventArgs e)
-		{
-			Icon = Resources.kuriimu;
+			Console.Write(Common.GetAppMessage());
 
 			// Load Plugins
 			_fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();
 			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 			_extensions = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll").ToList();
 
-			Tools.DoubleBuffer(treEntries, true);
+			// Load passed in file
+			if (args.Length > 0 && File.Exists(args[0]))
+				OpenFile(args[0]);
+		}
 
+		private void frmEditor_Load(object sender, EventArgs e)
+		{
+			Icon = Resources.kuriimu;
+			Tools.DoubleBuffer(treEntries, true);
 			UpdateForm();
 		}
 
+		// Menu/Toolbar
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ConfirmOpenFile();
@@ -96,7 +100,6 @@ namespace Kuriimu
 				}
 			}
 		}
-
 		private void tsbFind_Click(object sender, EventArgs e)
 		{
 			findToolStripMenuItem_Click(sender, e);
@@ -110,10 +113,99 @@ namespace Kuriimu
 				UpdateForm();
 			}
 		}
-
 		private void tsbFileProperties_Click(object sender, EventArgs e)
 		{
 			propertiesToolStripMenuItem_Click(sender, e);
+		}
+
+		private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			IEntry entry = _fileAdapter.NewEntry();
+
+			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
+
+			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
+			{
+				entry.Name = name.NewName;
+				if (_fileAdapter.AddEntry(entry))
+				{
+					_hasChanges = true;
+					LoadEntries();
+					treEntries.SelectNodeByIEntry(entry);
+					UpdateForm();
+				}
+			}
+		}
+		private void tsbEntryAdd_Click(object sender, EventArgs e)
+		{
+			addEntryToolStripMenuItem_Click(sender, e);
+		}
+
+		private void renameEntryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+
+			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
+
+			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
+			{
+				if (_fileAdapter.RenameEntry(entry, name.NewName))
+				{
+					_hasChanges = true;
+					treEntries.FindNodeByIEntry(entry).Text = name.NewName;
+					UpdateForm();
+				}
+			}
+		}
+		private void tsbEntryRename_Click(object sender, EventArgs e)
+		{
+			renameEntryToolStripMenuItem_Click(sender, e);
+		}
+
+		private void deleteEntryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+
+			if (MessageBox.Show("Are you sure you want to delete " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+			{
+				if (_fileAdapter.DeleteEntry(entry))
+				{
+					_hasChanges = true;
+					TreeNode nextNode = treEntries.SelectedNode.NextNode;
+					UpdateEntries();
+					treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
+					treEntries.SelectedNode = nextNode;
+				}
+			}
+		}
+		private void tsbEntryDelete_Click(object sender, EventArgs e)
+		{
+			deleteEntryToolStripMenuItem_Click(sender, e);
+		}
+
+		private void entryPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+			if (_fileAdapter.ShowEntryProperties(entry, Resources.kuriimu))
+			{
+				_hasChanges = true;
+				UpdateForm();
+			}
+		}
+		private void tsbEntryProperties_Click(object sender, EventArgs e)
+		{
+			entryPropertiesToolStripMenuItem_Click(sender, e);
+		}
+
+		private void sortEntriesToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			_fileAdapter.SortEntries = !_fileAdapter.SortEntries;
+			LoadEntries();
+			UpdateForm();
+		}
+		private void tsbSortEntries_Click(object sender, EventArgs e)
+		{
+			sortEntriesToolStripMenuItem_Click(sender, e);
 		}
 
 		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
@@ -126,6 +218,37 @@ namespace Kuriimu
 			System.Diagnostics.Process.Start("https://github.com/Icyson55/Kuriimu");
 		}
 
+		private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			frmAbout about = new frmAbout();
+			about.ShowDialog();
+		}
+
+		// UI Toolbars
+		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			ToolStripItem tsi = (ToolStripItem)sender;
+			_gameHandler = (IGameHandler)tsi.Tag;
+			tsbGameSelect.Text = tsi.Text;
+			tsbGameSelect.Image = tsi.Image;
+
+			UpdateTextView();
+			UpdatePreview();
+			UpdateForm();
+
+			Settings.Default.SelectedGameHandler = tsi.Text;
+			Settings.Default.Save();
+		}
+
+		private void tsbPreviewEnabled_Click(object sender, EventArgs e)
+		{
+			Settings.Default.PreviewEnabled = !Settings.Default.PreviewEnabled;
+			Settings.Default.Save();
+			UpdatePreview();
+			UpdateForm();
+		}
+
+		// File Handling
 		private void frmEditor_DragEnter(object sender, DragEventArgs e)
 		{
 			e.Effect = DragDropEffects.Copy;
@@ -382,7 +505,7 @@ namespace Kuriimu
 
 		private void UpdateForm()
 		{
-			Text = Settings.Default.ApplicationName + " Editor " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
+			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
@@ -396,7 +519,7 @@ namespace Kuriimu
 				bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
 				bool canAdd = _fileOpen && _fileAdapter.CanAddEntries;
 				bool canRename = itemSelected && _fileAdapter.CanRenameEntries && (_fileAdapter.OnlySubEntriesHaveText && entry.IsSubEntry || !_fileAdapter.OnlySubEntriesHaveText);
-				bool canRemove = itemSelected && _fileAdapter.CanRemoveEntries && !entry.IsSubEntry;
+				bool canDelete = itemSelected && _fileAdapter.CanDeleteEntries && !entry.IsSubEntry;
 
 				splMain.Enabled = _fileOpen;
 				splContent.Enabled = _fileOpen;
@@ -414,10 +537,16 @@ namespace Kuriimu
 				tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
 
 				// Toolbar
+				addEntryToolStripMenuItem.Enabled = canAdd;
 				tsbEntryAdd.Enabled = canAdd;
+				renameEntryToolStripMenuItem.Enabled = canRename;
 				tsbEntryRename.Enabled = canRename;
-				tsbEntryRemove.Enabled = canRemove;
+				deleteEntryToolStripMenuItem.Enabled = canDelete;
+				tsbEntryDelete.Enabled = canDelete;
+				entryPropertiesToolStripMenuItem.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
 				tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
+				sortEntriesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
+				sortEntriesToolStripMenuItem.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
@@ -447,100 +576,6 @@ namespace Kuriimu
 		private string FileName()
 		{
 			return _fileAdapter == null || _fileAdapter.FileInfo == null ? string.Empty : _fileAdapter.FileInfo.Name;
-		}
-
-		// Toolbar
-		private void tsbEntryAdd_Click(object sender, EventArgs e)
-		{
-			IEntry entry = _fileAdapter.NewEntry();
-
-			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
-
-			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
-			{
-				entry.Name = name.NewName;
-				if (_fileAdapter.AddEntry(entry))
-				{
-					_hasChanges = true;
-					LoadEntries();
-					treEntries.SelectNodeByIEntry(entry);
-					UpdateForm();
-				}
-			}
-		}
-
-		private void tsbEntryRename_Click(object sender, EventArgs e)
-		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-
-			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
-
-			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
-			{
-				if (_fileAdapter.RenameEntry(entry, name.NewName))
-				{
-					_hasChanges = true;
-					treEntries.FindNodeByIEntry(entry).Text = name.NewName;
-					UpdateForm();
-				}
-			}
-		}
-
-		private void tsbEntryRemove_Click(object sender, EventArgs e)
-		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-
-			if (MessageBox.Show("Are you sure you want to remove " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-			{
-				if (_fileAdapter.RemoveEntry(entry))
-				{
-					_hasChanges = true;
-					TreeNode nextNode = treEntries.SelectedNode.NextNode;
-					UpdateEntries();
-					treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
-					treEntries.SelectedNode = nextNode;
-				}
-			}
-		}
-
-		private void tsbEntryProperties_Click(object sender, EventArgs e)
-		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-			if (_fileAdapter.ShowEntryProperties(entry, Resources.kuriimu))
-			{
-				_hasChanges = true;
-				UpdateForm();
-			}
-		}
-
-		private void tsbSortEntries_Click(object sender, EventArgs e)
-		{
-			_fileAdapter.SortEntries = !_fileAdapter.SortEntries;
-			LoadEntries();
-			UpdateForm();
-		}
-
-		private void tsbGameSelect_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ToolStripItem tsi = (ToolStripItem)sender;
-			_gameHandler = (IGameHandler)tsi.Tag;
-			tsbGameSelect.Text = tsi.Text;
-			tsbGameSelect.Image = tsi.Image;
-
-			UpdateTextView();
-			UpdatePreview();
-			UpdateForm();
-
-			Settings.Default.SelectedGameHandler = tsi.Text;
-			Settings.Default.Save();
-		}
-
-		private void tsbPreviewEnabled_Click(object sender, EventArgs e)
-		{
-			Settings.Default.PreviewEnabled = !Settings.Default.PreviewEnabled;
-			Settings.Default.Save();
-			UpdatePreview();
-			UpdateForm();
 		}
 
 		// List
