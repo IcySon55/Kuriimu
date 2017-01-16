@@ -42,7 +42,6 @@ namespace KuriimuContract
 								if (type.GetInterface(pluginType.FullName) != null)
 								{
 									pluginTypes.Add(type);
-									Console.WriteLine("Loaded " + assembly.FullName);
 								}
 							}
 						}

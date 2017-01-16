@@ -25,7 +25,6 @@ namespace Kuriimu
 		public frmEditor(string[] args)
 		{
 			InitializeComponent();
-			Console.Write(Common.GetAppMessage());
 
 			// Load Plugins
 			_fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();

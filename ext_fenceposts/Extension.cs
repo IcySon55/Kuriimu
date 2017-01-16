@@ -37,8 +37,6 @@ namespace ext_fenceposts
 			Icon = Resources.fenceposts;
 
 			// Load Plugins
-			Console.WriteLine("Loading plugins...");
-
 			_gameHandlers = Tools.LoadGameHandlers(tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
 
 			// Configure workers
