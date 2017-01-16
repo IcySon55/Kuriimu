@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace KuriimuContract
 {
@@ -6,6 +7,6 @@ namespace KuriimuContract
 	{
 		string Name { get; }
 		Image Icon { get; }
-		void Show();
+		Form CreateInstance();
 	}
 }

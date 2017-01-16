@@ -1,11 +1,11 @@
-﻿using Kuriimu.Properties;
+﻿using runext.Properties;
 using KuriimuContract;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Kuriimu
+namespace runext
 {
 	public partial class frmExtensionSelect : Form
 	{
@@ -18,22 +18,20 @@ namespace Kuriimu
 		public frmExtensionSelect()
 		{
 			InitializeComponent();
-			this.Extension = null;
+			Extension = null;
 		}
 
 		private void ExtensionSelect_Load(object sender, EventArgs e)
 		{
-			this.Icon = Resources.kuriimu;
+			Icon = Resources.kuriimu;
 
-			// Load Dumpers
-			Console.WriteLine("Loading extensions...");
-
-			var extensions = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll");
+			// Load Extensions
+			IEnumerable<IExtension> extensions = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll");
 
 			// Populate List
 			int index = 0;
 			imgList.TransparentColor = Color.Transparent;
-			foreach (var extension in extensions)
+			foreach (IExtension extension in extensions)
 			{
 				imgList.Images.Add(extension.Icon);
 				imgList.Images.SetKeyName(index, extension.Name);

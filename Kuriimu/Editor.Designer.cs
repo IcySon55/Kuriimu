@@ -255,7 +255,7 @@
 			this.addEntryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_add;
 			this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
 			this.addEntryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-			this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			this.addEntryToolStripMenuItem.Text = "&Add Entry";
 			this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
 			// 
@@ -265,7 +265,7 @@
 			this.renameEntryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
 			this.renameEntryToolStripMenuItem.Name = "renameEntryToolStripMenuItem";
 			this.renameEntryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-			this.renameEntryToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.renameEntryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			this.renameEntryToolStripMenuItem.Text = "&Rename Entry";
 			this.renameEntryToolStripMenuItem.Click += new System.EventHandler(this.renameEntryToolStripMenuItem_Click);
 			// 
@@ -275,7 +275,7 @@
 			this.deleteEntryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_delete;
 			this.deleteEntryToolStripMenuItem.Name = "deleteEntryToolStripMenuItem";
 			this.deleteEntryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-			this.deleteEntryToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.deleteEntryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			this.deleteEntryToolStripMenuItem.Text = "&Delete Entry";
 			this.deleteEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteEntryToolStripMenuItem_Click);
 			// 
@@ -285,14 +285,14 @@
 			this.entryPropertiesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_properties;
 			this.entryPropertiesToolStripMenuItem.Name = "entryPropertiesToolStripMenuItem";
 			this.entryPropertiesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.entryPropertiesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.entryPropertiesToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			this.entryPropertiesToolStripMenuItem.Text = "Entry &Properties";
 			this.entryPropertiesToolStripMenuItem.Click += new System.EventHandler(this.entryPropertiesToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(195, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(202, 6);
 			// 
 			// sortEntriesToolStripMenuItem
 			// 
@@ -357,7 +357,7 @@
 			this.aboutToolStripMenuItem1.Image = global::Kuriimu.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
 			this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
 			this.aboutToolStripMenuItem1.Text = "&About";
 			this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
 			// 

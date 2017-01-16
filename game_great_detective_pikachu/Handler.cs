@@ -17,27 +17,12 @@ namespace game_great_detective_pikachu
 		{
 			// Control
 			["<prompt>"] = "\x1F\x20",
-			["<player>"] = "\x1F\x05",
-			["<name>"] = "\x1F\x02",
-			["</name>"] = "\x02",
-			["<top?>"] = "\x1F\x0100",
-			["<middle?>"] = "\x1F\x0103",
-			["<bottom?>"] = "\x1F\x0200",
-			["<u1>"] = "\x1F\x00",
-			["<next>"] = "\x1F\x15",
-			["<end>"] = "\x1F\x0115",
-			["<u3>"] = "\x17",
 
 			// Color
 			["<color-default>"] = "\x13\x00",
-			["<color-red>"] = "\x13\x01",
-			["<color-???>"] = "\x13\x02",
-			["<color-blue>"] = "\x13\x03",
 
 			// Special
-			["…"] = "\x85",
-			["©"] = "\x86",
-			["♥"] = "\x87"
+			["…"] = "\x85"
 		};
 
 		#region Properties
@@ -100,7 +85,6 @@ namespace game_great_detective_pikachu
 			// Text
 			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-			//Rectangle rectName = new Rectangle(33, 3, 114, 15);
 			Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 8, rectFace.Y + 10, 366, 60);
 
 			string str = rawString;
@@ -174,10 +158,10 @@ namespace game_great_detective_pikachu
 				//	y = pY;
 				//	continue;
 				//}
-				if (c == '\n' || x + bfc.Width - rectText.X > rectText.Width) // New Line/End of Textbox
+				if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
 				{
 					x = rectText.X;
-					y += bfc.Character.Height + yAdjust;
+					y += (bfc.Character.Height * scaleCurrent) + yAdjust;
 					continue;
 				}
 

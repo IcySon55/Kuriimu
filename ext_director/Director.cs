@@ -1,7 +1,7 @@
-﻿using ext_director.Properties;
-using KuriimuContract;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
+using ext_director.Properties;
+using KuriimuContract;
 
 namespace ext_director
 {
@@ -15,11 +15,11 @@ namespace ext_director
 
 		#endregion
 
-		public void Show()
+		public Form CreateInstance()
 		{
 			frmExtension configure = new frmExtension();
 			configure.StartPosition = FormStartPosition.CenterParent;
-			configure.Show();
+			return configure;
 		}
 
 		public override string ToString()

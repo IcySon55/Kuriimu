@@ -41,6 +41,7 @@ namespace Kuriimu
 		{
 			Icon = Resources.kuriimu;
 			Tools.DoubleBuffer(treEntries, true);
+			LoadForm();
 			UpdateForm();
 		}
 
@@ -208,6 +209,13 @@ namespace Kuriimu
 			sortEntriesToolStripMenuItem_Click(sender, e);
 		}
 
+		// Extensions
+		private void extensionsToolStripMenuItems_Click(object sender, EventArgs e)
+		{
+			((IExtension)((ToolStripMenuItem)sender).Tag).CreateInstance().Show();
+		}
+
+		// Help
 		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
@@ -397,6 +405,22 @@ namespace Kuriimu
 			}
 
 			return result;
+		}
+
+		// Loading
+		private void LoadForm()
+		{
+			if (_extensions.Count > 0)
+			{
+				extensionsToolStripMenuItem.DropDownItems.Clear();
+
+				foreach (IExtension extension in _extensions)
+				{
+					ToolStripMenuItem tsiExtension = new ToolStripMenuItem(extension.Name, extension.Icon, extensionsToolStripMenuItems_Click);
+					tsiExtension.Tag = extension;
+					extensionsToolStripMenuItem.DropDownItems.Add(tsiExtension);
+				}
+			}
 		}
 
 		private void LoadEntries()

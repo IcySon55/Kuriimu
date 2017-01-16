@@ -36,6 +36,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_director", "..\ext_dire
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_great_detective_pikachu", "..\game_great_detective_pikachu\game_great_detective_pikachu.csproj", "{05E492D3-00B6-475A-BC9E-A22237864C52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "runext", "..\runext\runext.csproj", "{22CBC179-CCE1-4C27-AA9D-DC69D9588101}"
+	ProjectSection(ProjectDependencies) = postProject
+		{51E474F7-1497-4C30-BC18-C357C884B8B2} = {51E474F7-1497-4C30-BC18-C357C884B8B2}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +91,10 @@ Global
 		{05E492D3-00B6-475A-BC9E-A22237864C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05E492D3-00B6-475A-BC9E-A22237864C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05E492D3-00B6-475A-BC9E-A22237864C52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
