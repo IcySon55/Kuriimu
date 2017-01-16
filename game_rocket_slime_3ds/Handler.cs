@@ -68,16 +68,16 @@ namespace game_rocket_slime_3ds
 			gfx.SmoothingMode = SmoothingMode.HighQuality;
 			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-			Rectangle rectName = new Rectangle(33, 3, 114, 15);
-			Rectangle rectText = new Rectangle(32, 21, 366, 60);
+			Rectangle rectName = new Rectangle(15, 3, 114, 15);
+			Rectangle rectText = new Rectangle(15, 21, 370, 60);
 
 			string str = rawString.Replace(_pairs["<player>"], "Player");
-			double scaleDefault = 1.06;
-			double scaleName = 0.86;
-			double scaleCurrent = scaleDefault;
-			int x = rectText.X, pX = x;
-			int y = rectText.Y, pY = y;
-			int yAdjust = 3;
+			float scaleDefault = 1.0f;
+			float scaleName = 0.86f;
+			float scaleCurrent = scaleDefault;
+			float x = rectText.X, pX = x;
+			float y = rectText.Y, pY = y;
+			float yAdjust = 3;
 			Color colorDefault = Color.FromArgb(255, 37, 66, 167);
 			Color colorCurrent = colorDefault;
 
@@ -143,16 +143,17 @@ namespace game_rocket_slime_3ds
 					y = pY;
 					continue;
 				}
-				else if (c == '\n' || x + bfc.Width - rectText.X > rectText.Width) // New Line/End of Textbox
+				else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
 				{
 					x = rectText.X;
-					y += bfc.Character.Height + yAdjust;
-					continue;
+					y += (bfc.Character.Height * scaleCurrent) + yAdjust;
+					if (c == '\n')
+						continue;
 				}
 
 				// Draw character
-				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset, y, (int)(bfh.CharacterWidth * scaleCurrent), (int)(bfh.CharacterHeight * scaleCurrent));
-				x += (int)(bfc.Width * scaleCurrent);
+				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - (bfc.Offset * scaleCurrent), y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
+				x += bfc.Width * scaleCurrent;
 			}
 
 			return img;
