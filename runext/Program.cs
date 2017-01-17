@@ -22,7 +22,7 @@ namespace runext
 
 			if (args.Length > 0 && File.Exists(Path.Combine(Settings.Default.PluginDirectory, args[0])))
 			{
-				List<IExtension> extension = PluginLoader<IExtension>.LoadPlugins("plugins", args[0]).ToList();
+				List<IExtension> extension = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, args[0]).ToList();
 				Application.Run(extension[0].CreateInstance());
 			}
 			else

@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace KuriimuContract
 {
 	public static class PluginLoader<T>
 	{
-		public static IEnumerable<T> LoadPlugins(string path, string filter = "*.dll")
+		public static IEnumerable<T> LoadPlugins(string pluginPath, string filter = "*.dll")
 		{
+			string path = Path.Combine(Application.StartupPath, pluginPath);
 			string[] dllFileNames = null;
+			ICollection<T> plugins = new List<T>();
 
 			if (Directory.Exists(path))
 			{
@@ -48,17 +51,14 @@ namespace KuriimuContract
 					}
 				}
 
-				ICollection<T> plugins = new List<T>(pluginTypes.Count);
 				foreach (Type type in pluginTypes)
 				{
 					T plugin = (T)Activator.CreateInstance(type);
 					plugins.Add(plugin);
 				}
-
-				return plugins;
 			}
 
-			return null;
+			return plugins;
 		}
 	}
 }

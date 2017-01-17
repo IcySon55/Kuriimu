@@ -22,14 +22,5 @@ namespace KuriimuContract.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
-        public string PluginDirectory {
-            get {
-                return ((string)(this["PluginDirectory"]));
-            }
-        }
     }
 }

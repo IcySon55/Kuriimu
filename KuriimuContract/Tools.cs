@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace KuriimuContract
 {
@@ -22,12 +23,12 @@ namespace KuriimuContract
 			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
 		}
 
-		public static List<IGameHandler> LoadGameHandlers(ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
+		public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();
 
 			List<IGameHandler> gameHandlers = new List<IGameHandler> { new DefaultGameHandler(noGameIcon) };
-			gameHandlers.AddRange(PluginLoader<IGameHandler>.LoadPlugins(Settings.Default.PluginDirectory, "game*.dll"));
+			gameHandlers.AddRange(PluginLoader<IGameHandler>.LoadPlugins(pluginPath, "game*.dll"));
 			foreach (IGameHandler gameHandler in gameHandlers)
 			{
 				ToolStripMenuItem tsiGameHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, selectedIndexChanged);

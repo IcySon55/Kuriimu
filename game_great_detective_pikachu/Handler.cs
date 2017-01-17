@@ -166,13 +166,14 @@ namespace game_great_detective_pikachu
 				{
 					x = rectText.X;
 					y += (bfc.Character.Height * scaleCurrent) + yAdjust;
-					continue;
+					if (c == '\n')
+						continue;
 				}
 
 				// Draw character
-				gfx.DrawImage(bfh.GetCharacter(c, Color.SaddleBrown).Character, x - bfc.Offset * scaleCurrent + 2f, y + 2f, (bfh.CharacterWidth * scaleCurrent), (bfh.CharacterHeight * scaleCurrent));
-				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, (bfh.CharacterWidth * scaleCurrent), (bfh.CharacterHeight * scaleCurrent));
-				x += (bfc.Width * scaleCurrent);
+				gfx.DrawImage(bfh.GetCharacter(c, Color.SaddleBrown).Character, x - bfc.Offset * scaleCurrent + 2f, y + 2f, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
+				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
+				x += bfc.Width * scaleCurrent;
 			}
 
 			// Cursor

@@ -152,7 +152,7 @@ namespace game_rocket_slime_3ds
 				}
 
 				// Draw character
-				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - (bfc.Offset * scaleCurrent), y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
+				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
 				x += bfc.Width * scaleCurrent;
 			}
 
