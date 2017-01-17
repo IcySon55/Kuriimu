@@ -16,10 +16,14 @@ namespace game_great_detective_pikachu
 		Dictionary<string, string> _pairs = new Dictionary<string, string>
 		{
 			// Control
-			["<prompt>"] = "\x1F\x20",
+			["Ⓐ"] = "\xE\x1\x0\x1\x0",
+			["Ⓨ"] = "\xE\x1\x0\x1\x3",
+			["◎"] = "\xE\x1\x0\x1\x4",
+			["👁️"] = "\xE\x1\x0\x1\x7",
 
 			// Color
-			["<color-default>"] = "\x13\x00",
+			["<color-red>"] = "\xE\x0\x3\x4\xFF\x4B\x4B\xFF",
+			["<color-white>"] = "\xE\x0\x3\x4\xFD\xFD\xFD\xFF",
 
 			// Special
 			["…"] = "\x85"
