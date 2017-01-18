@@ -40,23 +40,21 @@ namespace file_btxt
 					Object1s.Add(obj);
 				}
 
-				br.ReadUInt32(); // 0x00 00 00 00
-				Header.LabelLength = br.ReadUInt32();
-
 				// Offsets
-				for (int i = 0; i < Header.NumberOfEntries; i++)
+				for (int i = 0; i < 2 * Header.NumberOfEntries; i++)
 				{
 					Offsets.Add(br.ReadUInt32());
 				}
 
 				// Set the offset start position
 				uint offsetStart = (uint)br.BaseStream.Position;
+				Offsets.Add((uint)(br.BaseStream.Length - offsetStart)); // just to make the next part easier
 
 				// Labels
 				for (int i = 0; i < Header.NumberOfEntries; i++)
 				{
 					Label label = new Label();
-					label.Name = br.ReadString((int)Header.LabelLength);
+					label.Name = br.ReadString((int)(Offsets[i + 1] - Offsets[i]));
 					Labels.Add(label);
 				}
 
@@ -64,10 +62,8 @@ namespace file_btxt
 				for (int i = 0; i < Header.NumberOfEntries; i++)
 				{
 					Label label = Labels[i];
-					uint start = offsetStart + Offsets[i];
-					uint length = (i + 1 >= Offsets.Count) ? (uint)br.BaseStream.Length - start : offsetStart + Offsets[i + 1] - start;
+					uint length = Offsets[Header.NumberOfEntries + i + 1] - Offsets[Header.NumberOfEntries + i];
 
-					br.BaseStream.Seek(start, SeekOrigin.Begin);
 					label.Text = br.ReadBytes((int)length);
 				}
 
