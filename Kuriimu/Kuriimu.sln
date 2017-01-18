@@ -5,6 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
+		{243CFA03-BB36-421B-9E64-F446C8D6E5B0} = {243CFA03-BB36-421B-9E64-F446C8D6E5B0}
 		{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8} = {9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}
 		{40EA3463-4A08-4E2C-938F-5025E87D6CB6} = {40EA3463-4A08-4E2C-938F-5025E87D6CB6}
 		{9665286A-F74F-4180-A73C-F427FDF29B2E} = {9665286A-F74F-4180-A73C-F427FDF29B2E}
@@ -20,10 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuContract", "..\Kurii
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_kup", "..\file_kup\file_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_rocket_slime_3ds", "..\game_rocket_slime_3ds\game_rocket_slime_3ds.csproj", "{76791481-35E8-41C0-A01C-F0FC66416A20}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_fenceposts", "..\ext_fenceposts\ext_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_msbt", "..\file_msbt\file_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmml", "..\file_gmml\file_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
@@ -32,7 +29,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmd", "..\file_gmd\fil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_jmsg", "..\file_jmsg\file_jmsg.csproj", "{AD39D297-4420-4044-ACB4-21B22076B213}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_btxt", "..\file_btxt\file_btxt.csproj", "{243CFA03-BB36-421B-9E64-F446C8D6E5B0}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_director", "..\ext_director\ext_director.csproj", "{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_fenceposts", "..\ext_fenceposts\ext_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_rocket_slime_3ds", "..\game_rocket_slime_3ds\game_rocket_slime_3ds.csproj", "{76791481-35E8-41C0-A01C-F0FC66416A20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_great_detective_pikachu", "..\game_great_detective_pikachu\game_great_detective_pikachu.csproj", "{05E492D3-00B6-475A-BC9E-A22237864C52}"
 EndProject
@@ -95,6 +98,10 @@ Global
 		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22CBC179-CCE1-4C27-AA9D-DC69D9588101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{243CFA03-BB36-421B-9E64-F446C8D6E5B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{243CFA03-BB36-421B-9E64-F446C8D6E5B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{243CFA03-BB36-421B-9E64-F446C8D6E5B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{243CFA03-BB36-421B-9E64-F446C8D6E5B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
