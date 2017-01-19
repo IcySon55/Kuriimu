@@ -27,13 +27,13 @@ namespace file_btxt
 
 	public sealed class String
 	{
-		public uint Attribute2 { get; set; }
-		public byte[] Text { get; set; }
+		public uint ID { get; set; }
+		public string Text { get; set; }
 
 		public String()
 		{
-			Attribute2 = 0;
-			Text = new byte[] { };
+			ID = 0;
+			Text = string.Empty;
 		}
 	}
 

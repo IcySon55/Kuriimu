@@ -160,7 +160,7 @@ namespace file_btxt
 							}
 							else
 							{
-								Entry subEntry = new Entry(str, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name).Strings.FirstOrDefault(j => j.Attribute2 == str.Attribute2));
+								Entry subEntry = new Entry(str, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name).Strings.FirstOrDefault(j => j.ID == str.ID));
 								entry.SubEntries.Add(subEntry);
 							}
 						}
@@ -208,13 +208,13 @@ namespace file_btxt
 
 		public string Name
 		{
-			get { return IsSubEntry ? EditedString.Attribute2.ToString() : Temp.Name; }
+			get { return IsSubEntry ? EditedString.ID.ToString() : Temp.Name; }
 			set {; }
 		}
 
 		public byte[] OriginalText
 		{
-			get { return OriginalString.Text; }
+			get { return Encoding.GetBytes(OriginalString.Text); }
 			set {; }
 		}
 
@@ -226,8 +226,8 @@ namespace file_btxt
 
 		public byte[] EditedText
 		{
-			get { return EditedString.Text; }
-			set { EditedString.Text = value; }
+			get { return Encoding.GetBytes(EditedString.Text); }
+			set { EditedString.Text = Encoding.GetString(value); }
 		}
 
 		public string EditedTextString
@@ -280,7 +280,7 @@ namespace file_btxt
 
 		public override string ToString()
 		{
-			return IsSubEntry ? EditedString.Attribute2.ToString() : Name;
+			return IsSubEntry ? EditedString.ID.ToString() : Name;
 		}
 
 		public int CompareTo(IEntry rhs)

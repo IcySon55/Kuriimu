@@ -11,8 +11,7 @@ namespace file_btxt
 	public class BTXT
 	{
 		public Header Header = new Header();
-		public List<uint> LabelOffsets = new List<uint>();
-		public List<uint> StringOffsets = new List<uint>();
+		public List<uint> Offsets = new List<uint>();
 		public List<Label> Labels = new List<Label>();
 
 		public Encoding FileEncoding = Encoding.Unicode;
@@ -31,7 +30,7 @@ namespace file_btxt
 				Header.NumberOfLabels = br.ReadUInt16();
 				Header.NumberOfStrings = br.ReadUInt16();
 
-				// Create enough labels
+				// Create labels
 				for (int i = 0; i < Header.NumberOfLabels; i++)
 					Labels.Add(new Label());
 
@@ -44,63 +43,42 @@ namespace file_btxt
 					for (int j = 0; j < label.StringCount; j++)
 					{
 						String str = new String();
-						str.Attribute2 = br.ReadUInt32();
+						str.ID = br.ReadUInt32();
 						label.Strings.Add(str);
 					}
 				}
 
-				// Label Offsets
-				for (int i = 0; i < Header.NumberOfLabels; i++)
-					LabelOffsets.Add(br.ReadUInt32());
-
-				// String Offsets
-				for (int i = 0; i < Header.NumberOfStrings; i++)
-					StringOffsets.Add(br.ReadUInt32());
+				// Offsets
+				for (int i = 0; i < Header.NumberOfLabels + Header.NumberOfStrings; i++)
+					Offsets.Add(br.ReadUInt32());
 
 				// Set the offset start position
 				uint offsetStart = (uint)br.BaseStream.Position;
+				Offsets.Add((uint)br.BaseStream.Length - offsetStart); // Add an extra offset at the end
 
 				// Labels
 				for (int i = 0; i < Header.NumberOfLabels; i++)
 				{
 					Label label = Labels[i];
-					uint start = offsetStart + LabelOffsets[i];
-					uint length = (i + 1 >= LabelOffsets.Count) ? offsetStart + StringOffsets[0] - start : offsetStart + LabelOffsets[i + 1] - start;
-
-					br.BaseStream.Seek(start, SeekOrigin.Begin);
-					label.Name = Encoding.ASCII.GetString(StripNulls(br.ReadBytes((int)length)));
+					label.Name = Encoding.ASCII.GetString(br.ReadBytes((int)(Offsets[i + 1] - Offsets[i]))).TrimEnd('\0');
 				}
 
 				// Text
-				int adjust = 0;
+				int index = 0;
 				for (int i = 0; i < Header.NumberOfLabels; i++)
 				{
 					Label label = Labels[i];
 
 					for (int j = 0; j < label.StringCount; j++)
 					{
-						uint start = offsetStart + StringOffsets[adjust];
-						uint length = (adjust + 1 >= StringOffsets.Count) ? (uint)br.BaseStream.Length - start : offsetStart + StringOffsets[adjust + 1] - start;
-
-						br.BaseStream.Seek(start, SeekOrigin.Begin);
 						String str = label.Strings[j];
-						str.Text = StripNulls(br.ReadBytes((int)length));
-						adjust++;
+						str.Text = FileEncoding.GetString(br.ReadBytes((int)(Offsets[Header.NumberOfLabels + index + 1] - Offsets[Header.NumberOfLabels + index]))).TrimEnd('\0');
+						index++;
 					}
 				}
 
 				br.Close();
 			}
-		}
-
-		private byte[] StripNulls(byte[] input)
-		{
-			List<byte> result = input.ToList();
-
-			while (result.Count > 0 && result[result.Count - 1] == '\0')
-				result.RemoveAt(result.Count - 1);
-
-			return result.ToArray();
 		}
 
 		//public bool Save(string filename)
