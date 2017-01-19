@@ -14,8 +14,8 @@ namespace file_gmml
 	public sealed class GmmlAdapter : IFileAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private GMML _gmm = null;
-		private GMML _gmmBackup = null;
+		private GMML _gmml = null;
+		private GMML _gmmlBackup = null;
 		private List<Entry> _entries = null;
 
 		#region Properties
@@ -75,21 +75,21 @@ namespace file_gmml
 			{
 				try
 				{
-					_gmm = GMML.Load(_fileInfo.FullName);
+					_gmml = GMML.Load(_fileInfo.FullName);
 
 					string backupFilePath = _fileInfo.FullName + ".bak";
 					if (File.Exists(backupFilePath))
 					{
-						_gmmBackup = GMML.Load(backupFilePath);
+						_gmmlBackup = GMML.Load(backupFilePath);
 					}
 					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 					{
 						File.Copy(_fileInfo.FullName, backupFilePath);
-						_gmmBackup = GMML.Load(backupFilePath);
+						_gmmlBackup = GMML.Load(backupFilePath);
 					}
 					else
 					{
-						_gmmBackup = null;
+						_gmmlBackup = null;
 					}
 				}
 				catch (XmlException)
@@ -116,7 +116,7 @@ namespace file_gmml
 
 			try
 			{
-				_gmm.Save(_fileInfo.FullName);
+				_gmml.Save(_fileInfo.FullName);
 			}
 			catch (Exception)
 			{
@@ -151,21 +151,21 @@ namespace file_gmml
 				{
 					_entries = new List<Entry>();
 
-					foreach (Row row in _gmm.Body.Rows)
+					foreach (Row row in _gmml.Body.Rows)
 					{
 						Entry entry = new Entry(row);
 						_entries.Add(entry);
 
 						foreach (Language lang in row.Languages)
 						{
-							if (_gmmBackup == null)
+							if (_gmmlBackup == null)
 							{
 								Entry subEntry = new Entry(lang);
 								entry.SubEntries.Add(subEntry);
 							}
 							else
 							{
-								Entry subEntry = new Entry(lang, _gmmBackup.Body.Rows.FirstOrDefault(o => o.ID == row.ID).Languages.FirstOrDefault(j => j.Name == lang.Name));
+								Entry subEntry = new Entry(lang, _gmmlBackup.Body.Rows.FirstOrDefault(o => o.ID == row.ID).Languages.FirstOrDefault(j => j.Name == lang.Name));
 								entry.SubEntries.Add(subEntry);
 							}
 						}
@@ -176,7 +176,7 @@ namespace file_gmml
 			}
 		}
 
-		public IEnumerable<string> NameList => _gmm?.Body.Rows.Select(o => o.Comment);
+		public IEnumerable<string> NameList => _gmml?.Body.Rows.Select(o => o.Comment);
 
 		public string NameFilter => @".*";
 

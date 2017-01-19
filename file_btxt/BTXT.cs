@@ -97,7 +97,7 @@ namespace file_btxt
 		{
 			List<byte> result = input.ToList();
 
-			while (result[result.Count - 1] == '\0')
+			while (result.Count > 0 && result[result.Count - 1] == '\0')
 				result.RemoveAt(result.Count - 1);
 
 			return result.ToArray();
