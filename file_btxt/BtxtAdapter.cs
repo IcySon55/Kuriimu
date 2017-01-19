@@ -31,7 +31,7 @@ namespace file_btxt
 		// Feature Support
 		public bool FileHasExtendedProperties => false;
 
-		public bool CanSave => true;
+		public bool CanSave => false;
 
 		public bool CanAddEntries => false;
 
@@ -39,11 +39,11 @@ namespace file_btxt
 
 		public bool CanDeleteEntries => false;
 
-		public bool CanSortEntries => true;
+		public bool CanSortEntries => false;
 
-		public bool EntriesHaveSubEntries => false;
+		public bool EntriesHaveSubEntries => true;
 
-		public bool OnlySubEntriesHaveText => false;
+		public bool OnlySubEntriesHaveText => true;
 
 		public bool EntriesHaveUniqueNames => true;
 
@@ -148,15 +148,21 @@ namespace file_btxt
 
 					foreach (Label label in _btxt.Labels)
 					{
-						if (_btxtBackup == null)
+						Entry entry = new Entry(label);
+						_entries.Add(entry);
+
+						foreach (String str in label.Strings)
 						{
-							Entry entry = new Entry(_btxt.FileEncoding, label);
-							_entries.Add(entry);
-						}
-						else
-						{
-							Entry entry = new Entry(_btxt.FileEncoding, label, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name));
-							_entries.Add(entry);
+							if (_btxtBackup == null)
+							{
+								Entry subEntry = new Entry(str);
+								entry.SubEntries.Add(subEntry);
+							}
+							else
+							{
+								Entry subEntry = new Entry(str, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name).Strings.FirstOrDefault(j => j.Attribute2 == str.Attribute2));
+								entry.SubEntries.Add(subEntry);
+							}
 						}
 					}
 				}
@@ -174,7 +180,7 @@ namespace file_btxt
 		// Features
 		public bool ShowProperties(Icon icon) => false;
 
-		public IEntry NewEntry() => new Entry(_btxt.FileEncoding);
+		public IEntry NewEntry() => new Entry();
 
 		public bool AddEntry(IEntry entry) => false;
 
@@ -202,32 +208,32 @@ namespace file_btxt
 
 		public string Name
 		{
-			get { return EditedLabel.Name; }
+			get { return IsSubEntry ? EditedString.Attribute2.ToString() : Temp.Name; }
 			set {; }
 		}
 
 		public byte[] OriginalText
 		{
-			get { return OriginalLabel.Text; }
+			get { return OriginalString.Text; }
 			set {; }
 		}
 
 		public string OriginalTextString
 		{
-			get { return Encoding.GetString(OriginalLabel.Text); }
+			get { return Encoding.GetString(OriginalText); }
 			set {; }
 		}
 
 		public byte[] EditedText
 		{
-			get { return EditedLabel.Text; }
-			set { EditedLabel.Text = value; }
+			get { return EditedString.Text; }
+			set { EditedString.Text = value; }
 		}
 
 		public string EditedTextString
 		{
-			get { return Encoding.GetString(EditedLabel.Text); }
-			set { EditedLabel.Text = Encoding.GetBytes(value); }
+			get { return Encoding.GetString(EditedText); }
+			set { EditedText = Encoding.GetBytes(value); }
 		}
 
 		public int MaxLength { get; set; }
@@ -237,14 +243,16 @@ namespace file_btxt
 		public List<IEntry> SubEntries { get; set; }
 		public bool IsSubEntry { get; set; }
 
-		public Label EditedLabel { get; set; }
-		public Label OriginalLabel { get; }
+		public Label Temp { get; set; }
+		public String EditedString { get; set; }
+		public String OriginalString { get; }
 
 		public Entry()
 		{
 			Encoding = Encoding.Unicode;
-			EditedLabel = new Label();
-			OriginalLabel = new Label();
+			Temp = new Label();
+			EditedString = new String();
+			OriginalString = new String();
 			Name = string.Empty;
 			MaxLength = 0;
 			OriginalText = new byte[] { };
@@ -252,26 +260,27 @@ namespace file_btxt
 			SubEntries = new List<IEntry>();
 		}
 
-		public Entry(Encoding encoding) : this()
+		public Entry(Label row) : this()
 		{
-			Encoding = encoding;
+			Temp = row;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel) : this(encoding)
+		public Entry(String editedString) : this()
 		{
-			if (editedLabel != null)
-				EditedLabel = editedLabel;
+			if (editedString != null)
+				EditedString = editedString;
+			IsSubEntry = true;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel, Label originalLabel) : this(encoding, editedLabel)
+		public Entry(String editedString, String originalString) : this(editedString)
 		{
-			if (originalLabel != null)
-				OriginalLabel = originalLabel;
+			if (originalString != null)
+				OriginalString = originalString;
 		}
 
 		public override string ToString()
 		{
-			return Name;
+			return IsSubEntry ? EditedString.Attribute2.ToString() : Name;
 		}
 
 		public int CompareTo(IEntry rhs)

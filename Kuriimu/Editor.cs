@@ -307,28 +307,35 @@ namespace Kuriimu
 			{
 				try
 				{
-					_fileAdapter = SelectFileAdapter(filename);
-					if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
+					IFileAdapter _tempAdapter = SelectFileAdapter(filename);
+
+					if (_tempAdapter != null)
 					{
-						_fileOpen = true;
-						_hasChanges = false;
+						_fileAdapter = _tempAdapter;
 
-						// Select Game Handler
-						foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
-							if (tsi.Text == Settings.Default.SelectedGameHandler)
-							{
-								_gameHandler = (IGameHandler)tsi.Tag;
-								tsbGameSelect.Text = tsi.Text;
-								tsbGameSelect.Image = tsi.Image;
-								break;
-							}
-						if (_gameHandler == null)
-							_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
+						if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
+						{
+							_fileOpen = true;
+							_hasChanges = false;
 
-						LoadEntries();
-						UpdateTextView();
-						UpdatePreview();
-						UpdateHexView();
+							// Select Game Handler
+							foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+								if (tsi.Text == Settings.Default.SelectedGameHandler)
+								{
+									_gameHandler = (IGameHandler)tsi.Tag;
+									tsbGameSelect.Text = tsi.Text;
+									tsbGameSelect.Image = tsi.Image;
+									break;
+								}
+							if (_gameHandler == null)
+								_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
+
+							LoadEntries();
+							UpdateTextView();
+							UpdatePreview();
+							UpdateHexView();
+							UpdateForm();
+						}
 					}
 
 					Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
@@ -339,9 +346,8 @@ namespace Kuriimu
 					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
 					_fileOpen = false;
 					_hasChanges = false;
+					UpdateForm();
 				}
-
-				UpdateForm();
 			}
 		}
 

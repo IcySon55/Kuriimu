@@ -3,3 +3,4 @@ obj
 *.suo
 *.user
 Publish.bat
+/sample_files
