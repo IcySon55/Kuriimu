@@ -14,13 +14,7 @@ namespace game_maple_story_3ds
 			// Control
 			["PlayerName"] = "[NAME:B\\]",
 
-			// Color
-			["<color-default>"] = "\x13\x00",
-			["<color-red>"] = "\x13\x01",
-			["<color-???>"] = "\x13\x02",
-			["<color-blue>"] = "\x13\x03",
-
-			// Special
+			// Special (again, do these exist in maple? oh well~)
 			["…"] = "\x85",
 			["©"] = "\x86",
 			["♥"] = "\x87"
