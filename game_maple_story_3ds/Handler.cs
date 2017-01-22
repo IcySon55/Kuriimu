@@ -59,14 +59,14 @@ namespace game_maple_story_3ds
 			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
 			
-			Rectangle rectText = new Rectangle(15, 21, 370, 60);
+			Rectangle rectText = new Rectangle(8, 19, 400, 80);
 
-			string str = rawString.Replace(_pairs["PlayerName"], "NameMugi");
-			float scaleDefault = 0.5f;
+			string str = rawString.Replace(_pairs["PlayerName"], "‹NameMugi›");
+			float scaleDefault = 0.635f;
 			float scaleCurrent = scaleDefault;
 			float x = rectText.X, pX = x;
 			float y = rectText.Y, pY = y;
-			float yAdjust = 1;
+			float yAdjust = -2;
 			Color colorDefault = Color.FromArgb(255, 255, 255, 255);
 			Color colorCurrent = colorDefault;
 
@@ -83,37 +83,39 @@ namespace game_maple_story_3ds
 
 				// Handle control codes
 				
-				if (c == 0x001F && (c2 == 0x0000 || c2 == 0x0100 || c2 == 0x0200 || c2 == 0x0103 || c2 == 0x0020 || c2 == 0x0115)) // Unknown/No Render Effect
+				if (c == '<') // Orange
 				{
+					colorCurrent = Color.FromArgb(255, 255, 150, 0);
+					continue;
+				}
+				else if (c == '{') // Green
+				{
+					colorCurrent = Color.FromArgb(255, 131, 237, 63);
+					continue;
+				}
+				else if (c == '\\' && c2== '[') // Purple
+				{
+					colorCurrent = Color.FromArgb(255, 255, 100, 255);
 					i++;
 					continue;
 				}
-				else if (c == 0x0013 && c2 == 0x0000) // Default
+				else if (c == '>' || c == '}' || c== '›') // Reset
+				{
+					colorCurrent = colorDefault;
+					continue;
+				}
+				else if (c == '\\' && c2 == ']') //Reset
 				{
 					colorCurrent = colorDefault;
 					i++;
 					continue;
 				}
-				else if (c == 0x0013 && c2 == 0x0001) // Red
+				else if (c== '‹') //Player name
 				{
-					colorCurrent = Color.Red;
-					i++;
+					colorCurrent = Color.FromArgb(255, 254, 254, 149);
 					continue;
 				}
-				else if (c == 0x0013 && c2 == 0x0003) // Light Blue
-				{
-					colorCurrent = Color.FromArgb(255, 54, 129, 216);
-					i++;
-					continue;
-				}
-				else if (c == 0x001F && c2 == 0x0015) // End Dialog
-				{
-					i++;
-					continue;
-				}
-				else if (c == 0x0017) // End End Dialog?
-					continue;
-				else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
+				else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox (does this exist in maple? oh well leaving it in)
 				{
 					x = rectText.X;
 					y += (bfc.Character.Height * scaleCurrent) + yAdjust;
