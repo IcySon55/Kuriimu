@@ -12,12 +12,7 @@ namespace game_maple_story_3ds
 		Dictionary<string, string> _pairs = new Dictionary<string, string>
 		{
 			// Control
-			["PlayerName"] = "[NAME:B\\]",
-
-			// Special (again, do these exist in maple? oh well~)
-			["…"] = "\x85",
-			["©"] = "\x86",
-			["♥"] = "\x87"
+			["PlayerName"] = "[NAME:B\\]"
 		};
 
 		#region Properties
@@ -52,7 +47,7 @@ namespace game_maple_story_3ds
 			gfx.SmoothingMode = SmoothingMode.HighQuality;
 			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-			
+
 			Rectangle rectText = new Rectangle(8, 19, 400, 80);
 
 			string str = rawString.Replace(_pairs["PlayerName"], "‹NameMugi›");
@@ -76,7 +71,7 @@ namespace game_maple_story_3ds
 				BitmapFontCharacter bfc = bfh.GetCharacter(c);
 
 				// Handle control codes
-				
+
 				if (c == '<') // Orange
 				{
 					colorCurrent = Color.FromArgb(255, 255, 150, 0);
@@ -87,13 +82,13 @@ namespace game_maple_story_3ds
 					colorCurrent = Color.FromArgb(255, 131, 237, 63);
 					continue;
 				}
-				else if (c == '\\' && c2== '[') // Purple
+				else if (c == '\\' && c2 == '[') // Purple
 				{
 					colorCurrent = Color.FromArgb(255, 255, 100, 255);
 					i++;
 					continue;
 				}
-				else if (c == '>' || c == '}' || c== '›') // Reset
+				else if (c == '>' || c == '}' || c == '›') // Reset
 				{
 					colorCurrent = colorDefault;
 					continue;
@@ -104,7 +99,7 @@ namespace game_maple_story_3ds
 					i++;
 					continue;
 				}
-				else if (c== '‹') //Player name
+				else if (c == '‹') //Player name
 				{
 					colorCurrent = Color.FromArgb(255, 254, 254, 149);
 					continue;
