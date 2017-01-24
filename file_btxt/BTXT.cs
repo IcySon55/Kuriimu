@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using KuriimuContract;
 
 namespace file_btxt
@@ -13,7 +11,6 @@ namespace file_btxt
 		public Header Header = new Header();
 		public List<uint> Offsets = new List<uint>();
 		public List<Label> Labels = new List<Label>();
-
 		public Encoding FileEncoding = Encoding.Unicode;
 
 		public BTXT(string filename)

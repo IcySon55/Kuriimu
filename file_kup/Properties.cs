@@ -1,9 +1,9 @@
-﻿using file_kup.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using file_kup.Properties;
+using KuriimuContract;
 
 namespace file_kup
 {

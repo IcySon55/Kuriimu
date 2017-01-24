@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using file_btxt.Properties;
 using KuriimuContract;
@@ -43,8 +42,6 @@ namespace file_btxt
 
 		public bool EntriesHaveSubEntries => true;
 
-		public bool OnlySubEntriesHaveText => true;
-
 		public bool EntriesHaveUniqueNames => true;
 
 		public bool EntriesHaveExtendedProperties => false;
@@ -61,7 +58,25 @@ namespace file_btxt
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				new BTXT(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -116,22 +131,6 @@ namespace file_btxt
 			catch (Exception)
 			{
 				result = SaveResult.Failure;
-			}
-
-			return result;
-		}
-
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				new BTXT(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
 			}
 
 			return result;
@@ -204,59 +203,44 @@ namespace file_btxt
 
 	public sealed class Entry : IEntry
 	{
-		public Encoding Encoding { get; set; }
-
+		// Interface
 		public string Name
 		{
 			get { return IsSubEntry ? EditedString.ID.ToString() : Temp.Name; }
-			set {; }
+			set { }
 		}
 
-		public byte[] OriginalText
-		{
-			get { return Encoding.GetBytes(OriginalString.Text); }
-			set {; }
-		}
+		public string OriginalText => OriginalString.Text;
 
-		public string OriginalTextString
+		public string EditedText
 		{
-			get { return Encoding.GetString(OriginalText); }
-			set {; }
-		}
-
-		public byte[] EditedText
-		{
-			get { return Encoding.GetBytes(EditedString.Text); }
-			set { EditedString.Text = Encoding.GetString(value); }
-		}
-
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedText); }
-			set { EditedText = Encoding.GetBytes(value); }
+			get { return EditedString.Text; }
+			set { EditedString.Text = value; }
 		}
 
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => true;
+		public IEntry ParentEntry { get; set; }
+
+		public bool IsSubEntry => ParentEntry != null;
+
+		public bool HasText { get; }
 
 		public List<IEntry> SubEntries { get; set; }
-		public bool IsSubEntry { get; set; }
 
+		// Adapter
 		public Label Temp { get; set; }
-		public String EditedString { get; set; }
 		public String OriginalString { get; }
+		public String EditedString { get; set; }
 
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
 			Temp = new Label();
-			EditedString = new String();
 			OriginalString = new String();
+			EditedString = new String();
+
 			Name = string.Empty;
 			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
 			SubEntries = new List<IEntry>();
 		}
 
@@ -269,7 +253,6 @@ namespace file_btxt
 		{
 			if (editedString != null)
 				EditedString = editedString;
-			IsSubEntry = true;
 		}
 
 		public Entry(String editedString, String originalString) : this(editedString)

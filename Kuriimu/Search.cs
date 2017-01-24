@@ -1,8 +1,8 @@
-﻿using Kuriimu.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Kuriimu.Properties;
+using KuriimuContract;
 
 namespace Kuriimu
 {
@@ -53,12 +53,12 @@ namespace Kuriimu
 				{
 					if (chkMatchCase.Checked)
 					{
-						if (entry.EditedTextString.Contains(txtFindText.Text) || entry.OriginalTextString.Contains(txtFindText.Text))
+						if (entry.EditedText.Contains(txtFindText.Text) || entry.OriginalText.Contains(txtFindText.Text))
 							lstResults.Items.Add(new ListItem(entry.ToString(), entry));
 					}
 					else
 					{
-						if (entry.EditedTextString.ToLower().Contains(txtFindText.Text.ToLower()) || entry.OriginalTextString.ToLower().Contains(txtFindText.Text.ToLower()))
+						if (entry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || entry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()))
 							lstResults.Items.Add(new ListItem(entry.ToString(), entry));
 					}
 
@@ -66,12 +66,12 @@ namespace Kuriimu
 					{
 						if (chkMatchCase.Checked)
 						{
-							if (subEntry.EditedTextString.Contains(txtFindText.Text) || subEntry.OriginalTextString.Contains(txtFindText.Text))
+							if (subEntry.EditedText.Contains(txtFindText.Text) || subEntry.OriginalText.Contains(txtFindText.Text))
 								lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
 						}
 						else
 						{
-							if (subEntry.EditedTextString.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalTextString.ToLower().Contains(txtFindText.Text.ToLower()))
+							if (subEntry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()))
 								lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
 						}
 					}

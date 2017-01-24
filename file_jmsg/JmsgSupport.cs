@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace file_jmsg
 {
@@ -32,7 +31,7 @@ namespace file_jmsg
 
 		public uint TextID { get; set; }
 		public uint TextOffset { get; set; }
-		public byte[] Text { get; set; }
+		public string Text { get; set; }
 
 		public Label()
 		{
@@ -45,7 +44,7 @@ namespace file_jmsg
 
 			TextID = 0;
 			TextOffset = 0;
-			Text = new byte[] { };
+			Text = string.Empty;
 		}
 	}
 

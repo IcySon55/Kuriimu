@@ -1,9 +1,8 @@
-﻿using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using KuriimuContract;
 
 namespace file_jmsg
 {
@@ -70,7 +69,7 @@ namespace file_jmsg
 							Array.Reverse(unichar);
 					}
 
-					label.Text = result.ToArray();
+					label.Text = FileEncoding.GetString(result.ToArray());
 
 					// Extra
 					result.Clear();
@@ -87,7 +86,7 @@ namespace file_jmsg
 							Array.Reverse(unichar);
 					}
 
-					label.Extra = Encoding.Unicode.GetString(result.ToArray());
+					label.Extra = FileEncoding.GetString(result.ToArray());
 				}
 
 				// Labels

@@ -1,13 +1,12 @@
-﻿using file_gmml.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+using file_gmml.Properties;
+using KuriimuContract;
 
 namespace file_gmml
 {
@@ -44,8 +43,6 @@ namespace file_gmml
 
 		public bool EntriesHaveSubEntries => true;
 
-		public bool OnlySubEntriesHaveText => true;
-
 		public bool EntriesHaveUniqueNames => false;
 
 		public bool EntriesHaveExtendedProperties => false;
@@ -62,7 +59,25 @@ namespace file_gmml
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				GMML.Load(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -126,22 +141,6 @@ namespace file_gmml
 			return result;
 		}
 
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				GMML.Load(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -161,11 +160,13 @@ namespace file_gmml
 							if (_gmmlBackup == null)
 							{
 								Entry subEntry = new Entry(lang);
+								subEntry.ParentEntry = entry;
 								entry.SubEntries.Add(subEntry);
 							}
 							else
 							{
 								Entry subEntry = new Entry(lang, _gmmlBackup.Body.Rows.FirstOrDefault(o => o.ID == row.ID).Languages.FirstOrDefault(j => j.Name == lang.Name));
+								subEntry.ParentEntry = entry;
 								entry.SubEntries.Add(subEntry);
 							}
 						}
@@ -209,65 +210,51 @@ namespace file_gmml
 
 	public sealed class Entry : IEntry
 	{
-		public Encoding Encoding { get; set; }
-
+		// Interface
 		public string Name
 		{
 			get { return IsSubEntry ? EditedLanguage.Name : Row.Comment == string.Empty ? Row.ID : Row.Comment; }
 			set
 			{
-				if (IsSubEntry)
-					EditedLanguage.Name = value;
+				//if (IsSubEntry)
+				//	EditedLanguage.Name = value;
 			}
 		}
 
-		public byte[] OriginalText
-		{
-			get { return Encoding.GetBytes(OriginalLanguage.Text); }
-			set {; }
-		}
+		public string OriginalText => OriginalLanguage.Text;
 
-		public string OriginalTextString
+		public string EditedText
 		{
-			get { return Encoding.GetString(OriginalText); }
-			set {; }
-		}
-
-		public byte[] EditedText
-		{
-			get { return Encoding.GetBytes(EditedLanguage.Text); }
-			set { EditedLanguage.Text = Encoding.GetString(value); }
-		}
-
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedText); }
-			set { EditedText = Encoding.GetBytes(value); }
+			get { return EditedLanguage.Text; }
+			set { EditedLanguage.Text = value; }
 		}
 
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => true;
+		public IEntry ParentEntry { get; set; }
+
+		public bool IsSubEntry => ParentEntry != null;
+
+		public bool HasText { get; }
 
 		public List<IEntry> SubEntries { get; set; }
-		public bool IsSubEntry { get; set; }
 
+		// Adapter
 		public Row Row { get; set; }
 		public Language OriginalLanguage { get; set; }
 		public Language EditedLanguage { get; set; }
 
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
 			Row = new Row();
 			OriginalLanguage = new Language();
 			EditedLanguage = new Language();
+
 			Name = string.Empty;
 			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
+			ParentEntry = null;
+			HasText = false;
 			SubEntries = new List<IEntry>();
-			IsSubEntry = false;
 		}
 
 		public Entry(Row row) : this()
@@ -279,7 +266,7 @@ namespace file_gmml
 		{
 			if (editedLanguage != null)
 				EditedLanguage = editedLanguage;
-			IsSubEntry = true;
+			HasText = true;
 		}
 
 		public Entry(Language editedLanguage, Language originalLanguage) : this(editedLanguage)

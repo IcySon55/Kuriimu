@@ -1,8 +1,8 @@
-﻿using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using KuriimuContract;
 
 namespace file_msbt
 {
@@ -104,6 +104,56 @@ namespace file_msbt
 			}
 
 			return group % LBL1.NumberOfGroups;
+		}
+
+		public string GetString(byte[] bytes)
+		{
+			StringBuilder sb = new StringBuilder();
+			using (BinaryReader br = new BinaryReader(new MemoryStream(bytes), FileEncoding))
+			{
+				while (br.BaseStream.Length != br.BaseStream.Position)
+				{
+					char c = br.ReadChar();
+					sb.Append(c);
+					if (c == 0xE)
+					{
+						sb.Append((char)br.ReadInt16());
+						sb.Append((char)br.ReadInt16());
+						int count = br.ReadInt16();
+						sb.Append((char)count);
+						for (int i = 0; i < count; i++)
+						{
+							sb.Append((char)br.ReadByte());
+						}
+					}
+				}
+			}
+			return sb.ToString();
+		}
+
+		public byte[] GetBytes(string str)
+		{
+			MemoryStream ms = new MemoryStream();
+			using (BinaryWriter bw = new BinaryWriter(ms, FileEncoding))
+			{
+				for (int i = 0; i < str.Length; i++)
+				{
+					char c = str[i];
+					bw.Write(c);
+					if (c == 0xE)
+					{
+						bw.Write((short)str[++i]);
+						bw.Write((short)str[++i]);
+						int count = str[++i];
+						bw.Write((short)count);
+						for (int j = 0; j < count; j++)
+						{
+							bw.Write((byte)str[++i]);
+						}
+					}
+				}
+			}
+			return ms.ToArray();
 		}
 
 		// Reading
@@ -229,7 +279,7 @@ namespace file_msbt
 						result.AddRange(unichar);
 					}
 				}
-				str.Text = result.ToArray();
+				str.Text = GetString(result.ToArray());
 				str.Index = (uint)i;
 				TXT2.Strings.Add(str);
 			}
@@ -258,7 +308,6 @@ namespace file_msbt
 		public Label AddLabel(string name)
 		{
 			String nstr = new String();
-			nstr.Text = new byte[] { };
 			TXT2.Strings.Add(nstr);
 
 			Label nlbl = new Label();
@@ -520,7 +569,7 @@ namespace file_msbt
 				uint newSize = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
 
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
-					newSize += (uint)TXT2.Strings[i].Text.Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
+					newSize += (uint)GetBytes(TXT2.Strings[i].Text).Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
 
 				bw.WriteASCII(TXT2.Identifier);
 				bw.Write(newSize);
@@ -534,26 +583,27 @@ namespace file_msbt
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					offsets.Add(offsetsLength + runningTotal);
-					runningTotal += (uint)TXT2.Strings[i].Text.Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
+					runningTotal += (uint)GetBytes(TXT2.Strings[i].Text).Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
 				}
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					bw.Write(offsets[i]);
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
+					byte[] text = GetBytes(TXT2.Strings[i].Text);
 					if (Header.EncodingByte == EncodingByte.UTF8)
 					{
-						bw.Write(TXT2.Strings[i].Text);
+						bw.Write(text);
 						bw.Write((byte)0x0);
 					}
 					else
 					{
 						if (Header.ByteOrderMark[0] == 0xFF)
-							bw.Write(TXT2.Strings[i].Text);
+							bw.Write(text);
 						else
-							for (int j = 0; j < TXT2.Strings[i].Text.Length; j += 2)
+							for (int j = 0; j < text.Length; j += 2)
 							{
-								bw.Write(TXT2.Strings[i].Text[j + 1]);
-								bw.Write(TXT2.Strings[i].Text[j]);
+								bw.Write(text[j + 1]);
+								bw.Write(text[j]);
 							}
 						bw.Write(new byte[] { 0x0, 0x0 });
 					}
