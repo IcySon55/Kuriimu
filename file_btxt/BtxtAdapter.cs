@@ -206,7 +206,7 @@ namespace file_btxt
 		// Interface
 		public string Name
 		{
-			get { return IsSubEntry ? EditedString.ID.ToString() : Temp.Name; }
+			get { return IsSubEntry ? EditedString.ID.ToString() : Label.Name; }
 			set { }
 		}
 
@@ -229,30 +229,33 @@ namespace file_btxt
 		public List<IEntry> SubEntries { get; set; }
 
 		// Adapter
-		public Label Temp { get; set; }
+		public Label Label { get; set; }
 		public String OriginalString { get; }
 		public String EditedString { get; set; }
 
 		public Entry()
 		{
-			Temp = new Label();
+			Label = new Label();
 			OriginalString = new String();
 			EditedString = new String();
 
 			Name = string.Empty;
 			MaxLength = 0;
+			ParentEntry = null;
+			HasText = false;
 			SubEntries = new List<IEntry>();
 		}
 
-		public Entry(Label row) : this()
+		public Entry(Label lbl) : this()
 		{
-			Temp = row;
+			Label = lbl;
 		}
 
 		public Entry(String editedString) : this()
 		{
 			if (editedString != null)
 				EditedString = editedString;
+			HasText = true;
 		}
 
 		public Entry(String editedString, String originalString) : this(editedString)

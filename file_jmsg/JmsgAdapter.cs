@@ -233,6 +233,8 @@ namespace file_jmsg
 
 			Name = string.Empty;
 			MaxLength = 0;
+			ParentEntry = null;
+			HasText = true;
 			SubEntries = new List<IEntry>();
 		}
 
