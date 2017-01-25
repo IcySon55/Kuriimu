@@ -69,6 +69,8 @@ namespace game_rocket_slime_3ds
 			["\x87"] = "♥"
 		};
 
+		BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
+
 		public string GetKuriimuString(string rawString)
 		{
 			return _pairs.Aggregate(rawString, (str, pair) => str.Replace(pair.Key, pair.Value));
@@ -81,8 +83,6 @@ namespace game_rocket_slime_3ds
 
 		public Bitmap GeneratePreview(string rawString)
 		{
-			BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
-
 			Bitmap textBox = new Bitmap(Resources.blank_top);
 			int boxes = rawString.Split((char)0x17).Length;
 
