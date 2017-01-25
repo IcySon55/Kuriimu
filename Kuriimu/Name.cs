@@ -1,10 +1,10 @@
-﻿using Kuriimu.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Kuriimu.Properties;
+using KuriimuContract;
 
 namespace Kuriimu
 {

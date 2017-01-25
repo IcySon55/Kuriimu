@@ -1,9 +1,8 @@
-﻿using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
+using KuriimuContract;
 
 namespace file_jmsg
 {
@@ -31,8 +30,11 @@ namespace file_jmsg
 
 				Header.NumberOfEntries = br.ReadUInt32();
 				Header.Version = br.ReadUInt32();
-				Header.HasLabels = br.ReadUInt32(); // 0x01 || 0x0101
-				Header.LabelsOffset = br.ReadUInt32() + Header.Size;
+				if (Header.Version == 0x11)
+				{
+					Header.HasLabels = br.ReadUInt32(); // 0x01 || 0x0101
+					Header.LabelsOffset = br.ReadUInt32() + Header.Size;
+				}
 
 				// Text Offsets
 				for (int i = 0; i < Header.NumberOfEntries; i++)
@@ -70,7 +72,7 @@ namespace file_jmsg
 							Array.Reverse(unichar);
 					}
 
-					label.Text = result.ToArray();
+					label.Text = FileEncoding.GetString(result.ToArray());
 
 					// Extra
 					result.Clear();
@@ -87,7 +89,7 @@ namespace file_jmsg
 							Array.Reverse(unichar);
 					}
 
-					label.Extra = Encoding.Unicode.GetString(result.ToArray());
+					label.Extra = FileEncoding.GetString(result.ToArray());
 				}
 
 				// Labels
@@ -142,9 +144,13 @@ namespace file_jmsg
 					bw.Write(Header.FileSize);
 					bw.Write(Header.NumberOfEntries);
 					bw.Write(Header.Version);
-					bw.Write(Header.HasLabels);
-					uint labelsOffset = (uint)bw.BaseStream.Position;
-					bw.Write(Header.LabelsOffset - Header.Size);
+					uint labelsOffset = 0;
+					if (Header.Version == 0x11)
+					{
+						bw.Write(Header.HasLabels);
+						labelsOffset = (uint)bw.BaseStream.Position;
+						bw.Write(Header.LabelsOffset - Header.Size);
+					}
 
 					uint entryStart = Header.Size;
 					uint textStart = (uint)bw.BaseStream.Position + (uint)(Labels.Count * 2 * 8);
@@ -155,7 +161,7 @@ namespace file_jmsg
 					{
 						Label label = Labels[i];
 						label.TextOffset = (uint)bw.BaseStream.Position - Header.Size;
-						bw.Write(label.Text);
+						bw.Write(FileEncoding.GetBytes(label.Text));
 						bw.Write(new byte[] { 0x0, 0x0 });
 					}
 
@@ -169,7 +175,7 @@ namespace file_jmsg
 					}
 
 					// Pad to the nearest 8 bytes
-					PaddingWrite(bw);
+					PaddingWrite(bw, Header.Version == 0x11 ? 8 : 4);
 
 					// Set label offset variables
 					uint labelsOffsets = (uint)bw.BaseStream.Position;
@@ -211,21 +217,20 @@ namespace file_jmsg
 						}
 
 						// Pad to the nearest 8 bytes
-						PaddingWrite(bw);
-						// Grab the new filesize
-						Header.FileSize = (uint)bw.BaseStream.Position;
+						PaddingWrite(bw, Header.Version == 0x11 ? 8 : 4);
 
 						// Label Offsets
 						bw.BaseStream.Seek(labelsOffsets, SeekOrigin.Begin);
 						for (int i = 0; i < Header.NumberOfEntries; i++)
 							bw.Write(Labels[i].NameOffset);
+
+						// Update LabelsOffset
+						bw.BaseStream.Seek(labelsOffset, SeekOrigin.Begin);
+						bw.Write(Header.LabelsOffset);
 					}
 
-					// Update LabelsOffset
-					bw.BaseStream.Seek(labelsOffset, SeekOrigin.Begin);
-					bw.Write(Header.LabelsOffset);
-
 					// Update FileSize
+					Header.FileSize = (uint)bw.BaseStream.Length;
 					bw.BaseStream.Seek(fileSizeOffset, SeekOrigin.Begin);
 					bw.Write(Header.FileSize);
 

@@ -1,12 +1,11 @@
-﻿using file_msbt.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using file_msbt.Properties;
+using KuriimuContract;
 
 namespace file_msbt
 {
@@ -43,8 +42,6 @@ namespace file_msbt
 
 		public bool EntriesHaveSubEntries => false;
 
-		public bool OnlySubEntriesHaveText => false;
-
 		public bool EntriesHaveUniqueNames => true;
 
 		public bool EntriesHaveExtendedProperties => false;
@@ -61,7 +58,25 @@ namespace file_msbt
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				new MSBT(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -121,22 +136,6 @@ namespace file_msbt
 			return result;
 		}
 
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				new MSBT(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -145,9 +144,9 @@ namespace file_msbt
 				if (_entries == null)
 				{
 					if (_msbtBackup == null)
-						_entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(_msbt.FileEncoding, o)).ToList();
+						_entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(o)).ToList();
 					else
-						_entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(_msbt.FileEncoding, o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
+						_entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
 				}
 
 				return _entries;
@@ -163,7 +162,7 @@ namespace file_msbt
 		// Features
 		public bool ShowProperties(Icon icon) => false;
 
-		public IEntry NewEntry() => new Entry(_msbt.FileEncoding);
+		public IEntry NewEntry() => new Entry();
 
 		public bool AddEntry(IEntry entry)
 		{
@@ -234,72 +233,54 @@ namespace file_msbt
 
 	public sealed class Entry : IEntry
 	{
-		public Encoding Encoding { get; set; }
-
+		// Interface
 		public string Name
 		{
 			get { return EditedLabel.Name; }
 			set { EditedLabel.Name = value; }
 		}
 
-		public byte[] OriginalText
-		{
-			get { return OriginalLabel.String.Text; }
-			set {; }
-		}
+		public string OriginalText => OriginalLabel.Text;
 
-		public string OriginalTextString
+		public string EditedText
 		{
-			get { return Encoding.GetString(OriginalLabel.String.Text); }
-			set {; }
-		}
-
-		public byte[] EditedText
-		{
-			get { return EditedLabel.String.Text; }
-			set { EditedLabel.String.Text = value; }
-		}
-
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedLabel.String.Text); }
-			set { EditedLabel.String.Text = Encoding.GetBytes(value); }
+			get { return EditedLabel.Text; }
+			set { EditedLabel.Text = value; }
 		}
 
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => true;
+		public IEntry ParentEntry { get; set; }
+
+		public bool IsSubEntry => ParentEntry != null;
+
+		public bool HasText { get; }
 
 		public List<IEntry> SubEntries { get; set; }
-		public bool IsSubEntry { get; set; }
 
-		public Label EditedLabel { get; set; }
+		// Adapter
 		public Label OriginalLabel { get; }
+		public Label EditedLabel { get; set; }
 
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
-			EditedLabel = new Label();
 			OriginalLabel = new Label();
+			EditedLabel = new Label();
+
 			Name = string.Empty;
 			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
+			ParentEntry = null;
+			HasText = true;
 			SubEntries = new List<IEntry>();
 		}
 
-		public Entry(Encoding encoding) : this()
-		{
-			Encoding = encoding;
-		}
-
-		public Entry(Encoding encoding, Label editedLabel) : this(encoding)
+		public Entry(Label editedLabel) : this()
 		{
 			if (editedLabel != null)
 				EditedLabel = editedLabel;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel, Label originalLabel) : this(encoding, editedLabel)
+		public Entry(Label editedLabel, Label originalLabel) : this(editedLabel)
 		{
 			if (originalLabel != null)
 				OriginalLabel = originalLabel;
@@ -307,14 +288,14 @@ namespace file_msbt
 
 		public override string ToString()
 		{
-			return Name == string.Empty ? EditedLabel.String.Index.ToString() : Name;
+			return Name == string.Empty ? EditedLabel.Index.ToString() : Name;
 		}
 
 		public int CompareTo(IEntry rhs)
 		{
 			int result = Name.CompareTo(rhs.Name);
 			if (result == 0)
-				result = EditedLabel.String.Index.CompareTo(((Entry)rhs).EditedLabel.String.Index);
+				result = EditedLabel.Index.CompareTo(((Entry)rhs).EditedLabel.Index);
 			return result;
 		}
 	}

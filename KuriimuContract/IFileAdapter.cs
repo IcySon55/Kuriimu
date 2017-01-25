@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 
 namespace KuriimuContract
 {
@@ -22,15 +21,15 @@ namespace KuriimuContract
 		bool CanDeleteEntries { get; } // Is deleting entries supported?
 		bool CanSortEntries { get; } // Should the option to sort entries even be allowed?
 		bool EntriesHaveSubEntries { get; } // Do entries contain multiple text values?
-		bool OnlySubEntriesHaveText { get; } // Set this to true if only the sub entries contain text data.
 		bool EntriesHaveUniqueNames { get; } // Must entry names be unique?
 		bool EntriesHaveExtendedProperties { get; } // Entries provides an extended properties dialog?
 
 		// I/O
 		FileInfo FileInfo { get; set; }
+		string LineEndings { get; }
+		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 		LoadResult Load(string filename);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
-		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 
 		// Entries
 		IEnumerable<IEntry> Entries { get; }
@@ -52,20 +51,18 @@ namespace KuriimuContract
 
 	public interface IEntry : IComparable<IEntry>
 	{
-		Encoding Encoding { get; set; }
 		string Name { get; set; }
-		byte[] OriginalText { get; set; }
-		string OriginalTextString { get; }
-		byte[] EditedText { get; set; }
-		string EditedTextString { get; }
-
+		string OriginalText { get; }
+		string EditedText { get; set; }
 		int MaxLength { get; }
-		bool IsResizable { get; }
+
+		IEntry ParentEntry { get; set; } // Reference to the parent entry
+		bool IsSubEntry { get; } // Determines whether this entry is a sub entry
+		bool HasText { get; } // Determines whether this entry can be edited in the Editor
 
 		List<IEntry> SubEntries { get; }
-		bool IsSubEntry { get; }
 
-		string ToString();
+		string ToString(); // This will appear in the entry list in the Editor
 	}
 
 	public enum LoadResult

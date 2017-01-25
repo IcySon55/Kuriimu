@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace file_jmsg
 {
@@ -18,7 +17,10 @@ namespace file_jmsg
 		public uint HasLabels;
 		public uint LabelsOffset;
 
-		public const uint Size = 0x18;
+		public uint Size
+		{
+			get { return Version == 0x11 ? (uint)0x18 : 0x10; }
+		}
 	}
 
 	public sealed class Label
@@ -32,7 +34,7 @@ namespace file_jmsg
 
 		public uint TextID { get; set; }
 		public uint TextOffset { get; set; }
-		public byte[] Text { get; set; }
+		public string Text { get; set; }
 
 		public Label()
 		{
@@ -45,7 +47,7 @@ namespace file_jmsg
 
 			TextID = 0;
 			TextOffset = 0;
-			Text = new byte[] { };
+			Text = string.Empty;
 		}
 	}
 

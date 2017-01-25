@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using file_btxt.Properties;
 using KuriimuContract;
@@ -31,7 +30,7 @@ namespace file_btxt
 		// Feature Support
 		public bool FileHasExtendedProperties => false;
 
-		public bool CanSave => true;
+		public bool CanSave => false;
 
 		public bool CanAddEntries => false;
 
@@ -39,11 +38,9 @@ namespace file_btxt
 
 		public bool CanDeleteEntries => false;
 
-		public bool CanSortEntries => true;
+		public bool CanSortEntries => false;
 
-		public bool EntriesHaveSubEntries => false;
-
-		public bool OnlySubEntriesHaveText => false;
+		public bool EntriesHaveSubEntries => true;
 
 		public bool EntriesHaveUniqueNames => true;
 
@@ -61,7 +58,25 @@ namespace file_btxt
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				new BTXT(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -121,22 +136,6 @@ namespace file_btxt
 			return result;
 		}
 
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				new BTXT(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -148,15 +147,21 @@ namespace file_btxt
 
 					foreach (Label label in _btxt.Labels)
 					{
-						if (_btxtBackup == null)
+						Entry entry = new Entry(label);
+						_entries.Add(entry);
+
+						foreach (String str in label.Strings)
 						{
-							Entry entry = new Entry(_btxt.FileEncoding, label);
-							_entries.Add(entry);
-						}
-						else
-						{
-							Entry entry = new Entry(_btxt.FileEncoding, label, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name));
-							_entries.Add(entry);
+							if (_btxtBackup == null)
+							{
+								Entry subEntry = new Entry(str);
+								entry.SubEntries.Add(subEntry);
+							}
+							else
+							{
+								Entry subEntry = new Entry(str, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name).Strings.FirstOrDefault(j => j.ID == str.ID));
+								entry.SubEntries.Add(subEntry);
+							}
 						}
 					}
 				}
@@ -174,7 +179,7 @@ namespace file_btxt
 		// Features
 		public bool ShowProperties(Icon icon) => false;
 
-		public IEntry NewEntry() => new Entry(_btxt.FileEncoding);
+		public IEntry NewEntry() => new Entry();
 
 		public bool AddEntry(IEntry entry) => false;
 
@@ -198,80 +203,70 @@ namespace file_btxt
 
 	public sealed class Entry : IEntry
 	{
-		public Encoding Encoding { get; set; }
-
+		// Interface
 		public string Name
 		{
-			get { return EditedLabel.Name; }
-			set {; }
+			get { return IsSubEntry ? EditedString.ID.ToString() : Label.Name; }
+			set { }
 		}
 
-		public byte[] OriginalText
-		{
-			get { return OriginalLabel.Text; }
-			set {; }
-		}
+		public string OriginalText => OriginalString.Text;
 
-		public string OriginalTextString
+		public string EditedText
 		{
-			get { return Encoding.GetString(OriginalLabel.Text); }
-			set {; }
-		}
-
-		public byte[] EditedText
-		{
-			get { return EditedLabel.Text; }
-			set { EditedLabel.Text = value; }
-		}
-
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedLabel.Text); }
-			set { EditedLabel.Text = Encoding.GetBytes(value); }
+			get { return EditedString.Text; }
+			set { EditedString.Text = value; }
 		}
 
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => true;
+		public IEntry ParentEntry { get; set; }
+
+		public bool IsSubEntry => ParentEntry != null;
+
+		public bool HasText { get; }
 
 		public List<IEntry> SubEntries { get; set; }
-		public bool IsSubEntry { get; set; }
 
-		public Label EditedLabel { get; set; }
-		public Label OriginalLabel { get; }
+		// Adapter
+		public Label Label { get; set; }
+		public String OriginalString { get; }
+		public String EditedString { get; set; }
 
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
-			EditedLabel = new Label();
-			OriginalLabel = new Label();
+			Label = new Label();
+			OriginalString = new String();
+			EditedString = new String();
+
 			Name = string.Empty;
 			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
+			ParentEntry = null;
+			HasText = false;
 			SubEntries = new List<IEntry>();
 		}
 
-		public Entry(Encoding encoding) : this()
+		public Entry(Label lbl) : this()
 		{
-			Encoding = encoding;
+			Label = lbl;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel) : this(encoding)
+		public Entry(String editedString) : this()
 		{
-			if (editedLabel != null)
-				EditedLabel = editedLabel;
+			if (editedString != null)
+				EditedString = editedString;
+			HasText = true;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel, Label originalLabel) : this(encoding, editedLabel)
+		public Entry(String editedString, String originalString) : this(editedString)
 		{
-			if (originalLabel != null)
-				OriginalLabel = originalLabel;
+			if (originalString != null)
+				OriginalString = originalString;
 		}
 
 		public override string ToString()
 		{
-			return Name;
+			return IsSubEntry ? EditedString.ID.ToString() : Name;
 		}
 
 		public int CompareTo(IEntry rhs)

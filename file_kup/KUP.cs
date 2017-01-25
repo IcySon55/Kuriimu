@@ -1,11 +1,11 @@
-﻿using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using KuriimuContract;
 
 namespace file_kup
 {
@@ -142,25 +142,7 @@ namespace file_kup
 
 	public sealed class Entry : IEntry
 	{
-		[XmlIgnore]
-		public Encoding Encoding { get; set; }
-
-		[XmlAttribute("encoding")]
-		public string EncodingString
-		{
-			get { return Encoding.WebName; }
-			set
-			{
-				Encoding enc = Encoding.Unicode;
-				try
-				{
-					enc = Encoding.GetEncoding(value);
-				}
-				catch (Exception) { }
-				Encoding = enc;
-			}
-		}
-
+		// Interface
 		[XmlAttribute("name")]
 		public string Name { get; set; }
 
@@ -188,54 +170,40 @@ namespace file_kup
 		[XmlElement("pointer")]
 		public List<Pointer> Pointers { get; private set; }
 
-		[XmlIgnore]
-		public byte[] OriginalText { get; set; }
-
 		[XmlElement("original")]
-		public string OriginalTextString
-		{
-			get { return Encoding.GetString(OriginalText); }
-			set { OriginalText = Encoding.GetBytes(value); }
-		}
-
-		[XmlIgnore]
-		public byte[] EditedText { get; set; }
+		public string OriginalText { get; set; }
 
 		[XmlElement("edited")]
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedText); }
-			set { EditedText = Encoding.GetBytes(value); }
-		}
+		public string EditedText { get; set; }
 
 		[XmlAttribute("max_length")]
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => MaxLength == 0;
+		[XmlIgnore]
+		public IEntry ParentEntry { get; set; }
+
+		[XmlIgnore]
+		public bool IsSubEntry => ParentEntry != null;
+
+		[XmlIgnore]
+		public bool HasText { get; }
 
 		[XmlIgnore]
 		public List<IEntry> SubEntries { get; set; }
 
-		[XmlIgnore]
-		public bool IsSubEntry { get; set; }
-
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
 			Name = string.Empty;
 			OffsetLong = 0x0;
 			InjectedOffsetLong = 0x0;
 			Relocatable = true;
-			MaxLength = 0;
 			Pointers = new List<Pointer>();
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
+			OriginalText = string.Empty;
+			EditedText = string.Empty;
+			MaxLength = 0;
+			ParentEntry = null;
+			HasText = true;
 			SubEntries = new List<IEntry>();
-		}
-
-		public Entry(Encoding encoding) : this()
-		{
-			Encoding = encoding;
 		}
 
 		public override string ToString()

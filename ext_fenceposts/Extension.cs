@@ -1,13 +1,13 @@
-﻿using ext_fenceposts.Properties;
-using file_kup;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using ext_fenceposts.Properties;
+using file_kup;
+using KuriimuContract;
 
 namespace ext_fenceposts
 {
@@ -416,7 +416,7 @@ namespace ext_fenceposts
 									result.RemoveAt(result.Count - 1);
 								}
 
-								Entry entry = new Entry(_kup.Encoding);
+								Entry entry = new Entry();
 								entry.OffsetLong = offset;
 
 								// Merging
@@ -434,23 +434,21 @@ namespace ext_fenceposts
 									foreach (long key in _pointers.Keys)
 										if (_pointers[key] == offset)
 											entry.AddPointer(key);
-									if (entry.EditedTextString == entry.OriginalTextString)
-										entry.EditedText = result.ToArray();
-									entry.OriginalText = result.ToArray();
+									entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
+									if (entry.EditedText == entry.OriginalText)
+										entry.EditedText = _kup.Encoding.GetString(result.ToArray());
 								}
 								else
 								{
 									foreach (long key in _pointers.Keys)
 										if (_pointers[key] == offset)
 											entry.AddPointer(key);
-									entry.OriginalText = result.ToArray();
-									entry.EditedText = result.ToArray();
 									entry.Relocatable = stringBound.Injectable;
-									entry.Name = Regex.Match(entry.OriginalTextString, @"\w+", RegexOptions.IgnoreCase).Value;
+									entry.Name = Regex.Match(entry.OriginalText, @"\w+", RegexOptions.IgnoreCase).Value;
 									_kup.Entries.Add(entry);
 								}
 
-								string str = _gameHandler.GetKuriimuString(entry.OriginalTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
+								string str = _gameHandler.GetKuriimuString(entry.OriginalText).Replace("\0", "<null>").Replace("\n", "\r\n");
 
 								if (Regex.Matches(str, "<null>").Count > 0)
 									_workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);
@@ -477,7 +475,7 @@ namespace ext_fenceposts
 										result.RemoveAt(result.Count - 1);
 									}
 
-									Entry entry = new Entry(_kup.Encoding);
+									Entry entry = new Entry();
 									entry.OffsetLong = stringBound.StartLong;
 
 									// Merging
@@ -492,17 +490,17 @@ namespace ext_fenceposts
 
 									if (matched)
 									{
-										if (entry.EditedTextString == entry.OriginalTextString)
-											entry.EditedText = result.ToArray();
-										entry.OriginalText = result.ToArray();
+										entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
+										if (entry.EditedText == entry.OriginalText)
+											entry.EditedText = _kup.Encoding.GetString(result.ToArray());
 									}
 									else
 									{
-										entry.OriginalText = result.ToArray();
-										entry.EditedText = entry.OriginalText;
+										entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
+										entry.EditedText = _kup.Encoding.GetString(result.ToArray());
 										entry.Relocatable = stringBound.Injectable;
-										entry.Name = Regex.Match(entry.OriginalTextString, @"\w+", RegexOptions.IgnoreCase).Value;
-										entry.MaxLength = entry.EditedTextString.Length;
+										entry.Name = Regex.Match(entry.OriginalText, @"\w+", RegexOptions.IgnoreCase).Value;
+										entry.MaxLength = entry.EditedText.Length;
 										_kup.Entries.Add(entry);
 									}
 								}
@@ -562,7 +560,7 @@ namespace ext_fenceposts
 
 			// Sort Entries
 			if (_kup.OptimizeStrings)
-				_kup.Entries = _kup.Entries.Select(o => o).OrderByDescending(o => o.EditedText.Length).ThenBy(o => o.EditedTextString).ToList();
+				_kup.Entries = _kup.Entries.Select(o => o).OrderByDescending(o => _kup.Encoding.GetByteCount(o.EditedText)).ThenBy(o => o.EditedText).ToList();
 
 			// Bound Setup
 			foreach (Bound bound in _kup.StringBounds)
@@ -582,6 +580,7 @@ namespace ext_fenceposts
 			int count = 0, optimizedCount = 0;
 			foreach (Entry entry in _kup.Entries)
 			{
+				byte[] editedText = _kup.Encoding.GetBytes(entry.EditedText);
 				count++;
 
 				if (entry.Relocatable)
@@ -593,13 +592,14 @@ namespace ext_fenceposts
 					{
 						foreach (Entry injectedEntry in injectedEntries)
 						{
-							if (injectedEntry.EditedTextString.EndsWith(entry.EditedTextString))
+							if (injectedEntry.EditedText.EndsWith(entry.EditedText))
 							{
+								byte[] injectedText = _kup.Encoding.GetBytes(injectedEntry.EditedText);
 								// Update the pointer
 								foreach (Pointer pointer in entry.Pointers)
 								{
 									bw.BaseStream.Seek(pointer.AddressLong, SeekOrigin.Begin);
-									bw.Write((uint)(injectedEntry.InjectedOffsetLong + (injectedEntry.EditedText.Length - entry.EditedText.Length) + _kup.RamOffsetUInt));
+									bw.Write((uint)(injectedEntry.InjectedOffsetLong + (injectedText.Length - editedText.Length) + _kup.RamOffsetUInt));
 								}
 								optimized = true;
 								optimizedCount++;
@@ -614,7 +614,7 @@ namespace ext_fenceposts
 						Bound bound = null;
 						foreach (Bound stringBound in _kup.StringBounds)
 						{
-							if (!stringBound.Full && stringBound.Injectable && entry.EditedText.Length < stringBound.SpaceRemaining)
+							if (!stringBound.Full && stringBound.Injectable && editedText.Length < stringBound.SpaceRemaining)
 							{
 								bound = stringBound;
 								break;
@@ -632,7 +632,7 @@ namespace ext_fenceposts
 
 							// Write the string
 							bw.BaseStream.Seek(bound.NextAvailableOffset, SeekOrigin.Begin);
-							bw.Write(entry.EditedText);
+							bw.Write(editedText);
 							entry.InjectedOffsetLong = bound.NextAvailableOffset;
 							if (_kup.Encoding.IsSingleByte)
 								bw.Write(new byte[] { 0x0 });
@@ -654,7 +654,7 @@ namespace ext_fenceposts
 				{
 					// In place string update
 					bw.BaseStream.Seek(entry.OffsetLong, SeekOrigin.Begin);
-					bw.Write(entry.EditedText, 0, Math.Min(entry.EditedText.Length, entry.MaxLength));
+					bw.Write(editedText, 0, Math.Min(editedText.Length, entry.MaxLength));
 					if (_kup.Encoding.IsSingleByte)
 						bw.Write(new byte[] { 0x0 });
 					else

@@ -1,12 +1,11 @@
-﻿using file_jmsg.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using file_jmsg.Properties;
+using KuriimuContract;
 
 namespace file_jmsg
 {
@@ -43,8 +42,6 @@ namespace file_jmsg
 
 		public bool EntriesHaveSubEntries => false;
 
-		public bool OnlySubEntriesHaveText => false;
-
 		public bool EntriesHaveUniqueNames => true;
 
 		public bool EntriesHaveExtendedProperties => false;
@@ -61,7 +58,25 @@ namespace file_jmsg
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				new JMSG(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -121,22 +136,6 @@ namespace file_jmsg
 			return result;
 		}
 
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				new JMSG(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -150,12 +149,12 @@ namespace file_jmsg
 					{
 						if (_jmsgBackup == null)
 						{
-							Entry entry = new Entry(_jmsg.FileEncoding, label);
+							Entry entry = new Entry(label);
 							_entries.Add(entry);
 						}
 						else
 						{
-							Entry entry = new Entry(_jmsg.FileEncoding, label, _jmsgBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID));
+							Entry entry = new Entry(label, _jmsgBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID));
 							_entries.Add(entry);
 						}
 					}
@@ -174,26 +173,11 @@ namespace file_jmsg
 		// Features
 		public bool ShowProperties(Icon icon) => false;
 
-		public IEntry NewEntry() => new Entry(_jmsg.FileEncoding);
+		public IEntry NewEntry() => new Entry();
 
 		public bool AddEntry(IEntry entry) => false;
 
-		public bool RenameEntry(IEntry entry, string newName)
-		{
-			bool result = true;
-
-			try
-			{
-				Entry ent = (Entry)entry;
-				//_jmsg.RenameLabel(ent.EditedLabel, newName);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
+		public bool RenameEntry(IEntry entry, string newName) => false;
 
 		public bool DeleteEntry(IEntry entry) => false;
 
@@ -213,72 +197,54 @@ namespace file_jmsg
 
 	public sealed class Entry : IEntry
 	{
-		public Encoding Encoding { get; set; }
-
+		// Interface
 		public string Name
 		{
 			get { return EditedLabel.Name; }
-			set {; }
+			set { }
 		}
 
-		public byte[] OriginalText
-		{
-			get { return OriginalLabel.Text; }
-			set {; }
-		}
+		public string OriginalText => OriginalLabel.Text;
 
-		public string OriginalTextString
-		{
-			get { return Encoding.GetString(OriginalLabel.Text); }
-			set {; }
-		}
-
-		public byte[] EditedText
+		public string EditedText
 		{
 			get { return EditedLabel.Text; }
 			set { EditedLabel.Text = value; }
 		}
 
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedLabel.Text); }
-			set { EditedLabel.Text = Encoding.GetBytes(value); }
-		}
-
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => true;
+		public IEntry ParentEntry { get; set; }
+
+		public bool IsSubEntry => ParentEntry != null;
+
+		public bool HasText { get; }
 
 		public List<IEntry> SubEntries { get; set; }
-		public bool IsSubEntry { get; set; }
 
-		public Label EditedLabel { get; set; }
+		// Adapter
 		public Label OriginalLabel { get; }
+		public Label EditedLabel { get; set; }
 
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
-			EditedLabel = new Label();
 			OriginalLabel = new Label();
+			EditedLabel = new Label();
+
 			Name = string.Empty;
 			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
+			ParentEntry = null;
+			HasText = true;
 			SubEntries = new List<IEntry>();
 		}
 
-		public Entry(Encoding encoding) : this()
-		{
-			Encoding = encoding;
-		}
-
-		public Entry(Encoding encoding, Label editedLabel) : this(encoding)
+		public Entry(Label editedLabel) : this()
 		{
 			if (editedLabel != null)
 				EditedLabel = editedLabel;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel, Label originalLabel) : this(encoding, editedLabel)
+		public Entry(Label editedLabel, Label originalLabel) : this(editedLabel)
 		{
 			if (originalLabel != null)
 				OriginalLabel = originalLabel;

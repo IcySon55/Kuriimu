@@ -40,8 +40,6 @@ namespace file_gmml
 				using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					GMML gmm = (GMML)new XmlSerializer(typeof(GMML)).Deserialize(XmlReader.Create(fs, xmlSettings));
-
-
 					return gmm;
 				}
 			}
@@ -344,6 +342,7 @@ namespace file_gmml
 			Languages = new List<Language>();
 		}
 
+		// Serialization Control
 		public bool ShouldSerializeComment()
 		{
 			return Comment.Length > 0;

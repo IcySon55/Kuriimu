@@ -1,10 +1,10 @@
-﻿using file_kup.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Xml;
+using file_kup.Properties;
+using KuriimuContract;
 
 namespace file_kup
 {
@@ -39,8 +39,6 @@ namespace file_kup
 
 		public bool EntriesHaveSubEntries => false;
 
-		public bool OnlySubEntriesHaveText => false;
-
 		public bool EntriesHaveUniqueNames => false;
 
 		public bool EntriesHaveExtendedProperties => true;
@@ -57,7 +55,25 @@ namespace file_kup
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				KUP.Load(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -108,22 +124,6 @@ namespace file_kup
 			return result;
 		}
 
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				KUP.Load(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -147,7 +147,7 @@ namespace file_kup
 			return properties.HasChanges;
 		}
 
-		public IEntry NewEntry() => new Entry(_kup.Encoding);
+		public IEntry NewEntry() => new Entry();
 
 		public bool AddEntry(IEntry entry)
 		{

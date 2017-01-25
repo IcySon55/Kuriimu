@@ -1,37 +1,38 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace file_btxt
 {
-	public enum EncodingByte : byte
-	{
-		UTF8 = 0x00,
-		Unicode = 0x01
-	}
-
 	public sealed class Header
 	{
 		public byte[] Identifier; // 0x00 00 00 00 24 10 12 FF
-		public ushort NumberOfEntries;
-		public ushort NumberOfUnknown1;
-		public uint LabelLength;
-	}
-
-	public sealed class Object1
-	{
-		public uint Value1;
-		public uint Value2;
+		public ushort NumberOfLabels;
+		public ushort NumberOfStrings;
 	}
 
 	public sealed class Label
 	{
+		public uint StringCount { get; set; }
+
 		public string Name { get; set; }
-		public byte[] Text { get; set; }
+		public List<String> Strings { get; set; }
 
 		public Label()
 		{
 			Name = string.Empty;
-			Text = new byte[] { };
+			Strings = new List<String>();
+		}
+	}
+
+	public sealed class String
+	{
+		public uint ID { get; set; }
+		public string Text { get; set; }
+
+		public String()
+		{
+			ID = 0;
+			Text = string.Empty;
 		}
 	}
 

@@ -1,11 +1,10 @@
-﻿using Be.Windows.Forms;
-using Kuriimu.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Kuriimu.Properties;
+using KuriimuContract;
 
 namespace Kuriimu
 {
@@ -95,8 +94,6 @@ namespace Kuriimu
 					txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
 					txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
 					txtEdit.Focus();
-
-					SelectInHex();
 				}
 			}
 		}
@@ -307,28 +304,34 @@ namespace Kuriimu
 			{
 				try
 				{
-					_fileAdapter = SelectFileAdapter(filename);
-					if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
+					IFileAdapter _tempAdapter = SelectFileAdapter(filename);
+
+					if (_tempAdapter != null)
 					{
-						_fileOpen = true;
-						_hasChanges = false;
+						_fileAdapter = _tempAdapter;
 
-						// Select Game Handler
-						foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
-							if (tsi.Text == Settings.Default.SelectedGameHandler)
-							{
-								_gameHandler = (IGameHandler)tsi.Tag;
-								tsbGameSelect.Text = tsi.Text;
-								tsbGameSelect.Image = tsi.Image;
-								break;
-							}
-						if (_gameHandler == null)
-							_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
+						if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
+						{
+							_fileOpen = true;
+							_hasChanges = false;
 
-						LoadEntries();
-						UpdateTextView();
-						UpdatePreview();
-						UpdateHexView();
+							// Select Game Handler
+							foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+								if (tsi.Text == Settings.Default.SelectedGameHandler)
+								{
+									_gameHandler = (IGameHandler)tsi.Tag;
+									tsbGameSelect.Text = tsi.Text;
+									tsbGameSelect.Image = tsi.Image;
+									break;
+								}
+							if (_gameHandler == null)
+								_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
+
+							LoadEntries();
+							UpdateTextView();
+							UpdatePreview();
+							UpdateForm();
+						}
 					}
 
 					Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
@@ -339,9 +342,8 @@ namespace Kuriimu
 					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
 					_fileOpen = false;
 					_hasChanges = false;
+					UpdateForm();
 				}
-
-				UpdateForm();
 			}
 		}
 
@@ -439,7 +441,7 @@ namespace Kuriimu
 				{
 					TreeNode node = new TreeNode(entry.ToString());
 					node.Tag = entry;
-					if (_fileAdapter.OnlySubEntriesHaveText)
+					if (!entry.HasText)
 					{
 						node.ForeColor = System.Drawing.Color.Gray;
 					}
@@ -487,11 +489,11 @@ namespace Kuriimu
 			}
 			else
 			{
-				txtEdit.Text = _gameHandler.GetKuriimuString(entry.EditedTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
-				txtOriginal.Text = _gameHandler.GetKuriimuString(entry.OriginalTextString).Replace("\0", "<null>").Replace("\n", "\r\n");
+				txtEdit.Text = _gameHandler.GetKuriimuString(entry.EditedText).Replace("\0", "<null>").Replace(_fileAdapter.LineEndings, "\r\n");
+				txtOriginal.Text = _gameHandler.GetKuriimuString(entry.OriginalText).Replace("\0", "<null>").Replace(_fileAdapter.LineEndings, "\r\n");
 			}
 
-			if (entry != null && !entry.IsResizable)
+			if (entry != null && entry.MaxLength != 0)
 				txtEdit.MaxLength = entry.MaxLength == 0 ? int.MaxValue : entry.MaxLength;
 		}
 
@@ -500,30 +502,9 @@ namespace Kuriimu
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedTextString);
+				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText);
 			else
 				pbxPreview.Image = null;
-		}
-
-		private void UpdateHexView()
-		{
-			DynamicFileByteProvider dfbp = null;
-
-			try
-			{
-				IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-
-				if (entry != null)
-				{
-					MemoryStream strm = new MemoryStream(entry.EditedText);
-					dfbp = new DynamicFileByteProvider(strm);
-					dfbp.Changed += new EventHandler(hbxEdit_Changed);
-				}
-			}
-			catch (Exception)
-			{ }
-
-			hbxHexView.ByteProvider = dfbp;
 		}
 
 		private void UpdateForm()
@@ -541,8 +522,8 @@ namespace Kuriimu
 			{
 				bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
 				bool canAdd = _fileOpen && _fileAdapter.CanAddEntries;
-				bool canRename = itemSelected && _fileAdapter.CanRenameEntries && (_fileAdapter.OnlySubEntriesHaveText && entry.IsSubEntry || !_fileAdapter.OnlySubEntriesHaveText);
-				bool canDelete = itemSelected && _fileAdapter.CanDeleteEntries && !entry.IsSubEntry;
+				bool canRename = itemSelected && _fileAdapter.CanRenameEntries && entry.ParentEntry == null;
+				bool canDelete = itemSelected && _fileAdapter.CanDeleteEntries && entry.ParentEntry == null;
 
 				splMain.Enabled = _fileOpen;
 				splContent.Enabled = _fileOpen;
@@ -577,19 +558,20 @@ namespace Kuriimu
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 
 				treEntries.Enabled = _fileOpen;
-				if (itemSelected && _fileAdapter.OnlySubEntriesHaveText)
+
+				if (itemSelected)
 				{
-					txtEdit.Enabled = entry.IsSubEntry;
-					if (!entry.IsSubEntry)
-						txtEdit.Text = "Please select a sub entry to edit the text.";
-					txtOriginal.Enabled = entry.IsSubEntry && txtOriginal.Text.Trim().Length > 0;
-					hbxHexView.Enabled = entry.IsSubEntry;
+					txtEdit.Enabled = entry.HasText;
+					if (!entry.HasText && entry.IsSubEntry)
+						txtEdit.Text = "This entry has no text.";
+					else if (!entry.HasText && !entry.IsSubEntry)
+						txtEdit.Text = "Select a child item to edit the text.";
+					txtOriginal.Enabled = entry.HasText && txtOriginal.Text.Trim().Length > 0;
 				}
 				else
 				{
 					txtEdit.Enabled = itemSelected;
 					txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
-					hbxHexView.Enabled = itemSelected;
 				}
 
 				tsbGameSelect.Enabled = itemSelected;
@@ -606,7 +588,6 @@ namespace Kuriimu
 		{
 			UpdateTextView();
 			UpdatePreview();
-			UpdateHexView();
 			UpdateForm();
 		}
 
@@ -633,13 +614,11 @@ namespace Kuriimu
 			string next = string.Empty;
 			string previous = string.Empty;
 
-			previous = _gameHandler.GetKuriimuString(entry.EditedTextString);
-			next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", "\n");
-			entry.EditedText = entry.Encoding.GetBytes(_gameHandler.GetRawString(next));
+			previous = _gameHandler.GetKuriimuString(entry.EditedText);
+			next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _fileAdapter.LineEndings);
+			entry.EditedText = _gameHandler.GetRawString(next);
 
 			UpdatePreview();
-			UpdateHexView();
-			SelectInHex();
 
 			if (next != previous)
 				_hasChanges = true;
@@ -651,54 +630,6 @@ namespace Kuriimu
 		{
 			if (e.Control & e.KeyCode == Keys.A)
 				txtEdit.SelectAll();
-			SelectInHex();
-		}
-
-		private void txtEdit_MouseUp(object sender, MouseEventArgs e)
-		{
-			SelectInHex();
-		}
-
-		private void SelectInHex()
-		{
-			// Magic
-			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-
-			if (entry != null)
-			{
-				int selectionStart = 0;
-				int selectionLength = 0;
-
-				string startToSelection = txtEdit.Text.Substring(0, txtEdit.SelectionStart);
-				selectionStart = _gameHandler.GetRawString(startToSelection.Replace("<null>", "\0").Replace("\r\n", "\n")).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
-				selectionLength = _gameHandler.GetRawString(txtEdit.SelectedText.Replace("<null>", "\0").Replace("\r\n", "\n")).Length * (entry.Encoding.IsSingleByte ? 1 : 2);
-
-				hbxHexView.SelectionStart = selectionStart;
-				hbxHexView.SelectionLength = selectionLength;
-			}
-		}
-
-		protected void hbxEdit_Changed(object sender, EventArgs e)
-		{
-			DynamicFileByteProvider dfbp = (DynamicFileByteProvider)sender;
-
-			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-
-			if (entry != null)
-			{
-				List<byte> bytes = new List<byte>();
-				for (int i = 0; i < (int)dfbp.Length; i++)
-					bytes.Add(dfbp.ReadByte(i));
-				entry.EditedText = bytes.ToArray();
-
-				UpdateTextView();
-
-				if (txtEdit.Text != txtOriginal.Text)
-					_hasChanges = true;
-
-				UpdatePreview();
-				UpdateForm();
-			}
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace file_msbt
 		public uint Checksum { get; set; }
 		public String String { get; set; }
 
-		public byte[] Text
+		public string Text
 		{
 			get
 			{
@@ -117,13 +117,13 @@ namespace file_msbt
 
 	public sealed class String
 	{
-		public byte[] Text { get; set; }
+		public string Text { get; set; }
 
 		public uint Index { get; set; }
 
 		public String()
 		{
-			Text = new byte[] { };
+			Text = string.Empty;
 			Index = 0;
 		}
 	}

@@ -1,10 +1,10 @@
-﻿using ext_director.Properties;
-using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using ext_director.Properties;
+using KuriimuContract;
 
 namespace ext_director
 {
