@@ -213,12 +213,8 @@ namespace file_gmml
 		// Interface
 		public string Name
 		{
-			get { return IsSubEntry ? EditedLanguage.Name : Row.Comment == string.Empty ? Row.ID : Row.Comment; }
-			set
-			{
-				//if (IsSubEntry)
-				//	EditedLanguage.Name = value;
-			}
+			get { return IsSubEntry ? EditedLanguage.Name : string.Join(" - ", Row.ID, Row.Comment); }
+			set { }
 		}
 
 		public string OriginalText => OriginalLanguage.Text;

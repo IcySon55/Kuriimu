@@ -9,33 +9,6 @@ namespace game_rocket_slime_3ds
 {
 	public class Handler : IGameHandler
 	{
-		Dictionary<string, string> _pairs = new Dictionary<string, string>
-		{
-			// Control
-			["<prompt>"] = "\x1F\x20",
-			["<player>"] = "\x1F\x05",
-			["<name>"] = "\x1F\x02",
-			["</name>"] = "\x02",
-			["<top?>"] = "\x1F\x0100",
-			["<middle?>"] = "\x1F\x0103",
-			["<bottom?>"] = "\x1F\x0200",
-			["<u1>"] = "\x1F\x00",
-			["<next>"] = "\x1F\x15",
-			["<end>"] = "\x1F\x0115",
-			["<u3>"] = "\x17",
-
-			// Color
-			["<color-default>"] = "\x13\x00",
-			["<color-red>"] = "\x13\x01",
-			["<color-???>"] = "\x13\x02",
-			["<color-blue>"] = "\x13\x03",
-
-			// Special
-			["…"] = "\x85",
-			["©"] = "\x86",
-			["♥"] = "\x87"
-		};
-
 		#region Properties
 
 		// Information
@@ -48,112 +21,176 @@ namespace game_rocket_slime_3ds
 
 		#endregion
 
+		Dictionary<string, string> _pairs = new Dictionary<string, string>
+		{
+			// Control
+			["\x1F\x02"] = "<name>",
+			["\x02"] = "</name>",
+			["\x1F\x05"] = "<player>",
+
+			["\x1F\x00"] = "<1F00>",
+			["\x1F\x0100"] = "<a-top?>",
+			["\x1F\x0103"] = "<a-middle?>",
+			["\x1F\x0120"] = "<a-other?>",
+			["\x1F\x0200"] = "<a-bottom?>",
+
+			["\x17"] = "<next>",
+			["\x1F\x15"] = "<next-prompt>",
+			["\x1F\x16"] = "<question>",
+			["\x1F\x20"] = "<prompt>",
+			["\x1F\x21"] = "<21>",
+			["\x1F\x23"] = "<23>",
+			["\x1F\x25"] = "<25>",
+			["\x1F\x26"] = "<26>",
+			["\x1F\x27"] = "<27>",
+			["\x1F\x28"] = "<28>",
+
+			["\x1F\xA0"] = "<A0>",
+			["\x1F\x1A0"] = "<1A0>",
+			["\x1F\x2A0"] = "<2A0>",
+			["\x1F\x3A0"] = "<3A0>",
+			["\x1F\x4A0"] = "<4A0>",
+			["\x1F\x5A0"] = "<5A0>",
+			["\x1F\xAA0"] = "<AA0>",
+			["\x1F\xBA0"] = "<BA0>",
+			["\x1F\xDA0"] = "<DA0>",
+			["\x1F\xEA0"] = "<EA0>",
+
+			["\x1F\x0115"] = "<end>",
+
+			// Color
+			["\x13\x00"] = "<color-default>",
+			["\x13\x01"] = "<color-red>",
+			["\x13\x03"] = "<color-blue>",
+
+			// Special
+			["\x85"] = "…",
+			["\x86"] = "©",
+			["\x87"] = "♥"
+		};
+
 		public string GetKuriimuString(string rawString)
 		{
-			return _pairs.Aggregate(rawString, (str, pair) => str.Replace(pair.Value, pair.Key));
+			return _pairs.Aggregate(rawString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
 		public string GetRawString(string kuriimuString)
 		{
-			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
+			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
 		public Bitmap GeneratePreview(string rawString)
 		{
 			BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
 
-			Bitmap img = new Bitmap(Resources.blank_top);
+			Bitmap textBox = new Bitmap(Resources.blank_top);
+			int boxes = rawString.Split((char)0x17).Length;
 
-			Graphics gfx = Graphics.FromImage(img);
-			gfx.SmoothingMode = SmoothingMode.HighQuality;
-			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+			Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);
 
-			Rectangle rectName = new Rectangle(15, 3, 114, 15);
-			Rectangle rectText = new Rectangle(15, 21, 370, 60);
-
-			string str = rawString.Replace(_pairs["<player>"], "Player");
-			float scaleDefault = 1.0f;
-			float scaleName = 0.86f;
-			float scaleCurrent = scaleDefault;
-			float x = rectText.X, pX = x;
-			float y = rectText.Y, pY = y;
-			float yAdjust = 3;
-			Color colorDefault = Color.FromArgb(255, 37, 66, 167);
-			Color colorCurrent = colorDefault;
-
-			for (int i = 0; i < str.Length; i++)
+			using (Graphics gfx = Graphics.FromImage(img))
 			{
-				bool notEOS = i + 2 < str.Length;
-				char c = str[i];
+				gfx.SmoothingMode = SmoothingMode.HighQuality;
+				gfx.InterpolationMode = InterpolationMode.Bicubic;
 
-				char c2 = ' ';
-				if (notEOS)
-					c2 = str[i + 1];
+				for (int i = 0; i < boxes; i++)
+					gfx.DrawImage(textBox, 0, i * textBox.Height);
 
-				BitmapFontCharacter bfc = bfh.GetCharacter(c);
+				Rectangle rectName = new Rectangle(15, 3, 114, 15);
+				Rectangle rectText = new Rectangle(15, 22, 370, 60);
 
-				// Handle control codes
-				if (c == 0x001F && c2 == 0x0002) // Start Name
+				string str = rawString.Replace("\x1F\x05", "Player");
+				float scaleDefault = 1.0f;
+				float scaleName = 0.86f;
+				float scaleCurrent = scaleDefault;
+				float x = rectText.X, pX = x;
+				float y = rectText.Y, pY = y;
+				float yAdjust = 4;
+				int box = 0;
+				Color colorDefault = Color.FromArgb(255, 37, 66, 167);
+				Color colorCurrent = colorDefault;
+
+				for (int i = 0; i < str.Length; i++)
 				{
-					colorCurrent = Color.White;
-					scaleCurrent = scaleName;
-					int width = bfh.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
-					pX = x;
-					pY = y;
-					x = rectName.X + (rectName.Width / 2) - (width / 2);
-					y = rectName.Y;
-					i++;
-					continue;
-				}
-				else if (c == 0x001F && (c2 == 0x0000 || c2 == 0x0100 || c2 == 0x0200 || c2 == 0x0103 || c2 == 0x0020 || c2 == 0x0115)) // Unknown/No Render Effect
-				{
-					i++;
-					continue;
-				}
-				else if (c == 0x0013 && c2 == 0x0000) // Default
-				{
-					colorCurrent = colorDefault;
-					i++;
-					continue;
-				}
-				else if (c == 0x0013 && c2 == 0x0001) // Red
-				{
-					colorCurrent = Color.Red;
-					i++;
-					continue;
-				}
-				else if (c == 0x0013 && c2 == 0x0003) // Light Blue
-				{
-					colorCurrent = Color.FromArgb(255, 54, 129, 216);
-					i++;
-					continue;
-				}
-				else if (c == 0x001F && c2 == 0x0015) // End Dialog
-				{
-					i++;
-					continue;
-				}
-				else if (c == 0x0017) // End End Dialog?
-					continue;
-				else if (c == 0x0002) // End Name
-				{
-					colorCurrent = colorDefault;
-					scaleCurrent = scaleDefault;
-					x = pX;
-					y = pY;
-					continue;
-				}
-				else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
-				{
-					x = rectText.X;
-					y += (bfc.Character.Height * scaleCurrent) + yAdjust;
-					if (c == '\n')
+					bool notEOS = i + 2 < str.Length;
+					char c = str[i];
+
+					char c2 = ' ';
+					if (notEOS)
+						c2 = str[i + 1];
+
+					BitmapFontCharacter bfc = bfh.GetCharacter(c);
+
+					// Handle control codes
+					if (c == 0x001F && c2 == 0x0002) // Start Name
+					{
+						colorCurrent = Color.White;
+						scaleCurrent = scaleName;
+						int width = bfh.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
+						pX = x;
+						pY = y;
+						x = rectName.X + (rectName.Width / 2) - (width / 2);
+						y = rectName.Y;
+						i++;
 						continue;
-				}
+					}
+					else if (c == 0x001F && (c2 == 0x0000 || c2 == 0x0100 || c2 == 0x0200 || c2 == 0x0103 || c2 == 0x0020 || c2 == 0x0115)) // Unknown/No Render Effect
+					{
+						i++;
+						continue;
+					}
+					else if (c == 0x0013 && c2 == 0x0000) // Default
+					{
+						colorCurrent = colorDefault;
+						i++;
+						continue;
+					}
+					else if (c == 0x0013 && c2 == 0x0001) // Red
+					{
+						colorCurrent = Color.Red;
+						i++;
+						continue;
+					}
+					else if (c == 0x0013 && c2 == 0x0003) // Light Blue
+					{
+						colorCurrent = Color.FromArgb(255, 54, 129, 216);
+						i++;
+						continue;
+					}
+					else if (c == 0x001F && c2 == 0x0015) // End Dialog
+					{
+						i++;
+						continue;
+					}
+					else if (c == 0x0017) // Next TextBox
+					{
+						box++;
+						x = rectText.X;
+						pX = x;
+						y = rectText.Y + textBox.Height * box;
+						pY += y;
+						continue;
+					}
+					else if (c == 0x0002) // End Name
+					{
+						colorCurrent = colorDefault;
+						scaleCurrent = scaleDefault;
+						x = pX;
+						y = pY;
+						continue;
+					}
+					else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
+					{
+						x = rectText.X;
+						y += (bfc.Character.Height * scaleCurrent) + yAdjust;
+						if (c == '\n')
+							continue;
+					}
 
-				// Draw character
-				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
-				x += bfc.Width * scaleCurrent;
+					// Draw character
+					gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
+					x += bfc.Width * scaleCurrent;
+				}
 			}
 
 			return img;
