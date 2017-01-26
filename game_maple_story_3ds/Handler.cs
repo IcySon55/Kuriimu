@@ -25,7 +25,9 @@ namespace game_maple_story_3ds
 		Dictionary<string, string> _pairs = new Dictionary<string, string>
 		{
 			// Control
-			["\\[NAME:B\\]"] = "PlayerName"
+			["\\["] = "[",
+			["\\]"] = "]",
+			["[NAME:B]"] = "PlayerName"
 		};
 
 		BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
@@ -58,6 +60,8 @@ namespace game_maple_story_3ds
 				Rectangle rectText = new Rectangle(8, 19, 400, 80);
 
 				string str = rawString.Replace("\\[NAME:B\\]", "‹NameMugi›");
+				str = str.Replace("[NAME:B]", "‹NameMugi›");
+				str = str.Replace("’", "'");
 				float scaleDefault = 0.625f;
 				float scaleCurrent = scaleDefault;
 				float x = rectText.X, pX = x;
@@ -112,7 +116,7 @@ namespace game_maple_story_3ds
 						colorCurrent = Color.FromArgb(255, 254, 254, 149);
 						continue;
 					}
-					else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox (does this exist in maple? oh well leaving it in)
+					else if (c == '\n') // The previewer will not break to a new line when the line hits the end of the text box since the game doesn't do this.
 					{
 						line++;
 						x = rectText.X;
