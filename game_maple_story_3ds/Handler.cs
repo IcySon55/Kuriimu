@@ -27,7 +27,25 @@ namespace game_maple_story_3ds
 			// Control
 			["\\["] = "[",
 			["\\]"] = "]",
-			["[NAME:B]"] = "PlayerName"
+			["[NAME:B]"] = "<PlayerName>",
+		};
+
+		Dictionary<string, string> _previewPairs = new Dictionary<string, string>
+		{
+			// Control
+			["\\["] = "[",
+			["\\]"] = "]",
+			["[NAME:B]"] = "‹NameMugi›",
+
+			// Special
+			["…"] = "\x85",
+			["‘"] = "\x91",
+			["’"] = "\x92",
+			["“"] = "\x93",
+			["”"] = "\x94",
+			["Ⅰ"] = "\x95",
+			["Ⅱ"] = "\x96",
+			["Ⅲ"] = "\x97",
 		};
 
 		BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
@@ -44,29 +62,33 @@ namespace game_maple_story_3ds
 
 		public Bitmap GeneratePreview(string rawString)
 		{
+			Bitmap background = new Bitmap(Resources.background);
+
 			Bitmap textBox = new Bitmap(Resources.blank);
 			int boxes = (int)Math.Ceiling((double)rawString.Split('\n').Length / 3);
 
-			Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);
+			int txtOffsetX = 2, txtOffsetY = 2;
+			Bitmap img = new Bitmap(400, Math.Max(textBox.Height * boxes, background.Height) + (boxes * txtOffsetY) + txtOffsetY);
 
 			using (Graphics gfx = Graphics.FromImage(img))
 			{
 				gfx.SmoothingMode = SmoothingMode.HighQuality;
 				gfx.InterpolationMode = InterpolationMode.Bicubic;
+				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+				gfx.DrawImage(new Bitmap(Resources.background), 0, 0);
 
 				for (int i = 0; i < boxes; i++)
-					gfx.DrawImage(textBox, 0, i * textBox.Height);
+					gfx.DrawImage(textBox, 0 + txtOffsetX, (i * textBox.Height) + ((i + 1) * txtOffsetY));
 
-				Rectangle rectText = new Rectangle(8, 19, 400, 80);
+				Rectangle rectText = new Rectangle(8 + txtOffsetX, 19 + txtOffsetY, 400, 80);
 
-				string str = rawString.Replace("\\[NAME:B\\]", "‹NameMugi›");
-				str = str.Replace("[NAME:B]", "‹NameMugi›");
-				str = str.Replace("’", "'");
+				string str = _previewPairs.Aggregate(rawString, (s, pair) => s.Replace(pair.Key, pair.Value));
 				float scaleDefault = 0.625f;
 				float scaleCurrent = scaleDefault;
 				float x = rectText.X, pX = x;
 				float y = rectText.Y, pY = y;
-				float yAdjust = -2;
+				float yAdjust = -2.75f;
 				int box = 0, line = 0;
 				bool newBox = true;
 				Color colorDefault = Color.FromArgb(255, 255, 255, 255);
@@ -84,7 +106,12 @@ namespace game_maple_story_3ds
 					BitmapFontCharacter bfc = bfh.GetCharacter(c);
 
 					// Handle control codes
-					if (c == '<') // Orange
+					if (c == '‹') // Player Name
+					{
+						colorCurrent = Color.FromArgb(255, 254, 254, 149);
+						continue;
+					}
+					else if (c == '<') // Orange
 					{
 						colorCurrent = Color.FromArgb(255, 255, 150, 0);
 						continue;
@@ -94,26 +121,14 @@ namespace game_maple_story_3ds
 						colorCurrent = Color.FromArgb(255, 131, 237, 63);
 						continue;
 					}
-					else if (c == '\\' && c2 == '[') // Purple
+					else if (c == '[') // Purple
 					{
 						colorCurrent = Color.FromArgb(255, 255, 100, 255);
-						i++;
 						continue;
 					}
-					else if (c == '>' || c == '}' || c == '›') // Reset
+					else if (c == '>' || c == '}' || c == '›' || c == ']') // Reset
 					{
 						colorCurrent = colorDefault;
-						continue;
-					}
-					else if (c == '\\' && c2 == ']') //Reset
-					{
-						colorCurrent = colorDefault;
-						i++;
-						continue;
-					}
-					else if (c == '‹') //Player name
-					{
-						colorCurrent = Color.FromArgb(255, 254, 254, 149);
 						continue;
 					}
 					else if (c == '\n') // The previewer will not break to a new line when the line hits the end of the text box since the game doesn't do this.
@@ -131,7 +146,7 @@ namespace game_maple_story_3ds
 						newBox = true;
 						x = rectText.X;
 						pX = x;
-						y = rectText.Y + textBox.Height * box;
+						y = rectText.Y + textBox.Height * box + (txtOffsetY * box);
 						pY += y;
 					}
 					else if (line % 3 != 0)
