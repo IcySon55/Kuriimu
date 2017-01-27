@@ -31,5 +31,17 @@ namespace file_gmd.Properties {
                 return ((string)(this["PluginName"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SortEntries {
+            get {
+                return ((bool)(this["SortEntries"]));
+            }
+            set {
+                this["SortEntries"] = value;
+            }
+        }
     }
 }

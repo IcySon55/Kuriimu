@@ -1,11 +1,12 @@
-﻿using KuriimuContract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using file_gmd.Properties;
+using KuriimuContract;
 
 namespace file_gmd
 {
@@ -42,8 +43,6 @@ namespace file_gmd
 
 		public bool EntriesHaveSubEntries => false;
 
-		public bool OnlySubEntriesHaveText => false;
-
 		public bool EntriesHaveUniqueNames => true;
 
 		public bool EntriesHaveExtendedProperties => false;
@@ -60,7 +59,25 @@ namespace file_gmd
 			}
 		}
 
+		public string LineEndings => "\n";
+
 		#endregion
+
+		public bool Identify(string filename)
+		{
+			bool result = true;
+
+			try
+			{
+				new GMD(filename);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
 
 		public LoadResult Load(string filename)
 		{
@@ -120,22 +137,6 @@ namespace file_gmd
 			return result;
 		}
 
-		public bool Identify(string filename)
-		{
-			bool result = true;
-
-			try
-			{
-				new GMD(filename);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -149,12 +150,12 @@ namespace file_gmd
 					{
 						if (_gmdBackup == null)
 						{
-							Entry entry = new Entry(_gmd.FileEncoding, label);
+							Entry entry = new Entry(label);
 							_entries.Add(entry);
 						}
 						else
 						{
-							Entry entry = new Entry(_gmd.FileEncoding, label, _gmdBackup.Labels.FirstOrDefault(o => o.ID == label.ID));
+							Entry entry = new Entry(label, _gmdBackup.Labels.FirstOrDefault(o => o.ID == label.ID));
 							_entries.Add(entry);
 						}
 					}
@@ -173,139 +174,78 @@ namespace file_gmd
 		// Features
 		public bool ShowProperties(Icon icon) => false;
 
-		public IEntry NewEntry() => new Entry(_gmd.FileEncoding);
+		public IEntry NewEntry() => new Entry();
 
-		public bool AddEntry(IEntry entry)
-		{
-			bool result = true;
+		public bool AddEntry(IEntry entry) => false;
 
-			try
-			{
-				Entry ent = (Entry)entry;
-				//ent.EditedLabel = _gmd.AddLabel(entry.Name);
-				_entries.Add((Entry)entry);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
+		public bool RenameEntry(IEntry entry, string newName) => false;
 
-			return result;
-		}
-
-		public bool RenameEntry(IEntry entry, string newName)
-		{
-			bool result = true;
-
-			try
-			{
-				Entry ent = (Entry)entry;
-				//_gmd.RenameLabel(ent.EditedLabel, newName);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
-
-		public bool DeleteEntry(IEntry entry)
-		{
-			bool result = true;
-
-			try
-			{
-				Entry ent = (Entry)entry;
-				//_gmd.RemoveLabel(ent.EditedLabel);
-				_entries.Remove(ent);
-			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
-		}
+		public bool DeleteEntry(IEntry entry) => false;
 
 		public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
 
 		// Settings
 		public bool SortEntries
 		{
-			get { return false; }
-			set {; }
+			get { return Settings.Default.SortEntries; }
+			set
+			{
+				Settings.Default.SortEntries = value;
+				Settings.Default.Save();
+			}
 		}
 	}
 
 	public sealed class Entry : IEntry
 	{
-		public Encoding Encoding { get; set; }
-
+		// Interface
 		public string Name
 		{
 			get { return EditedLabel.Name; }
 			set { EditedLabel.Name = value; }
 		}
 
-		public byte[] OriginalText
-		{
-			get { return OriginalLabel.Text; }
-			set {; }
-		}
+		public string OriginalText => OriginalLabel.Text;
 
-		public string OriginalTextString
-		{
-			get { return Encoding.GetString(OriginalLabel.Text); }
-			set {; }
-		}
-
-		public byte[] EditedText
+		public string EditedText
 		{
 			get { return EditedLabel.Text; }
 			set { EditedLabel.Text = value; }
 		}
 
-		public string EditedTextString
-		{
-			get { return Encoding.GetString(EditedLabel.Text); }
-			set { EditedLabel.Text = Encoding.GetBytes(value); }
-		}
-
 		public int MaxLength { get; set; }
 
-		public bool IsResizable => true;
+		public IEntry ParentEntry { get; set; }
+
+		public bool IsSubEntry => ParentEntry != null;
+
+		public bool HasText { get; }
 
 		public List<IEntry> SubEntries { get; set; }
-		public bool IsSubEntry { get; set; }
 
+		// Adapter
 		public Label EditedLabel { get; set; }
 		public Label OriginalLabel { get; }
 
 		public Entry()
 		{
-			Encoding = Encoding.Unicode;
 			EditedLabel = new Label();
 			OriginalLabel = new Label();
+
 			Name = string.Empty;
 			MaxLength = 0;
-			OriginalText = new byte[] { };
-			EditedText = new byte[] { };
+			ParentEntry = null;
+			HasText = true;
 			SubEntries = new List<IEntry>();
 		}
 
-		public Entry(Encoding encoding) : this()
-		{
-			Encoding = encoding;
-		}
-
-		public Entry(Encoding encoding, Label editedLabel) : this(encoding)
+		public Entry(Label editedLabel) : this()
 		{
 			if (editedLabel != null)
 				EditedLabel = editedLabel;
 		}
 
-		public Entry(Encoding encoding, Label editedLabel, Label originalLabel) : this(encoding, editedLabel)
+		public Entry(Label editedLabel, Label originalLabel) : this(editedLabel)
 		{
 			if (originalLabel != null)
 				OriginalLabel = originalLabel;

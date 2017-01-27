@@ -30,8 +30,13 @@ namespace file_gmd
 		public uint Unknown3;
 		public uint Unknown4;
 		public string Name;
+		public string Text;
 
-		public byte[] Text = new byte[] { };
+		public Label()
+		{
+			Name = string.Empty;
+			Text = string.Empty;
+		}
 	}
 
 	public sealed class InvalidGMDException : Exception

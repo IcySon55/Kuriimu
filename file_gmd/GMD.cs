@@ -56,7 +56,7 @@ namespace file_gmd
 
 				// Read in the text data
 				foreach (Label label in Labels)
-					label.Text = br.ReadBytesUntil(0x0);
+					label.Text = FileEncoding.GetString(br.ReadBytesUntil(0x0));
 
 				br.Close();
 			}
