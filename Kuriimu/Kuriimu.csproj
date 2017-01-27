@@ -160,6 +160,7 @@
     <None Include="images\game-none.png" />
     <None Include="images\btn-director.png" />
     <None Include="images\btn-extensions.png" />
+    <None Include="images\kukki.png" />
     <Content Include="images\kuriimu.ico" />
     <None Include="images\menu-about.png" />
     <Content Include="images\menu-add.png" />

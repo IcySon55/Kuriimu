@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "runext", "..\runext\runext.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_maple_story_3ds", "..\game_maple_story_3ds\game_maple_story_3ds.csproj", "{8B851D96-DA5D-48E4-9791-F15EB36E7142}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kukki", "..\Kukki\Kukki.csproj", "{DDF760B7-1273-4048-A052-4E396245937B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,10 @@ Global
 		{8B851D96-DA5D-48E4-9791-F15EB36E7142}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B851D96-DA5D-48E4-9791-F15EB36E7142}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B851D96-DA5D-48E4-9791-F15EB36E7142}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDF760B7-1273-4048-A052-4E396245937B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDF760B7-1273-4048-A052-4E396245937B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDF760B7-1273-4048-A052-4E396245937B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDF760B7-1273-4048-A052-4E396245937B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

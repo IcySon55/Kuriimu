@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -113,6 +114,16 @@ namespace Kuriimu
 		private void tsbFileProperties_Click(object sender, EventArgs e)
 		{
 			propertiesToolStripMenuItem_Click(sender, e);
+		}
+
+		private void tsbKukki_Click(object sender, EventArgs e)
+		{
+			ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kukki.exe"));
+			start.WorkingDirectory = Application.StartupPath;
+
+			Process p = new Process();
+			p.StartInfo = start;
+			p.Start();
 		}
 
 		private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -576,6 +587,9 @@ namespace Kuriimu
 
 				tsbGameSelect.Enabled = itemSelected;
 			}
+
+			// Kukki
+			tsbKukki.Enabled = File.Exists(Path.Combine(Application.StartupPath, "kukki.exe"));
 		}
 
 		private string FileName()
@@ -618,10 +632,12 @@ namespace Kuriimu
 			next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _fileAdapter.LineEndings);
 			entry.EditedText = _gameHandler.GetRawString(next);
 
-			UpdatePreview();
 
 			if (next != previous)
+			{
+				UpdatePreview();
 				_hasChanges = true;
+			}
 
 			UpdateForm();
 		}

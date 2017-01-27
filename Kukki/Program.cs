@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Kuriimu
+namespace Kukki
 {
 	static class Program
 	{
@@ -10,7 +10,7 @@ namespace Kuriimu
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new frmEditor(args));
+			Application.Run(new frmConverter(args));
 		}
 	}
 }
