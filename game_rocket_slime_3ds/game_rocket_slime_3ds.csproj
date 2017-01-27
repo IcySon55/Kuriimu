@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\icon.png" />
+    <None Include="resources\MainFont.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\blank_top.png" />

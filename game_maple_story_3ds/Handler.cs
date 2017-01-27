@@ -67,6 +67,7 @@ namespace game_maple_story_3ds
 		{
 			int boxes = rawString.Count(c => c == '\n') / 3 + 1;
 
+			const int txtOffsetX = 2;
 			const int txtOffsetY = 2;
 			Bitmap img = new Bitmap(400, Math.Max((txtOffsetY + textBox.Height) * boxes + txtOffsetY, background.Height));
 
@@ -79,7 +80,7 @@ namespace game_maple_story_3ds
 				gfx.DrawImage(background, 0, 0);
 
 				for (int i = 0; i < boxes; i++)
-					gfx.DrawImage(textBox, 2, (txtOffsetY + textBox.Height) * i + txtOffsetY);
+					gfx.DrawImage(textBox, txtOffsetX, (txtOffsetY + textBox.Height) * i + txtOffsetY);
 
 				float scale = 0.625f;
 				float x = 10, y = 22;

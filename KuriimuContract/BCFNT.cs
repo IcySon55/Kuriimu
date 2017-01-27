@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -141,6 +142,11 @@ namespace KuriimuContract
 				 GraphicsUnit.Pixel,
 				 attr);
 			return x + widthInfo.glyph_width;
+		}
+
+		public float MeasureString(string text, char stopChar, float scale = 1.0f)
+		{
+			return text.TakeWhile(c => c != stopChar).Sum(c => GetWidthInfo(c).char_width) * scale;
 		}
 
 		public BCFNT(Stream input)

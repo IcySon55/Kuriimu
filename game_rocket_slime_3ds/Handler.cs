@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using game_rocket_slime_3ds.Properties;
 using KuriimuContract;
@@ -69,7 +71,15 @@ namespace game_rocket_slime_3ds
 			["\x87"] = "♥"
 		};
 
-		BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
+		BCFNT font;
+
+		public Handler()
+		{
+			var ms = new MemoryStream();
+			new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
+			ms.Position = 0;
+			font = new BCFNT(ms);
+		}
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -81,10 +91,11 @@ namespace game_rocket_slime_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
+		Bitmap textBox = new Bitmap(Resources.blank_top);
+
 		public Bitmap GeneratePreview(string rawString)
 		{
-			Bitmap textBox = new Bitmap(Resources.blank_top);
-			int boxes = rawString.Split((char)0x17).Length;
+			int boxes = rawString.Count(c => c == (char)0x17) + 1;
 
 			Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);
 
@@ -92,14 +103,16 @@ namespace game_rocket_slime_3ds
 			{
 				gfx.SmoothingMode = SmoothingMode.HighQuality;
 				gfx.InterpolationMode = InterpolationMode.Bicubic;
+				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
 				for (int i = 0; i < boxes; i++)
 					gfx.DrawImage(textBox, 0, i * textBox.Height);
 
-				Rectangle rectName = new Rectangle(15, 3, 114, 15);
-				Rectangle rectText = new Rectangle(15, 22, 370, 60);
+				RectangleF rectName = new RectangleF(15, 3, 114, 15);
+				RectangleF rectText = new RectangleF(15, 22, 370, 60);
 
-				string str = rawString.Replace("\x1F\x05", "Player");
+				Color colorDefault = Color.FromArgb(255, 37, 66, 167);
+
 				float scaleDefault = 1.0f;
 				float scaleName = 0.86f;
 				float scaleCurrent = scaleDefault;
@@ -107,26 +120,26 @@ namespace game_rocket_slime_3ds
 				float y = rectText.Y, pY = y;
 				float yAdjust = 4;
 				int box = 0;
-				Color colorDefault = Color.FromArgb(255, 37, 66, 167);
-				Color colorCurrent = colorDefault;
+
+				string str = rawString.Replace("\x1F\x05", "Player");
+				font.SetTextColor(colorDefault);
 
 				for (int i = 0; i < str.Length; i++)
 				{
 					bool notEOS = i + 2 < str.Length;
 					char c = str[i];
-
 					char c2 = ' ';
 					if (notEOS)
 						c2 = str[i + 1];
 
-					BitmapFontCharacter bfc = bfh.GetCharacter(c);
+					BCFNT.CharWidthInfo widthInfo = font.GetWidthInfo(c);
 
 					// Handle control codes
 					if (c == 0x001F && c2 == 0x0002) // Start Name
 					{
-						colorCurrent = Color.White;
+						font.SetTextColor(Color.White);
 						scaleCurrent = scaleName;
-						int width = bfh.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
+						float width = font.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
 						pX = x;
 						pY = y;
 						x = rectName.X + (rectName.Width / 2) - (width / 2);
@@ -141,19 +154,19 @@ namespace game_rocket_slime_3ds
 					}
 					else if (c == 0x0013 && c2 == 0x0000) // Default
 					{
-						colorCurrent = colorDefault;
+						font.SetTextColor(colorDefault);
 						i++;
 						continue;
 					}
 					else if (c == 0x0013 && c2 == 0x0001) // Red
 					{
-						colorCurrent = Color.Red;
+						font.SetTextColor(Color.Red);
 						i++;
 						continue;
 					}
 					else if (c == 0x0013 && c2 == 0x0003) // Light Blue
 					{
-						colorCurrent = Color.FromArgb(255, 54, 129, 216);
+						font.SetTextColor(Color.FromArgb(255, 54, 129, 216));
 						i++;
 						continue;
 					}
@@ -173,23 +186,23 @@ namespace game_rocket_slime_3ds
 					}
 					else if (c == 0x0002) // End Name
 					{
-						colorCurrent = colorDefault;
+						font.SetTextColor(colorDefault);
 						scaleCurrent = scaleDefault;
 						x = pX;
 						y = pY;
 						continue;
 					}
-					else if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
+					else if (c == '\n' || x + (widthInfo.char_width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
 					{
 						x = rectText.X;
-						y += (bfc.Character.Height * scaleCurrent) + yAdjust;
+						y += (16 * scaleCurrent) + yAdjust;
 						if (c == '\n')
 							continue;
 					}
 
-					// Draw character
-					gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
-					x += bfc.Width * scaleCurrent;
+					// Otherwise it's a regular drawable character
+					font.DrawCharacter(c, gfx, x, y, scaleCurrent);
+					x += widthInfo.char_width * scaleCurrent;
 				}
 			}
 

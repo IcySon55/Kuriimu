@@ -59,7 +59,7 @@ namespace game_great_detective_pikachu
 
 			Graphics gfx = Graphics.FromImage(background);
 			gfx.SmoothingMode = SmoothingMode.HighQuality;
-			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+			gfx.InterpolationMode = InterpolationMode.Bicubic;
 			gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
 			float[][] fadeToFiftyPercentMatrix = {
