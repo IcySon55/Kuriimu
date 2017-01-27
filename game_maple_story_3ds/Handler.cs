@@ -41,6 +41,7 @@ namespace game_maple_story_3ds
 		};
 
 		BCFNT font;
+
 		public Handler()
 		{
 			var ms = new MemoryStream();
@@ -59,8 +60,8 @@ namespace game_maple_story_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		Bitmap background = Resources.background;
-		Bitmap textBox = Resources.blank;
+		Bitmap background = new Bitmap(Resources.background);
+		Bitmap textBox = new Bitmap(Resources.blank);
 
 		public Bitmap GeneratePreview(string rawString)
 		{
@@ -78,7 +79,7 @@ namespace game_maple_story_3ds
 				gfx.DrawImage(background, 0, 0);
 
 				for (int i = 0; i < boxes; i++)
-					gfx.DrawImage(textBox, 0, (txtOffsetY + textBox.Height) * i  + txtOffsetY);
+					gfx.DrawImage(textBox, 2, (txtOffsetY + textBox.Height) * i + txtOffsetY);
 
 				float scale = 0.625f;
 				float x = 10, y = 22;
@@ -116,7 +117,7 @@ namespace game_maple_story_3ds
 							continue;
 					}
 
-					// otherwise it's a regular drawable character
+					// Otherwise it's a regular drawable character
 					font.DrawCharacter(c, gfx, x, y, scale);
 					x += font.GetWidthInfo(c).char_width * scale;
 				}
