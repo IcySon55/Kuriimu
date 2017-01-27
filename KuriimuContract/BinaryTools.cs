@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace KuriimuContract
@@ -139,6 +140,12 @@ namespace KuriimuContract
 			BaseStream.Seek(startOffset, SeekOrigin.Begin);
 
 			return encoding.GetString(bytes.ToArray());
+		}
+
+		public unsafe T ReadStruct<T>()
+		{
+			fixed (byte* pBuffer = ReadBytes(Marshal.SizeOf<T>()))
+				return Marshal.PtrToStructure<T>((IntPtr)pBuffer);
 		}
 	}
 
