@@ -136,12 +136,12 @@ namespace KuriimuContract
 
 			g.DrawImage(bmp,
 				 new[] { new PointF(x + widthInfo.left * scale, y),
-						  new PointF(x + (widthInfo.left + widthInfo.char_width) * scale, y),
+						  new PointF(x + (widthInfo.left + widthInfo.glyph_width) * scale, y),
 						  new PointF(x + widthInfo.left * scale, y + tglp.cell_height * scale)},
-				 new RectangleF(xOffset, yOffset, widthInfo.char_width, tglp.cell_height),
+				 new RectangleF(xOffset, yOffset, widthInfo.glyph_width, tglp.cell_height),
 				 GraphicsUnit.Pixel,
 				 attr);
-			return x + widthInfo.glyph_width;
+			return x + widthInfo.char_width;
 		}
 
 		public float MeasureString(string text, char stopChar, float scale = 1.0f)
