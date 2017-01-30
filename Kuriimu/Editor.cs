@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -114,6 +116,30 @@ namespace Kuriimu
 		private void tsbFileProperties_Click(object sender, EventArgs e)
 		{
 			propertiesToolStripMenuItem_Click(sender, e);
+		}
+
+		private void scbFontFamily_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Settings.Default.FontFamily = scbFontFamily.Text;
+			Settings.Default.Save();
+			SetFont();
+		}
+
+		private void scbFontSize_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			Settings.Default.FontSize = scbFontSize.Text;
+			Settings.Default.Save();
+			SetFont();
+		}
+
+		private void scbFontFamily_TextChanged(object sender, EventArgs e)
+		{
+			scbFontFamily_SelectedIndexChanged(sender, e);
+		}
+
+		private void scbFontSize_TextChanged(object sender, EventArgs e)
+		{
+			scbFontSize_SelectedIndexChanged(sender, e);
 		}
 
 		private void tsbKukki_Click(object sender, EventArgs e)
@@ -422,6 +448,33 @@ namespace Kuriimu
 		// Loading
 		private void LoadForm()
 		{
+			// Fonts
+			string[] fontSizes = new string[] { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "36", "48", "72" };
+			FontFamily[] fontFamilies = new InstalledFontCollection().Families;
+
+			scbFontFamily.SelectedIndexChanged -= new EventHandler(scbFontFamily_SelectedIndexChanged);
+			scbFontFamily.TextChanged -= new EventHandler(scbFontFamily_TextChanged);
+
+			scbFontFamily.Items.Clear();
+			scbFontFamily.Items.AddRange(fontFamilies.Select(o => o.Name).ToArray());
+			scbFontFamily.Text = Settings.Default.FontFamily;
+
+			scbFontFamily.SelectedIndexChanged += new EventHandler(scbFontFamily_SelectedIndexChanged);
+			scbFontFamily.TextChanged += new EventHandler(scbFontFamily_TextChanged);
+
+			scbFontSize.SelectedIndexChanged -= new EventHandler(scbFontSize_SelectedIndexChanged);
+			scbFontSize.TextChanged -= new EventHandler(scbFontSize_TextChanged);
+
+			scbFontSize.Items.Clear();
+			scbFontSize.Items.AddRange(fontSizes);
+			scbFontSize.Text = Settings.Default.FontSize;
+
+			scbFontSize.SelectedIndexChanged += new EventHandler(scbFontSize_SelectedIndexChanged);
+			scbFontSize.TextChanged += new EventHandler(scbFontSize_TextChanged);
+
+			SetFont();
+
+			// Extensions
 			if (_extensions.Count > 0)
 			{
 				extensionsToolStripMenuItem.DropDownItems.Clear();
@@ -433,6 +486,14 @@ namespace Kuriimu
 					extensionsToolStripMenuItem.DropDownItems.Add(tsiExtension);
 				}
 			}
+		}
+
+		private void SetFont()
+		{
+			float size = 10;
+			float.TryParse(scbFontSize.Text, out size);
+			txtEdit.Font = new Font(scbFontFamily.Text, size);
+			txtOriginal.Font = new Font(scbFontFamily.Text, size);
 		}
 
 		private void LoadEntries()
@@ -550,6 +611,10 @@ namespace Kuriimu
 				tsbFind.Enabled = _fileOpen;
 				propertiesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
 				tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
+				tslFontFamily.Enabled = _fileOpen;
+				scbFontFamily.Enabled = _fileOpen;
+				tslFontSize.Enabled = _fileOpen;
+				scbFontSize.Enabled = _fileOpen;
 
 				// Toolbar
 				addEntryToolStripMenuItem.Enabled = canAdd;

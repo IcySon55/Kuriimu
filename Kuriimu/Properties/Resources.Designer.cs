@@ -193,6 +193,26 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_font_family {
+            get {
+                object obj = ResourceManager.GetObject("menu_font_family", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_font_size {
+            get {
+                object obj = ResourceManager.GetObject("menu_font_size", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_gbatemp {
             get {
                 object obj = ResourceManager.GetObject("menu_gbatemp", resourceCulture);

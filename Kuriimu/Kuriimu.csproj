@@ -171,6 +171,8 @@
     <None Include="images\menu-manage.png" />
     <None Include="images\menu-gbatemp.png" />
     <None Include="images\menu-git.png" />
+    <None Include="images\menu-font-family.png" />
+    <None Include="images\menu-font-size.png" />
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />
     <None Include="images\menu-properties.png" />
