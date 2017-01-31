@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kukki.Properties {
+namespace Kukkii.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Kukki.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kukki.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kukkii.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -73,9 +73,9 @@ namespace Kukki.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon kukki {
+        internal static System.Drawing.Icon kukkii {
             get {
-                object obj = ResourceManager.GetObject("kukki", resourceCulture);
+                object obj = ResourceManager.GetObject("kukkii", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

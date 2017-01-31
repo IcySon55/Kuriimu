@@ -21,6 +21,17 @@ namespace KuriimuContract
 			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
 		}
 
+		public static string LoadImageFilters(IEnumerable<IImageAdapter> imageAdapters)
+		{
+			var alltypes = imageAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
+
+			// Add two special cases at start and end
+			alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension)) });
+			alltypes.Add(new { Description = "All Files", Extension = "*.*" });
+
+			return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
+		}
+
 		public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
 		{
 			tsb.DropDownItems.Clear();

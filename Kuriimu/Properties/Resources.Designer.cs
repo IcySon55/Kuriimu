@@ -113,9 +113,9 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap kukki {
+        internal static System.Drawing.Bitmap kukkii {
             get {
-                object obj = ResourceManager.GetObject("kukki", resourceCulture);
+                object obj = ResourceManager.GetObject("kukkii", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

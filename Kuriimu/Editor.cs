@@ -144,7 +144,7 @@ namespace Kuriimu
 
 		private void tsbKukki_Click(object sender, EventArgs e)
 		{
-			ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kukki.exe"));
+			ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kukkii.exe"));
 			start.WorkingDirectory = Application.StartupPath;
 
 			Process p = new Process();
@@ -654,7 +654,7 @@ namespace Kuriimu
 			}
 
 			// Kukki
-			tsbKukki.Enabled = File.Exists(Path.Combine(Application.StartupPath, "kukki.exe"));
+			tsbKukki.Enabled = File.Exists(Path.Combine(Application.StartupPath, "kukkii.exe"));
 		}
 
 		private string FileName()

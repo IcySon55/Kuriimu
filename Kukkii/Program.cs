@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Kukki
+namespace Kukkii
 {
 	static class Program
 	{

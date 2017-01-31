@@ -64,18 +64,4 @@ namespace KuriimuContract
 
 		string ToString(); // This will appear in the entry list in the Editor
 	}
-
-	public enum LoadResult
-	{
-		Success,
-		Failure,
-		TypeMismatch,
-		FileNotFound
-	}
-
-	public enum SaveResult
-	{
-		Success,
-		Failure
-	}
 }

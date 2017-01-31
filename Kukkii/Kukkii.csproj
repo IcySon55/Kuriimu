@@ -7,8 +7,8 @@
     <ProjectGuid>{DDF760B7-1273-4048-A052-4E396245937B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kukki</RootNamespace>
-    <AssemblyName>Kukki</AssemblyName>
+    <RootNamespace>Kukkii</RootNamespace>
+    <AssemblyName>Kukkii</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,10 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Kukki.Program</StartupObject>
+    <StartupObject>Kukkii.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>images\kukki.ico</ApplicationIcon>
+    <ApplicationIcon>images\kukkii.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -87,7 +87,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\kukki.ico" />
+    <None Include="images\kukkii.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\menu-about.png" />
@@ -97,7 +97,6 @@
     <None Include="images\menu-open.png" />
     <None Include="images\menu-save.png" />
     <None Include="images\menu-save-as.png" />
-    <None Include="images\preview-background.png" />
     <None Include="images\background.png" />
   </ItemGroup>
   <ItemGroup>

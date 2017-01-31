@@ -1,4 +1,4 @@
-﻿namespace Kukki
+﻿namespace Kukkii
 {
 	partial class frmConverter
 	{
@@ -36,6 +36,7 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,6 +45,7 @@
 			this.tsbOpen = new System.Windows.Forms.ToolStripButton();
 			this.tsbSave = new System.Windows.Forms.ToolStripButton();
 			this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
 			this.pnlPreview = new System.Windows.Forms.Panel();
@@ -84,48 +86,63 @@
 			// 
 			// openToolStripMenuItem
 			// 
-			this.openToolStripMenuItem.Image = global::Kukki.Properties.Resources.menu_open;
+			this.openToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.openToolStripMenuItem.Text = "&Open";
+			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
 			// saveToolStripMenuItem
 			// 
 			this.saveToolStripMenuItem.Enabled = false;
-			this.saveToolStripMenuItem.Image = global::Kukki.Properties.Resources.menu_save;
+			this.saveToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
+			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
 			// saveAsToolStripMenuItem
 			// 
 			this.saveAsToolStripMenuItem.Enabled = false;
-			this.saveAsToolStripMenuItem.Image = global::Kukki.Properties.Resources.menu_save_as;
+			this.saveAsToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave As...";
+			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
-			this.exitToolStripMenuItem.Image = global::Kukki.Properties.Resources.menu_exit;
+			this.exitToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
 			// editToolStripMenuItem
 			// 
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.editToolStripMenuItem.Text = "&Image";
+			// 
+			// exportToolStripMenuItem
+			// 
+			this.exportToolStripMenuItem.Enabled = false;
+			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+			this.exportToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+			this.exportToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+			this.exportToolStripMenuItem.Text = "&Export to PNG";
+			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -139,24 +156,24 @@
 			// 
 			// gBATempToolStripMenuItem
 			// 
-			this.gBATempToolStripMenuItem.Image = global::Kukki.Properties.Resources.menu_gbatemp;
+			this.gBATempToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_gbatemp;
 			this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gBATempToolStripMenuItem.Text = "GBATemp";
 			// 
 			// gitHubToolStripMenuItem
 			// 
-			this.gitHubToolStripMenuItem.Image = global::Kukki.Properties.Resources.menu_git;
+			this.gitHubToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_git;
 			this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gitHubToolStripMenuItem.Text = "GitHub";
 			// 
 			// aboutToolStripMenuItem1
 			// 
-			this.aboutToolStripMenuItem1.Image = global::Kukki.Properties.Resources.menu_about;
+			this.aboutToolStripMenuItem1.Image = global::Kukkii.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
 			this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
 			this.aboutToolStripMenuItem1.Text = "&About";
 			// 
 			// tlsMain
@@ -167,7 +184,8 @@
 			this.tlsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbOpen,
             this.tsbSave,
-            this.tsbSaveAs});
+            this.tsbSaveAs,
+            this.toolStripSeparator2});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -177,31 +195,39 @@
 			// tsbOpen
 			// 
 			this.tsbOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbOpen.Image = global::Kukki.Properties.Resources.menu_open;
+			this.tsbOpen.Image = global::Kukkii.Properties.Resources.menu_open;
 			this.tsbOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbOpen.Name = "tsbOpen";
 			this.tsbOpen.Size = new System.Drawing.Size(23, 22);
 			this.tsbOpen.Text = "Open";
+			this.tsbOpen.Click += new System.EventHandler(this.tsbOpen_Click);
 			// 
 			// tsbSave
 			// 
 			this.tsbSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.tsbSave.Enabled = false;
-			this.tsbSave.Image = global::Kukki.Properties.Resources.menu_save;
+			this.tsbSave.Image = global::Kukkii.Properties.Resources.menu_save;
 			this.tsbSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbSave.Name = "tsbSave";
 			this.tsbSave.Size = new System.Drawing.Size(23, 22);
 			this.tsbSave.Text = "Save";
+			this.tsbSave.Click += new System.EventHandler(this.tsbSave_Click);
 			// 
 			// tsbSaveAs
 			// 
 			this.tsbSaveAs.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.tsbSaveAs.Enabled = false;
-			this.tsbSaveAs.Image = global::Kukki.Properties.Resources.menu_save_as;
+			this.tsbSaveAs.Image = global::Kukkii.Properties.Resources.menu_save_as;
 			this.tsbSaveAs.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbSaveAs.Name = "tsbSaveAs";
 			this.tsbSaveAs.Size = new System.Drawing.Size(23, 22);
 			this.tsbSaveAs.Text = "Save As...";
+			this.tsbSaveAs.Click += new System.EventHandler(this.tsbSaveAs_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
 			// pnlMain
 			// 
@@ -230,7 +256,7 @@
 			// 
 			this.pnlPreview.AutoScroll = true;
 			this.pnlPreview.BackColor = System.Drawing.Color.DarkGray;
-			this.pnlPreview.BackgroundImage = global::Kukki.Properties.Resources.background;
+			this.pnlPreview.BackgroundImage = global::Kukkii.Properties.Resources.background;
 			this.pnlPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.pnlPreview.Controls.Add(this.pbxPreview);
 			this.pnlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -242,10 +268,9 @@
 			// pbxPreview
 			// 
 			this.pbxPreview.BackColor = System.Drawing.Color.Transparent;
-			this.pbxPreview.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pbxPreview.Location = new System.Drawing.Point(0, 0);
 			this.pbxPreview.Name = "pbxPreview";
-			this.pbxPreview.Size = new System.Drawing.Size(738, 597);
+			this.pbxPreview.Size = new System.Drawing.Size(128, 128);
 			this.pbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
 			this.pbxPreview.TabIndex = 4;
 			this.pbxPreview.TabStop = false;
@@ -261,6 +286,7 @@
 			this.Name = "frmConverter";
 			this.Text = "Kukki";
 			this.Load += new System.EventHandler(this.frmConverter_Load);
+			this.Resize += new System.EventHandler(this.frmConverter_Resize);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
 			this.tlsMain.ResumeLayout(false);
@@ -299,6 +325,8 @@
 		private System.Windows.Forms.SplitContainer splMain;
 		private System.Windows.Forms.Panel pnlPreview;
 		private System.Windows.Forms.PictureBox pbxPreview;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
 	}
 }
 

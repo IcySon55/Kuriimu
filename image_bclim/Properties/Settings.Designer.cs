@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kukki.Properties {
+namespace image_bclim.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,28 +25,10 @@ namespace Kukki.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Kukki")]
-        public string ApplicationName {
+        [global::System.Configuration.DefaultSettingValueAttribute("BCLIM")]
+        public string PluginName {
             get {
-                return ((string)(this["ApplicationName"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("v1.0.0")]
-        public string ApplicationVersion {
-            get {
-                return ((string)(this["ApplicationVersion"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
-        public string PluginDirectory {
-            get {
-                return ((string)(this["PluginDirectory"]));
+                return ((string)(this["PluginName"]));
             }
         }
     }

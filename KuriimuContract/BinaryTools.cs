@@ -7,12 +7,6 @@ using System.Text;
 
 namespace KuriimuContract
 {
-	public enum ByteOrder
-	{
-		LittleEndian = 0,
-		BigEndian = 1
-	}
-
 	public class BinaryReaderX : BinaryReader
 	{
 		public ByteOrder ByteOrder { get; set; }

@@ -92,12 +92,12 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbKukki = new System.Windows.Forms.ToolStripButton();
 			this.tsbProperties = new System.Windows.Forms.ToolStripButton();
-			this.imlEntries = new System.Windows.Forms.ImageList(this.components);
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.tslFontFamily = new System.Windows.Forms.ToolStripLabel();
 			this.scbFontFamily = new System.Windows.Forms.ToolStripComboBox();
 			this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
 			this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
+			this.imlEntries = new System.Windows.Forms.ImageList(this.components);
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -799,11 +799,11 @@
 			// tsbKukki
 			// 
 			this.tsbKukki.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.tsbKukki.Image = global::Kuriimu.Properties.Resources.kukki;
+			this.tsbKukki.Image = global::Kuriimu.Properties.Resources.kukkii;
 			this.tsbKukki.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tsbKukki.Name = "tsbKukki";
-			this.tsbKukki.Size = new System.Drawing.Size(56, 22);
-			this.tsbKukki.Text = "Kukki";
+			this.tsbKukki.Size = new System.Drawing.Size(59, 22);
+			this.tsbKukki.Text = "Kukkii";
 			this.tsbKukki.Click += new System.EventHandler(this.tsbKukki_Click);
 			// 
 			// tsbProperties
@@ -816,12 +816,6 @@
 			this.tsbProperties.Size = new System.Drawing.Size(23, 22);
 			this.tsbProperties.Text = "Properties";
 			this.tsbProperties.Click += new System.EventHandler(this.tsbFileProperties_Click);
-			// 
-			// imlEntries
-			// 
-			this.imlEntries.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-			this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
-			this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// toolStripSeparator5
 			// 
@@ -868,6 +862,12 @@
 			this.scbFontSize.Text = "Size";
 			this.scbFontSize.SelectedIndexChanged += new System.EventHandler(this.scbFontSize_SelectedIndexChanged);
 			this.scbFontSize.TextChanged += new System.EventHandler(this.scbFontSize_TextChanged);
+			// 
+			// imlEntries
+			// 
+			this.imlEntries.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+			this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
+			this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
 			// 
 			// frmEditor
 			// 
