@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using KuriimuContract;
 
@@ -80,10 +77,10 @@ namespace image_xi
 				header.checkConst();
 
 				//decompress table
-				byte[] table = Decomp(br,header.tableDataOffset,header.tableSize2);
+				byte[] table = Decomp(br, header.tableDataOffset, header.tableSize2);
 
 				//get decompressed picture data
-				byte[] tex = Decomp(br, header.tableDataOffset+header.tableSize2, header.imgDataSize);
+				byte[] tex = Decomp(br, header.tableDataOffset + header.tableSize2, header.imgDataSize);
 
 				//return decompressed picture data
 				return ImageCommon.FromTexture(tex, header.width, header.height, (ImageCommon.Format)Enum.Parse(typeof(ImageCommon.Format), header.imageFormat.ToString()));
@@ -92,7 +89,7 @@ namespace image_xi
 
 		public static UInt32 getUInt32(UInt32 n)
 		{
-			return BitConverter.ToUInt32(BitConverter.GetBytes(n).Reverse().ToArray(),0);
+			return BitConverter.ToUInt32(BitConverter.GetBytes(n).Reverse().ToArray(), 0);
 		}
 
 		public static byte[] Decomp(BinaryReaderX br, int offset, int compSize)
@@ -102,7 +99,7 @@ namespace image_xi
 			int sizeAndMethod = br.ReadInt32();
 			int method = ((sizeAndMethod >> 3) << 3) ^ sizeAndMethod;
 			int size = sizeAndMethod >> 3;
-			switch(method)
+			switch (method)
 			{
 				case 0://No compression
 					return br.ReadBytes(size);
