@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using image_bclim.Properties;
 using KuriimuContract;
 
@@ -25,7 +22,7 @@ namespace image_bclim
 
 		public string Extension => "*.bclim";
 
-		public string About => "This is the BCLIM file adapter for Kukki.";
+		public string About => "This is the BCLIM file adapter for Kukkii.";
 
 		// Feature Support
 		public bool FileHasExtendedProperties => false;

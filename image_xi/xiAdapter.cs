@@ -1,22 +1,18 @@
 ﻿using System;
-using System.IO;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
+using System.IO;
 using KuriimuContract;
-using image_xi;
 
 namespace image_xi
 {
-	public sealed class xiAdapter:IImageAdapter
+	public sealed class XiAdapter : IImageAdapter
 	{
 		private FileInfo _fileInfo = null;
 		private Bitmap _xi = null;
 		private List<Bitmap> _bitmaps = null;
 
-		public string Name => "image_xi";
+		public string Name => "XI";
 		public string Description => "Level 5 Compressed Image";
 		public string Extension => "*.xi";
 		public string About => "This is the XI file adapter for Kukkii.";
