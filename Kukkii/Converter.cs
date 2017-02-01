@@ -197,11 +197,9 @@ namespace Kukkii
 
 				result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
+				// if none of them match, then try all other adapters
 				if (result == null)
-				{
-					// if none of them match, then try all other adapters
 					result = _imageAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
-				}
 
 				if (result == null)
 					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);

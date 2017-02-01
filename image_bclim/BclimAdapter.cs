@@ -45,18 +45,11 @@ namespace image_bclim
 
 		public bool Identify(string filename)
 		{
-			bool result = true;
-
-			try
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				BCLIM.Load(new FileStream(filename, FileMode.Open, FileAccess.Read));
+				br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
+				return br.ReadString(4) == "CLIM";
 			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
 		}
 
 		public LoadResult Load(string filename)
