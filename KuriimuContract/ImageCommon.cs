@@ -20,9 +20,9 @@ namespace KuriimuContract
 
 		static readonly int[] order = { 0, 4, 1, 5, 8, 12, 9, 13, 2, 6, 3, 7, 10, 14, 11, 15 };
 
-		static int npo2(int n) => 2 << (int)Math.Log(n - 1, 2); // next power of 2
+		static int npo2(int n) => 2 << (int)Math.Log(n - 1, 2); // Next power of 2
 
-        //standard format definitions
+		// Standard Format Definitions
 		public enum Format : byte
 		{
 			L8, A8, LA4, LA8, HILO8,
@@ -31,8 +31,8 @@ namespace KuriimuContract
 			ETC1, ETC1A4, L4, A4
 		}
 
-        //image orientation
-		public enum ImgOrientation : byte
+		// Image Orientation
+		public enum ImageOrientation : byte
 		{
 			RightDown, UpRight = 4, DownRight = 8
 		}
@@ -42,7 +42,7 @@ namespace KuriimuContract
 			pack_etc1_block_init();
 		}
 
-		public static Bitmap FromTexture(byte[] tex, int width, int height, Format format, ImgOrientation orient = 0)
+		public static Bitmap FromTexture(byte[] texture, int width, int height, Format format, ImageOrientation orientation = 0)
 		{
 			var bmp = new Bitmap(width, height);
 			int? nibble = null;
@@ -52,7 +52,7 @@ namespace KuriimuContract
 
 			var etc1colors = new Queue<Color>();
 
-			using (var br = new BinaryReader(new MemoryStream(tex)))
+			using (var br = new BinaryReader(new MemoryStream(texture)))
 			{
 				Func<int> ReadNibble = () =>
 				{
@@ -132,7 +132,7 @@ namespace KuriimuContract
 								var alpha = (format == Format.ETC1A4) ? br.ReadUInt64() : ulong.MaxValue;
 								var unpacked = new int[16];
 								unpack_etc1_block(br.ReadBytes(8).Reverse().ToArray(), unpacked);
-								foreach (int j in order) // unscramble
+								foreach (int j in order) // Unscramble
 								{
 									var k = BitConverter.GetBytes(unpacked[(j % 4) * 4 + j / 4]);
 									etc1colors.Enqueue(Color.FromArgb((byte)(alpha >> (4 * j)) % 16 * 17, k[0], k[1], k[2]));
@@ -151,18 +151,18 @@ namespace KuriimuContract
 					}
 
 					int x, y;
-					switch (orient)
+					switch (orientation)
 					{
-						case ImgOrientation.RightDown:
+						case ImageOrientation.RightDown:
 							x = (i / 64 % (strideWidth / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
 							y = (i / 64 / (strideWidth / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
 							break;
-						case ImgOrientation.UpRight:
+						case ImageOrientation.UpRight:
 							x = (i / 64 / (strideHeight / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
 							y = (i / 64 % (strideHeight / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
 							y = strideHeight - 1 - y;
 							break;
-						case ImgOrientation.DownRight:
+						case ImageOrientation.DownRight:
 							x = (i / 64 / (strideHeight / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
 							y = (i / 64 % (strideHeight / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
 							break;
@@ -182,7 +182,7 @@ namespace KuriimuContract
 			return bmp;
 		}
 
-		public static byte[] ToTexture(Bitmap bmp, Format format, ImgOrientation orient = 0)
+		public static byte[] ToTexture(Bitmap bmp, Format format, ImageOrientation orientation = 0)
 		{
 			var ms = new MemoryStream();
 			int width = bmp.Width, height = bmp.Height;
@@ -212,7 +212,7 @@ namespace KuriimuContract
 					//throw new NotSupportedException("Need to make changes to some swizzle stuff");
 					int x = (i / 64 / (stride / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
 					int y = (i / 64 % (stride / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
-					if (orient == ImgOrientation.UpRight)
+					if (orientation == ImageOrientation.UpRight)
 					{
 						y = stride - 1 - y;
 					}

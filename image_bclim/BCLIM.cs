@@ -20,7 +20,7 @@ namespace image_bclim
 			public short width;
 			public short height;
 			public ImageCommon.Format format;
-			public ImageCommon.Swizzle swizzle;
+			public ImageCommon.ImageOrientation orientation;
 			byte b1;
 			byte b2;
 			int imgSize;
@@ -30,9 +30,9 @@ namespace image_bclim
 		{
 			using (var br = new BinaryReaderX(input))
 			{
-				var tex = br.ReadBytes((int)br.BaseStream.Length - 40);
+				var texture = br.ReadBytes((int)br.BaseStream.Length - 40);
 				var header = br.ReadStruct<Header>();
-				return ImageCommon.FromTexture(tex, header.width, header.height, header.format, header.swizzle);
+				return ImageCommon.FromTexture(texture, header.width, header.height, header.format, header.orientation);
 			}
 		}
 	}

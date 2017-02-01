@@ -51,6 +51,7 @@
     <Compile Include="BinaryTools.cs" />
     <Compile Include="BitmapFontHandler.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="CommonCompression.cs" />
     <Compile Include="IImageAdapter.cs" />
     <Compile Include="IGameHandler.cs" />
     <Compile Include="IExtension.cs" />
