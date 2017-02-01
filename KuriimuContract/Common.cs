@@ -43,5 +43,4 @@ namespace KuriimuContract
 		long value;
 		public static implicit operator string(Magic8 magic) => Encoding.ASCII.GetString(BitConverter.GetBytes(magic.value));
 	}
-
 }
