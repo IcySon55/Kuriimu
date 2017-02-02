@@ -277,6 +277,7 @@
 			// 
 			// frmConverter
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(984, 662);
@@ -286,6 +287,8 @@
 			this.Name = "frmConverter";
 			this.Text = "Kukki";
 			this.Load += new System.EventHandler(this.frmConverter_Load);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragEnter);
 			this.Resize += new System.EventHandler(this.frmConverter_Resize);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();

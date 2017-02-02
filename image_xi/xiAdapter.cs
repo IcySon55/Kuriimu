@@ -32,21 +32,13 @@ namespace image_xi
 			}
 		}
 
-		//Identify if plugin can handle input file
 		public bool Identify(string filename)
 		{
-			bool result = true;
-
-			try
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				XI.Load(new FileStream(filename, FileMode.Open, FileAccess.Read));
+				if (br.BaseStream.Length < 4) return false;
+				return br.ReadString(4) == "IMGC";
 			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
 		}
 
 		public LoadResult Load(string filename)
@@ -57,16 +49,7 @@ namespace image_xi
 			_bitmaps = null;
 
 			if (_fileInfo.Exists)
-			{
-				try
-				{
-					_xi = XI.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-				}
-				catch (Exception)
-				{
-					result = LoadResult.Failure;
-				}
-			}
+				_xi = XI.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
 			else
 				result = LoadResult.FileNotFound;
 

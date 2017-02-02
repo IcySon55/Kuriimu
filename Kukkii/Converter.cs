@@ -25,6 +25,10 @@ namespace Kukkii
 
 			// Load Plugins
 			_imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
+
+			// Load passed in file
+			if (args.Length > 0 && File.Exists(args[0]))
+				OpenFile(args[0]);
 		}
 
 		private void frmConverter_Load(object sender, EventArgs e)
@@ -73,16 +77,27 @@ namespace Kukkii
 		}
 
 		// File Handling
-		private void frmEditor_DragEnter(object sender, DragEventArgs e)
+		private void frmConverter_DragEnter(object sender, DragEventArgs e)
 		{
 			e.Effect = DragDropEffects.Copy;
 		}
 
-		private void frmEditor_DragDrop(object sender, DragEventArgs e)
+		private void frmConverter_DragDrop(object sender, DragEventArgs e)
 		{
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
 			if (files.Length > 0 && File.Exists(files[0]))
-				ConfirmOpenFile(files[0]);
+				if (!_fileOpen)
+					ConfirmOpenFile(files[0]);
+				else
+				{
+					// TODO: Ask if open or import dropped file
+					ConfirmOpenFile(files[0]);
+				}
+		}
+
+		private void frmConverter_Resize(object sender, EventArgs e)
+		{
+			UpdatePreview();
 		}
 
 		private void ConfirmOpenFile(string filename = "")
@@ -115,31 +130,25 @@ namespace Kukkii
 			DialogResult dr = DialogResult.OK;
 
 			if (filename == string.Empty)
-			{
 				dr = ofd.ShowDialog();
-				filename = ofd.FileName;
-			}
 
 			if (dr == DialogResult.OK)
 			{
+				if (filename == string.Empty)
+					filename = ofd.FileName;
+
+				IImageAdapter _tempAdapter = SelectImageAdapter(filename);
+
 				try
 				{
-					IImageAdapter _tempAdapter = SelectImageAdapter(filename);
-
-					if (_tempAdapter != null)
+					if (_tempAdapter != null && _tempAdapter.Load(filename) == LoadResult.Success)
 					{
 						_imageAdapter = _tempAdapter;
+						_fileOpen = true;
+						_hasChanges = false;
 
-						if (_imageAdapter != null && _imageAdapter.Load(filename) == LoadResult.Success)
-						{
-							_fileOpen = true;
-							_hasChanges = false;
-
-							//LoadEntries();
-							//UpdateTextView();
-							UpdatePreview();
-							UpdateForm();
-						}
+						UpdatePreview();
+						UpdateForm();
 					}
 
 					Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
@@ -147,10 +156,10 @@ namespace Kukkii
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
-					_fileOpen = false;
-					_hasChanges = false;
-					UpdateForm();
+					if (_tempAdapter != null)
+						MessageBox.Show(this, ex.ToString(), _tempAdapter.Name + " - " + _tempAdapter.Description + " Adapter", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					else
+						MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 		}
@@ -160,6 +169,7 @@ namespace Kukkii
 			SaveFileDialog sfd = new SaveFileDialog();
 			DialogResult dr = DialogResult.OK;
 
+			sfd.Title = "Save as " + _imageAdapter.Description;
 			sfd.FileName = _imageAdapter.FileInfo.Name;
 			sfd.Filter = _imageAdapter.Description + " (" + _imageAdapter.Extension + ")|" + _imageAdapter.Extension;
 
@@ -190,30 +200,36 @@ namespace Kukkii
 		{
 			IImageAdapter result = null;
 
-			try
-			{
-				// first look for adapters whose extension matches that of our filename
-				List<IImageAdapter> matchingAdapters = _imageAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+			// first look for adapters whose extension matches that of our filename
+			List<IImageAdapter> matchingAdapters = _imageAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
 
-				result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
+			result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
-				// if none of them match, then try all other adapters
-				if (result == null)
-					result = _imageAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
+			// if none of them match, then try all other adapters
+			if (result == null)
+				result = _imageAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
 
-				if (result == null)
-					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
-				_fileOpen = false;
-				_hasChanges = false;
-			}
+			if (result == null)
+				MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return result;
 		}
 
+		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Title = "Export to PNG...";
+			sfd.InitialDirectory = Settings.Default.LastDirectory;
+			sfd.FileName = _imageAdapter.FileInfo.Name + ".png";
+			sfd.Filter = "Portable Network Graphics (*.png)|*.png";
+			sfd.AddExtension = true;
+
+			if (sfd.ShowDialog() == DialogResult.OK)
+			{
+				Bitmap bmp = _imageAdapter.Bitmaps.ToList()[0];
+				bmp.Save(sfd.FileName, ImageFormat.Png);
+			}
+		}
 
 		private void UpdateForm()
 		{
@@ -299,24 +315,6 @@ namespace Kukkii
 		private string FileName()
 		{
 			return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
-		}
-
-		private void frmConverter_Resize(object sender, EventArgs e)
-		{
-			UpdatePreview();
-		}
-
-		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.InitialDirectory = Settings.Default.LastDirectory;
-			sfd.Filter = "Portable Network Graphics (*.png)|*.png";
-
-			if (sfd.ShowDialog() == DialogResult.OK)
-			{
-				Bitmap bmp = _imageAdapter.Bitmaps.ToList()[0];
-				bmp.Save(sfd.FileName, ImageFormat.Png);
-			}
 		}
 	}
 }

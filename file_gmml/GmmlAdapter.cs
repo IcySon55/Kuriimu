@@ -88,32 +88,21 @@ namespace file_gmml
 
 			if (_fileInfo.Exists)
 			{
-				try
-				{
-					_gmml = GMML.Load(_fileInfo.FullName);
+				_gmml = GMML.Load(_fileInfo.FullName);
 
-					string backupFilePath = _fileInfo.FullName + ".bak";
-					if (File.Exists(backupFilePath))
-					{
-						_gmmlBackup = GMML.Load(backupFilePath);
-					}
-					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						File.Copy(_fileInfo.FullName, backupFilePath);
-						_gmmlBackup = GMML.Load(backupFilePath);
-					}
-					else
-					{
-						_gmmlBackup = null;
-					}
-				}
-				catch (XmlException)
+				string backupFilePath = _fileInfo.FullName + ".bak";
+				if (File.Exists(backupFilePath))
 				{
-					result = LoadResult.TypeMismatch;
+					_gmmlBackup = GMML.Load(backupFilePath);
 				}
-				catch (Exception)
+				else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
-					result = LoadResult.Failure;
+					File.Copy(_fileInfo.FullName, backupFilePath);
+					_gmmlBackup = GMML.Load(backupFilePath);
+				}
+				else
+				{
+					_gmmlBackup = null;
 				}
 			}
 			else

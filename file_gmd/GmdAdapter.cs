@@ -65,18 +65,11 @@ namespace file_gmd
 
 		public bool Identify(string filename)
 		{
-			bool result = true;
-
-			try
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				new GMD(filename);
+				if (br.BaseStream.Length < 4) return false;
+				return br.ReadString(4) == "GMD";
 			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
 		}
 
 		public LoadResult Load(string filename)
@@ -88,28 +81,21 @@ namespace file_gmd
 
 			if (_fileInfo.Exists)
 			{
-				try
-				{
-					_gmd = new GMD(_fileInfo.FullName);
+				_gmd = new GMD(_fileInfo.FullName);
 
-					string backupFilePath = _fileInfo.FullName + ".bak";
-					if (File.Exists(backupFilePath))
-					{
-						_gmdBackup = new GMD(backupFilePath);
-					}
-					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						File.Copy(_fileInfo.FullName, backupFilePath);
-						_gmdBackup = new GMD(backupFilePath);
-					}
-					else
-					{
-						_gmdBackup = null;
-					}
-				}
-				catch (Exception)
+				string backupFilePath = _fileInfo.FullName + ".bak";
+				if (File.Exists(backupFilePath))
 				{
-					result = LoadResult.Failure;
+					_gmdBackup = new GMD(backupFilePath);
+				}
+				else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					File.Copy(_fileInfo.FullName, backupFilePath);
+					_gmdBackup = new GMD(backupFilePath);
+				}
+				else
+				{
+					_gmdBackup = null;
 				}
 			}
 			else

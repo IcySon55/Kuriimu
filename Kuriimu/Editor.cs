@@ -332,43 +332,39 @@ namespace Kuriimu
 			DialogResult dr = DialogResult.OK;
 
 			if (filename == string.Empty)
-			{
 				dr = ofd.ShowDialog();
-				filename = ofd.FileName;
-			}
 
 			if (dr == DialogResult.OK)
 			{
+				if (filename == string.Empty)
+					filename = ofd.FileName;
+
+				IFileAdapter _tempAdapter = SelectFileAdapter(filename);
+
 				try
 				{
-					IFileAdapter _tempAdapter = SelectFileAdapter(filename);
-
-					if (_tempAdapter != null)
+					if (_tempAdapter != null && _tempAdapter.Load(filename) == LoadResult.Success)
 					{
 						_fileAdapter = _tempAdapter;
+						_fileOpen = true;
+						_hasChanges = false;
 
-						if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
-						{
-							_fileOpen = true;
-							_hasChanges = false;
+						// Select Game Handler
+						foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+							if (tsi.Text == Settings.Default.SelectedGameHandler)
+							{
+								_gameHandler = (IGameHandler)tsi.Tag;
+								tsbGameSelect.Text = tsi.Text;
+								tsbGameSelect.Image = tsi.Image;
+								break;
+							}
+						if (_gameHandler == null)
+							_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
 
-							// Select Game Handler
-							foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
-								if (tsi.Text == Settings.Default.SelectedGameHandler)
-								{
-									_gameHandler = (IGameHandler)tsi.Tag;
-									tsbGameSelect.Text = tsi.Text;
-									tsbGameSelect.Image = tsi.Image;
-									break;
-								}
-							if (_gameHandler == null)
-								_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
-
-							LoadEntries();
-							UpdateTextView();
-							UpdatePreview();
-							UpdateForm();
-						}
+						LoadEntries();
+						UpdateTextView();
+						UpdatePreview();
+						UpdateForm();
 					}
 
 					Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
@@ -376,10 +372,10 @@ namespace Kuriimu
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
-					_fileOpen = false;
-					_hasChanges = false;
-					UpdateForm();
+					if (_tempAdapter != null)
+						MessageBox.Show(this, ex.ToString(), _tempAdapter.Name + " - " + _tempAdapter.Description + " Adapter", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					else
+						MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 		}
@@ -389,6 +385,7 @@ namespace Kuriimu
 			SaveFileDialog sfd = new SaveFileDialog();
 			DialogResult dr = DialogResult.OK;
 
+			sfd.Title = "Save as " + _fileAdapter.Description;
 			sfd.FileName = _fileAdapter.FileInfo.Name;
 			sfd.Filter = _fileAdapter.Description + " (" + _fileAdapter.Extension + ")|" + _fileAdapter.Extension;
 
@@ -419,28 +416,17 @@ namespace Kuriimu
 		{
 			IFileAdapter result = null;
 
-			try
-			{
-				// first look for adapters whose extension matches that of our filename
-				List<IFileAdapter> matchingAdapters = _fileAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+			// first look for adapters whose extension matches that of our filename
+			List<IFileAdapter> matchingAdapters = _fileAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
 
-				result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
+			result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
-				if (result == null)
-				{
-					// if none of them match, then try all other adapters
-					result = _fileAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
-				}
+			// if none of them match, then try all other adapters
+			if (result == null)
+				result = _fileAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
 
-				if (result == null)
-					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
-				_fileOpen = false;
-				_hasChanges = false;
-			}
+			if (result == null)
+				MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return result;
 		}

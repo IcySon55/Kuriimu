@@ -64,18 +64,11 @@ namespace file_jmsg
 
 		public bool Identify(string filename)
 		{
-			bool result = true;
-
-			try
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				new JMSG(filename);
+				if (br.BaseStream.Length < 4) return false;
+				return br.ReadString(4) == "jMSG";
 			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
 		}
 
 		public LoadResult Load(string filename)
@@ -87,28 +80,21 @@ namespace file_jmsg
 
 			if (_fileInfo.Exists)
 			{
-				try
-				{
-					_jmsg = new JMSG(_fileInfo.FullName);
+				_jmsg = new JMSG(_fileInfo.FullName);
 
-					string backupFilePath = _fileInfo.FullName + ".bak";
-					if (File.Exists(backupFilePath))
-					{
-						_jmsgBackup = new JMSG(backupFilePath);
-					}
-					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						File.Copy(_fileInfo.FullName, backupFilePath);
-						_jmsgBackup = new JMSG(backupFilePath);
-					}
-					else
-					{
-						_jmsgBackup = null;
-					}
-				}
-				catch (Exception)
+				string backupFilePath = _fileInfo.FullName + ".bak";
+				if (File.Exists(backupFilePath))
 				{
-					result = LoadResult.Failure;
+					_jmsgBackup = new JMSG(backupFilePath);
+				}
+				else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					File.Copy(_fileInfo.FullName, backupFilePath);
+					_jmsgBackup = new JMSG(backupFilePath);
+				}
+				else
+				{
+					_jmsgBackup = null;
 				}
 			}
 			else

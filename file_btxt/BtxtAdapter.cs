@@ -64,18 +64,11 @@ namespace file_btxt
 
 		public bool Identify(string filename)
 		{
-			bool result = true;
-
-			try
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				new BTXT(filename);
+				if (br.BaseStream.Length < 8) return false;
+				return br.ReadBytes(8).SequenceEqual(new byte[] { 0x0, 0x0, 0x0, 0x0, 0x24, 0x10, 0x12, 0xFF });
 			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
 		}
 
 		public LoadResult Load(string filename)
@@ -87,28 +80,21 @@ namespace file_btxt
 
 			if (_fileInfo.Exists)
 			{
-				try
-				{
-					_btxt = new BTXT(_fileInfo.FullName);
+				_btxt = new BTXT(_fileInfo.FullName);
 
-					string backupFilePath = _fileInfo.FullName + ".bak";
-					if (File.Exists(backupFilePath))
-					{
-						_btxtBackup = new BTXT(backupFilePath);
-					}
-					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						File.Copy(_fileInfo.FullName, backupFilePath);
-						_btxtBackup = new BTXT(backupFilePath);
-					}
-					else
-					{
-						_btxtBackup = null;
-					}
-				}
-				catch (Exception)
+				string backupFilePath = _fileInfo.FullName + ".bak";
+				if (File.Exists(backupFilePath))
 				{
-					result = LoadResult.Failure;
+					_btxtBackup = new BTXT(backupFilePath);
+				}
+				else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					File.Copy(_fileInfo.FullName, backupFilePath);
+					_btxtBackup = new BTXT(backupFilePath);
+				}
+				else
+				{
+					_btxtBackup = null;
 				}
 			}
 			else
@@ -155,11 +141,13 @@ namespace file_btxt
 							if (_btxtBackup == null)
 							{
 								Entry subEntry = new Entry(str);
+								subEntry.ParentEntry = entry;
 								entry.SubEntries.Add(subEntry);
 							}
 							else
 							{
 								Entry subEntry = new Entry(str, _btxtBackup.Labels.FirstOrDefault(o => o.Name == label.Name).Strings.FirstOrDefault(j => j.ID == str.ID));
+								subEntry.ParentEntry = entry;
 								entry.SubEntries.Add(subEntry);
 							}
 						}

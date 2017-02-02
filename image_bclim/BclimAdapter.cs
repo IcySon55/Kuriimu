@@ -18,7 +18,7 @@ namespace image_bclim
 		// Information
 		public string Name => Settings.Default.PluginName;
 
-		public string Description => "Binary C Layout Image";
+		public string Description => "Binary CLayout Image";
 
 		public string Extension => "*.bclim";
 
@@ -47,6 +47,7 @@ namespace image_bclim
 		{
 			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
+				if (br.BaseStream.Length < 40) return false;
 				br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
 				return br.ReadString(4) == "CLIM";
 			}
@@ -60,16 +61,7 @@ namespace image_bclim
 			_bitmaps = null;
 
 			if (_fileInfo.Exists)
-			{
-				try
-				{
-					_bclim = BCLIM.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-				}
-				catch (Exception)
-				{
-					result = LoadResult.Failure;
-				}
-			}
+				_bclim = BCLIM.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
 			else
 				result = LoadResult.FileNotFound;
 

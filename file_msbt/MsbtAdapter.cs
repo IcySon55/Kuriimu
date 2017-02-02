@@ -64,18 +64,11 @@ namespace file_msbt
 
 		public bool Identify(string filename)
 		{
-			bool result = true;
-
-			try
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				new MSBT(filename);
+				if (br.BaseStream.Length < 8) return false;
+				return br.ReadString(8) == "MsgStdBn";
 			}
-			catch (Exception)
-			{
-				result = false;
-			}
-
-			return result;
 		}
 
 		public LoadResult Load(string filename)
@@ -87,28 +80,21 @@ namespace file_msbt
 
 			if (_fileInfo.Exists)
 			{
-				try
-				{
-					_msbt = new MSBT(_fileInfo.FullName);
+				_msbt = new MSBT(_fileInfo.FullName);
 
-					string backupFilePath = _fileInfo.FullName + ".bak";
-					if (File.Exists(backupFilePath))
-					{
-						_msbtBackup = new MSBT(backupFilePath);
-					}
-					else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						File.Copy(_fileInfo.FullName, backupFilePath);
-						_msbtBackup = new MSBT(backupFilePath);
-					}
-					else
-					{
-						_msbtBackup = null;
-					}
-				}
-				catch (Exception)
+				string backupFilePath = _fileInfo.FullName + ".bak";
+				if (File.Exists(backupFilePath))
 				{
-					result = LoadResult.Failure;
+					_msbtBackup = new MSBT(backupFilePath);
+				}
+				else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					File.Copy(_fileInfo.FullName, backupFilePath);
+					_msbtBackup = new MSBT(backupFilePath);
+				}
+				else
+				{
+					_msbtBackup = null;
 				}
 			}
 			else
