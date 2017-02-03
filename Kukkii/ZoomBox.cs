@@ -49,6 +49,13 @@ namespace Kukkii
 		{
 			paintEventArgs.Graphics.InterpolationMode = InterpolationMode;
 			base.OnPaint(paintEventArgs);
+
+			if (Image != null)
+			{
+				Width = Image.Width * _zoom;
+				Height = Image.Height * _zoom;
+				ZoomChanged(this, new EventArgs());
+			}
 		}
 
 		/// <summary>
