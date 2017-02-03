@@ -35,8 +35,8 @@ namespace Kukkii
 		{
 			Icon = Resources.kukkii;
 
-			Tools.DoubleBuffer(pbxPreview, true);
-			//LoadForm();
+			Tools.DoubleBuffer(pnlPreview, true);
+			Tools.DoubleBuffer(zbxPreview, true);
 			UpdateForm();
 		}
 
@@ -303,18 +303,35 @@ namespace Kukkii
 			}
 		}
 
-		private void UpdatePreview()
-		{
-			Bitmap bmp = _imageAdapter.Bitmaps.ToList()[0];
-
-			pbxPreview.Image = bmp;
-
-			pbxPreview.Location = new Point(pnlPreview.Width / 2 - bmp.Width / 2, pnlPreview.Height / 2 - bmp.Height / 2);
-		}
-
 		private string FileName()
 		{
 			return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
+		}
+
+		private void UpdatePreview()
+		{
+			zbxPreview.Image = _imageAdapter.Bitmaps.ToList()[0];
+		}
+
+		private void zbxPreview_ZoomChanged(object sender, EventArgs e)
+		{
+			int x = Math.Max(pnlPreview.Width / 2 - zbxPreview.Width / 2, 0);
+			int y = Math.Max(pnlPreview.Height / 2 - zbxPreview.Height / 2, 0);
+
+			int scrollX = 0, scrollY = 0;
+			if (zbxPreview.Width > pnlPreview.Width)
+				scrollX = (zbxPreview.Width - pnlPreview.Width) / 2;
+			if (zbxPreview.Height > pnlPreview.Height)
+				scrollY = (zbxPreview.Height - pnlPreview.Height) / 2;
+
+			pnlPreview.AutoScrollPosition = new Point(scrollX, scrollY);
+			zbxPreview.Location = new Point(x, y);
+			tslZoom.Text = "Zoom: " + (zbxPreview.Zoom * 100) + "%";
+		}
+
+		private void pnlPreview_Scroll(object sender, ScrollEventArgs e)
+		{
+			pnlPreview.Invalidate();
 		}
 	}
 }
