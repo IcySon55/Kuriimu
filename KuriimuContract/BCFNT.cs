@@ -206,16 +206,26 @@ namespace KuriimuContract
 						case 0:
 							var charOffset = br.ReadUInt16();
 							for (char i = cmap.code_begin; i <= cmap.code_end; i++)
-								dicCMAP[i] = i - cmap.code_begin + charOffset;
+							{
+								int idx = i - cmap.code_begin + charOffset;
+								dicCMAP[i] = idx < UInt16.MaxValue ? idx : 0;
+							}
 							break;
 						case 1:
 							for (char i = cmap.code_begin; i <= cmap.code_end; i++)
-								dicCMAP[i] = br.ReadUInt16();
+							{
+								int idx = br.ReadUInt16();
+								dicCMAP[i] = idx < UInt16.MaxValue ? idx : 0;
+							}
 							break;
 						case 2:
 							var n = br.ReadUInt16();
 							for (int i = 0; i < n; i++)
-								dicCMAP[br.ReadChar()] = br.ReadUInt16();
+							{
+								char c = br.ReadChar();
+								int idx = br.ReadUInt16();
+								dicCMAP[c] = idx < UInt16.MaxValue ? idx : 0;
+							}
 							break;
 						default:
 							throw new Exception("Unsupported mapping method");

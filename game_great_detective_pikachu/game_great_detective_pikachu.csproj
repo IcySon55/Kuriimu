@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\lookup_bg.bflim.png" />
+    <None Include="resources\MainFont.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\lookup_bg.png" />

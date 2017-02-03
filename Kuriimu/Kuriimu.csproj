@@ -177,6 +177,7 @@
     <Content Include="images\menu-open.png" />
     <None Include="images\menu-properties.png" />
     <Content Include="images\menu-preview-invisible.png" />
+    <None Include="images\menu-preview-save.png" />
     <Content Include="images\menu-preview-visible.png" />
     <Content Include="images\menu-save-as.png" />
     <Content Include="images\menu-save.png" />
