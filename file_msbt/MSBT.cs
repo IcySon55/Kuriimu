@@ -53,7 +53,7 @@ namespace file_msbt
 				Header.Unknown4 = br.ReadBytes(10);
 
 				if (Header.FileSize != br.BaseStream.Length)
-					throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
+					throw new InvalidMSBTException("The file provided is not a valid MSBT file. Filesize mismtach.");
 
 				SectionOrder.Clear();
 				for (int i = 0; i < Header.NumberOfSections; i++)

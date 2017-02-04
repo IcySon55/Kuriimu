@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConverter));
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,7 +50,9 @@
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
 			this.pnlPreview = new System.Windows.Forms.Panel();
-			this.pbxPreview = new System.Windows.Forms.PictureBox();
+			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+			this.tslZoom = new System.Windows.Forms.ToolStripStatusLabel();
+			this.zbxPreview = new Kukkii.ZoomBox();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
@@ -57,7 +60,8 @@
 			this.splMain.Panel1.SuspendLayout();
 			this.splMain.SuspendLayout();
 			this.pnlPreview.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).BeginInit();
+			this.statusStrip1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zbxPreview)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -248,6 +252,7 @@
 			// splMain.Panel1
 			// 
 			this.splMain.Panel1.Controls.Add(this.pnlPreview);
+			this.splMain.Panel1.Controls.Add(this.statusStrip1);
 			this.splMain.Size = new System.Drawing.Size(972, 599);
 			this.splMain.SplitterDistance = 740;
 			this.splMain.TabIndex = 0;
@@ -258,25 +263,56 @@
 			this.pnlPreview.BackColor = System.Drawing.Color.DarkGray;
 			this.pnlPreview.BackgroundImage = global::Kukkii.Properties.Resources.background;
 			this.pnlPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.pnlPreview.Controls.Add(this.pbxPreview);
+			this.pnlPreview.Controls.Add(this.zbxPreview);
 			this.pnlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlPreview.Location = new System.Drawing.Point(0, 0);
 			this.pnlPreview.Name = "pnlPreview";
-			this.pnlPreview.Size = new System.Drawing.Size(740, 599);
+			this.pnlPreview.Size = new System.Drawing.Size(740, 577);
 			this.pnlPreview.TabIndex = 6;
+			this.pnlPreview.Scroll += new System.Windows.Forms.ScrollEventHandler(this.pnlPreview_Scroll);
+			this.pnlPreview.MouseEnter += new System.EventHandler(this.pnlPreview_MouseEnter);
 			// 
-			// pbxPreview
+			// statusStrip1
 			// 
-			this.pbxPreview.BackColor = System.Drawing.Color.Transparent;
-			this.pbxPreview.Location = new System.Drawing.Point(0, 0);
-			this.pbxPreview.Name = "pbxPreview";
-			this.pbxPreview.Size = new System.Drawing.Size(128, 128);
-			this.pbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-			this.pbxPreview.TabIndex = 4;
-			this.pbxPreview.TabStop = false;
+			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tslZoom});
+			this.statusStrip1.Location = new System.Drawing.Point(0, 577);
+			this.statusStrip1.Name = "statusStrip1";
+			this.statusStrip1.Size = new System.Drawing.Size(740, 22);
+			this.statusStrip1.SizingGrip = false;
+			this.statusStrip1.TabIndex = 7;
+			this.statusStrip1.Text = "statusStrip1";
+			// 
+			// tslZoom
+			// 
+			this.tslZoom.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tslZoom.BackColor = System.Drawing.SystemColors.Control;
+			this.tslZoom.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenInner;
+			this.tslZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.tslZoom.Image = ((System.Drawing.Image)(resources.GetObject("tslZoom.Image")));
+			this.tslZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tslZoom.Name = "tslZoom";
+			this.tslZoom.Size = new System.Drawing.Size(73, 17);
+			this.tslZoom.Text = "Zoom: 100%";
+			// 
+			// zbxPreview
+			// 
+			this.zbxPreview.BackColor = System.Drawing.Color.Transparent;
+			this.zbxPreview.Image = null;
+			this.zbxPreview.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+			this.zbxPreview.Location = new System.Drawing.Point(0, 0);
+			this.zbxPreview.MaximumZoomFactor = 10;
+			this.zbxPreview.MinimumZoomFactor = 1;
+			this.zbxPreview.Name = "zbxPreview";
+			this.zbxPreview.Size = new System.Drawing.Size(128, 128);
+			this.zbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.zbxPreview.TabIndex = 4;
+			this.zbxPreview.TabStop = false;
+			this.zbxPreview.ZoomChanged += new Kukkii.ZoomBox.ZoomChangedEventHandler(this.zbxPreview_ZoomChanged);
 			// 
 			// frmConverter
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(984, 662);
@@ -286,6 +322,8 @@
 			this.Name = "frmConverter";
 			this.Text = "Kukki";
 			this.Load += new System.EventHandler(this.frmConverter_Load);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragEnter);
 			this.Resize += new System.EventHandler(this.frmConverter_Resize);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
@@ -293,11 +331,13 @@
 			this.tlsMain.PerformLayout();
 			this.pnlMain.ResumeLayout(false);
 			this.splMain.Panel1.ResumeLayout(false);
+			this.splMain.Panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
 			this.splMain.ResumeLayout(false);
 			this.pnlPreview.ResumeLayout(false);
-			this.pnlPreview.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).EndInit();
+			this.statusStrip1.ResumeLayout(false);
+			this.statusStrip1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zbxPreview)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -324,9 +364,11 @@
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splMain;
 		private System.Windows.Forms.Panel pnlPreview;
-		private System.Windows.Forms.PictureBox pbxPreview;
+		private ZoomBox zbxPreview;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+		private System.Windows.Forms.StatusStrip statusStrip1;
+		private System.Windows.Forms.ToolStripStatusLabel tslZoom;
 	}
 }
 

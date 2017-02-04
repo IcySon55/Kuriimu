@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using game_great_detective_pikachu.Properties;
 using KuriimuContract;
 
@@ -13,6 +12,18 @@ namespace game_great_detective_pikachu
 {
 	public class Handler : IGameHandler
 	{
+		#region Properties
+
+		// Information
+		public string Name => "Great Detective Pikachu";
+
+		public Image Icon => Resources.icon;
+
+		// Feature Support
+		public bool HandlerCanGeneratePreviews => true;
+
+		#endregion
+
 		Dictionary<string, string> _pairs = new Dictionary<string, string>
 		{
 			// Control
@@ -29,17 +40,15 @@ namespace game_great_detective_pikachu
 			["…"] = "\x85"
 		};
 
-		#region Properties
+		BCFNT font;
 
-		// Information
-		public string Name => "Great Detective Pikachu";
-
-		public Image Icon => Resources.icon;
-
-		// Feature Support
-		public bool HandlerCanGeneratePreviews => true;
-
-		#endregion
+		public Handler()
+		{
+			var ms = new MemoryStream();
+			new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
+			ms.Position = 0;
+			font = new BCFNT(ms);
+		}
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -51,137 +60,81 @@ namespace game_great_detective_pikachu
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
+		Bitmap background = new Bitmap(Resources.background1);
+
 		public Bitmap GeneratePreview(string rawString)
 		{
-			BitmapFontHandler bfh = new BitmapFontHandler(Resources.MainFont);
+			Bitmap img = new Bitmap(background.Width, background.Height);
 
-			Bitmap background = new Bitmap(Resources.background1);
-
-			Graphics gfx = Graphics.FromImage(background);
-			gfx.SmoothingMode = SmoothingMode.HighQuality;
-			gfx.InterpolationMode = InterpolationMode.Bicubic;
-			gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-			float[][] fadeToFiftyPercentMatrix = {
-				new float[] { 1, 0, 0, 0, 0 },
-				new float[] { 0, 1, 0, 0, 0 },
-				new float[] { 0, 0, 1, 0, 0 },
-				new float[] { 0, 0, 0, 0.5f, 0 },
-				new float[] { 0, 0, 0, 0, 1 },
-			};
-
-			// Textbox
-			Bitmap textBox = new Bitmap(Resources.top_speaker_bg);
-			ColorMatrix textBoxMatrix = new ColorMatrix(fadeToFiftyPercentMatrix);
-
-			ImageAttributes textBoxAttributes = new ImageAttributes();
-			textBoxAttributes.SetColorMatrix(textBoxMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-
-			Rectangle rectTextBox = new Rectangle(0, background.Height - textBox.Height / 2, background.Width, textBox.Height / 2);
-			gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
-			gfx.DrawImage(textBox, rectTextBox, 0, 0, textBox.Width, textBox.Height, GraphicsUnit.Pixel, textBoxAttributes);
-
-			// Face
-			Bitmap face = Resources.face_icon_pikachu_surprised;
-			Rectangle rectFace = new Rectangle(4, background.Height - face.Height - 4, face.Width, face.Height);
-			gfx.DrawImageUnscaled(face, rectFace);
-
-			// Text
-			gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-			Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 8, rectFace.Y + 10, 366, 60);
-
-			string str = rawString;
-			float scaleDefault = 0.64f;
-			float scaleCurrent = scaleDefault;
-			float x = rectText.X, pX = x;
-			float y = rectText.Y, pY = y;
-			float yAdjust = 3;
-			Color colorDefault = Color.FromArgb(255, 255, 255, 255);
-			Color colorCurrent = colorDefault;
-
-			for (int i = 0; i < str.Length; i++)
+			using (Graphics gfx = Graphics.FromImage(img))
 			{
-				bool notEOS = i + 2 < str.Length;
-				char c = str[i];
+				gfx.SmoothingMode = SmoothingMode.HighQuality;
+				gfx.InterpolationMode = InterpolationMode.Bicubic;
+				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-				char c2 = ' ';
-				if (notEOS)
-					c2 = str[i + 1];
+				gfx.DrawImage(background, 0, 0);
 
-				BitmapFontCharacter bfc = bfh.GetCharacter(c);
+				float[][] fadeToFiftyPercentMatrix = {
+					new float[] { 1, 0, 0, 0, 0 },
+					new float[] { 0, 1, 0, 0, 0 },
+					new float[] { 0, 0, 1, 0, 0 },
+					new float[] { 0, 0, 0, 0.45f, 0 },
+					new float[] { 0, 0, 0, 0, 1 },
+				};
 
-				//// Handle control codes
-				//if (c == 0x001F && c2 == 0x0002) // Start Name
-				//{
-				//	colorCurrent = Color.White;
-				//	scaleCurrent = scaleName;
-				//	int width = bfh.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
-				//	pX = x;
-				//	pY = y;
-				//	x = rectName.X + (rectName.Width / 2) - (width / 2);
-				//	y = rectName.Y;
-				//	i++;
-				//	continue;
-				//}
-				//else if (c == 0x001F && (c2 == 0x0000 || c2 == 0x0100 || c2 == 0x0200 || c2 == 0x0103 || c2 == 0x0020 || c2 == 0x0115)) // Unknown/No Render Effect
-				//{
-				//	i++;
-				//	continue;
-				//}
-				//else if (c == 0x0013 && c2 == 0x0000) // Default
-				//{
-				//	colorCurrent = colorDefault;
-				//	i++;
-				//	continue;
-				//}
-				//else if (c == 0x0013 && c2 == 0x0001) // Red
-				//{
-				//	colorCurrent = Color.Red;
-				//	i++;
-				//	continue;
-				//}
-				//else if (c == 0x0013 && c2 == 0x0003) // Light Blue
-				//{
-				//	colorCurrent = Color.FromArgb(255, 54, 129, 216);
-				//	i++;
-				//	continue;
-				//}
-				//else if (c == 0x001F && c2 == 0x0015) // End Dialog
-				//{
-				//	i++;
-				//	continue;
-				//}
-				//else if (c == 0x0017) // End End Dialog?
-				//	continue;
-				//else if (c == 0x0002) // End Name
-				//{
-				//	colorCurrent = colorDefault;
-				//	scaleCurrent = scaleDefault;
-				//	x = pX;
-				//	y = pY;
-				//	continue;
-				//}
-				if (c == '\n' || x + (bfc.Width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
+				// Textbox
+				Bitmap textBox = new Bitmap(Resources.top_speaker_bg);
+				ColorMatrix textBoxMatrix = new ColorMatrix(fadeToFiftyPercentMatrix);
+
+				ImageAttributes textBoxAttributes = new ImageAttributes();
+				textBoxAttributes.SetColorMatrix(textBoxMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+				Rectangle rectTextBox = new Rectangle(0, img.Height - textBox.Height / 2, img.Width, textBox.Height / 2);
+				gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
+				gfx.DrawImage(textBox, rectTextBox, 0, 0, textBox.Width, textBox.Height, GraphicsUnit.Pixel, textBoxAttributes);
+
+				// Face
+				Bitmap face = Resources.face_icon_pikachu_surprised;
+				Rectangle rectFace = new Rectangle(5, img.Height - face.Height - 4, face.Width, face.Height);
+				gfx.DrawImageUnscaled(face, rectFace);
+
+				// Text
+				Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 9, rectFace.Y + 12, 366, 60);
+
+				float scale = 1.0f;
+				float x = rectText.X, y = rectText.Y;
+				int line = 0;
+
+				string str = rawString;
+				font.SetTextColor(Color.White);
+
+				gfx.InterpolationMode = InterpolationMode.Bicubic;
+				foreach (char c in str)
 				{
-					x = rectText.X;
-					y += (bfc.Character.Height * scaleCurrent) + yAdjust;
-					if (c == '\n')
-						continue;
+					switch (c)
+					{
+						case '\n':
+							x = rectText.X;
+							y += rectText.Y;
+							if (++line % 3 == 0)
+								y += 33;
+							continue;
+					}
+
+					font.SetTextColor(Color.FromArgb(255, 63, 3, 3));
+					font.DrawCharacter(c, gfx, x + 2f, y + 2f, scale);
+					font.SetTextColor(Color.White);
+					font.DrawCharacter(c, gfx, x, y, scale);
+					x += font.GetWidthInfo(c).char_width * scale;
 				}
 
-				// Draw character
-				gfx.DrawImage(bfh.GetCharacter(c, Color.SaddleBrown).Character, x - bfc.Offset * scaleCurrent + 2f, y + 2f, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
-				gfx.DrawImage(bfh.GetCharacter(c, colorCurrent).Character, x - bfc.Offset * scaleCurrent, y, bfh.CharacterWidth * scaleCurrent, bfh.CharacterHeight * scaleCurrent);
-				x += bfc.Width * scaleCurrent;
+				// Cursor
+				Bitmap cursor = new Bitmap(Resources.top_speaker);
+				RectangleF rectCursor = new RectangleF(381, 225, 13.9f, 10);
+				gfx.DrawImage(cursor, rectCursor);
 			}
 
-			// Cursor
-			Bitmap cursor = new Bitmap(Resources.top_speaker);
-			Rectangle rectCursor = new Rectangle(background.Width - cursor.Width - 10, background.Height - cursor.Height - 10, cursor.Width, cursor.Height);
-			gfx.DrawImage(cursor, rectCursor);
-
-			return background;
+			return img;
 		}
 	}
 }

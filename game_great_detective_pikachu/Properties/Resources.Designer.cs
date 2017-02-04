@@ -201,12 +201,12 @@ namespace game_great_detective_pikachu.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Bitmap MainFont {
+        internal static byte[] MainFont_bcfnt {
             get {
-                object obj = ResourceManager.GetObject("MainFont", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("MainFont_bcfnt", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

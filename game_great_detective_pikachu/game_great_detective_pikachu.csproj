@@ -53,6 +53,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -62,22 +63,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\lookup_bg.bflim.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\lookup_bg.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\pikachu.png" />
+    <None Include="resources\MainFont.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\top_speaker_bg.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\top_speaker.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\tim.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\face_icon_pikachu.png" />
@@ -120,9 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\background1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\MainFont.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

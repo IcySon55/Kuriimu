@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
@@ -154,19 +155,22 @@ namespace Kuriimu
 
 		private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			IEntry entry = _fileAdapter.NewEntry();
-
-			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
-
-			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
+			if (treEntries.Focused)
 			{
-				entry.Name = name.NewName;
-				if (_fileAdapter.AddEntry(entry))
+				IEntry entry = _fileAdapter.NewEntry();
+
+				frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
+
+				if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 				{
-					_hasChanges = true;
-					LoadEntries();
-					treEntries.SelectNodeByIEntry(entry);
-					UpdateForm();
+					entry.Name = name.NewName;
+					if (_fileAdapter.AddEntry(entry))
+					{
+						_hasChanges = true;
+						LoadEntries();
+						treEntries.SelectNodeByIEntry(entry);
+						UpdateForm();
+					}
 				}
 			}
 		}
@@ -177,17 +181,20 @@ namespace Kuriimu
 
 		private void renameEntryToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-
-			frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
-
-			if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
+			if (treEntries.Focused)
 			{
-				if (_fileAdapter.RenameEntry(entry, name.NewName))
+				IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+
+				frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
+
+				if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
 				{
-					_hasChanges = true;
-					treEntries.FindNodeByIEntry(entry).Text = name.NewName;
-					UpdateForm();
+					if (_fileAdapter.RenameEntry(entry, name.NewName))
+					{
+						_hasChanges = true;
+						treEntries.FindNodeByIEntry(entry).Text = name.NewName;
+						UpdateForm();
+					}
 				}
 			}
 		}
@@ -198,17 +205,20 @@ namespace Kuriimu
 
 		private void deleteEntryToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-
-			if (MessageBox.Show("Are you sure you want to delete " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+			if (treEntries.Focused)
 			{
-				if (_fileAdapter.DeleteEntry(entry))
+				IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+
+				if (MessageBox.Show("Are you sure you want to delete " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
-					_hasChanges = true;
-					TreeNode nextNode = treEntries.SelectedNode.NextNode;
-					UpdateEntries();
-					treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
-					treEntries.SelectedNode = nextNode;
+					if (_fileAdapter.DeleteEntry(entry))
+					{
+						_hasChanges = true;
+						TreeNode nextNode = treEntries.SelectedNode.NextNode;
+						UpdateEntries();
+						treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
+						treEntries.SelectedNode = nextNode;
+					}
 				}
 			}
 		}
@@ -289,6 +299,22 @@ namespace Kuriimu
 			UpdateForm();
 		}
 
+		private void tsbPreviewSave_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Title = "Save Preview as PNG...";
+			sfd.InitialDirectory = Settings.Default.LastDirectory;
+			sfd.FileName = "preview.png";
+			sfd.Filter = "Portable Network Graphics (*.png)|*.png";
+			sfd.AddExtension = true;
+
+			if (sfd.ShowDialog() == DialogResult.OK)
+			{
+				Bitmap bmp = (Bitmap)pbxPreview.Image;
+				bmp.Save(sfd.FileName, ImageFormat.Png);
+			}
+		}
+
 		// File Handling
 		private void frmEditor_DragEnter(object sender, DragEventArgs e)
 		{
@@ -332,43 +358,39 @@ namespace Kuriimu
 			DialogResult dr = DialogResult.OK;
 
 			if (filename == string.Empty)
-			{
 				dr = ofd.ShowDialog();
-				filename = ofd.FileName;
-			}
 
 			if (dr == DialogResult.OK)
 			{
+				if (filename == string.Empty)
+					filename = ofd.FileName;
+
+				IFileAdapter _tempAdapter = SelectFileAdapter(filename);
+
 				try
 				{
-					IFileAdapter _tempAdapter = SelectFileAdapter(filename);
-
-					if (_tempAdapter != null)
+					if (_tempAdapter != null && _tempAdapter.Load(filename) == LoadResult.Success)
 					{
 						_fileAdapter = _tempAdapter;
+						_fileOpen = true;
+						_hasChanges = false;
 
-						if (_fileAdapter != null && _fileAdapter.Load(filename) == LoadResult.Success)
-						{
-							_fileOpen = true;
-							_hasChanges = false;
+						// Select Game Handler
+						foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+							if (tsi.Text == Settings.Default.SelectedGameHandler)
+							{
+								_gameHandler = (IGameHandler)tsi.Tag;
+								tsbGameSelect.Text = tsi.Text;
+								tsbGameSelect.Image = tsi.Image;
+								break;
+							}
+						if (_gameHandler == null)
+							_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
 
-							// Select Game Handler
-							foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
-								if (tsi.Text == Settings.Default.SelectedGameHandler)
-								{
-									_gameHandler = (IGameHandler)tsi.Tag;
-									tsbGameSelect.Text = tsi.Text;
-									tsbGameSelect.Image = tsi.Image;
-									break;
-								}
-							if (_gameHandler == null)
-								_gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
-
-							LoadEntries();
-							UpdateTextView();
-							UpdatePreview();
-							UpdateForm();
-						}
+						LoadEntries();
+						UpdateTextView();
+						UpdatePreview();
+						UpdateForm();
 					}
 
 					Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
@@ -376,10 +398,10 @@ namespace Kuriimu
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
-					_fileOpen = false;
-					_hasChanges = false;
-					UpdateForm();
+					if (_tempAdapter != null)
+						MessageBox.Show(this, ex.ToString(), _tempAdapter.Name + " - " + _tempAdapter.Description + " Adapter", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					else
+						MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
 		}
@@ -389,6 +411,7 @@ namespace Kuriimu
 			SaveFileDialog sfd = new SaveFileDialog();
 			DialogResult dr = DialogResult.OK;
 
+			sfd.Title = "Save as " + _fileAdapter.Description;
 			sfd.FileName = _fileAdapter.FileInfo.Name;
 			sfd.Filter = _fileAdapter.Description + " (" + _fileAdapter.Extension + ")|" + _fileAdapter.Extension;
 
@@ -419,28 +442,17 @@ namespace Kuriimu
 		{
 			IFileAdapter result = null;
 
-			try
-			{
-				// first look for adapters whose extension matches that of our filename
-				List<IFileAdapter> matchingAdapters = _fileAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+			// first look for adapters whose extension matches that of our filename
+			List<IFileAdapter> matchingAdapters = _fileAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
 
-				result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
+			result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
-				if (result == null)
-				{
-					// if none of them match, then try all other adapters
-					result = _fileAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
-				}
+			// if none of them match, then try all other adapters
+			if (result == null)
+				result = _fileAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
 
-				if (result == null)
-					MessageBox.Show("None of the installed plugins were able to open the file.", "Not Supported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK);
-				_fileOpen = false;
-				_hasChanges = false;
-			}
+			if (result == null)
+				MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return result;
 		}
@@ -617,12 +629,12 @@ namespace Kuriimu
 				scbFontSize.Enabled = _fileOpen;
 
 				// Toolbar
-				addEntryToolStripMenuItem.Enabled = canAdd;
-				tsbEntryAdd.Enabled = canAdd;
-				renameEntryToolStripMenuItem.Enabled = canRename;
-				tsbEntryRename.Enabled = canRename;
-				deleteEntryToolStripMenuItem.Enabled = canDelete;
-				tsbEntryDelete.Enabled = canDelete;
+				addEntryToolStripMenuItem.Enabled = canAdd && treEntries.Focused;
+				tsbEntryAdd.Enabled = canAdd && treEntries.Focused;
+				renameEntryToolStripMenuItem.Enabled = canRename && treEntries.Focused;
+				tsbEntryRename.Enabled = canRename && treEntries.Focused;
+				deleteEntryToolStripMenuItem.Enabled = canDelete && treEntries.Focused;
+				tsbEntryDelete.Enabled = canDelete && treEntries.Focused;
 				entryPropertiesToolStripMenuItem.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
 				tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
 				sortEntriesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
@@ -632,6 +644,7 @@ namespace Kuriimu
 				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
+				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
 
 				treEntries.Enabled = _fileOpen;
 
@@ -684,6 +697,16 @@ namespace Kuriimu
 		private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
 		{
 			e.Node.Expand();
+		}
+
+		private void treEntries_Enter(object sender, EventArgs e)
+		{
+			UpdateForm();
+		}
+
+		private void treEntries_Leave(object sender, EventArgs e)
+		{
+			UpdateForm();
 		}
 
 		// Text

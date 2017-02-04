@@ -83,21 +83,10 @@ namespace file_kup
 
 			if (_fileInfo.Exists)
 			{
-				try
-				{
-					_kup = KUP.Load(_fileInfo.FullName);
+				_kup = KUP.Load(_fileInfo.FullName);
 
-					foreach (Entry entry in _kup.Entries)
-						entry.PointerCleanup();
-				}
-				catch (XmlException)
-				{
-					result = LoadResult.TypeMismatch;
-				}
-				catch (Exception)
-				{
-					result = LoadResult.Failure;
-				}
+				foreach (Entry entry in _kup.Entries)
+					entry.PointerCleanup();
 			}
 			else
 				result = LoadResult.FileNotFound;
