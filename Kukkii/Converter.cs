@@ -320,14 +320,6 @@ namespace Kukkii
 			int y = Math.Max(pnlPreview.Height / 2 - zbxPreview.Height / 2, 0);
 			zbxPreview.Location = new Point(x, y);
 
-			//pnlPreview.AutoScrollMinSize = new Size(zbxPreview.Width, zbxPreview.Height);
-			//int scrollX = 0, scrollY = 0;
-			//if (zbxPreview.Width > pnlPreview.Width)
-			//	scrollX = pnlPreview.AutoScrollMinSize.Width / 2 - pnlPreview.ClientRectangle.Width / 2;
-			//if (zbxPreview.Height > pnlPreview.Height)
-			//	scrollY = pnlPreview.AutoScrollMinSize.Height / 2 - pnlPreview.ClientSize.Height / 2;
-			//pnlPreview.AutoScrollPosition = new Point(scrollX, scrollY);
-
 			tslZoom.Text = "Zoom: " + (zbxPreview.Zoom * 100) + "%";
 			pnlPreview.Invalidate();
 		}
@@ -335,6 +327,12 @@ namespace Kukkii
 		private void pnlPreview_Scroll(object sender, ScrollEventArgs e)
 		{
 			pnlPreview.Invalidate();
+		}
+
+		private void pnlPreview_MouseEnter(object sender, EventArgs e)
+		{
+			if (!zbxPreview.Focused)
+				zbxPreview.Focus();
 		}
 	}
 }

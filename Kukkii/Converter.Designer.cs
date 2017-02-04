@@ -270,6 +270,7 @@
 			this.pnlPreview.Size = new System.Drawing.Size(740, 577);
 			this.pnlPreview.TabIndex = 6;
 			this.pnlPreview.Scroll += new System.Windows.Forms.ScrollEventHandler(this.pnlPreview_Scroll);
+			this.pnlPreview.MouseEnter += new System.EventHandler(this.pnlPreview_MouseEnter);
 			// 
 			// statusStrip1
 			// 
@@ -285,7 +286,7 @@
 			// tslZoom
 			// 
 			this.tslZoom.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.tslZoom.BackColor = System.Drawing.SystemColors.Window;
+			this.tslZoom.BackColor = System.Drawing.SystemColors.Control;
 			this.tslZoom.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenInner;
 			this.tslZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.tslZoom.Image = ((System.Drawing.Image)(resources.GetObject("tslZoom.Image")));
@@ -297,13 +298,14 @@
 			// zbxPreview
 			// 
 			this.zbxPreview.BackColor = System.Drawing.Color.Transparent;
+			this.zbxPreview.Image = null;
 			this.zbxPreview.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 			this.zbxPreview.Location = new System.Drawing.Point(0, 0);
-			this.zbxPreview.MaximumZoomFactor = 5;
+			this.zbxPreview.MaximumZoomFactor = 10;
 			this.zbxPreview.MinimumZoomFactor = 1;
 			this.zbxPreview.Name = "zbxPreview";
 			this.zbxPreview.Size = new System.Drawing.Size(128, 128);
-			this.zbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.zbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.zbxPreview.TabIndex = 4;
 			this.zbxPreview.TabStop = false;
 			this.zbxPreview.ZoomChanged += new Kukkii.ZoomBox.ZoomChangedEventHandler(this.zbxPreview_ZoomChanged);
