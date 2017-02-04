@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -34,7 +34,7 @@ namespace KuriimuContract
 		// Image Orientation
 		public enum ImageOrientation : byte
 		{
-			RightDown, UpRight = 4, DownRight = 8
+			RightDown, UpRight = 4, DownRight = 8, XiOrientationHack = 12
 		}
 
 		static ImageCommon()
@@ -70,7 +70,7 @@ namespace KuriimuContract
 					}
 					return val;
 				};
-				//throw new Exception((strideWidth * strideHeight).ToString() + " " + texture.Length.ToString());
+
 				for (int i = 0; i < strideWidth * strideHeight; i++)
 				{
 					int a = 255, r = 255, g = 255, b = 255;
@@ -108,7 +108,7 @@ namespace KuriimuContract
 								g = br.ReadByte();
 								r = br.ReadByte();
 								break;
-							} catch (Exception)
+							} catch(Exception)
 							{
 								b = 255;
 								g = 255;
@@ -162,6 +162,10 @@ namespace KuriimuContract
 					int x, y;
 					switch (orientation)
 					{
+						case ImageOrientation.XiOrientationHack:
+							x = (i / 64 % (strideWidth / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
+							y = (i / 64 / (strideWidth / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
+							break;
 						case ImageOrientation.RightDown:
 							x = (i / 64 % (strideWidth / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
 							y = (i / 64 / (strideWidth / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
