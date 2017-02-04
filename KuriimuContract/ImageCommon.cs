@@ -70,7 +70,7 @@ namespace KuriimuContract
 					}
 					return val;
 				};
-
+				//throw new Exception((strideWidth * strideHeight).ToString() + " " + texture.Length.ToString());
 				for (int i = 0; i < strideWidth * strideHeight; i++)
 				{
 					int a = 255, r = 255, g = 255, b = 255;
@@ -102,10 +102,19 @@ namespace KuriimuContract
 							r = (s >> 11) * 33 / 4;
 							break;
 						case Format.RGB8:
-							b = br.ReadByte();
-							g = br.ReadByte();
-							r = br.ReadByte();
-							break;
+							try
+							{
+								b = br.ReadByte();
+								g = br.ReadByte();
+								r = br.ReadByte();
+								break;
+							} catch (Exception)
+							{
+								b = 255;
+								g = 255;
+								r = 255;
+								break;
+							}
 						case Format.RGBA5551:
 							var s2 = br.ReadUInt16();
 							a = (s2 & 1) * 255;

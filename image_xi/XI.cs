@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -77,11 +78,16 @@ namespace image_xi
 				header.checkConst();
 
 				//decompress table
-				byte[] table = Decomp(br, header.tableDataOffset, header.tableSize2);
+				br.BaseStream.Position = header.tableDataOffset;
+				byte[] table = Decomp(new BinaryReaderX(new MemoryStream(br.ReadBytes(header.tableSize2))));
 
 				//get decompressed picture data
-				byte[] tex = Decomp(br, header.tableDataOffset + header.tableSize2, header.imgDataSize);
+				br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
+				byte[] tex = Decomp(new BinaryReaderX(new MemoryStream(br.ReadBytes(header.imgDataSize))));
 
+				//order pic blocks by table
+				byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)),header.width,header.height,header.imageFormat);
+				
 				//return decompressed picture data
 				return ImageCommon.FromTexture(tex, header.width, header.height, (ImageCommon.Format)Enum.Parse(typeof(ImageCommon.Format), header.imageFormat.ToString()));
 			}
@@ -92,13 +98,11 @@ namespace image_xi
 			return BitConverter.ToUInt32(BitConverter.GetBytes(n).Reverse().ToArray(), 0);
 		}
 
-		public static byte[] Decomp(BinaryReaderX br, int offset, int compSize)
+		public static byte[] Decomp(BinaryReaderX br)
 		{
-			br.BaseStream.Position = offset;
-
 			int sizeAndMethod = br.ReadInt32();
-			int method = ((sizeAndMethod >> 3) << 3) ^ sizeAndMethod;
-			int size = sizeAndMethod >> 3;
+			int method = sizeAndMethod % 8;
+			int size = sizeAndMethod / 8;
 			switch (method)
 			{
 				case 0://No compression
@@ -113,6 +117,48 @@ namespace image_xi
 					return CommonCompression.Decomp_RLE(br, size);
 				default:
 					throw new Exception("Unknown compression!");
+			}
+		}
+
+		public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, Format format)
+		{
+			switch (format)
+			{
+				case Format.RGB8:
+					var result = new byte[w * h * 3];
+					int resultCount = 0;
+					int[] tileorder = {7,6,15,14,5,4,13,12,23,22,31,30,};
+
+					for (int i = 0; i<tableLength;i+=2)
+					{
+						int entry = table.ReadUInt16();
+						if (entry == 0xFFFF)
+						{
+							for (int j = 0; j < 64 * 3; j++)
+							{
+								result[resultCount++] = 0;
+							}
+						} else
+						{
+							tex.BaseStream.Position = entry * 64 * 3;
+							for (int j = 0; j < 64 * 3; j++)
+							{
+								result[resultCount++] = tex.ReadByte();
+							}
+							/*int[] tileorder = {0,8,1,9,16,24,17,25,2,10,3,11,18,26,19,27,32,40,33,41,48,56,49,57,34,42,35,43,50,58,51,59,4,12,5,13,20,28,21,29,6,14,7,15,22,30,23,31,36,44,37,45,52,60,53,61,38,46,39,47,54,62,55,63};
+							tex.BaseStream.Position = entry * 64 * 3;
+							foreach (int j in tileorder)
+							{
+								result[resultCount + j * 3] = tex.ReadByte();
+								result[resultCount + j * 3 + 1] = tex.ReadByte();
+								result[resultCount + j * 3 + 2] = tex.ReadByte();
+							}
+							resultCount += (64*3);*/
+						}
+					}
+					return result;
+				default:
+					throw new Exception("Unsupported Picture encoding!");
 			}
 		}
 	}
