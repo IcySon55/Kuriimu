@@ -108,7 +108,8 @@ namespace KuriimuContract
 								g = br.ReadByte();
 								r = br.ReadByte();
 								break;
-							} catch(Exception)
+							}
+							catch (Exception)
 							{
 								b = 255;
 								g = 255;
