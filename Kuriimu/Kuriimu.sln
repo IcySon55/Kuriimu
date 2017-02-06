@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_bclim", "..\image_bcl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_xi", "..\image_xi\image_xi.csproj", "{1C9D7F75-2E04-441E-83D4-00A406809E09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_time_travelers", "..\game_time_travelers\game_time_travelers.csproj", "{9913FA89-71FC-486A-9B81-43289AA70A55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,10 @@ Global
 		{1C9D7F75-2E04-441E-83D4-00A406809E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C9D7F75-2E04-441E-83D4-00A406809E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C9D7F75-2E04-441E-83D4-00A406809E09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9913FA89-71FC-486A-9B81-43289AA70A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9913FA89-71FC-486A-9B81-43289AA70A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9913FA89-71FC-486A-9B81-43289AA70A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9913FA89-71FC-486A-9B81-43289AA70A55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
