@@ -7,7 +7,7 @@ using KuriimuContract;
 
 namespace image_xi
 {
-	class XI
+	public class XI
 	{
 		public enum Format : byte
 		{
@@ -138,12 +138,12 @@ namespace image_xi
 					}
 					return result;
 				case Format.ETC1:
-					result = new byte[w * h *2];
+					result = new byte[w * h * 2];
 					for (int i = 0; i < tableLength; i += 2)
 					{
 						int entry = table.ReadUInt16();
 						tex.BaseStream.Position = entry * 4 * 8;
-						for (int j = 0; j < 4*8; j++)
+						for (int j = 0; j < 4 * 8; j++)
 						{
 							result[resultCount++] = tex.ReadByte();
 						}
