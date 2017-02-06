@@ -1,23 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
+using image_xi;
+using KuriimuContract;
 
-namespace KuriimuContract
+namespace game_time_travelers
 {
 	public class XF
 	{
-		[DllImport("plugins/image_xi.dll", EntryPoint = "Load", CallingConvention = CallingConvention.Cdecl)]
-		static extern Bitmap Load(Stream filename);
-
 		public Bitmap bmp;
-		public string txt;
+		ImageAttributes attr = new ImageAttributes();
+		//public string txt;
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		[DebuggerDisplay("[{offset_x}, {offset_y}, {glyph_width}, {glyph_height}]")]
@@ -97,12 +94,12 @@ namespace KuriimuContract
 				//get xi image
 				Stream file = File.OpenWrite("img.bin");
 				br.BaseStream.Position = header.fileInfoOffset + fileEntries[0].offset;
-				file.Write(br.ReadBytes(fileEntries[0].fileSize),0, fileEntries[0].fileSize);
+				file.Write(br.ReadBytes(fileEntries[0].fileSize), 0, fileEntries[0].fileSize);
 				file.Close();
 
 				//convert xi image to bmp
-				bmp = game_time_travelers.image_xi.Load
-				bmp = new XI(new MemoryStream(br.ReadBytes(0x3396C))).Image; // temporary hack -- only works with nrm_main.xf for now
+				//bmp = XI.Load(file);
+				bmp = XI.Load(new MemoryStream(br.ReadBytes(0x3396C))); // temporary hack -- only works with nrm_main.xf for now
 				br.ReadBytes(0x28); // temporary hack -- should be the header
 				var buf1 = CriWare.GetDecompressedBytes(br.BaseStream);
 				var buf2 = CriWare.GetDecompressedBytes(br.BaseStream);
@@ -116,7 +113,7 @@ namespace KuriimuContract
 
 		public static byte[] Decompress(BinaryReaderX br)
 		{
-
+			return null;
 		}
 
 		public void SetTextColor(Color color)
