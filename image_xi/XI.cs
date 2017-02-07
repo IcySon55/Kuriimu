@@ -77,15 +77,16 @@ namespace image_xi
 				//decompress table
 				br.BaseStream.Position = header.tableDataOffset;
 				byte[] table = Decomp(new BinaryReaderX(new MemoryStream(br.ReadBytes(header.tableSize1))));
-
 				//File.OpenWrite("table.bin").Write(table,0,table.Length);
 
 				//get decompressed picture data
 				br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
 				byte[] tex = Decomp(new BinaryReaderX(new MemoryStream(br.ReadBytes(header.imgDataSize))));
+				//File.OpenWrite("xi.bin").Write(tex, 0, tex.Length);
 
 				//order pic blocks by table
 				byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.imageFormat);
+				//File.OpenWrite("pic.bin").Write(pic, 0, pic.Length);
 
 				//return decompressed picture data
 				return ImageCommon.FromTexture(pic, header.width, header.height, (ImageCommon.Format)Enum.Parse(typeof(ImageCommon.Format), header.imageFormat.ToString()), ImageCommon.ImageOrientation.XiOrientationHack);
@@ -109,9 +110,9 @@ namespace image_xi
 				case 1://LZSS
 					return CommonCompression.Decomp_LZSS(br, size);
 				case 2://4bit Huffman
-					return CommonCompression.Decomp_Huff(br, 1, size);
+					return CommonCompression.Decomp_Huff(br, 4, size);
 				case 3://8bit Huffman
-					return CommonCompression.Decomp_Huff(br, 0, size);
+					return CommonCompression.Decomp_Huff(br, 8, size);
 				case 4://RLE
 					return CommonCompression.Decomp_RLE(br, size);
 				default:
@@ -183,8 +184,21 @@ namespace image_xi
 						}
 					}
 					return result;
+				case Format.RGBA5551:
+					w=ImageCommon.strideVal(w); h = ImageCommon.strideVal(h);
+					result = new byte[w * h * 2];
+					for (int i = 0; i < tableLength; i += 2)
+					{
+						int entry = table.ReadUInt16();
+						tex.BaseStream.Position = entry * 64 * 2;
+						for (int j = 0; j < 64 * 2; j++)
+						{
+							result[resultCount++] = tex.ReadByte();
+						}
+					}
+					return result;
 				default:
-					throw new Exception("Unsupported Picture encoding!");
+					throw new Exception("Unsupported Picture encoding!" + format.ToString());
 			}
 		}
 	}

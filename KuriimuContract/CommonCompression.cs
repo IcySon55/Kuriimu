@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,26 +8,8 @@ namespace KuriimuContract
 {
 	public class CommonCompression
 	{
-		public static byte[] Decomp_Huff(BinaryReaderX br, int mode, int uncompSize)
+		public static byte[] Decomp_Huff(BinaryReaderX br, int bitMode, int uncompSize)
 		{
-			int method;
-
-			/* Modes:
-			 * 0 = 8bit
-			 * 1 = 4bit
-			 * */
-			switch (mode)
-			{
-				case 0:
-					method = 1;
-					break;
-				case 1:
-					method = 2;
-					break;
-				default:
-					throw new Exception("Huffman mode not supported!");
-			}
-
 			var tree_size = br.ReadByte();
 			var tree_root = br.ReadByte();
 			var tree_buffer = br.ReadBytes(tree_size * 2);
@@ -47,11 +29,11 @@ namespace KuriimuContract
 					next = 0;
 				}
 
-				if (result.Count == uncompSize * method)
+				if (result.Count == uncompSize * (8 / bitMode))
 				{
-					if (br.BaseStream.Position != br.BaseStream.Length)
-						throw new Exception("Haven't consumed all data in stream!");
-					return method == 3 ? result.ToArray() :
+					//if (br.BaseStream.Position != br.BaseStream.Length)
+						//throw new Exception("Haven't consumed all data in stream!");
+					return bitMode == 8 ? result.ToArray() :
 						 Enumerable.Range(0, uncompSize).Select(j => (byte)(result[2 * j + 1] * 16 + result[2 * j])).ToArray();
 				}
 			}
@@ -75,8 +57,8 @@ namespace KuriimuContract
 				}
 				if (result.Count == uncompSize)
 				{
-					if (br.BaseStream.Position != br.BaseStream.Length)
-						throw new Exception("Haven't consumed all data in stream!");
+					//if (br.BaseStream.Position != br.BaseStream.Length)
+						//throw new Exception("Haven't consumed all data in stream!");
 					return result.ToArray();
 				}
 				else if (result.Count > uncompSize)
@@ -100,8 +82,8 @@ namespace KuriimuContract
 					result.AddRange(br.ReadBytes(flag + 1));
 				if (result.Count == uncompSize)
 				{
-					if (br.BaseStream.Position != br.BaseStream.Length)
-						throw new Exception("Haven't consumed all data in stream");
+					//if (br.BaseStream.Position != br.BaseStream.Length)
+						//throw new Exception("Haven't consumed all data in stream");
 					return result.ToArray();
 				}
 				else if (result.Count > uncompSize)
