@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using KuriimuContract;
+using Cetera;
 
 namespace image_xi
 {
@@ -12,8 +13,8 @@ namespace image_xi
 		public enum Format : byte
 		{
 			RGBA8888, RGBA4444,
-			RGBA5551, RGB8, RGB565,
-			LA8 = 11, LA4, L8, HILO8, A8,
+			RGBA5551, RGB888, RGB565,
+			LA88 = 11, LA44, L8, HL88, A8,
 			L4 = 26, A4, ETC1, ETC1A4
 		}
 
@@ -89,7 +90,15 @@ namespace image_xi
 				//File.OpenWrite("pic.bin").Write(pic, 0, pic.Length);
 
 				//return decompressed picture data
-				return ImageCommon.FromTexture(pic, header.width, header.height, (ImageCommon.Format)Enum.Parse(typeof(ImageCommon.Format), header.imageFormat.ToString()), ImageCommon.ImageOrientation.XiOrientationHack);
+				var settings = new ImageCommon.Settings
+				{
+					Width = header.width,
+					Height = header.height,
+					Orientation = ImageCommon.Orientation.TransposeTile,
+					PadToPowerOf2 = false
+				};
+				settings.SetFormat(header.imageFormat);
+				return ImageCommon.Load(pic, settings);
 			}
 		}
 
@@ -162,7 +171,7 @@ namespace image_xi
 						}
 					}
 					return result;
-				case Format.RGB8:
+				case Format.RGB888:
 					result = new byte[w * h * 3];
 					for (int i = 0; i < tableLength; i += 2)
 					{
@@ -185,7 +194,8 @@ namespace image_xi
 					}
 					return result;
 				case Format.RGBA5551:
-					w=ImageCommon.strideVal(w); h = ImageCommon.strideVal(h);
+					w = (w + 7) & ~7;
+					h = (h + 7) & ~7;
 					result = new byte[w * h * 2];
 					for (int i = 0; i < tableLength; i += 2)
 					{

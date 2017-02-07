@@ -8,8 +8,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using KuriimuContract;
 
-namespace KuriimuContract
+namespace Cetera
 {
 	public class BCFNT
 	{

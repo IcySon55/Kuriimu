@@ -9,6 +9,8 @@ namespace KuriimuContract
 {
 	public class BinaryReaderX : BinaryReader
 	{
+		int nibbles = -1;
+
 		public ByteOrder ByteOrder { get; set; }
 
 		public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian)
@@ -141,10 +143,27 @@ namespace KuriimuContract
 			fixed (byte* pBuffer = ReadBytes(Marshal.SizeOf<T>()))
 				return Marshal.PtrToStructure<T>((IntPtr)pBuffer);
 		}
+
+		public int ReadNibble()
+		{
+			if (nibbles == -1)
+			{
+				nibbles = ReadByte();
+				return nibbles % 16;
+			}
+			else
+			{
+				int val = nibbles / 16;
+				nibbles = -1;
+				return val;
+			}
+		}
 	}
 
 	public class BinaryWriterX : BinaryWriter
 	{
+		int nibble = -1;
+
 		public ByteOrder ByteOrder { get; set; }
 
 		public BinaryWriterX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian)
@@ -210,6 +229,30 @@ namespace KuriimuContract
 		public void WriteASCII(string value)
 		{
 			base.Write(Encoding.ASCII.GetBytes(value));
+		}
+
+		public unsafe void WriteStruct<T>(T item)
+		{
+			var buffer = new byte[Marshal.SizeOf(typeof(T))];
+			fixed (byte* pBuffer = buffer)
+			{
+				Marshal.StructureToPtr(item, (IntPtr)pBuffer, false);
+			}
+			Write(buffer);
+		}
+
+		public void WriteNibble(int val)
+		{
+			val &= 15;
+			if (nibble == -1)
+			{
+				nibble = val;
+			}
+			else
+			{
+				Write((byte)(nibble + 16 * val));
+				nibble = -1;
+			}
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using game_rocket_slime_3ds.Properties;
 using KuriimuContract;
+using Cetera;
 
 namespace game_rocket_slime_3ds
 {

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using game_daigasso_band_brothers_p.Properties;
 using KuriimuContract;
+using Cetera;
 
 namespace game_daigasso_band_brothers_p
 {

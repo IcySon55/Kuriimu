@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using game_great_detective_pikachu.Properties;
 using KuriimuContract;
+using Cetera;
 
 namespace game_great_detective_pikachu
 {

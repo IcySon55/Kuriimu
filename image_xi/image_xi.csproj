@@ -64,6 +64,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cetera\Cetera.csproj">
+      <Project>{1c15d947-2616-456d-8bf1-9512228f789f}</Project>
+      <Name>Cetera</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>KuriimuContract</Name>

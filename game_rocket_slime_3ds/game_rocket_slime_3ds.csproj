@@ -53,6 +53,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cetera\Cetera.csproj">
+      <Project>{1c15d947-2616-456d-8bf1-9512228f789f}</Project>
+      <Name>Cetera</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
