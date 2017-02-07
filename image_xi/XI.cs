@@ -86,7 +86,7 @@ namespace image_xi
 				//File.OpenWrite("xi.bin").Write(tex, 0, tex.Length);
 
 				//order pic blocks by table
-				byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.imageFormat);
+				byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.bitDepth);
 				//File.OpenWrite("pic.bin").Write(pic, 0, pic.Length);
 
 				//return decompressed picture data
@@ -125,91 +125,35 @@ namespace image_xi
 				case 4://RLE
 					return CommonCompression.Decomp_RLE(br, size);
 				default:
-					throw new Exception("Unknown compression!");
+					throw new Exception(br.BaseStream.Position.ToString());//throw new Exception("Unknown compression!");
 			}
 		}
 
-		public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, Format format)
+		public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, byte bitDepth)
 		{
-			byte[] result;
+			var result = new byte[(w * h * bitDepth) / 8];
 			int resultCount = 0;
-			switch (format)
+
+			for (int i = 0; i < tableLength; i += 2)
 			{
-				case Format.RGB565:
-					result = new byte[w * h * 2];
-					for (int i = 0; i < tableLength; i += 2)
+				int entry = table.ReadUInt16();
+				if (entry == 0xFFFF)
+				{
+					for (int j = 0; j < (64 * bitDepth) / 8; j++)
 					{
-						int entry = table.ReadUInt16();
-						tex.BaseStream.Position = entry * 64 * 2;
-						for (int j = 0; j < 64 * 2; j++)
-						{
-							result[resultCount++] = tex.ReadByte();
-						}
+						result[resultCount++] = 0;
 					}
-					return result;
-				case Format.ETC1:
-					result = new byte[w * h * 2];
-					for (int i = 0; i < tableLength; i += 2)
+				}
+				else
+				{
+					tex.BaseStream.Position = entry * (64 * bitDepth / 8);
+					for (int j = 0; j < (64 * bitDepth) / 8; j++)
 					{
-						int entry = table.ReadUInt16();
-						tex.BaseStream.Position = entry * 4 * 8;
-						for (int j = 0; j < 4 * 8; j++)
-						{
-							result[resultCount++] = tex.ReadByte();
-						}
+						result[resultCount++] = tex.ReadByte();
 					}
-					return result;
-				case Format.ETC1A4:
-					result = new byte[w * h];
-					for (int i = 0; i < tableLength; i += 2)
-					{
-						int entry = table.ReadUInt16();
-						tex.BaseStream.Position = entry * 8 * 8;
-						for (int j = 0; j < 8 * 8; j++)
-						{
-							result[resultCount++] = tex.ReadByte();
-						}
-					}
-					return result;
-				case Format.RGB888:
-					result = new byte[w * h * 3];
-					for (int i = 0; i < tableLength; i += 2)
-					{
-						int entry = table.ReadUInt16();
-						if (entry == 0xFFFF)
-						{
-							for (int j = 0; j < 64 * 3; j++)
-							{
-								result[resultCount++] = 0;
-							}
-						}
-						else
-						{
-							tex.BaseStream.Position = entry * 64 * 3;
-							for (int j = 0; j < 64 * 3; j++)
-							{
-								result[resultCount++] = tex.ReadByte();
-							}
-						}
-					}
-					return result;
-				case Format.RGBA5551:
-					w = (w + 7) & ~7;
-					h = (h + 7) & ~7;
-					result = new byte[w * h * 2];
-					for (int i = 0; i < tableLength; i += 2)
-					{
-						int entry = table.ReadUInt16();
-						tex.BaseStream.Position = entry * 64 * 2;
-						for (int j = 0; j < 64 * 2; j++)
-						{
-							result[resultCount++] = tex.ReadByte();
-						}
-					}
-					return result;
-				default:
-					throw new Exception("Unsupported Picture encoding!" + format.ToString());
+				}
 			}
+			return result;
 		}
 	}
 }
