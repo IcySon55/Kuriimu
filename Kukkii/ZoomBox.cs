@@ -29,6 +29,24 @@ namespace Kukkii
 			get { return _zoom; }
 		}
 
+		public new Image Image
+		{
+			get
+			{
+				return base.Image;
+			}
+			set
+			{
+				base.Image = value;
+				if (base.Image != null)
+				{
+					Width = base.Image.Width * _zoom;
+					Height = base.Image.Height * _zoom;
+					ZoomChanged(this, new EventArgs());
+				}
+			}
+		}
+
 		public delegate void ZoomChangedEventHandler(object sender, EventArgs e);
 
 		[Category("Action")]
@@ -41,8 +59,8 @@ namespace Kukkii
 			MinimumZoomFactor = 1;
 			MaximumZoomFactor = 5;
 
-			MouseEnter += new EventHandler(PicBox_MouseEnter);
-			MouseWheel += new MouseEventHandler(PicBox_MouseWheel);
+			MouseEnter += new EventHandler(ZoomBox_MouseEnter);
+			MouseWheel += new MouseEventHandler(ZoomBox_MouseWheel);
 		}
 
 		protected override void OnPaint(PaintEventArgs paintEventArgs)
@@ -51,10 +69,6 @@ namespace Kukkii
 			base.OnPaint(paintEventArgs);
 		}
 
-		/// <summary>
-		/// Make the PictureBox dimensions larger to effect the Zoom.
-		/// </summary>
-		/// <remarks>Maximum 5 times bigger</remarks>
 		private void ZoomIn()
 		{
 			if (Image != null)
@@ -67,10 +81,6 @@ namespace Kukkii
 			}
 		}
 
-		/// <summary>
-		/// Make the PictureBox dimensions smaller to effect the Zoom.
-		/// </summary>
-		/// <remarks>Minimum 5 times smaller</remarks>
 		private void ZoomOut()
 		{
 			if (Image != null)
@@ -83,29 +93,18 @@ namespace Kukkii
 			}
 		}
 
-		/// <summary>
-		/// We use the mousewheel to zoom the picture in or out
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void PicBox_MouseWheel(object sender, MouseEventArgs e)
+		private void ZoomBox_MouseEnter(object sender, EventArgs e)
+		{
+			if (!Focused)
+				Focus();
+		}
+
+		private void ZoomBox_MouseWheel(object sender, MouseEventArgs e)
 		{
 			if (e.Delta < 0)
 				ZoomOut();
 			else
 				ZoomIn();
-		}
-
-		/// <summary>
-		/// Make sure that the PicBox have the focus, otherwise it doesn´t receive 
-		/// mousewheel events !.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void PicBox_MouseEnter(object sender, EventArgs e)
-		{
-			if (!Focused)
-				Focus();
 		}
 	}
 }

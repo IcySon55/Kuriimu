@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -34,7 +34,7 @@ namespace KuriimuContract
 		// Image Orientation
 		public enum ImageOrientation : byte
 		{
-			RightDown, UpRight = 4, DownRight = 8
+			RightDown, UpRight = 4, DownRight = 8, XiOrientationHack = 12
 		}
 
 		static ImageCommon()
@@ -42,13 +42,24 @@ namespace KuriimuContract
 			pack_etc1_block_init();
 		}
 
+		public static int strideVal(int toStride)
+		{
+			while (toStride % 8 > 0)
+			{
+				toStride++;
+			}
+			return toStride;
+		}
+
 		public static Bitmap FromTexture(byte[] texture, int width, int height, Format format, ImageOrientation orientation = 0)
 		{
 			var bmp = new Bitmap(width, height);
 			int? nibble = null;
 
-			int strideWidth = Math.Max(8, npo2(width));
-			int strideHeight = Math.Max(8, npo2(height));
+			//int strideWidth = Math.Max(8, npo2(width));
+			//int strideHeight = Math.Max(8, npo2(height));
+			int strideWidth = strideVal(width);
+			int strideHeight = strideVal(height);
 
 			var etc1colors = new Queue<Color>();
 
@@ -102,12 +113,30 @@ namespace KuriimuContract
 							r = (s >> 11) * 33 / 4;
 							break;
 						case Format.RGB8:
-							b = br.ReadByte();
-							g = br.ReadByte();
-							r = br.ReadByte();
-							break;
+							try
+							{
+								b = br.ReadByte();
+								g = br.ReadByte();
+								r = br.ReadByte();
+								break;
+							}
+							catch (Exception)
+							{
+								b = 255;
+								g = 255;
+								r = 255;
+								break;
+							}
 						case Format.RGBA5551:
-							var s2 = br.ReadUInt16();
+							var s2 = 0;
+							try
+							{
+								s2 = br.ReadUInt16();
+							}
+							catch (Exception)
+							{
+								throw new Exception(strideWidth + "   " + strideHeight + "   " + br.BaseStream.Position.ToString() + "   " + br.BaseStream.Length.ToString());
+							}
 							a = (s2 & 1) * 255;
 							b = (s2 >> 1) % 32 * 33 / 4;
 							g = (s2 >> 6) % 32 * 33 / 4;
@@ -153,6 +182,10 @@ namespace KuriimuContract
 					int x, y;
 					switch (orientation)
 					{
+						case ImageOrientation.XiOrientationHack:
+							x = (i / 64 % (strideWidth / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
+							y = (i / 64 / (strideWidth / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
+							break;
 						case ImageOrientation.RightDown:
 							x = (i / 64 % (strideWidth / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
 							y = (i / 64 / (strideWidth / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);

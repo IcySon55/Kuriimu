@@ -311,27 +311,28 @@ namespace Kukkii
 		private void UpdatePreview()
 		{
 			zbxPreview.Image = _imageAdapter.Bitmaps.ToList()[0];
+			zbxPreview_ZoomChanged(zbxPreview, null);
 		}
 
 		private void zbxPreview_ZoomChanged(object sender, EventArgs e)
 		{
 			int x = Math.Max(pnlPreview.Width / 2 - zbxPreview.Width / 2, 0);
 			int y = Math.Max(pnlPreview.Height / 2 - zbxPreview.Height / 2, 0);
-
-			int scrollX = 0, scrollY = 0;
-			if (zbxPreview.Width > pnlPreview.Width)
-				scrollX = (zbxPreview.Width - pnlPreview.Width) / 2;
-			if (zbxPreview.Height > pnlPreview.Height)
-				scrollY = (zbxPreview.Height - pnlPreview.Height) / 2;
-
-			pnlPreview.AutoScrollPosition = new Point(scrollX, scrollY);
 			zbxPreview.Location = new Point(x, y);
+
 			tslZoom.Text = "Zoom: " + (zbxPreview.Zoom * 100) + "%";
+			pnlPreview.Invalidate();
 		}
 
 		private void pnlPreview_Scroll(object sender, ScrollEventArgs e)
 		{
 			pnlPreview.Invalidate();
+		}
+
+		private void pnlPreview_MouseEnter(object sender, EventArgs e)
+		{
+			if (!zbxPreview.Focused)
+				zbxPreview.Focus();
 		}
 	}
 }

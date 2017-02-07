@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,7 @@ using KuriimuContract;
 
 namespace image_xi
 {
-	class XI
+	public class XI
 	{
 		public enum Format : byte
 		{
@@ -47,9 +47,7 @@ namespace image_xi
 			public void checkConst()
 			{
 				var ex = new Exception("Unknown xi file format!");
-				var ex2 = new Exception("No xi file format!");
 
-				if (magic != "IMGC") throw ex2;
 				if (const1 != 0x3030) throw ex;
 				if (const2 != 0x30) throw ex;
 				if (const3 != 1) throw ex;
@@ -77,13 +75,21 @@ namespace image_xi
 				header.checkConst();
 
 				//decompress table
-				byte[] table = Decomp(br, header.tableDataOffset, header.tableSize2);
+				br.BaseStream.Position = header.tableDataOffset;
+				byte[] table = Decomp(new BinaryReaderX(new MemoryStream(br.ReadBytes(header.tableSize1))));
+				//File.OpenWrite("table.bin").Write(table,0,table.Length);
 
 				//get decompressed picture data
-				byte[] tex = Decomp(br, header.tableDataOffset + header.tableSize2, header.imgDataSize);
+				br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
+				byte[] tex = Decomp(new BinaryReaderX(new MemoryStream(br.ReadBytes(header.imgDataSize))));
+				//File.OpenWrite("xi.bin").Write(tex, 0, tex.Length);
+
+				//order pic blocks by table
+				byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.imageFormat);
+				//File.OpenWrite("pic.bin").Write(pic, 0, pic.Length);
 
 				//return decompressed picture data
-				return ImageCommon.FromTexture(tex, header.width, header.height, (ImageCommon.Format)Enum.Parse(typeof(ImageCommon.Format), header.imageFormat.ToString()));
+				return ImageCommon.FromTexture(pic, header.width, header.height, (ImageCommon.Format)Enum.Parse(typeof(ImageCommon.Format), header.imageFormat.ToString()), ImageCommon.ImageOrientation.XiOrientationHack);
 			}
 		}
 
@@ -92,13 +98,11 @@ namespace image_xi
 			return BitConverter.ToUInt32(BitConverter.GetBytes(n).Reverse().ToArray(), 0);
 		}
 
-		public static byte[] Decomp(BinaryReaderX br, int offset, int compSize)
+		public static byte[] Decomp(BinaryReaderX br)
 		{
-			br.BaseStream.Position = offset;
-
 			int sizeAndMethod = br.ReadInt32();
-			int method = ((sizeAndMethod >> 3) << 3) ^ sizeAndMethod;
-			int size = sizeAndMethod >> 3;
+			int method = sizeAndMethod % 8;
+			int size = sizeAndMethod / 8;
 			switch (method)
 			{
 				case 0://No compression
@@ -106,13 +110,95 @@ namespace image_xi
 				case 1://LZSS
 					return CommonCompression.Decomp_LZSS(br, size);
 				case 2://4bit Huffman
-					return CommonCompression.Decomp_Huff(br, 1, size);
+					return CommonCompression.Decomp_Huff(br, 4, size);
 				case 3://8bit Huffman
-					return CommonCompression.Decomp_Huff(br, 0, size);
+					return CommonCompression.Decomp_Huff(br, 8, size);
 				case 4://RLE
 					return CommonCompression.Decomp_RLE(br, size);
 				default:
 					throw new Exception("Unknown compression!");
+			}
+		}
+
+		public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, Format format)
+		{
+			byte[] result;
+			int resultCount = 0;
+			switch (format)
+			{
+				case Format.RGB565:
+					result = new byte[w * h * 2];
+					for (int i = 0; i < tableLength; i += 2)
+					{
+						int entry = table.ReadUInt16();
+						tex.BaseStream.Position = entry * 64 * 2;
+						for (int j = 0; j < 64 * 2; j++)
+						{
+							result[resultCount++] = tex.ReadByte();
+						}
+					}
+					return result;
+				case Format.ETC1:
+					result = new byte[w * h * 2];
+					for (int i = 0; i < tableLength; i += 2)
+					{
+						int entry = table.ReadUInt16();
+						tex.BaseStream.Position = entry * 4 * 8;
+						for (int j = 0; j < 4 * 8; j++)
+						{
+							result[resultCount++] = tex.ReadByte();
+						}
+					}
+					return result;
+				case Format.ETC1A4:
+					result = new byte[w * h];
+					for (int i = 0; i < tableLength; i += 2)
+					{
+						int entry = table.ReadUInt16();
+						tex.BaseStream.Position = entry * 8 * 8;
+						for (int j = 0; j < 8 * 8; j++)
+						{
+							result[resultCount++] = tex.ReadByte();
+						}
+					}
+					return result;
+				case Format.RGB8:
+					result = new byte[w * h * 3];
+					for (int i = 0; i < tableLength; i += 2)
+					{
+						int entry = table.ReadUInt16();
+						if (entry == 0xFFFF)
+						{
+							for (int j = 0; j < 64 * 3; j++)
+							{
+								result[resultCount++] = 0;
+							}
+						}
+						else
+						{
+							tex.BaseStream.Position = entry * 64 * 3;
+							for (int j = 0; j < 64 * 3; j++)
+							{
+								result[resultCount++] = tex.ReadByte();
+							}
+						}
+					}
+					return result;
+				case Format.RGBA5551:
+					w=ImageCommon.strideVal(w); h = ImageCommon.strideVal(h);
+					result = new byte[w * h * 2];
+					for (int i = 0; i < tableLength; i += 2)
+					{
+						int entry = table.ReadUInt16();
+						tex.BaseStream.Position = entry * 64 * 2;
+						for (int j = 0; j < 64 * 2; j++)
+						{
+							result[resultCount++] = tex.ReadByte();
+						}
+					}
+					return result;
+				default:
+					throw new Exception("Unsupported Picture encoding!" + format.ToString());
 			}
 		}
 	}
