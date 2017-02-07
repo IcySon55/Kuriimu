@@ -24,8 +24,7 @@ namespace game_time_travelers
 
 		Dictionary<string, string> _pairs = new Dictionary<string, string>
 		{
-			["\x21"] = "！",
-
+			["\x21"] = "！"
 		};
 
 		XF font;
@@ -65,9 +64,9 @@ namespace game_time_travelers
 				for (int i = 0; i < boxes; i++)
 					gfx.DrawImage(textBox, 0, i * textBox.Height);
 
-				RectangleF rectText = new RectangleF(15, 22, 370, 60);
+				RectangleF rectText = new RectangleF(10, 10, 370, 100);
 
-				Color colorDefault = Color.FromArgb(255, 127, 127, 127);
+				Color colorDefault = Color.FromArgb(255, 255, 255, 255);
 
 				float scaleDefault = 1.0f;
 				//float scaleName = 0.86f;
@@ -91,10 +90,10 @@ namespace game_time_travelers
 					XF.CharSizeInfo charInfo = font.GetCharacterInfo(charMap.CharSizeInfoIndex);
 
 					//handle non-character codes
-					if (c.ToString()=="\n")
+					if (c.ToString() == "\n")
 					{
-						y += charInfo.glyph_height;
-						x = 15;
+						y += 20;
+						x = 10;
 						continue;
 					}
 

@@ -51,6 +51,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_maple_story_3ds", "..\game_maple_story_3ds\game_maple_story_3ds.csproj", "{8B851D96-DA5D-48E4-9791-F15EB36E7142}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kukkii", "..\Kukkii\Kukkii.csproj", "{DDF760B7-1273-4048-A052-4E396245937B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1C9D7F75-2E04-441E-83D4-00A406809E09} = {1C9D7F75-2E04-441E-83D4-00A406809E09}
+		{77A182C0-4E86-469D-986E-9FAFAABCD26E} = {77A182C0-4E86-469D-986E-9FAFAABCD26E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_bclim", "..\image_bclim\image_bclim.csproj", "{77A182C0-4E86-469D-986E-9FAFAABCD26E}"
 EndProject

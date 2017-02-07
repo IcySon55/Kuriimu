@@ -112,7 +112,7 @@ namespace game_time_travelers
 
 				//get fnt.bin
 				file = File.OpenWrite("fnt.bin");
-				br.BaseStream.Position = header.dataOffset + fileEntries[1].offset;
+				br.BaseStream.Position = header.dataOffset + fileEntries[0].fileSize + 4;
 				file.Write(br.ReadBytes(fileEntries[1].fileSize), 0, fileEntries[1].fileSize);
 				file.Close();
 
@@ -129,7 +129,14 @@ namespace game_time_travelers
 
 				lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(i => CharSizeStruct(buf1.Skip(4 * i).Take(4).ToArray())).ToList();
 				dicGlyphLarge = Enumerable.Range(0, buf2.Length / 8).Select(i => CharMapStruct(buf2.Skip(8 * i).Take(8).ToArray())).ToDictionary(x => x.code_point);
-				dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => CharMapStruct(buf3.Skip(8 * i).Take(8).ToArray())).ToDictionary(x => x.code_point);
+				try
+				{
+					dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => CharMapStruct(buf3.Skip(8 * i).Take(8).ToArray())).ToDictionary(x => x.code_point);
+				}
+				catch (Exception)
+				{
+					dicGlyphSmall = null;
+				}
 			}
 		}
 
@@ -151,7 +158,7 @@ namespace game_time_travelers
 		public CharacterMap GetCharacterMap(char c)
 		{
 			CharacterMap result;
-			var success = dicGlyphLarge.TryGetValue(c, out result) || dicGlyphSmall.TryGetValue(c, out result) || dicGlyphLarge.TryGetValue('?', out result);
+			var success = dicGlyphLarge.TryGetValue(c, out result) || dicGlyphLarge.TryGetValue('?', out result);
 			return result;
 		}
 		public CharSizeInfo GetCharacterInfo(int offset) => lstCharSizeInfo[offset];
@@ -163,7 +170,8 @@ namespace game_time_travelers
 
 			var attr = new ImageAttributes();
 			var matrix = Enumerable.Repeat(new float[5], 5).ToArray();
-			matrix[charMap.ColorChannel] = new[] { color.R / 255f, color.G / 255f, color.B / 255f, 1f, 0 };
+			matrix[charMap.ColorChannel] = new[] { 0, 0, 0, 1f, 0 };
+			matrix[4] = new[] { color.R / 255f, color.G / 255f, color.B / 255f, 0, 0 };
 			attr.SetColorMatrix(new ColorMatrix(matrix));
 
 			g.DrawImage(bmp,
