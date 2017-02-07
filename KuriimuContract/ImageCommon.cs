@@ -42,13 +42,24 @@ namespace KuriimuContract
 			pack_etc1_block_init();
 		}
 
+		public static int strideVal(int toStride)
+		{
+			while (toStride % 8 > 0)
+			{
+				toStride++;
+			}
+			return toStride;
+		}
+
 		public static Bitmap FromTexture(byte[] texture, int width, int height, Format format, ImageOrientation orientation = 0)
 		{
 			var bmp = new Bitmap(width, height);
 			int? nibble = null;
 
-			int strideWidth = Math.Max(8, npo2(width));
-			int strideHeight = Math.Max(8, npo2(height));
+			//int strideWidth = Math.Max(8, npo2(width));
+			//int strideHeight = Math.Max(8, npo2(height));
+			int strideWidth = strideVal(width);
+			int strideHeight = strideVal(height);
 
 			var etc1colors = new Queue<Color>();
 
@@ -117,7 +128,15 @@ namespace KuriimuContract
 								break;
 							}
 						case Format.RGBA5551:
-							var s2 = br.ReadUInt16();
+							var s2 = 0;
+							try
+							{
+								s2 = br.ReadUInt16();
+							}
+							catch (Exception)
+							{
+								throw new Exception(strideWidth + "   " + strideHeight + "   " + br.BaseStream.Position.ToString() + "   " + br.BaseStream.Length.ToString());
+							}
 							a = (s2 & 1) * 255;
 							b = (s2 >> 1) % 32 * 33 / 4;
 							g = (s2 >> 6) % 32 * 33 / 4;
