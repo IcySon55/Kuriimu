@@ -71,10 +71,10 @@ namespace game_time_travelers
 			public int unk1;
 			public short unk2;
 			public ushort offsetTmp;
-			public short fileSizeTmp;
-			public short multiplier;
+			public ushort fileSizeTmp;
+			public ushort multiplier;
 
-			public int fileSize => fileSizeTmp + (multiplier / 256 * 0x10000) + (multiplier % 256);
+			public int fileSize => fileSizeTmp + ((multiplier / 256) * 0x10000) + (multiplier % 256);
 			public int offset => offsetTmp * 4;
 		}
 
