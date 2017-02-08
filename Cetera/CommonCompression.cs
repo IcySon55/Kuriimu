@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KuriimuContract;
 
-namespace KuriimuContract
+namespace Cetera
 {
 	public class CommonCompression
 	{

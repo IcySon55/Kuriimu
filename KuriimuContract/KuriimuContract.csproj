@@ -67,16 +67,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BCFNT.cs" />
     <Compile Include="BinaryTools.cs" />
-    <Compile Include="BitmapFontHandler.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="CommonCompression.cs" />
     <Compile Include="IImageAdapter.cs" />
     <Compile Include="IGameHandler.cs" />
     <Compile Include="IExtension.cs" />
     <Compile Include="IFileAdapter.cs" />
-    <Compile Include="ImageCommon.cs" />
     <Compile Include="ListItem.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,11 +88,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="rg_etc1.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

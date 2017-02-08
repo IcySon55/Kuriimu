@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{05E492D3-00B6-475A-BC9E-A22237864C52}</ProjectGuid>
+    <ProjectGuid>{D1A02778-ADD3-41CF-B2E4-BA6AA9FACE70}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>game_great_detective_pikachu</RootNamespace>
-    <AssemblyName>game_great_detective_pikachu</AssemblyName>
+    <RootNamespace>game_daigasso_band_brothers_p</RootNamespace>
+    <AssemblyName>game_daigasso_band_brothers_p</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -29,24 +29,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\Kuriimu\bin\x86\Debug\plugins\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handler.cs" />
+    <Compile Include="DaigassoHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -71,8 +53,14 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Basic.bcfnt.gz" />
+    <None Include="Resources\SisterSymbol.bcfnt.gz" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\music.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera.csproj">
@@ -80,60 +68,12 @@
       <Name>Cetera</Name>
     </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
-      <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
+      <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\MainFont.bcfnt.gz" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\top_speaker_bg.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\top_speaker.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_pikachu.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_pikachu_angry.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_pikachu_glad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_pikachu_sad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_pikachu_serious.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_pikachu_surprised.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_tim.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_tim_angry.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_tim_glad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_tim_sad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_tim_serious.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\face_icon_tim_surprised.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\background1.png" />
+    <None Include="Resources\daigasso_box.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -72,6 +72,10 @@
     <Compile Include="XF.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cetera\Cetera.csproj">
+      <Project>{1c15d947-2616-456d-8bf1-9512228f789f}</Project>
+      <Name>Cetera</Name>
+    </ProjectReference>
     <ProjectReference Include="..\image_xi\image_xi.csproj">
       <Project>{1c9d7f75-2e04-441e-83d4-00a406809e09}</Project>
       <Name>image_xi</Name>

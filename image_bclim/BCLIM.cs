@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using KuriimuContract;
+using Cetera;
 
 namespace image_bclim
 {
@@ -19,11 +20,19 @@ namespace image_bclim
 			public int stuff;
 			public short width;
 			public short height;
-			public ImageCommon.Format format;
-			public ImageCommon.ImageOrientation orientation;
+			public Format format;
+			public ImageCommon.Orientation orientation;
 			byte b1;
 			byte b2;
 			int imgSize;
+		}
+
+		public enum Format : byte
+		{
+			L8, A8, LA44, LA88, HL88,
+			RGB565, RGB888, RGBA5551,
+			RGBA4444, RGBA8888,
+			ETC1, ETC1A4, L4, A4
 		}
 
 		public static Bitmap Load(Stream input)
@@ -32,7 +41,14 @@ namespace image_bclim
 			{
 				var texture = br.ReadBytes((int)br.BaseStream.Length - 40);
 				var header = br.ReadStruct<Header>();
-				return ImageCommon.FromTexture(texture, header.width, header.height, header.format, header.orientation);
+				var settings = new ImageCommon.Settings
+				{
+					Width = header.width,
+					Height = header.height,
+					Orientation = header.orientation,
+					Format = ImageCommon.Settings.ConvertFormat(header.format)
+				};
+				return ImageCommon.Load(texture, settings);
 			}
 		}
 	}

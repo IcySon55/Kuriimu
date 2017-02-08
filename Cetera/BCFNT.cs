@@ -8,8 +8,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using KuriimuContract;
 
-namespace KuriimuContract
+namespace Cetera
 {
 	public class BCFNT
 	{
@@ -114,12 +115,12 @@ namespace KuriimuContract
 		{
 			attr.SetColorMatrix(new ColorMatrix(new[]
 			{
-					 new[] { 0, 0, 0, 0, 0f },
-					 new[] { 0, 0, 0, 0, 0f },
-					 new[] { 0, 0, 0, 0, 0f },
-					 new[] { 0, 0, 0, 1, 0f },
-					 new[] { color.R / 255f, color.G / 255f, color.B / 255f, 0, 1 }
-				}));
+				new[] { 0, 0, 0, 0, 0f },
+				new[] { 0, 0, 0, 0, 0f },
+				new[] { 0, 0, 0, 0, 0f },
+				new[] { 0, 0, 0, 1, 0f },
+				new[] { color.R / 255f, color.G / 255f, color.B / 255f, 0, 1 }
+			}));
 		}
 
 		public float DrawCharacter(char c, Graphics g, float x, float y, float scale)
