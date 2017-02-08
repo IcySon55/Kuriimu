@@ -34,9 +34,6 @@ namespace Kukkii
 		private void frmConverter_Load(object sender, EventArgs e)
 		{
 			Icon = Resources.kukkii;
-
-			Tools.DoubleBuffer(pnlPreview, true);
-			Tools.DoubleBuffer(zbxPreview, true);
 			UpdateForm();
 		}
 
@@ -97,7 +94,7 @@ namespace Kukkii
 
 		private void frmConverter_Resize(object sender, EventArgs e)
 		{
-			UpdatePreview();
+			//UpdatePreview();
 		}
 
 		private void ConfirmOpenFile(string filename = "")
@@ -147,7 +144,7 @@ namespace Kukkii
 						_fileOpen = true;
 						_hasChanges = false;
 
-						UpdatePreview();
+						imageBox.Image = _imageAdapter.Bitmaps.First();
 						UpdateForm();
 					}
 
@@ -306,33 +303,6 @@ namespace Kukkii
 		private string FileName()
 		{
 			return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
-		}
-
-		private void UpdatePreview()
-		{
-			zbxPreview.Image = _imageAdapter.Bitmaps.ToList()[0];
-			zbxPreview_ZoomChanged(zbxPreview, null);
-		}
-
-		private void zbxPreview_ZoomChanged(object sender, EventArgs e)
-		{
-			int x = Math.Max(pnlPreview.Width / 2 - zbxPreview.Width / 2, 0);
-			int y = Math.Max(pnlPreview.Height / 2 - zbxPreview.Height / 2, 0);
-			zbxPreview.Location = new Point(x, y);
-
-			tslZoom.Text = "Zoom: " + (zbxPreview.Zoom * 100) + "%";
-			pnlPreview.Invalidate();
-		}
-
-		private void pnlPreview_Scroll(object sender, ScrollEventArgs e)
-		{
-			pnlPreview.Invalidate();
-		}
-
-		private void pnlPreview_MouseEnter(object sender, EventArgs e)
-		{
-			if (!zbxPreview.Focused)
-				zbxPreview.Focus();
 		}
 	}
 }
