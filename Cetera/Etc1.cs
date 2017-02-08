@@ -4,11 +4,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
-using KuriimuContract;
 
 namespace Cetera
 {
-	public class Etc1
+	public class ETC1
 	{
 		static readonly int[] order3ds = { 0, 4, 1, 5, 8, 12, 9, 13, 2, 6, 3, 7, 10, 14, 11, 15 };
 

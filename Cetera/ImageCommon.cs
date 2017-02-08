@@ -56,7 +56,7 @@ namespace Cetera
 		{
 			using (var br = new BinaryReaderX(new MemoryStream(tex)))
 			{
-				var etc1decoder = new Etc1.Decoder();
+				var etc1decoder = new ETC1.Decoder();
 
 				while (true)
 				{
@@ -116,7 +116,7 @@ namespace Cetera
 							yield return etc1decoder.Get(() =>
 							{
 								var alpha = (format == Format.ETC1A4) ? br.ReadUInt64() : ulong.MaxValue;
-								return new Etc1.PixelData { Alpha = alpha, Block = br.ReadStruct<Etc1.Block>() };
+								return new ETC1.PixelData { Alpha = alpha, Block = br.ReadStruct<ETC1.Block>() };
 							});
 							continue;
 						case Format.L4:
@@ -205,7 +205,7 @@ namespace Cetera
 			int width = bmp.Width, height = bmp.Height;
 
 			var etc1colors = new Queue<Color>();
-			var etc1encoder = new Etc1.Encoder();
+			var etc1encoder = new ETC1.Encoder();
 
 			using (var bw = new BinaryWriterX(ms))
 			{
