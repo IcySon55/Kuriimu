@@ -92,11 +92,6 @@ namespace Kukkii
 				}
 		}
 
-		private void frmConverter_Resize(object sender, EventArgs e)
-		{
-			//UpdatePreview();
-		}
-
 		private void ConfirmOpenFile(string filename = "")
 		{
 			DialogResult dr = DialogResult.No;
@@ -144,7 +139,8 @@ namespace Kukkii
 						_fileOpen = true;
 						_hasChanges = false;
 
-						imageBox.Image = _imageAdapter.Bitmaps.First();
+						imbPreview.Image = _imageAdapter.Bitmaps.First();
+						imbPreview.Zoom = 100;
 						UpdateForm();
 					}
 
@@ -303,6 +299,32 @@ namespace Kukkii
 		private string FileName()
 		{
 			return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
+		}
+
+		// Image Box
+		private void imbPreview_Zoomed(object sender, Cyotek.Windows.Forms.ImageBoxZoomEventArgs e)
+		{
+			tslZoom.Text = "Zoom: " + imbPreview.Zoom + "%";
+		}
+
+		private void imbPreview_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Space)
+			{
+				imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.None;
+				imbPreview.Cursor = Cursors.SizeAll;
+				tslTool.Text = "Pan";
+			}
+		}
+
+		private void imbPreview_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Space)
+			{
+				imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
+				imbPreview.Cursor = Cursors.Default;
+				tslTool.Text = "Zoom";
+			}
 		}
 	}
 }

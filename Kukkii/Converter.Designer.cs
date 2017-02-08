@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConverter));
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,24 +48,25 @@
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
-			this.imageBox = new Cyotek.Windows.Forms.ImageBox();
-			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.tslZoom = new System.Windows.Forms.ToolStripStatusLabel();
+			this.imbPreview = new Cyotek.Windows.Forms.ImageBox();
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.tslZoom = new System.Windows.Forms.ToolStripLabel();
+			this.tslTool = new System.Windows.Forms.ToolStripLabel();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
 			this.splMain.Panel1.SuspendLayout();
 			this.splMain.SuspendLayout();
-			this.statusStrip1.SuspendLayout();
+			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-				this.fileToolStripMenuItem,
-				this.editToolStripMenuItem,
-				this.aboutToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.aboutToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
 			this.mnuMain.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -76,11 +76,11 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-				this.openToolStripMenuItem,
-				this.saveToolStripMenuItem,
-				this.saveAsToolStripMenuItem,
-				this.toolStripSeparator1,
-				this.exitToolStripMenuItem});
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.exitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
@@ -131,7 +131,7 @@
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-				this.exportToolStripMenuItem});
+            this.exportToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.editToolStripMenuItem.Text = "&Image";
@@ -148,9 +148,9 @@
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-				this.gBATempToolStripMenuItem,
-				this.gitHubToolStripMenuItem,
-				this.aboutToolStripMenuItem1});
+            this.gBATempToolStripMenuItem,
+            this.gitHubToolStripMenuItem,
+            this.aboutToolStripMenuItem1});
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.aboutToolStripMenuItem.Text = "&Help";
@@ -183,10 +183,10 @@
 			this.tlsMain.BackColor = System.Drawing.Color.Transparent;
 			this.tlsMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-				this.tsbOpen,
-				this.tsbSave,
-				this.tsbSaveAs,
-				this.toolStripSeparator2});
+            this.tsbOpen,
+            this.tsbSave,
+            this.tsbSaveAs,
+            this.toolStripSeparator2});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -248,44 +248,58 @@
 			// 
 			// splMain.Panel1
 			// 
-			this.splMain.Panel1.Controls.Add(this.imageBox);
-			this.splMain.Panel1.Controls.Add(this.statusStrip1);
+			this.splMain.Panel1.Controls.Add(this.imbPreview);
+			this.splMain.Panel1.Controls.Add(this.toolStrip1);
 			this.splMain.Size = new System.Drawing.Size(972, 599);
 			this.splMain.SplitterDistance = 740;
 			this.splMain.TabIndex = 0;
 			// 
-			// imageBox1
+			// imbPreview
 			// 
-			this.imageBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.imageBox.Location = new System.Drawing.Point(0, 0);
-			this.imageBox.Name = "imageBox";
-			this.imageBox.Size = new System.Drawing.Size(0, 0);
-			this.imageBox.TabIndex = 6;
+			this.imbPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.imbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.imbPreview.GridCellSize = 16;
+			this.imbPreview.GridColor = System.Drawing.Color.Silver;
+			this.imbPreview.Location = new System.Drawing.Point(0, 0);
+			this.imbPreview.Name = "imbPreview";
+			this.imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
+			this.imbPreview.Size = new System.Drawing.Size(740, 572);
+			this.imbPreview.TabIndex = 6;
+			this.imbPreview.Zoomed += new System.EventHandler<Cyotek.Windows.Forms.ImageBoxZoomEventArgs>(this.imbPreview_Zoomed);
+			this.imbPreview.KeyDown += new System.Windows.Forms.KeyEventHandler(this.imbPreview_KeyDown);
+			this.imbPreview.KeyUp += new System.Windows.Forms.KeyEventHandler(this.imbPreview_KeyUp);
 			// 
-			// statusStrip1
+			// toolStrip1
 			// 
-			this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tslZoom});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 715);
-			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-			this.statusStrip1.Size = new System.Drawing.Size(986, 25);
-			this.statusStrip1.SizingGrip = false;
-			this.statusStrip1.TabIndex = 7;
-			this.statusStrip1.Text = "statusStrip1";
+			this.toolStrip1.AutoSize = false;
+			this.toolStrip1.BackColor = System.Drawing.Color.Transparent;
+			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tslZoom,
+            this.tslTool});
+			this.toolStrip1.Location = new System.Drawing.Point(0, 572);
+			this.toolStrip1.Name = "toolStrip1";
+			this.toolStrip1.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+			this.toolStrip1.Size = new System.Drawing.Size(740, 27);
+			this.toolStrip1.TabIndex = 7;
 			// 
 			// tslZoom
 			// 
-			this.tslZoom.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.tslZoom.BackColor = System.Drawing.SystemColors.Control;
-			this.tslZoom.BorderStyle = System.Windows.Forms.Border3DStyle.SunkenInner;
 			this.tslZoom.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.tslZoom.Image = ((System.Drawing.Image)(resources.GetObject("tslZoom.Image")));
 			this.tslZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tslZoom.Name = "tslZoom";
-			this.tslZoom.Size = new System.Drawing.Size(73, 17);
+			this.tslZoom.Size = new System.Drawing.Size(73, 22);
 			this.tslZoom.Text = "Zoom: 100%";
+			// 
+			// tslTool
+			// 
+			this.tslTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tslTool.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.tslTool.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tslTool.Name = "tslTool";
+			this.tslTool.Size = new System.Drawing.Size(39, 22);
+			this.tslTool.Text = "Zoom";
 			// 
 			// frmConverter
 			// 
@@ -301,18 +315,16 @@
 			this.Load += new System.EventHandler(this.frmConverter_Load);
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragEnter);
-			this.Resize += new System.EventHandler(this.frmConverter_Resize);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
 			this.tlsMain.ResumeLayout(false);
 			this.tlsMain.PerformLayout();
 			this.pnlMain.ResumeLayout(false);
 			this.splMain.Panel1.ResumeLayout(false);
-			this.splMain.Panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
 			this.splMain.ResumeLayout(false);
-			this.statusStrip1.ResumeLayout(false);
-			this.statusStrip1.PerformLayout();
+			this.toolStrip1.ResumeLayout(false);
+			this.toolStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -338,11 +350,12 @@
 		private System.Windows.Forms.Panel pnlMain;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splMain;
-		private Cyotek.Windows.Forms.ImageBox imageBox;
+		private Cyotek.Windows.Forms.ImageBox imbPreview;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.ToolStripStatusLabel tslZoom;
-  }
+		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStripLabel tslZoom;
+		private System.Windows.Forms.ToolStripLabel tslTool;
+	}
 }
 
