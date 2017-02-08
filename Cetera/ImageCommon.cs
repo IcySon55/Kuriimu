@@ -34,23 +34,12 @@ namespace Cetera
 			public Orientation Orientation { get; set; } = Orientation.Default;
 			public bool PadToPowerOf2 { get; set; } = true;
 
-			public int Stride
-			{
-				get
-				{
-					int stride = (int)Orientation < 4 ? Width : Height;
-					stride = (stride + 7) & ~7; // round up to multiple of 8
-					if (PadToPowerOf2) stride = 2 << (int)Math.Log(stride - 1, 2);
-					return stride;
-				}
-			}
-
 			/// <summary>
 			/// This is currently a hack
 			/// </summary>
-			public void SetFormat<T>(T originalFormat) where T : struct, IConvertible
+			public static Format ConvertFormat<T>(T originalFormat) where T : struct, IConvertible
 			{
-				Format = (Format)Enum.Parse(typeof(Format), originalFormat.ToString());
+				return (Format)Enum.Parse(typeof(Format), originalFormat.ToString());
 			}
 		}
 

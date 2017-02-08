@@ -45,9 +45,9 @@ namespace image_bclim
 				{
 					Width = header.width,
 					Height = header.height,
-					Orientation = header.orientation
+					Orientation = header.orientation,
+					Format = ImageCommon.Settings.ConvertFormat(header.format)
 				};
-				settings.SetFormat(header.format);
 				return ImageCommon.Load(texture, settings);
 			}
 		}

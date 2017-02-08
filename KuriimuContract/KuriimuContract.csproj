@@ -68,7 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryTools.cs" />
-    <Compile Include="BitmapFontHandler.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="IImageAdapter.cs" />
     <Compile Include="IGameHandler.cs" />

@@ -95,16 +95,11 @@ namespace image_xi
 					Width = header.width,
 					Height = header.height,
 					Orientation = ImageCommon.Orientation.TransposeTile,
+					Format = ImageCommon.Settings.ConvertFormat(header.imageFormat),
 					PadToPowerOf2 = false
 				};
-				settings.SetFormat(header.imageFormat);
 				return ImageCommon.Load(pic, settings);
 			}
-		}
-
-		public static UInt32 getUInt32(UInt32 n)
-		{
-			return BitConverter.ToUInt32(BitConverter.GetBytes(n).Reverse().ToArray(), 0);
 		}
 
 		public static byte[] Decomp(BinaryReaderX br)
@@ -131,9 +126,7 @@ namespace image_xi
 
 		public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, byte bitDepth)
 		{
-			var result = new byte[(w * h * bitDepth) / 8];
-			int resultCount = 0;
-
+			var ms = new MemoryStream();
 			for (int i = 0; i < tableLength; i += 2)
 			{
 				int entry = table.ReadUInt16();
@@ -141,7 +134,7 @@ namespace image_xi
 				{
 					for (int j = 0; j < (64 * bitDepth) / 8; j++)
 					{
-						result[resultCount++] = 0;
+						ms.WriteByte(0);
 					}
 				}
 				else
@@ -149,11 +142,11 @@ namespace image_xi
 					tex.BaseStream.Position = entry * (64 * bitDepth / 8);
 					for (int j = 0; j < (64 * bitDepth) / 8; j++)
 					{
-						result[resultCount++] = tex.ReadByte();
+						ms.WriteByte(tex.ReadByte());
 					}
 				}
 			}
-			return result;
+			return ms.ToArray();
 		}
 	}
 }

@@ -14,7 +14,6 @@ namespace game_time_travelers
 	public class XF
 	{
 		public Bitmap bmp;
-		ImageAttributes attr = new ImageAttributes();
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		[DebuggerDisplay("[{offset_x}, {offset_y}, {glyph_width}, {glyph_height}]")]
@@ -122,37 +121,20 @@ namespace game_time_travelers
 				fnt.BaseStream.Position = 0x28;
 
 				byte[] buf1 = XI.Decomp(fnt);
+				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
 				byte[] buf2 = XI.Decomp(fnt);
+				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
 				byte[] buf3 = XI.Decomp(fnt);
 
 				file.Close(); //File.Delete("fnt.bin");
 
-				lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(i => CharSizeStruct(buf1.Skip(4 * i).Take(4).ToArray())).ToList();
-				dicGlyphLarge = Enumerable.Range(0, buf2.Length / 8).Select(i => CharMapStruct(buf2.Skip(8 * i).Take(8).ToArray())).ToDictionary(x => x.code_point);
-				try
-				{
-					dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => CharMapStruct(buf3.Skip(8 * i).Take(8).ToArray())).ToDictionary(x => x.code_point);
-				}
-				catch (Exception)
-				{
-					dicGlyphSmall = null;
-				}
+				using (var br2 = new BinaryReaderX(new MemoryStream(buf1)))
+					lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();
+				using (var br2 = new BinaryReaderX(new MemoryStream(buf2)))
+					dicGlyphLarge = Enumerable.Range(0, buf2.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
+				using (var br2 = new BinaryReaderX(new MemoryStream(buf3)))
+					dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
 			}
-		}
-
-		public static CharSizeInfo CharSizeStruct(byte[] b) => new BinaryReaderX(new MemoryStream(b)).ReadStruct<CharSizeInfo>();
-		public static CharacterMap CharMapStruct(byte[] b) => new BinaryReaderX(new MemoryStream(b)).ReadStruct<CharacterMap>();
-
-		public void SetTextColor(Color color)
-		{
-			attr.SetColorMatrix(new ColorMatrix(new[]
-			{
-					 new[] { 0, 0, 0, 0, 0f },
-					 new[] { 0, 0, 0, 0, 0f },
-					 new[] { 0, 0, 0, 0, 0f },
-					 new[] { 0, 0, 0, 1, 0f },
-					 new[] { color.R / 255f, color.G / 255f, color.B / 255f, 0, 1 }
-				}));
 		}
 
 		public CharacterMap GetCharacterMap(char c)
