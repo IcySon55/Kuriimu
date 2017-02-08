@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using game_maple_story_3ds.Properties;
 using KuriimuContract;
+using Cetera;
 
 namespace game_maple_story_3ds
 {

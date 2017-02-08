@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kukkii.Properties {
+namespace game_daigasso_band_brothers_p.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Kukkii.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kukkii.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("game_daigasso_band_brothers_p.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,21 +61,21 @@ namespace Kukkii.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Icon kukkii {
+        internal static byte[] Basic_bcfnt {
             get {
-                object obj = ResourceManager.GetObject("kukkii", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                object obj = ResourceManager.GetObject("Basic_bcfnt", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_about {
+        internal static System.Drawing.Bitmap daigasso_box {
             get {
-                object obj = ResourceManager.GetObject("menu_about", resourceCulture);
+                object obj = ResourceManager.GetObject("daigasso_box", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace Kukkii.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_exit {
+        internal static System.Drawing.Bitmap music {
             get {
-                object obj = ResourceManager.GetObject("menu_exit", resourceCulture);
+                object obj = ResourceManager.GetObject("music", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,50 +93,20 @@ namespace Kukkii.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_gbatemp {
+        internal static System.Drawing.Bitmap p {
             get {
-                object obj = ResourceManager.GetObject("menu_gbatemp", resourceCulture);
+                object obj = ResourceManager.GetObject("p", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Bitmap menu_git {
+        internal static byte[] SisterSymbol_bcfnt {
             get {
-                object obj = ResourceManager.GetObject("menu_git", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_open {
-            get {
-                object obj = ResourceManager.GetObject("menu_open", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_save {
-            get {
-                object obj = ResourceManager.GetObject("menu_save", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap menu_save_as {
-            get {
-                object obj = ResourceManager.GetObject("menu_save_as", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("SisterSymbol_bcfnt", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -27,14 +28,9 @@ namespace game_time_travelers
 			["\x21"] = "！"
 		};
 
-		XF font;
-
-		public Handler()
-		{
-			var ms = new MemoryStream(Resources.MainFont_xf);
-			ms.Position = 0;
-			font = new XF(ms);
-		}
+		// Loading the font takes up some time so we defer it to a lazy initializer
+		static Lazy<XF> fontInitializer = new Lazy<XF>(() => new XF(new MemoryStream(Resources.MainFont_xf)));
+		static XF font => fontInitializer.Value;
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -76,7 +72,7 @@ namespace game_time_travelers
 				//float yAdjust = 4;
 				//int box = 0;
 
-				font.SetTextColor(colorDefault);
+				//font.SetTextColor(colorDefault);
 
 				for (int i = 0; i < kuriimuString.Length; i++)
 				{

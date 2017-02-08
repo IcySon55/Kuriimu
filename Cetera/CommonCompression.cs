@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KuriimuContract;
 
-namespace KuriimuContract
+namespace Cetera
 {
 	public class CommonCompression
 	{
@@ -32,7 +31,7 @@ namespace KuriimuContract
 				if (result.Count == uncompSize * (8 / bitMode))
 				{
 					//if (br.BaseStream.Position != br.BaseStream.Length)
-						//throw new Exception("Haven't consumed all data in stream!");
+					//throw new Exception("Haven't consumed all data in stream!");
 					return bitMode == 8 ? result.ToArray() :
 						 Enumerable.Range(0, uncompSize).Select(j => (byte)(result[2 * j + 1] * 16 + result[2 * j])).ToArray();
 				}
@@ -58,7 +57,7 @@ namespace KuriimuContract
 				if (result.Count == uncompSize)
 				{
 					//if (br.BaseStream.Position != br.BaseStream.Length)
-						//throw new Exception("Haven't consumed all data in stream!");
+					//throw new Exception("Haven't consumed all data in stream!");
 					return result.ToArray();
 				}
 				else if (result.Count > uncompSize)
@@ -83,7 +82,7 @@ namespace KuriimuContract
 				if (result.Count == uncompSize)
 				{
 					//if (br.BaseStream.Position != br.BaseStream.Length)
-						//throw new Exception("Haven't consumed all data in stream");
+					//throw new Exception("Haven't consumed all data in stream");
 					return result.ToArray();
 				}
 				else if (result.Count > uncompSize)

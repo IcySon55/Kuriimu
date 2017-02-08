@@ -34,9 +34,6 @@ namespace Kukkii
 		private void frmConverter_Load(object sender, EventArgs e)
 		{
 			Icon = Resources.kukkii;
-
-			Tools.DoubleBuffer(pnlPreview, true);
-			Tools.DoubleBuffer(zbxPreview, true);
 			UpdateForm();
 		}
 
@@ -95,11 +92,6 @@ namespace Kukkii
 				}
 		}
 
-		private void frmConverter_Resize(object sender, EventArgs e)
-		{
-			UpdatePreview();
-		}
-
 		private void ConfirmOpenFile(string filename = "")
 		{
 			DialogResult dr = DialogResult.No;
@@ -147,7 +139,8 @@ namespace Kukkii
 						_fileOpen = true;
 						_hasChanges = false;
 
-						UpdatePreview();
+						imbPreview.Image = _imageAdapter.Bitmaps.First();
+						imbPreview.Zoom = 100;
 						UpdateForm();
 					}
 
@@ -308,31 +301,30 @@ namespace Kukkii
 			return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
 		}
 
-		private void UpdatePreview()
+		// Image Box
+		private void imbPreview_Zoomed(object sender, Cyotek.Windows.Forms.ImageBoxZoomEventArgs e)
 		{
-			zbxPreview.Image = _imageAdapter.Bitmaps.ToList()[0];
-			zbxPreview_ZoomChanged(zbxPreview, null);
+			tslZoom.Text = "Zoom: " + imbPreview.Zoom + "%";
 		}
 
-		private void zbxPreview_ZoomChanged(object sender, EventArgs e)
+		private void imbPreview_KeyDown(object sender, KeyEventArgs e)
 		{
-			int x = Math.Max(pnlPreview.Width / 2 - zbxPreview.Width / 2, 0);
-			int y = Math.Max(pnlPreview.Height / 2 - zbxPreview.Height / 2, 0);
-			zbxPreview.Location = new Point(x, y);
-
-			tslZoom.Text = "Zoom: " + (zbxPreview.Zoom * 100) + "%";
-			pnlPreview.Invalidate();
+			if (e.KeyCode == Keys.Space)
+			{
+				imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.None;
+				imbPreview.Cursor = Cursors.SizeAll;
+				tslTool.Text = "Pan";
+			}
 		}
 
-		private void pnlPreview_Scroll(object sender, ScrollEventArgs e)
+		private void imbPreview_KeyUp(object sender, KeyEventArgs e)
 		{
-			pnlPreview.Invalidate();
-		}
-
-		private void pnlPreview_MouseEnter(object sender, EventArgs e)
-		{
-			if (!zbxPreview.Focused)
-				zbxPreview.Focus();
+			if (e.KeyCode == Keys.Space)
+			{
+				imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
+				imbPreview.Cursor = Cursors.Default;
+				tslTool.Text = "Zoom";
+			}
 		}
 	}
 }
