@@ -49,27 +49,24 @@
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
-			this.pnlPreview = new System.Windows.Forms.Panel();
+			this.imageBox = new Cyotek.Windows.Forms.ImageBox();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.tslZoom = new System.Windows.Forms.ToolStripStatusLabel();
-			this.zbxPreview = new Kukkii.ZoomBox();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
 			this.splMain.Panel1.SuspendLayout();
 			this.splMain.SuspendLayout();
-			this.pnlPreview.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zbxPreview)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// mnuMain
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.aboutToolStripMenuItem});
+				this.fileToolStripMenuItem,
+				this.editToolStripMenuItem,
+				this.aboutToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
 			this.mnuMain.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -79,11 +76,11 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.exitToolStripMenuItem});
+				this.openToolStripMenuItem,
+				this.saveToolStripMenuItem,
+				this.saveAsToolStripMenuItem,
+				this.toolStripSeparator1,
+				this.exitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
@@ -134,7 +131,7 @@
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportToolStripMenuItem});
+				this.exportToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.editToolStripMenuItem.Text = "&Image";
@@ -151,9 +148,9 @@
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.gBATempToolStripMenuItem,
-            this.gitHubToolStripMenuItem,
-            this.aboutToolStripMenuItem1});
+				this.gBATempToolStripMenuItem,
+				this.gitHubToolStripMenuItem,
+				this.aboutToolStripMenuItem1});
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.aboutToolStripMenuItem.Text = "&Help";
@@ -186,10 +183,10 @@
 			this.tlsMain.BackColor = System.Drawing.Color.Transparent;
 			this.tlsMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbOpen,
-            this.tsbSave,
-            this.tsbSaveAs,
-            this.toolStripSeparator2});
+				this.tsbOpen,
+				this.tsbSave,
+				this.tsbSaveAs,
+				this.toolStripSeparator2});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -251,34 +248,29 @@
 			// 
 			// splMain.Panel1
 			// 
-			this.splMain.Panel1.Controls.Add(this.pnlPreview);
+			this.splMain.Panel1.Controls.Add(this.imageBox);
 			this.splMain.Panel1.Controls.Add(this.statusStrip1);
 			this.splMain.Size = new System.Drawing.Size(972, 599);
 			this.splMain.SplitterDistance = 740;
 			this.splMain.TabIndex = 0;
 			// 
-			// pnlPreview
+			// imageBox1
 			// 
-			this.pnlPreview.AutoScroll = true;
-			this.pnlPreview.BackColor = System.Drawing.Color.DarkGray;
-			this.pnlPreview.BackgroundImage = global::Kukkii.Properties.Resources.background;
-			this.pnlPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.pnlPreview.Controls.Add(this.zbxPreview);
-			this.pnlPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlPreview.Location = new System.Drawing.Point(0, 0);
-			this.pnlPreview.Name = "pnlPreview";
-			this.pnlPreview.Size = new System.Drawing.Size(740, 577);
-			this.pnlPreview.TabIndex = 6;
-			this.pnlPreview.Scroll += new System.Windows.Forms.ScrollEventHandler(this.pnlPreview_Scroll);
-			this.pnlPreview.MouseEnter += new System.EventHandler(this.pnlPreview_MouseEnter);
+			this.imageBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.imageBox.Location = new System.Drawing.Point(0, 0);
+			this.imageBox.Name = "imageBox";
+			this.imageBox.Size = new System.Drawing.Size(0, 0);
+			this.imageBox.TabIndex = 6;
 			// 
 			// statusStrip1
 			// 
+			this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslZoom});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 577);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 715);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(740, 22);
+			this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
+			this.statusStrip1.Size = new System.Drawing.Size(986, 25);
 			this.statusStrip1.SizingGrip = false;
 			this.statusStrip1.TabIndex = 7;
 			this.statusStrip1.Text = "statusStrip1";
@@ -294,21 +286,6 @@
 			this.tslZoom.Name = "tslZoom";
 			this.tslZoom.Size = new System.Drawing.Size(73, 17);
 			this.tslZoom.Text = "Zoom: 100%";
-			// 
-			// zbxPreview
-			// 
-			this.zbxPreview.BackColor = System.Drawing.Color.Transparent;
-			this.zbxPreview.Image = null;
-			this.zbxPreview.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-			this.zbxPreview.Location = new System.Drawing.Point(0, 0);
-			this.zbxPreview.MaximumZoomFactor = 10;
-			this.zbxPreview.MinimumZoomFactor = 1;
-			this.zbxPreview.Name = "zbxPreview";
-			this.zbxPreview.Size = new System.Drawing.Size(128, 128);
-			this.zbxPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.zbxPreview.TabIndex = 4;
-			this.zbxPreview.TabStop = false;
-			this.zbxPreview.ZoomChanged += new Kukkii.ZoomBox.ZoomChangedEventHandler(this.zbxPreview_ZoomChanged);
 			// 
 			// frmConverter
 			// 
@@ -334,10 +311,8 @@
 			this.splMain.Panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
 			this.splMain.ResumeLayout(false);
-			this.pnlPreview.ResumeLayout(false);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zbxPreview)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -363,12 +338,11 @@
 		private System.Windows.Forms.Panel pnlMain;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		private System.Windows.Forms.SplitContainer splMain;
-		private System.Windows.Forms.Panel pnlPreview;
-		private ZoomBox zbxPreview;
+		private Cyotek.Windows.Forms.ImageBox imageBox;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripStatusLabel tslZoom;
-	}
+  }
 }
 
