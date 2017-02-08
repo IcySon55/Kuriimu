@@ -56,11 +56,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Basic.bcfnt.gz" />
-    <None Include="Resources\SisterSymbol.bcfnt.gz" />
+    <None Include="resources\Basic.bcfnt.gz" />
+    <None Include="resources\SisterSymbol.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\music.png" />
+    <None Include="images\music.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera.csproj">
@@ -73,7 +73,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\daigasso_box.png" />
+    <None Include="images\daigasso_box.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\p.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

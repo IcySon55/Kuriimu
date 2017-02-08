@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Cetera;
 using game_daigasso_band_brothers_p.Properties;
 using KuriimuContract;
-using Cetera;
 
 namespace game_daigasso_band_brothers_p
 {
@@ -21,7 +19,7 @@ namespace game_daigasso_band_brothers_p
 
 		// Information
 		public string Name => "Jam With The Band P";
-		public Image Icon => Resources.music;
+		public Image Icon => Resources.p;
 
 		// Feature Support
 		public bool HandlerCanGeneratePreviews => true;
