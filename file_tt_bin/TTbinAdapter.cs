@@ -11,7 +11,7 @@ using KuriimuContract;
 
 namespace file_ttbin
 {
-	class TTbinAdapter
+	public sealed class TTBinAdapter : IFileAdapter
 	{
 		private FileInfo _fileInfo = null;
 		private TTBIN _ttbin = null;
@@ -111,6 +111,25 @@ namespace file_ttbin
 			return result;
 		}
 
+		public SaveResult Save(string filename = "")
+		{
+			SaveResult result = SaveResult.Success;
+
+			if (filename.Trim() != string.Empty)
+				_fileInfo = new FileInfo(filename);
+
+			try
+			{
+				//_ttbin.Save(_fileInfo.FullName);
+			}
+			catch (Exception)
+			{
+				result = SaveResult.Failure;
+			}
+
+			return result;
+		}
+
 		// Entries
 		public IEnumerable<IEntry> Entries
 		{
@@ -138,7 +157,6 @@ namespace file_ttbin
 				return _entries;
 			}
 		}
-
 
 		public IEnumerable<string> NameList => Entries?.Select(o => o.Name);
 

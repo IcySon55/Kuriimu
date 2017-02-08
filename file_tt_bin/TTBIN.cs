@@ -22,7 +22,6 @@ namespace file_ttbin
 			public uint dataLength;
 		}
 
-
 		public TTBIN(string filename)
 		{
 			using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
