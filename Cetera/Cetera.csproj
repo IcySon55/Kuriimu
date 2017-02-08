@@ -45,7 +45,7 @@
   <ItemGroup>
     <Compile Include="BCFNT.cs" />
     <Compile Include="CommonCompression.cs" />
-    <Compile Include="Etc1.cs" />
+    <Compile Include="ETC1.cs" />
     <Compile Include="ImageCommon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
