@@ -5,4 +5,4 @@
 A general purpose game translation toolkit for authors of fan translations.
 
 ### [Download the beta.](http://sx.sytes.net/kuriimu/kuriimu-beta.rar)
-Warning! This link is to a live dev build. It is replaced every time I build the project.
+I update this download on occasion. It is usually accompanied by a post on the [GBATemp thread](http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/).
