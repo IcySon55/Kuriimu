@@ -81,25 +81,19 @@ namespace file_ttbin
 	#region Label_Definition
 	public sealed class Label
 	{
-		public uint NameOffset { get; set; }
-		public string Name { get; set; }
+		public string Name;
 
-		public uint ExtraID { get; set; }
-		public uint ExtraOffset { get; set; }
-		public string Extra { get; set; }
+		public Encoding TextEncoding;
 
-		public uint TextID { get; set; }
-		public uint TextOffset { get; set; }
-		public string Text { get; set; }
+		public uint TextID;
+		public uint TextOffset;
+		public string Text;
 
 		public Label()
 		{
-			NameOffset = 0;
 			Name = string.Empty;
 
-			ExtraID = 0;
-			ExtraOffset = 0;
-			Extra = string.Empty;
+			TextEncoding = null;
 
 			TextID = 0;
 			TextOffset = 0;
