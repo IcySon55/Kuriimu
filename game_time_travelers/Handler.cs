@@ -25,7 +25,11 @@ namespace game_time_travelers
 
 		Dictionary<string, string> _pairs = new Dictionary<string, string>
 		{
-			["\x21"] = "！"
+			["\x5b"] = "[",
+			["\x5d"] = "]",
+			["\x2f"] = "/",
+			["\x5c\x6e"] = "\r\n",
+			["\x00"] = "",
 		};
 
 		// Loading the font takes up some time so we defer it to a lazy initializer
@@ -74,6 +78,9 @@ namespace game_time_travelers
 
 				//font.SetTextColor(colorDefault);
 
+				bool furigana = false;
+				bool furiganaUpper = false;
+				float bkX = 0;
 				for (int i = 0; i < kuriimuString.Length; i++)
 				{
 					bool notEOS = i + 2 < kuriimuString.Length;
@@ -82,19 +89,45 @@ namespace game_time_travelers
 					if (notEOS)
 						c2 = kuriimuString[i + 1];
 
-					XF.CharacterMap charMap = font.GetCharacterMap(c);
-					XF.CharSizeInfo charInfo = font.GetCharacterInfo(charMap.CharSizeInfoIndex);
-
 					//handle non-character codes
 					if (c.ToString() == "\n")
 					{
-						y += 20;
+						y += 27;
 						x = 10;
 						continue;
 					}
+					else if (c.ToString() == "\r")
+					{
+						continue;
+					}
+					else if (c.ToString() == "[")
+					{
+						bkX = x;
+						furigana = true;
+						continue;
+					}
+					else if (c.ToString() == "/")
+					{
+						if (furigana)
+						{
+							furiganaUpper = true;
+							y -= 7;
+							x = bkX;
+							continue;
+						}
+					}
+					else if (c.ToString() == "]")
+					{
+						furiganaUpper = false;
+						furigana = false;
+						y += 7;
+						continue;
+					}
+
+					XF.CharacterMap charMap = font.GetCharacterMap(c, furiganaUpper);
 
 					//draw regular character
-					font.DrawCharacter(c, colorDefault, gfx, x, y);
+					font.DrawCharacter(c, colorDefault, gfx, x, y, furiganaUpper);
 					x += charMap.CharWidth;
 				}
 			}

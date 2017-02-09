@@ -47,19 +47,20 @@ namespace file_ttbin
 				//Header
 				var header = br.ReadStruct<Header>();
 				br.BaseStream.Position += 0xc;
+				EditorStruct entryE;
 
 				//getting Editor's notes entries
 				int count = 0;
 				while (true)
 				{
 					Label label = new Label();
-					var entry = br.ReadStruct<EditorStruct>();
+					entryE = br.ReadStruct<EditorStruct>();
 					text = "";
 
 					label.Name = "editor" + count.ToString(); count++;
 					label.TextEncoding = Encoding.ASCII;
-					label.TextID = entry.ID;
-					label.TextOffset = header.dataOffset + entry.entryOffset;
+					label.TextID = entryE.ID;
+					label.TextOffset = header.dataOffset + entryE.entryOffset;
 
 					long posBk = br.BaseStream.Position;
 					br.BaseStream.Position = label.TextOffset;
@@ -75,7 +76,7 @@ namespace file_ttbin
 
 					Labels.Add(label);
 
-					if (entry.endingFlag == 0x0101)
+					if (entryE.endingFlag == 0x0101)
 					{
 						break;
 					}
@@ -85,12 +86,13 @@ namespace file_ttbin
 				count = 0;
 
 				//getting text entries
-				while (true)
+				TextStruct entry; TextStruct entry2;
+				do
 				{
 					Label label = new Label();
 
-					var entry = br.ReadStruct<TextStruct>();
-					var entry2 = br.ReadStruct<TextStruct>();
+					entry = br.ReadStruct<TextStruct>();
+					entry2 = br.ReadStruct<TextStruct>();
 					br.BaseStream.Position -= 0x14;
 
 					label.Name = "text" + count.ToString();
@@ -104,9 +106,7 @@ namespace file_ttbin
 					label.Text = getUnicodeString(new BinaryReaderX(new MemoryStream(br.ReadBytes((int)textSize))));
 					br.BaseStream.Position = posBk;
 					Labels.Add(label);
-
-					if (entry.entryNr == 0xffffff00) break;
-				}
+				} while (entry.entryNr != 0xffffff00);
 
 				br.Close();
 			}
@@ -115,25 +115,13 @@ namespace file_ttbin
 		public static string getUnicodeString(BinaryReaderX br)
 		{
 			Encoding sjis = Encoding.GetEncoding("shift-jis");
-			Encoding ascii = Encoding.GetEncoding("ascii");
-			string uni = "";
-			while (true)
+			string uni = ""; byte part;
+
+			do
 			{
-				byte part = br.ReadByte();
-				if (part >= 0x80)
-				{
-					byte[] c = new byte[] { part, br.ReadByte() };
-					uni += sjis.GetString(c);
-				}
-				else if (part > 0x00)
-				{
-					uni += ascii.GetString(new byte[] { part });
-				}
-				else
-				{
-					break;
-				}
-			}
+				part = br.ReadByte();
+				uni += (part >= 0x80) ? sjis.GetString(new byte[] { part, br.ReadByte() }) : sjis.GetString(new byte[] { part });
+			} while (part != 0x00);
 			return uni;
 		}
 	}

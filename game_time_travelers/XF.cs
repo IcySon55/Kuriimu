@@ -137,17 +137,24 @@ namespace game_time_travelers
 			}
 		}
 
-		public CharacterMap GetCharacterMap(char c)
+		public CharacterMap GetCharacterMap(char c, bool small)
 		{
 			CharacterMap result;
-			var success = dicGlyphLarge.TryGetValue(c, out result) || dicGlyphLarge.TryGetValue('?', out result);
+			if (small == false)
+			{
+				var success = dicGlyphLarge.TryGetValue(c, out result) || dicGlyphLarge.TryGetValue('?', out result);
+			}
+			else
+			{
+				var success = dicGlyphSmall.TryGetValue(c, out result) || dicGlyphSmall.TryGetValue('?', out result);
+			}
 			return result;
 		}
 		public CharSizeInfo GetCharacterInfo(int offset) => lstCharSizeInfo[offset];
 
-		public float DrawCharacter(char c, Color color, Graphics g, float x, float y)
+		public float DrawCharacter(char c, Color color, Graphics g, float x, float y, bool small)
 		{
-			CharacterMap charMap = GetCharacterMap(c);
+			CharacterMap charMap = GetCharacterMap(c, small);
 			CharSizeInfo charInfo = GetCharacterInfo(charMap.CharSizeInfoIndex);
 
 			var attr = new ImageAttributes();
