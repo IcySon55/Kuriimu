@@ -28,8 +28,7 @@ namespace game_time_travelers
 			["\x5b"] = "[",
 			["\x5d"] = "]",
 			["\x2f"] = "/",
-			["\x5c\x6e"] = "\r\n",
-			["\x00"] = "",
+			["\x5c\x6e"] = "\r\n"
 		};
 
 		// Loading the font takes up some time so we defer it to a lazy initializer
