@@ -77,10 +77,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\file_kup\file_kup.csproj">
-      <Project>{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}</Project>
-      <Name>file_kup</Name>
-    </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>

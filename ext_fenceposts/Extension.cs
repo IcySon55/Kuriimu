@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
-using file_kup;
 using KuriimuContract;
 
 namespace ext_fenceposts

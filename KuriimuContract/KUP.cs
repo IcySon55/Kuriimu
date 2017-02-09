@@ -5,9 +5,8 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using KuriimuContract;
 
-namespace file_kup
+namespace KuriimuContract
 {
 	[XmlRoot("kup")]
 	public sealed class KUP
