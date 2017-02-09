@@ -120,7 +120,7 @@ namespace file_ttbin
 			do
 			{
 				part = br.ReadByte();
-				uni += (part >= 0x80) ? sjis.GetString(new byte[] { part, br.ReadByte() }) : sjis.GetString(new byte[] { part });
+				uni += (part >= 0x80) ? sjis.GetString(new byte[] { part, br.ReadByte() }) : (part > 0x00) ? sjis.GetString(new byte[] { part }) : "";
 			} while (part != 0x00);
 			return uni;
 		}
