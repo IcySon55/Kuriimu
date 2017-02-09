@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
-using file_kup;
+using KuriimuContract;
 
 namespace ext_fenceposts
 {

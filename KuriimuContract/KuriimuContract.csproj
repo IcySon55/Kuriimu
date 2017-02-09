@@ -53,6 +53,8 @@
     <Compile Include="IGameHandler.cs" />
     <Compile Include="IExtension.cs" />
     <Compile Include="IFileAdapter.cs" />
+    <Compile Include="KUP.cs" />
+    <Compile Include="KupUser.cs" />
     <Compile Include="ListItem.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

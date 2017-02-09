@@ -45,9 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KUP.cs" />
     <Compile Include="KupAdapter.cs" />
-    <Compile Include="KupUser.cs" />
     <Compile Include="EntryProperties.cs">
       <SubType>Form</SubType>
     </Compile>
