@@ -710,23 +710,12 @@ namespace Kuriimu
 		}
 
 		// Text
-		private void txtEdit_KeyUp(object sender, KeyEventArgs e)
+		private void txtEdit_TextChanged(object sender, EventArgs e)
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
-			string next = string.Empty;
-			string previous = string.Empty;
-
-			previous = _gameHandler.GetKuriimuString(entry.EditedText);
-			next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _fileAdapter.LineEndings);
-			entry.EditedText = _gameHandler.GetRawString(next);
-
-
-			if (next != previous)
-			{
-				UpdatePreview();
-				_hasChanges = true;
-			}
-
+			entry.EditedText = _gameHandler.GetRawString(txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _fileAdapter.LineEndings));
+			_hasChanges = true;
+			UpdatePreview();
 			UpdateForm();
 		}
 
