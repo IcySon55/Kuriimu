@@ -10,8 +10,7 @@ namespace image_bclim
 	public class BclimAdapter : IImageAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private Bitmap _bclim = null;
-		private List<Bitmap> _bitmaps = null;
+		private BCLIM _bclim = null;
 
 		#region Properties
 
@@ -27,7 +26,7 @@ namespace image_bclim
 		// Feature Support
 		public bool FileHasExtendedProperties => false;
 
-		public bool CanSave => false;
+		public bool CanSave => true;
 
 		public FileInfo FileInfo
 		{
@@ -58,10 +57,9 @@ namespace image_bclim
 			LoadResult result = LoadResult.Success;
 
 			_fileInfo = new FileInfo(filename);
-			_bitmaps = null;
 
 			if (_fileInfo.Exists)
-				_bclim = BCLIM.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+				_bclim = new BCLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
 			else
 				result = LoadResult.FileNotFound;
 
@@ -77,7 +75,7 @@ namespace image_bclim
 
 			try
 			{
-				//_msbt.Save(_fileInfo.FullName);
+				_bclim.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
 			}
 			catch (Exception)
 			{
@@ -88,17 +86,15 @@ namespace image_bclim
 		}
 
 		// Bitmaps
-		public IEnumerable<Bitmap> Bitmaps
+		public Bitmap Bitmap
 		{
 			get
 			{
-				if (_bitmaps == null)
-				{
-					_bitmaps = new List<Bitmap>();
-					_bitmaps.Add(_bclim);
-				}
-
-				return _bitmaps;
+				return _bclim.Image;
+			}
+			set
+			{
+				_bclim.Image = value;
 			}
 		}
 	}

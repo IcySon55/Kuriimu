@@ -10,7 +10,6 @@ namespace image_xi
 	{
 		private FileInfo _fileInfo = null;
 		private Bitmap _xi = null;
-		private List<Bitmap> _bitmaps = null;
 
 		public string Name => "XI";
 		public string Description => "Level 5 Compressed Image";
@@ -46,7 +45,6 @@ namespace image_xi
 			LoadResult result = LoadResult.Success;
 
 			_fileInfo = new FileInfo(filename);
-			_bitmaps = null;
 
 			if (_fileInfo.Exists)
 				_xi = XI.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
@@ -76,17 +74,15 @@ namespace image_xi
 		}
 
 		// Bitmaps
-		public IEnumerable<Bitmap> Bitmaps
+		public Bitmap Bitmap
 		{
 			get
 			{
-				if (_bitmaps == null)
-				{
-					_bitmaps = new List<Bitmap>();
-					_bitmaps.Add(_xi);
-				}
-
-				return _bitmaps;
+				return _xi;
+			}
+			set
+			{
+				_xi = value;
 			}
 		}
 	}

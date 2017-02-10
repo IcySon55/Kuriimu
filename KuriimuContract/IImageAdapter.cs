@@ -24,21 +24,9 @@ namespace KuriimuContract
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
 		// Images
-		IEnumerable<Bitmap> Bitmaps { get; }
+		Bitmap Bitmap { get; set; }
 
 		//// Features
 		//bool ShowProperties(Icon icon);
-		//IEntry NewEntry();
-		//bool AddEntry(IEntry entry);
-		//bool RenameEntry(IEntry entry, string newName);
-		//bool DeleteEntry(IEntry entry);
-		//bool ShowEntryProperties(IEntry entry, Icon icon);
-	}
-
-	public interface IBitmap
-	{
-		string Name { get; }
-		Bitmap Bitmap { get; }
-		bool Import(Bitmap bmp);
 	}
 }
