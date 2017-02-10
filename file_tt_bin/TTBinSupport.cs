@@ -83,8 +83,6 @@ namespace file_ttbin
 	{
 		public string Name;
 
-		public Encoding TextEncoding;
-
 		public uint TextID;
 		public uint TextOffset;
 		public string Text;
@@ -92,8 +90,6 @@ namespace file_ttbin
 		public Label()
 		{
 			Name = string.Empty;
-
-			TextEncoding = null;
 
 			TextID = 0;
 			TextOffset = 0;

@@ -25,7 +25,7 @@ namespace file_ttbin
 
 		public string Description => "Time Travelers Binary Text";
 
-		public string Extension => "*.cfg.bin";
+		public string Extension => "*.cfg.bin;*.pck";
 
 		public string About => "This is the TTBin file adapter for Kuriimu.";
 
@@ -68,13 +68,17 @@ namespace file_ttbin
 		{
 			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
+				br.BaseStream.Position = br.ReadInt32() * 3 * 4 + 4;
+				if (br.ReadByte() == 0x64)
+				{
+					return true;
+				}
+
 				br.BaseStream.Position = 0x18;
 				uint t1 = br.ReadUInt32();
 				br.BaseStream.Position = 0x24;
 				uint t2 = br.ReadUInt32();
-				br.BaseStream.Position = 0x30;
-				uint t3 = br.ReadUInt32();
-				return (t1 == 0x0 && t2 == 0x14 && t3 == 0x24);
+				return (t1 == 0x0 && t2 == 0x14);
 			}
 		}
 
