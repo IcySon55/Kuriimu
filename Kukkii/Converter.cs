@@ -42,7 +42,6 @@ namespace Kukkii
 		{
 			ConfirmOpenFile();
 		}
-
 		private void tsbOpen_Click(object sender, EventArgs e)
 		{
 			ConfirmOpenFile();
@@ -52,7 +51,6 @@ namespace Kukkii
 		{
 			SaveFile();
 		}
-
 		private void tsbSave_Click(object sender, EventArgs e)
 		{
 			SaveFile();
@@ -62,7 +60,6 @@ namespace Kukkii
 		{
 			SaveFile(true);
 		}
-
 		private void tsbSaveAs_Click(object sender, EventArgs e)
 		{
 			SaveFile(true);
@@ -71,6 +68,15 @@ namespace Kukkii
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Close();
+		}
+
+		private void exportToPNGToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportToPNG();
+		}
+		private void tsbExportToPNG_Click(object sender, EventArgs e)
+		{
+			ExportToPNG();
 		}
 
 		// File Handling
@@ -87,8 +93,10 @@ namespace Kukkii
 					ConfirmOpenFile(files[0]);
 				else
 				{
-					// TODO: Ask if open or import dropped file
-					ConfirmOpenFile(files[0]);
+					if (new FileInfo(files[0]).Extension == ".png")
+						Import(files[0]);
+					else
+						ConfirmOpenFile(files[0]);
 				}
 		}
 
@@ -139,8 +147,7 @@ namespace Kukkii
 						_fileOpen = true;
 						_hasChanges = false;
 
-						imbPreview.Image = _imageAdapter.Bitmaps.First();
-						imbPreview.Zoom = 100;
+						UpdatePreview();
 						UpdateForm();
 					}
 
@@ -189,7 +196,7 @@ namespace Kukkii
 			return dr;
 		}
 
-		private IImageAdapter SelectImageAdapter(string filename)
+		private IImageAdapter SelectImageAdapter(string filename, bool batchMode = false)
 		{
 			IImageAdapter result = null;
 
@@ -202,13 +209,13 @@ namespace Kukkii
 			if (result == null)
 				result = _imageAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
 
-			if (result == null)
+			if (result == null && !batchMode)
 				MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return result;
 		}
 
-		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+		private void ExportToPNG()
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Title = "Export to PNG...";
@@ -218,87 +225,99 @@ namespace Kukkii
 			sfd.AddExtension = true;
 
 			if (sfd.ShowDialog() == DialogResult.OK)
+				imbPreview.Image.Save(sfd.FileName, ImageFormat.Png);
+		}
+
+		private void ImportFromPNG()
+		{
+
+		}
+
+		private void Import(string filename)
+		{
+			try
 			{
-				Bitmap bmp = _imageAdapter.Bitmaps.ToList()[0];
-				bmp.Save(sfd.FileName, ImageFormat.Png);
+				var bmp = (Bitmap)Image.FromFile(filename);
+				_imageAdapter.Bitmap = bmp;
+				UpdatePreview();
 			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void UpdatePreview()
+		{
+			imbPreview.Image = _imageAdapter.Bitmap;
+			imbPreview.Zoom = 100;
 		}
 
 		private void UpdateForm()
 		{
 			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
-			//IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-
-			//if (_fileOpen)
-			//	tslEntries.Text = (_fileAdapter.Entries?.Count() + " Entries").Trim();
-			//else
-			//	tslEntries.Text = "Entries";
-
 			if (_imageAdapter != null)
 			{
-				//bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
-				//bool canAdd = _fileOpen && _fileAdapter.CanAddEntries;
-				//bool canRename = itemSelected && _fileAdapter.CanRenameEntries && entry.ParentEntry == null;
-				//bool canDelete = itemSelected && _fileAdapter.CanDeleteEntries && entry.ParentEntry == null;
+				// Menu
+				saveToolStripMenuItem.Enabled = _fileOpen && _imageAdapter.CanSave;
+				tsbSave.Enabled = _fileOpen && _imageAdapter.CanSave;
+				saveAsToolStripMenuItem.Enabled = _fileOpen && _imageAdapter.CanSave;
+				tsbSaveAs.Enabled = _fileOpen && _imageAdapter.CanSave;
 
-				//splMain.Enabled = _fileOpen;
-				//splContent.Enabled = _fileOpen;
-				//splText.Enabled = _fileOpen;
-				//splPreview.Enabled = _fileOpen;
-
-				//// Menu
-				//saveToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
-				//tsbSave.Enabled = _fileOpen && _fileAdapter.CanSave;
-				//saveAsToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSave;
-				//tsbSaveAs.Enabled = _fileOpen && _fileAdapter.CanSave;
-				//findToolStripMenuItem.Enabled = _fileOpen;
-				//tsbFind.Enabled = _fileOpen;
-				//propertiesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
-				//tsbProperties.Enabled = _fileOpen && _fileAdapter.FileHasExtendedProperties;
-
-				//// Toolbar
-				exportToolStripMenuItem.Enabled = _fileOpen;
-				//addEntryToolStripMenuItem.Enabled = canAdd;
-				//tsbEntryAdd.Enabled = canAdd;
-				//renameEntryToolStripMenuItem.Enabled = canRename;
-				//tsbEntryRename.Enabled = canRename;
-				//deleteEntryToolStripMenuItem.Enabled = canDelete;
-				//tsbEntryDelete.Enabled = canDelete;
+				// Toolbar
+				exportToPNGToolStripMenuItem.Enabled = _fileOpen;
+				tsbExportToPNG.Enabled = _fileOpen;
 				//entryPropertiesToolStripMenuItem.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
 				//tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
-				//sortEntriesToolStripMenuItem.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
-				//sortEntriesToolStripMenuItem.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
-				//tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
-				//tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
-				//tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
-				//tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
-				//tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
-
-				//treEntries.Enabled = _fileOpen;
-
-				//if (itemSelected)
-				//{
-				//	txtEdit.Enabled = entry.HasText;
-				//	if (!entry.HasText && entry.IsSubEntry)
-				//		txtEdit.Text = "This entry has no text.";
-				//	else if (!entry.HasText && !entry.IsSubEntry)
-				//		txtEdit.Text = "Select a child item to edit the text.";
-				//	txtOriginal.Enabled = entry.HasText && txtOriginal.Text.Trim().Length > 0;
-				//}
-				//else
-				//{
-				//	txtEdit.Enabled = itemSelected;
-				//	txtOriginal.Enabled = itemSelected && txtOriginal.Text.Trim().Length > 0;
-				//}
-
-				//tsbGameSelect.Enabled = itemSelected;
 			}
 		}
 
 		private string FileName()
 		{
 			return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
+		}
+
+		// Toolbar Features
+		private void tsbBatchExport_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.SelectedPath = Settings.Default.LastDirectory;
+			fbd.ShowNewFolderButton = false;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				string path = fbd.SelectedPath;
+				int count = 0;
+
+				if (Directory.Exists(path))
+				{
+					string[] types = _imageAdapters.Select(x => x.Extension.ToLower()).ToArray();
+
+					List<string> files = new List<string>();
+					foreach (string type in types)
+						files.AddRange(Directory.GetFiles(path, type));
+
+					foreach (string file in files)
+					{
+						if (File.Exists(file))
+						{
+							FileInfo fi = new FileInfo(file);
+							IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+
+							if (currentAdapter != null)
+							{
+								currentAdapter.Load(file);
+								currentAdapter.Bitmap.Save(fi.FullName + ".png");
+								count++;
+							}
+						}
+					}
+
+					// Success?
+					MessageBox.Show("Batch export completed successfully. " + count + " image(s) were succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
 		}
 
 		// Image Box
@@ -313,7 +332,7 @@ namespace Kukkii
 			{
 				imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.None;
 				imbPreview.Cursor = Cursors.SizeAll;
-				tslTool.Text = "Pan";
+				tslTool.Text = "Tool: Pan";
 			}
 		}
 
@@ -323,7 +342,7 @@ namespace Kukkii
 			{
 				imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
 				imbPreview.Cursor = Cursors.Default;
-				tslTool.Text = "Zoom";
+				tslTool.Text = "Tool: Zoom";
 			}
 		}
 	}
