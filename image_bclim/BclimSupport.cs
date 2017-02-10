@@ -9,18 +9,18 @@ namespace image_bclim
 	{
 		public Magic magic; // CLIM
 		public ByteOrder byteOrder;
-		public int size;
-		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 10)]
-		private byte[] to_be_finished;
-		public Magic magic2;
-		public int stuff;
+		public short header_size;
+		public int version;
+		public int file_size;
+		public int section_count;
+		public Magic magic2; // imag
+		public int imag_section_size;
 		public short width;
 		public short height;
 		public Format format;
 		public ImageCommon.Orientation orientation;
-		byte b1;
-		byte b2;
-		int imgSize;
+		public short padding;
+		public int image_size;
 	}
 
 	public enum Format : byte

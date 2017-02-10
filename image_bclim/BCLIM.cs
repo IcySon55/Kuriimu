@@ -7,7 +7,7 @@ namespace image_bclim
 {
 	class BCLIM
 	{
-		public Header Header { get; }
+		public Header Header { get; private set; }
 
 		public Bitmap Image { get; set; }
 
@@ -41,6 +41,15 @@ namespace image_bclim
 				};
 				var texture = ImageCommon.Save(Image, settings);
 				bw.Write(texture);
+
+				// We can now change the image width/height/filesize!
+				var modifiedHeader = Header;
+				modifiedHeader.width = (short)Image.Width;
+				modifiedHeader.height = (short)Image.Height;
+				modifiedHeader.image_size = texture.Length;
+				modifiedHeader.file_size = texture.Length + 40;
+				Header = modifiedHeader;
+
 				bw.WriteStruct(Header);
 			}
 		}
