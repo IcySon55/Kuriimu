@@ -23,6 +23,14 @@ namespace file_ttbin
 		}
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
+		public struct pckEntryStruct
+		{
+			public uint ID;
+			public uint offset;
+			public uint length;
+		}
+
+		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct EditorStruct
 		{
 			public uint entryOffset;
@@ -44,72 +52,103 @@ namespace file_ttbin
 		{
 			using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
 			{
-				//Header
-				var header = br.ReadStruct<Header>();
-				br.BaseStream.Position += 0xc;
-				EditorStruct entryE;
-
-				//getting Editor's notes entries
-				int count = 0;
-				while (true)
+				br.BaseStream.Position = br.ReadInt32() * 3 * 4 + 4;
+				if (br.ReadByte() == 0x64)
 				{
-					Label label = new Label();
-					entryE = br.ReadStruct<EditorStruct>();
-					text = "";
-
-					label.Name = "editor" + count.ToString(); count++;
-					label.TextEncoding = Encoding.ASCII;
-					label.TextID = entryE.ID;
-					label.TextOffset = header.dataOffset + entryE.entryOffset;
-
-					long posBk = br.BaseStream.Position;
-					br.BaseStream.Position = label.TextOffset;
-					while (true)
+					br.BaseStream.Position = 0;
+					int pckEntryCount = br.ReadInt32();
+					for (int i = 0; i < pckEntryCount; i++)
 					{
-						byte part = br.ReadByte();
-						if (part == 0x00) break;
-
-						text += (char)part;
-					}
-					label.Text = text;
-					br.BaseStream.Position = posBk;
-
-					Labels.Add(label);
-
-					if (entryE.endingFlag == 0x0101)
-					{
-						break;
+						var entry = br.ReadStruct<pckEntryStruct>();
+						br.BaseStream.Position = entry.offset + 2;
+						int blockCountCheck = br.ReadUInt16();
+						br.BaseStream.Position += blockCountCheck * 4;
+						using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(br.ReadBytes((int)entry.length - (blockCountCheck * 4 + 4)))))
+						{
+							extractSingleTTBin(br2, "pckEntry" + i.ToString() + "/");
+						}
+						br.BaseStream.Position = 4 + (i + 1) * 3 * 4;
 					}
 				}
-				br.BaseStream.Position += 0x14;
-
-				count = 0;
-
-				//getting text entries
-				TextStruct entry; TextStruct entry2;
-				do
+				else
 				{
-					Label label = new Label();
-
-					entry = br.ReadStruct<TextStruct>();
-					entry2 = br.ReadStruct<TextStruct>();
-					br.BaseStream.Position -= 0x14;
-
-					label.Name = "text" + count.ToString();
-					count += 1;
-					label.TextID = entry.ID;
-					label.TextOffset = header.dataOffset + entry.entryOffset;
-
-					long posBk = br.BaseStream.Position;
-					br.BaseStream.Position = label.TextOffset;
-					long textSize = (entry.entryNr == 0xffffff00) ? br.BaseStream.Length - label.TextOffset : header.dataOffset + (entry2.entryOffset - entry.entryOffset);
-					label.Text = getUnicodeString(new BinaryReaderX(new MemoryStream(br.ReadBytes((int)textSize))));
-					br.BaseStream.Position = posBk;
-					Labels.Add(label);
-				} while (entry.entryNr != 0xffffff00);
-
+					br.BaseStream.Position = 0;
+					extractSingleTTBin(br);
+				}
 				br.Close();
 			}
+		}
+
+		public void extractSingleTTBin(BinaryReaderX br, string prefix = "")
+		{
+			//Header
+			var header = br.ReadStruct<Header>();
+			br.BaseStream.Position += 0xc;
+			EditorStruct entryE;
+
+			//getting Editor's notes entries
+			int count = 0;
+			while (true)
+			{
+				Label label = new Label();
+				entryE = br.ReadStruct<EditorStruct>();
+				text = "";
+
+				label.Name = prefix + "editor" + count.ToString(); count++;
+				label.TextID = entryE.ID;
+				label.TextOffset = header.dataOffset + entryE.entryOffset;
+
+				long posBk = br.BaseStream.Position;
+				br.BaseStream.Position = label.TextOffset;
+				while (true)
+				{
+					byte part = br.ReadByte();
+					if (part == 0x00) break;
+
+					text += (char)part;
+				}
+				label.Text = text;
+				br.BaseStream.Position = posBk;
+
+				Labels.Add(label);
+
+				if (entryE.endingFlag == 0x0101)
+				{
+					break;
+				}
+			}
+			br.BaseStream.Position += 0x14;
+
+			if (br.ReadUInt32() > br.BaseStream.Position)
+			{
+				return;
+			}
+			br.BaseStream.Position -= 0x4;
+
+			count = 0;
+
+			//getting text entries
+			TextStruct entry; TextStruct entry2;
+			do
+			{
+				Label label = new Label();
+
+				entry = br.ReadStruct<TextStruct>();
+				entry2 = br.ReadStruct<TextStruct>();
+				br.BaseStream.Position -= 0x14;
+
+				label.Name = prefix + "text" + count.ToString();
+				count += 1;
+				label.TextID = entry.ID;
+				label.TextOffset = header.dataOffset + entry.entryOffset;
+
+				long posBk = br.BaseStream.Position;
+				br.BaseStream.Position = label.TextOffset;
+				long textSize = (entry.entryNr == 0xffffff00 || entry2.entryOffset > br.BaseStream.Length) ? br.BaseStream.Length - label.TextOffset : header.dataOffset + (entry2.entryOffset - entry.entryOffset);
+				label.Text = getUnicodeString(new BinaryReaderX(new MemoryStream(br.ReadBytes((int)textSize))));
+				br.BaseStream.Position = posBk;
+				Labels.Add(label);
+			} while (entry.entryNr != 0xffffff00 && entry2.entryOffset <= br.BaseStream.Length);
 		}
 
 		public static string getUnicodeString(BinaryReaderX br)
