@@ -63,10 +63,19 @@
     <Compile Include="Converter.Designer.cs">
       <DependentUpon>Converter.cs</DependentUpon>
     </Compile>
+    <Compile Include="Import.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Import.Designer.cs">
+      <DependentUpon>Import.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Converter.resx">
       <DependentUpon>Converter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Import.resx">
+      <DependentUpon>Import.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -102,13 +111,24 @@
     <None Include="images\menu-open.png" />
     <None Include="images\menu-save.png" />
     <None Include="images\menu-save-as.png" />
-    <None Include="images\background.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-batch-export.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-export.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\import-open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\import-import.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

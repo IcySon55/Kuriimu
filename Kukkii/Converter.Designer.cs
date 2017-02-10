@@ -36,7 +36,8 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportToPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.batchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,19 +47,24 @@
 			this.tsbSave = new System.Windows.Forms.ToolStripButton();
 			this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbExportToPNG = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbBatchExport = new System.Windows.Forms.ToolStripButton();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
 			this.imbPreview = new Cyotek.Windows.Forms.ImageBox();
-			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.tslTools = new System.Windows.Forms.ToolStrip();
 			this.tslZoom = new System.Windows.Forms.ToolStripLabel();
 			this.tslTool = new System.Windows.Forms.ToolStripLabel();
+			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
 			this.splMain.Panel1.SuspendLayout();
+			this.splMain.Panel2.SuspendLayout();
 			this.splMain.SuspendLayout();
-			this.toolStrip1.SuspendLayout();
+			this.tslTools.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -66,6 +72,7 @@
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.batchToolStripMenuItem,
             this.aboutToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
@@ -131,19 +138,26 @@
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportToolStripMenuItem});
+            this.exportToPNGToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
 			this.editToolStripMenuItem.Text = "&Image";
 			// 
-			// exportToolStripMenuItem
+			// exportToPNGToolStripMenuItem
 			// 
-			this.exportToolStripMenuItem.Enabled = false;
-			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
-			this.exportToolStripMenuItem.Text = "&Export to PNG";
-			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+			this.exportToPNGToolStripMenuItem.Enabled = false;
+			this.exportToPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_export;
+			this.exportToPNGToolStripMenuItem.Name = "exportToPNGToolStripMenuItem";
+			this.exportToPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+			this.exportToPNGToolStripMenuItem.Size = new System.Drawing.Size(188, 22);
+			this.exportToPNGToolStripMenuItem.Text = "&Export to PNG";
+			this.exportToPNGToolStripMenuItem.Click += new System.EventHandler(this.exportToPNGToolStripMenuItem_Click);
+			// 
+			// batchToolStripMenuItem
+			// 
+			this.batchToolStripMenuItem.Name = "batchToolStripMenuItem";
+			this.batchToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
+			this.batchToolStripMenuItem.Text = "&Batch";
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -186,7 +200,10 @@
             this.tsbOpen,
             this.tsbSave,
             this.tsbSaveAs,
-            this.toolStripSeparator2});
+            this.toolStripSeparator2,
+            this.tsbExportToPNG,
+            this.toolStripSeparator3,
+            this.tsbBatchExport});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -230,6 +247,32 @@
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
 			// 
+			// tsbExportToPNG
+			// 
+			this.tsbExportToPNG.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbExportToPNG.Enabled = false;
+			this.tsbExportToPNG.Image = global::Kukkii.Properties.Resources.menu_export;
+			this.tsbExportToPNG.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbExportToPNG.Name = "tsbExportToPNG";
+			this.tsbExportToPNG.Size = new System.Drawing.Size(23, 22);
+			this.tsbExportToPNG.Text = "Export to PNG";
+			this.tsbExportToPNG.Click += new System.EventHandler(this.tsbExportToPNG_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbBatchExport
+			// 
+			this.tsbBatchExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbBatchExport.Image = global::Kukkii.Properties.Resources.menu_batch_export;
+			this.tsbBatchExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbBatchExport.Name = "tsbBatchExport";
+			this.tsbBatchExport.Size = new System.Drawing.Size(23, 22);
+			this.tsbBatchExport.Text = "Batch Export";
+			this.tsbBatchExport.Click += new System.EventHandler(this.tsbBatchExport_Click);
+			// 
 			// pnlMain
 			// 
 			this.pnlMain.Controls.Add(this.splMain);
@@ -249,7 +292,11 @@
 			// splMain.Panel1
 			// 
 			this.splMain.Panel1.Controls.Add(this.imbPreview);
-			this.splMain.Panel1.Controls.Add(this.toolStrip1);
+			this.splMain.Panel1.Controls.Add(this.tslTools);
+			// 
+			// splMain.Panel2
+			// 
+			this.splMain.Panel2.Controls.Add(this.propertyGrid1);
 			this.splMain.Size = new System.Drawing.Size(972, 599);
 			this.splMain.SplitterDistance = 740;
 			this.splMain.TabIndex = 0;
@@ -269,20 +316,20 @@
 			this.imbPreview.KeyDown += new System.Windows.Forms.KeyEventHandler(this.imbPreview_KeyDown);
 			this.imbPreview.KeyUp += new System.Windows.Forms.KeyEventHandler(this.imbPreview_KeyUp);
 			// 
-			// toolStrip1
+			// tslTools
 			// 
-			this.toolStrip1.AutoSize = false;
-			this.toolStrip1.BackColor = System.Drawing.Color.Transparent;
-			this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.tslTools.AutoSize = false;
+			this.tslTools.BackColor = System.Drawing.Color.Transparent;
+			this.tslTools.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.tslTools.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.tslTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslZoom,
             this.tslTool});
-			this.toolStrip1.Location = new System.Drawing.Point(0, 572);
-			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-			this.toolStrip1.Size = new System.Drawing.Size(740, 27);
-			this.toolStrip1.TabIndex = 7;
+			this.tslTools.Location = new System.Drawing.Point(0, 572);
+			this.tslTools.Name = "tslTools";
+			this.tslTools.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+			this.tslTools.Size = new System.Drawing.Size(740, 27);
+			this.tslTools.TabIndex = 7;
 			// 
 			// tslZoom
 			// 
@@ -298,8 +345,16 @@
 			this.tslTool.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.tslTool.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tslTool.Name = "tslTool";
-			this.tslTool.Size = new System.Drawing.Size(39, 22);
-			this.tslTool.Text = "Zoom";
+			this.tslTool.Size = new System.Drawing.Size(69, 22);
+			this.tslTool.Text = "Tool: Zoom";
+			// 
+			// propertyGrid1
+			// 
+			this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+			this.propertyGrid1.Name = "propertyGrid1";
+			this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
+			this.propertyGrid1.TabIndex = 0;
 			// 
 			// frmConverter
 			// 
@@ -321,10 +376,11 @@
 			this.tlsMain.PerformLayout();
 			this.pnlMain.ResumeLayout(false);
 			this.splMain.Panel1.ResumeLayout(false);
+			this.splMain.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
 			this.splMain.ResumeLayout(false);
-			this.toolStrip1.ResumeLayout(false);
-			this.toolStrip1.PerformLayout();
+			this.tslTools.ResumeLayout(false);
+			this.tslTools.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -352,10 +408,15 @@
 		private System.Windows.Forms.SplitContainer splMain;
 		private Cyotek.Windows.Forms.ImageBox imbPreview;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
-		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStripMenuItem exportToPNGToolStripMenuItem;
+		private System.Windows.Forms.ToolStrip tslTools;
 		private System.Windows.Forms.ToolStripLabel tslZoom;
 		private System.Windows.Forms.ToolStripLabel tslTool;
+		private System.Windows.Forms.ToolStripButton tsbBatchExport;
+		private System.Windows.Forms.PropertyGrid propertyGrid1;
+		private System.Windows.Forms.ToolStripMenuItem batchToolStripMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripButton tsbExportToPNG;
 	}
 }
 
