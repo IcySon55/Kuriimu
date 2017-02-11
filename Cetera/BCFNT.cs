@@ -134,13 +134,15 @@ namespace Cetera
 			int xOffset = cellCol * (tglp.cell_width + 1) + 1;
 			int yOffset = sheetNum * tglp.sheet_height + cellRow * (tglp.cell_height + 1) + 1;
 
-			g.DrawImage(bmp,
+			if (widthInfo.glyph_width > 0)
+				g.DrawImage(bmp,
 				 new[] { new PointF(x + widthInfo.left * scale, y),
 						  new PointF(x + (widthInfo.left + widthInfo.glyph_width) * scale, y),
 						  new PointF(x + widthInfo.left * scale, y + tglp.cell_height * scale)},
 				 new RectangleF(xOffset, yOffset, widthInfo.glyph_width, tglp.cell_height),
 				 GraphicsUnit.Pixel,
 				 attr);
+
 			return x + widthInfo.char_width;
 		}
 
