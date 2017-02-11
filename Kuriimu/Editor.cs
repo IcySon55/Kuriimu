@@ -696,7 +696,7 @@ namespace Kuriimu
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
 				string path = fbd.SelectedPath;
-				int count = 0;
+				int fileCount = 0;
 
 				if (Directory.Exists(path))
 				{
@@ -723,35 +723,35 @@ namespace Kuriimu
 								currentAdapter.Load(file, true);
 								foreach (IEntry entry in currentAdapter.Entries)
 								{
-									Entry nEntry = new Entry();
-									nEntry.Name = entry.Name;
-									nEntry.EditedText = entry.EditedText;
-									nEntry.OriginalText = entry.OriginalText;
-									nEntry.MaxLength = entry.MaxLength;
-									kup.Entries.Add(nEntry);
+									Entry kEntry = new Entry();
+									kEntry.Name = entry.Name;
+									kEntry.EditedText = entry.EditedText;
+									kEntry.OriginalText = entry.OriginalText;
+									kEntry.MaxLength = entry.MaxLength;
+									kup.Entries.Add(kEntry);
 
 									if (currentAdapter.EntriesHaveSubEntries)
 									{
 										foreach (IEntry sub in entry.SubEntries)
 										{
-											Entry nSub = new Entry();
-											nSub.Name = sub.Name;
-											nSub.EditedText = sub.EditedText;
-											nSub.OriginalText = sub.OriginalText;
-											nSub.MaxLength = sub.MaxLength;
-											nSub.ParentEntry = entry;
-											entry.SubEntries.Add(nSub);
+											Entry kSub = new Entry();
+											kSub.Name = sub.Name;
+											kSub.EditedText = sub.EditedText;
+											kSub.OriginalText = sub.OriginalText;
+											kSub.MaxLength = sub.MaxLength;
+											kSub.ParentEntry = entry;
+											entry.SubEntries.Add(kSub);
 										}
 									}
 								}
 
 								kup.Save(fi.FullName + ".kup");
-								count++;
+								fileCount++;
 							}
 						}
 					}
 
-					MessageBox.Show("Batch export completed successfully. " + count + " file(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show("Batch export completed successfully. " + fileCount + " file(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 
@@ -769,7 +769,7 @@ namespace Kuriimu
 			if (fbd.ShowDialog() == DialogResult.OK)
 			{
 				string path = fbd.SelectedPath;
-				int count = 0;
+				int fileCount = 0;
 				int importCount = 0;
 
 				if (Directory.Exists(path))
@@ -818,11 +818,11 @@ namespace Kuriimu
 								importCount++;
 							}
 
-							count++;
+							fileCount++;
 						}
 					}
 
-					MessageBox.Show("Batch import completed successfully. " + importCount + " of " + count + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 
