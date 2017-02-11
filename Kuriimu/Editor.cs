@@ -586,7 +586,7 @@ namespace Kuriimu
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText);
+				pbxPreview.Image = _gameHandler.GeneratePreview(entry);
 			else
 				pbxPreview.Image = null;
 		}

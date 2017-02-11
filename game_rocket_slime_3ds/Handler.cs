@@ -94,8 +94,9 @@ namespace game_rocket_slime_3ds
 
 		Bitmap textBox = new Bitmap(Resources.blank_top);
 
-		public Bitmap GeneratePreview(string rawString)
+		public Bitmap GeneratePreview(IEntry entry)
 		{
+			string rawString = entry.EditedText;
 			int boxes = rawString.Count(c => c == (char)0x17) + 1;
 
 			Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);

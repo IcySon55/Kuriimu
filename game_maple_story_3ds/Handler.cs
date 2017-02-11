@@ -64,8 +64,9 @@ namespace game_maple_story_3ds
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap textBox = new Bitmap(Resources.blank);
 
-		public Bitmap GeneratePreview(string rawString)
+		public Bitmap GeneratePreview(IEntry entry)
 		{
+			string rawString = entry.EditedText;
 			int boxes = rawString.Count(c => c == '\n') / 3 + 1;
 
 			const int txtOffsetX = 2;

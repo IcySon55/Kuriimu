@@ -63,8 +63,9 @@ namespace game_great_detective_pikachu
 
 		Bitmap background = new Bitmap(Resources.background1);
 
-		public Bitmap GeneratePreview(string rawString)
+		public Bitmap GeneratePreview(IEntry entry)
 		{
+			string rawString = entry.EditedText;
 			Bitmap img = new Bitmap(background.Width, background.Height);
 
 			using (Graphics gfx = Graphics.FromImage(img))
