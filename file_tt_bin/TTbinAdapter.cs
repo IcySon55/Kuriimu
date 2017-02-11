@@ -124,7 +124,7 @@ namespace file_ttbin
 
 			try
 			{
-				//_ttbin.Save(_fileInfo.FullName);
+				_ttbin.Save(_fileInfo.FullName);
 			}
 			catch (Exception)
 			{

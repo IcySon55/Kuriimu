@@ -163,5 +163,10 @@ namespace file_ttbin
 			} while (part != 0x00);
 			return uni;
 		}
+
+		public void Save(string filename)
+		{
+
+		}
 	}
 }
