@@ -57,6 +57,7 @@
 			this.tslZoom = new System.Windows.Forms.ToolStripLabel();
 			this.tslTool = new System.Windows.Forms.ToolStripLabel();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
@@ -164,6 +165,7 @@
 			this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gBATempToolStripMenuItem,
             this.gitHubToolStripMenuItem,
+            this.toolStripSeparator4,
             this.aboutToolStripMenuItem1});
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -173,14 +175,14 @@
 			// 
 			this.gBATempToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_gbatemp;
 			this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.gBATempToolStripMenuItem.Text = "GBATemp";
 			// 
 			// gitHubToolStripMenuItem
 			// 
 			this.gitHubToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_git;
 			this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.gitHubToolStripMenuItem.Text = "GitHub";
 			// 
 			// aboutToolStripMenuItem1
@@ -188,7 +190,7 @@
 			this.aboutToolStripMenuItem1.Image = global::Kukkii.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
 			this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
+			this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
 			this.aboutToolStripMenuItem1.Text = "&About";
 			// 
 			// tlsMain
@@ -356,6 +358,11 @@
 			this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
 			this.propertyGrid1.TabIndex = 0;
 			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(149, 6);
+			// 
 			// frmConverter
 			// 
 			this.AllowDrop = true;
@@ -417,6 +424,7 @@
 		private System.Windows.Forms.ToolStripMenuItem batchToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripButton tsbExportToPNG;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 	}
 }
 

@@ -61,5 +61,17 @@ namespace Kukkii.Properties {
                 this["LastDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastBatchDirectory {
+            get {
+                return ((string)(this["LastBatchDirectory"]));
+            }
+            set {
+                this["LastBatchDirectory"] = value;
+            }
+        }
     }
 }
