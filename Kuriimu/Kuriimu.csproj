@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -125,7 +125,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -163,8 +163,11 @@
     <Content Include="images\kuriimu.ico" />
     <None Include="images\menu-about.png" />
     <Content Include="images\menu-add.png" />
+    <None Include="images\menu-batch-export.png" />
+    <None Include="images\menu-batch-import.png" />
     <Content Include="images\menu-delete.png" />
     <None Include="images\menu-exit.png" />
+    <None Include="images\menu-export.png" />
     <Content Include="images\menu-field-properties.png" />
     <None Include="images\menu-find.png" />
     <None Include="images\menu-manage.png" />
@@ -172,6 +175,7 @@
     <None Include="images\menu-git.png" />
     <None Include="images\menu-font-family.png" />
     <None Include="images\menu-font-size.png" />
+    <None Include="images\menu-import.png" />
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />
     <None Include="images\menu-properties.png" />

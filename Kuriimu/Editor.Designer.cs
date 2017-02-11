@@ -54,6 +54,7 @@
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
@@ -98,7 +99,12 @@
 			this.scbFontFamily = new System.Windows.Forms.ToolStripComboBox();
 			this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
 			this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbExportKUP = new System.Windows.Forms.ToolStripButton();
 			this.imlEntries = new System.Windows.Forms.ImageList(this.components);
+			this.tsbImportKUP = new System.Windows.Forms.ToolStripButton();
+			this.tsbBatchExportKUP = new System.Windows.Forms.ToolStripButton();
+			this.tsbBatchImportKUP = new System.Windows.Forms.ToolStripButton();
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -337,6 +343,7 @@
 			this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gBATempToolStripMenuItem,
             this.gitHubToolStripMenuItem,
+            this.toolStripSeparator7,
             this.aboutToolStripMenuItem1});
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
@@ -357,6 +364,11 @@
 			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gitHubToolStripMenuItem.Text = "GitHub";
 			this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
+			// 
+			// toolStripSeparator7
+			// 
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(125, 6);
 			// 
 			// aboutToolStripMenuItem1
 			// 
@@ -738,6 +750,11 @@
             this.tsbKukki,
             this.tsbProperties,
             this.toolStripSeparator5,
+            this.tsbExportKUP,
+            this.tsbImportKUP,
+            this.tsbBatchExportKUP,
+            this.tsbBatchImportKUP,
+            this.toolStripSeparator6,
             this.tslFontFamily,
             this.scbFontFamily,
             this.tslFontSize,
@@ -878,11 +895,58 @@
 			this.scbFontSize.SelectedIndexChanged += new System.EventHandler(this.scbFontSize_SelectedIndexChanged);
 			this.scbFontSize.TextChanged += new System.EventHandler(this.scbFontSize_TextChanged);
 			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbExportKUP
+			// 
+			this.tsbExportKUP.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbExportKUP.Enabled = false;
+			this.tsbExportKUP.Image = global::Kuriimu.Properties.Resources.menu_export;
+			this.tsbExportKUP.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbExportKUP.Name = "tsbExportKUP";
+			this.tsbExportKUP.Size = new System.Drawing.Size(23, 22);
+			this.tsbExportKUP.Text = "Export KUP";
+			this.tsbExportKUP.Click += new System.EventHandler(this.tsbExportKUP_Click);
+			// 
 			// imlEntries
 			// 
 			this.imlEntries.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
 			this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
 			this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
+			// 
+			// tsbImportKUP
+			// 
+			this.tsbImportKUP.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbImportKUP.Enabled = false;
+			this.tsbImportKUP.Image = global::Kuriimu.Properties.Resources.menu_import;
+			this.tsbImportKUP.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbImportKUP.Name = "tsbImportKUP";
+			this.tsbImportKUP.Size = new System.Drawing.Size(23, 22);
+			this.tsbImportKUP.Text = "Import KUP";
+			this.tsbImportKUP.Click += new System.EventHandler(this.tsbImportKUP_Click);
+			// 
+			// tsbBatchExportKUP
+			// 
+			this.tsbBatchExportKUP.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbBatchExportKUP.Image = global::Kuriimu.Properties.Resources.menu_batch_export;
+			this.tsbBatchExportKUP.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbBatchExportKUP.Name = "tsbBatchExportKUP";
+			this.tsbBatchExportKUP.Size = new System.Drawing.Size(23, 22);
+			this.tsbBatchExportKUP.Text = "Batch Export KUP";
+			this.tsbBatchExportKUP.Click += new System.EventHandler(this.tsbBatchExportKUP_Click);
+			// 
+			// tsbBatchImportKUP
+			// 
+			this.tsbBatchImportKUP.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbBatchImportKUP.Image = global::Kuriimu.Properties.Resources.menu_batch_import;
+			this.tsbBatchImportKUP.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbBatchImportKUP.Name = "tsbBatchImportKUP";
+			this.tsbBatchImportKUP.Size = new System.Drawing.Size(23, 22);
+			this.tsbBatchImportKUP.Text = "Batch Import KUP";
+			this.tsbBatchImportKUP.Click += new System.EventHandler(this.tsbBatchImportKUP_Click);
 			// 
 			// frmEditor
 			// 
@@ -1013,5 +1077,11 @@
 		private System.Windows.Forms.ToolStripLabel tslFontSize;
 		private System.Windows.Forms.ToolStripComboBox scbFontSize;
 		private System.Windows.Forms.ToolStripButton tsbPreviewSave;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripButton tsbExportKUP;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		private System.Windows.Forms.ToolStripButton tsbImportKUP;
+		private System.Windows.Forms.ToolStripButton tsbBatchExportKUP;
+		private System.Windows.Forms.ToolStripButton tsbBatchImportKUP;
 	}
 }
