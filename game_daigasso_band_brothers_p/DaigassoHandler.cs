@@ -119,8 +119,9 @@ namespace game_daigasso_band_brothers_p
 
 		public string GetRawString(string s) => s;
 
-		public Bitmap GeneratePreview(string s)
+		public Bitmap GeneratePreview(IEntry entry)
 		{
+			string rawString = entry.EditedText;
 			var bmp = new Bitmap(Resources.daigasso_box);
 			using (var g = Graphics.FromImage(bmp))
 			{
@@ -130,7 +131,10 @@ namespace game_daigasso_band_brothers_p
 				float txtOffsetX = 32, txtOffsetY = 12;
 				float x = 0, y = 0;
 				const float scale = 0.6f;
-				foreach (var c in s)
+
+				fontSymbol.SetTextColor(Color.Black);
+				fontBasic.SetTextColor(Color.Black);
+				foreach (var c in entry.EditedText)
 				{
 					var font = (c >> 8 == 0xE1) ? fontSymbol : fontBasic; // figure out how to merge fonts
 

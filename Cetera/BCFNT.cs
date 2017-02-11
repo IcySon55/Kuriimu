@@ -134,13 +134,15 @@ namespace Cetera
 			int xOffset = cellCol * (tglp.cell_width + 1) + 1;
 			int yOffset = sheetNum * tglp.sheet_height + cellRow * (tglp.cell_height + 1) + 1;
 
-			g.DrawImage(bmp,
+			if (widthInfo.glyph_width > 0)
+				g.DrawImage(bmp,
 				 new[] { new PointF(x + widthInfo.left * scale, y),
 						  new PointF(x + (widthInfo.left + widthInfo.glyph_width) * scale, y),
 						  new PointF(x + widthInfo.left * scale, y + tglp.cell_height * scale)},
 				 new RectangleF(xOffset, yOffset, widthInfo.glyph_width, tglp.cell_height),
 				 GraphicsUnit.Pixel,
 				 attr);
+
 			return x + widthInfo.char_width;
 		}
 
@@ -165,26 +167,14 @@ namespace Cetera
 				int width = tglp.sheet_width;
 				int height = tglp.sheet_height * tglp.num_sheets;
 				var bytes = br.ReadBytes(tglp.sheet_size * tglp.num_sheets);
-				bmp = new Bitmap(width, height);
-				var data = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-				unsafe
+				var settings = new ImageCommon.Settings
 				{
-					var ptr = (int*)data.Scan0;
-					for (int i = 0; i < width * height; i++)
-					{
-						int x = (i / 64 % (width / 8)) * 8 + (i / 4 & 4) | (i / 2 & 2) | (i & 1);
-						int y = (i / 64 / (width / 8)) * 8 + (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
-						int a;
-						if (tglp.sheet_image_format == 8) // A8
-							a = bytes[i];
-						else if (tglp.sheet_image_format == 11) // A4
-							a = (bytes[i / 2] >> (i % 2 * 4)) % 16 * 17;
-						else
-							throw new NotSupportedException("Only supports A4 and A8 for now");
-						ptr[width * y + x] = a << 24;
-					}
-				}
-				bmp.UnlockBits(data);
+					Width = width,
+					Height = height,
+					Format = ImageCommon.Settings.ConvertFormat(tglp.sheet_image_format),
+					PadToPowerOf2 = false
+				};
+				bmp = ImageCommon.Load(bytes, settings);
 
 				// read CWDH
 				for (int offset = finf.cwdh_offset; offset != 0;)

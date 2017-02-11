@@ -28,7 +28,7 @@ namespace KuriimuContract
 		FileInfo FileInfo { get; set; }
 		string LineEndings { get; }
 		bool Identify(string filename); // Determines if the given file is opened by the plugin.
-		LoadResult Load(string filename);
+		LoadResult Load(string filename, bool autoBackup = false);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
 		// Entries

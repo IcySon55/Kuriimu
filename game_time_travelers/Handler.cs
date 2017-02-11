@@ -47,9 +47,9 @@ namespace game_time_travelers
 
 		Bitmap textBox = new Bitmap(Resources.blank_top);
 
-		public Bitmap GeneratePreview(string rawString)
+		public Bitmap GeneratePreview(IEntry entry)
 		{
-			string kuriimuString = GetKuriimuString(rawString);
+			string kuriimuString = GetKuriimuString(entry.EditedText);
 			int boxes = kuriimuString.Count(c => c == (char)0x17) + 1;
 
 			Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);

@@ -14,6 +14,9 @@
     <Setting Name="LastDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="LastBatchDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
     <Setting Name="FindWhat" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

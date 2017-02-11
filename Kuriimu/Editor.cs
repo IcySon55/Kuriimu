@@ -438,7 +438,7 @@ namespace Kuriimu
 			return dr;
 		}
 
-		private IFileAdapter SelectFileAdapter(string filename)
+		private IFileAdapter SelectFileAdapter(string filename, bool batchMode = false)
 		{
 			IFileAdapter result = null;
 
@@ -451,7 +451,7 @@ namespace Kuriimu
 			if (result == null)
 				result = _fileAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
 
-			if (result == null)
+			if (result == null && !batchMode)
 				MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return result;
@@ -586,7 +586,7 @@ namespace Kuriimu
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.GeneratePreview(entry.EditedText);
+				pbxPreview.Image = _gameHandler.GeneratePreview(entry);
 			else
 				pbxPreview.Image = null;
 		}
@@ -673,6 +673,161 @@ namespace Kuriimu
 		private string FileName()
 		{
 			return _fileAdapter == null || _fileAdapter.FileInfo == null ? string.Empty : _fileAdapter.FileInfo.Name;
+		}
+
+		// Import/Export
+		private void tsbExportKUP_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void tsbImportKUP_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void tsbBatchExportKUP_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.Description = "Select the source directory containing text files...";
+			fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
+			fbd.ShowNewFolderButton = false;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				string path = fbd.SelectedPath;
+				int fileCount = 0;
+
+				if (Directory.Exists(path))
+				{
+					string[] types = _fileAdapters.Select(x => x.Extension.ToLower()).ToArray();
+
+					List<string> files = new List<string>();
+					foreach (string type in types)
+						if (type != "*.kup")
+							files.AddRange(Directory.GetFiles(path, type));
+
+					// TODO: Ask how to handle overwrites and backups
+
+					foreach (string file in files)
+					{
+						if (File.Exists(file))
+						{
+							FileInfo fi = new FileInfo(file);
+							IFileAdapter currentAdapter = SelectFileAdapter(file, true);
+
+							if (currentAdapter != null)
+							{
+								KUP kup = new KUP();
+
+								currentAdapter.Load(file, true);
+								foreach (IEntry entry in currentAdapter.Entries)
+								{
+									Entry kEntry = new Entry();
+									kEntry.Name = entry.Name;
+									kEntry.EditedText = entry.EditedText;
+									kEntry.OriginalText = entry.OriginalText;
+									kEntry.MaxLength = entry.MaxLength;
+									kup.Entries.Add(kEntry);
+
+									if (currentAdapter.EntriesHaveSubEntries)
+									{
+										foreach (IEntry sub in entry.SubEntries)
+										{
+											Entry kSub = new Entry();
+											kSub.Name = sub.Name;
+											kSub.EditedText = sub.EditedText;
+											kSub.OriginalText = sub.OriginalText;
+											kSub.MaxLength = sub.MaxLength;
+											kSub.ParentEntry = entry;
+											entry.SubEntries.Add(kSub);
+										}
+									}
+								}
+
+								kup.Save(fi.FullName + ".kup");
+								fileCount++;
+							}
+						}
+					}
+
+					MessageBox.Show("Batch export completed successfully. " + fileCount + " file(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+			Settings.Default.Save();
+		}
+
+		private void tsbBatchImportKUP_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.Description = "Select the source directory containing text and kup file pairs...";
+			fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
+			fbd.ShowNewFolderButton = false;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				string path = fbd.SelectedPath;
+				int fileCount = 0;
+				int importCount = 0;
+
+				if (Directory.Exists(path))
+				{
+					string[] types = _fileAdapters.Select(x => x.Extension.ToLower()).ToArray();
+
+					List<string> files = new List<string>();
+					foreach (string type in types)
+						if (type != "*.kup")
+							files.AddRange(Directory.GetFiles(path, type));
+
+					// TODO: Ask how to handle overwrites and backups
+
+					foreach (string file in files)
+					{
+						if (File.Exists(file))
+						{
+							FileInfo fi = new FileInfo(file);
+							IFileAdapter currentAdapter = SelectFileAdapter(file, true);
+
+							if (currentAdapter != null && currentAdapter.CanSave && File.Exists(fi.FullName + ".kup"))
+							{
+								KUP kup = KUP.Load(fi.FullName + ".kup");
+
+								currentAdapter.Load(file, true);
+								foreach (IEntry entry in currentAdapter.Entries)
+								{
+									Entry kEntry = kup.Entries.Find(o => o.Name == entry.Name);
+
+									if (kEntry != null)
+										entry.EditedText = kEntry.EditedText;
+
+									if (currentAdapter.EntriesHaveSubEntries && kEntry != null)
+									{
+										foreach (IEntry sub in entry.SubEntries)
+										{
+											Entry kSub = (Entry)kEntry.SubEntries.Find(o => o.Name == sub.Name);
+
+											if (kSub != null)
+												sub.EditedText = kSub.EditedText;
+										}
+									}
+								}
+
+								currentAdapter.Save();
+								importCount++;
+							}
+
+							fileCount++;
+						}
+					}
+
+					MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+			Settings.Default.Save();
 		}
 
 		// List

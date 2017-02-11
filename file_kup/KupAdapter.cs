@@ -74,7 +74,7 @@ namespace file_kup
 			return result;
 		}
 
-		public LoadResult Load(string filename)
+		public LoadResult Load(string filename, bool autoBackup = false)
 		{
 			LoadResult result = LoadResult.Success;
 

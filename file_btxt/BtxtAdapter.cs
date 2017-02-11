@@ -71,7 +71,7 @@ namespace file_btxt
 			}
 		}
 
-		public LoadResult Load(string filename)
+		public LoadResult Load(string filename, bool autoBackup = false)
 		{
 			LoadResult result = LoadResult.Success;
 
@@ -87,7 +87,7 @@ namespace file_btxt
 				{
 					_btxtBackup = new BTXT(backupFilePath);
 				}
-				else if (MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
 					File.Copy(_fileInfo.FullName, backupFilePath);
 					_btxtBackup = new BTXT(backupFilePath);
