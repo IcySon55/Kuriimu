@@ -153,6 +153,26 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_batch_export {
+            get {
+                object obj = ResourceManager.GetObject("menu_batch_export", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_batch_import {
+            get {
+                object obj = ResourceManager.GetObject("menu_batch_import", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_delete {
             get {
                 object obj = ResourceManager.GetObject("menu_delete", resourceCulture);
@@ -166,6 +186,16 @@ namespace Kuriimu.Properties {
         internal static System.Drawing.Bitmap menu_exit {
             get {
                 object obj = ResourceManager.GetObject("menu_exit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_export {
+            get {
+                object obj = ResourceManager.GetObject("menu_export", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -226,6 +256,16 @@ namespace Kuriimu.Properties {
         internal static System.Drawing.Bitmap menu_git {
             get {
                 object obj = ResourceManager.GetObject("menu_git", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_import {
+            get {
+                object obj = ResourceManager.GetObject("menu_import", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

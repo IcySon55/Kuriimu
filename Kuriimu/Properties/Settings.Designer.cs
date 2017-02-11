@@ -65,6 +65,18 @@ namespace Kuriimu.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastBatchDirectory {
+            get {
+                return ((string)(this["LastBatchDirectory"]));
+            }
+            set {
+                this["LastBatchDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string FindWhat {
             get {
                 return ((string)(this["FindWhat"]));

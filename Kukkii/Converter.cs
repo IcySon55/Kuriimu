@@ -282,7 +282,8 @@ namespace Kukkii
 		private void tsbBatchExport_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
-			fbd.SelectedPath = Settings.Default.LastDirectory;
+			fbd.Description = "Select the source directory containing image files...";
+			fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
 			fbd.ShowNewFolderButton = false;
 
 			if (fbd.ShowDialog() == DialogResult.OK)
@@ -314,10 +315,12 @@ namespace Kukkii
 						}
 					}
 
-					// Success?
-					MessageBox.Show("Batch export completed successfully. " + count + " image(s) were succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					MessageBox.Show("Batch export completed successfully. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
+
+			Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+			Settings.Default.Save();
 		}
 
 		// Image Box
