@@ -593,7 +593,7 @@ namespace Kuriimu
 
 		private void UpdateForm()
 		{
-			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
+			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_fileAdapter != null ? " - " + _fileAdapter.Name + " Adapter" : string.Empty);
 
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
 
@@ -704,8 +704,14 @@ namespace Kuriimu
 
 					List<string> files = new List<string>();
 					foreach (string type in types)
+					{
 						if (type != "*.kup")
-							files.AddRange(Directory.GetFiles(path, type));
+						{
+							string[] subTypes = type.Split(';');
+							foreach (string subType in subTypes)
+								files.AddRange(Directory.GetFiles(path, subType));
+						}
+					}
 
 					// TODO: Ask how to handle overwrites and backups
 
@@ -778,8 +784,14 @@ namespace Kuriimu
 
 					List<string> files = new List<string>();
 					foreach (string type in types)
+					{
 						if (type != "*.kup")
-							files.AddRange(Directory.GetFiles(path, type));
+						{
+							string[] subTypes = type.Split(';');
+							foreach (string subType in subTypes)
+								files.AddRange(Directory.GetFiles(path, subType));
+						}
+					}
 
 					// TODO: Ask how to handle overwrites and backups
 
