@@ -5,9 +5,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Cetera.Font;
 using game_great_detective_pikachu.Properties;
 using KuriimuContract;
-using Cetera;
 
 namespace game_great_detective_pikachu
 {
@@ -108,7 +108,7 @@ namespace game_great_detective_pikachu
 				int line = 0;
 
 				string str = rawString;
-				font.SetTextColor(Color.White);
+				font.SetColor(Color.White);
 
 				gfx.InterpolationMode = InterpolationMode.Bicubic;
 				foreach (char c in str)
@@ -123,10 +123,10 @@ namespace game_great_detective_pikachu
 							continue;
 					}
 
-					font.SetTextColor(Color.FromArgb(255, 63, 3, 3));
-					font.DrawCharacter(c, gfx, x + 2f, y + 2f, scale);
-					font.SetTextColor(Color.White);
-					font.DrawCharacter(c, gfx, x, y, scale);
+					font.SetColor(Color.FromArgb(255, 63, 3, 3));
+					font.Draw(c, gfx, x + 2f, y + 2f, scale, scale);
+					font.SetColor(Color.White);
+					font.Draw(c, gfx, x, y, scale, scale);
 					x += font.GetWidthInfo(c).char_width * scale;
 				}
 

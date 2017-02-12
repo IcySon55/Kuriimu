@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using image_bclim.Properties;
+using Cetera.Image;
 using KuriimuContract;
 
 namespace image_bclim
@@ -10,12 +9,12 @@ namespace image_bclim
 	public class BclimAdapter : IImageAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private BCLIM _bclim = null;
+		private BXLIM _bclim = null;
 
 		#region Properties
 
 		// Information
-		public string Name => Settings.Default.PluginName;
+		public string Name => Properties.Settings.Default.PluginName;
 
 		public string Description => "Binary CLayout Image";
 
@@ -59,7 +58,7 @@ namespace image_bclim
 			_fileInfo = new FileInfo(filename);
 
 			if (_fileInfo.Exists)
-				_bclim = new BCLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+				_bclim = new BXLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
 			else
 				result = LoadResult.FileNotFound;
 
