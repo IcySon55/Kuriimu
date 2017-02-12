@@ -119,20 +119,20 @@ namespace game_time_travelers
 				var fnt = new BinaryReaderX(file);
 				fnt.BaseStream.Position = 0x28;
 
-				//byte[] buf1 = XI.Decomp(fnt);
-				//while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
-				//byte[] buf2 = XI.Decomp(fnt);
-				//while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
-				//byte[] buf3 = XI.Decomp(fnt);
+				byte[] buf1 = XI.Decomp(fnt);
+				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
+				byte[] buf2 = XI.Decomp(fnt);
+				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
+				byte[] buf3 = XI.Decomp(fnt);
 
 				file.Close(); //File.Delete("fnt.bin");
 
-				//using (var br2 = new BinaryReaderX(new MemoryStream(buf1)))
-				//	lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();
-				//using (var br2 = new BinaryReaderX(new MemoryStream(buf2)))
-				//	dicGlyphLarge = Enumerable.Range(0, buf2.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
-				//using (var br2 = new BinaryReaderX(new MemoryStream(buf3)))
-				//	dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
+				using (var br2 = new BinaryReaderX(new MemoryStream(buf1)))
+					lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();
+				using (var br2 = new BinaryReaderX(new MemoryStream(buf2)))
+					dicGlyphLarge = Enumerable.Range(0, buf2.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
+				using (var br2 = new BinaryReaderX(new MemoryStream(buf3)))
+					dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
 			}
 		}
 

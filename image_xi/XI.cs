@@ -124,6 +124,11 @@ namespace image_xi
 		//			throw new Exception(br.BaseStream.Position.ToString());//throw new Exception("Unknown compression!");
 		//	}
 		//}
+		public static byte[] Decomp(BinaryReaderX br)
+		{
+			// above to be restored eventually with some changes to Cetera
+			return CriWare.GetDecompressedBytes(br.BaseStream);
+		}
 
 		public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, byte bitDepth)
 		{
