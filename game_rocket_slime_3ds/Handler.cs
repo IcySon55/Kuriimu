@@ -4,9 +4,9 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Cetera.Font;
 using game_rocket_slime_3ds.Properties;
 using KuriimuContract;
-using Cetera;
 
 namespace game_rocket_slime_3ds
 {
@@ -124,7 +124,7 @@ namespace game_rocket_slime_3ds
 				int box = 0;
 
 				string str = rawString.Replace("\x1F\x05", "Player");
-				font.SetTextColor(colorDefault);
+				font.SetColor(colorDefault);
 
 				for (int i = 0; i < str.Length; i++)
 				{
@@ -139,7 +139,7 @@ namespace game_rocket_slime_3ds
 					// Handle control codes
 					if (c == 0x001F && c2 == 0x0002) // Start Name
 					{
-						font.SetTextColor(Color.White);
+						font.SetColor(Color.White);
 						scaleCurrent = scaleName;
 						float width = font.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
 						pX = x;
@@ -156,19 +156,19 @@ namespace game_rocket_slime_3ds
 					}
 					else if (c == 0x0013 && c2 == 0x0000) // Default
 					{
-						font.SetTextColor(colorDefault);
+						font.SetColor(colorDefault);
 						i++;
 						continue;
 					}
 					else if (c == 0x0013 && c2 == 0x0001) // Red
 					{
-						font.SetTextColor(Color.Red);
+						font.SetColor(Color.Red);
 						i++;
 						continue;
 					}
 					else if (c == 0x0013 && c2 == 0x0003) // Light Blue
 					{
-						font.SetTextColor(Color.FromArgb(255, 54, 129, 216));
+						font.SetColor(Color.FromArgb(255, 54, 129, 216));
 						i++;
 						continue;
 					}
@@ -188,7 +188,7 @@ namespace game_rocket_slime_3ds
 					}
 					else if (c == 0x0002) // End Name
 					{
-						font.SetTextColor(colorDefault);
+						font.SetColor(colorDefault);
 						scaleCurrent = scaleDefault;
 						x = pX;
 						y = pY;
@@ -203,7 +203,7 @@ namespace game_rocket_slime_3ds
 					}
 
 					// Otherwise it's a regular drawable character
-					font.DrawCharacter(c, gfx, x, y, scaleCurrent);
+					font.Draw(c, gfx, x, y, scaleCurrent, scaleCurrent);
 					x += widthInfo.char_width * scaleCurrent;
 				}
 			}

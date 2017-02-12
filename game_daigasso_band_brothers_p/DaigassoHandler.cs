@@ -6,7 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using Cetera;
+using Cetera.Font;
 using game_daigasso_band_brothers_p.Properties;
 using KuriimuContract;
 
@@ -132,8 +132,8 @@ namespace game_daigasso_band_brothers_p
 				float x = 0, y = 0;
 				const float scale = 0.6f;
 
-				fontSymbol.SetTextColor(Color.Black);
-				fontBasic.SetTextColor(Color.Black);
+				fontSymbol.SetColor(Color.Black);
+				fontBasic.SetColor(Color.Black);
 				foreach (var c in entry.EditedText)
 				{
 					var font = (c >> 8 == 0xE1) ? fontSymbol : fontBasic; // figure out how to merge fonts
@@ -145,7 +145,7 @@ namespace game_daigasso_band_brothers_p
 						y += font.LineFeed * scale;
 						if (c == '\n') continue;
 					}
-					font.DrawCharacter(c, g, x + txtOffsetX, y + txtOffsetY, scale);
+					font.Draw(c, g, x + txtOffsetX, y + txtOffsetY, scale, scale);
 					x += char_width;
 				}
 			}
