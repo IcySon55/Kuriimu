@@ -5,9 +5,9 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Cetera.Font;
 using game_maple_story_3ds.Properties;
 using KuriimuContract;
-using Cetera;
 
 namespace game_maple_story_3ds
 {
@@ -88,29 +88,29 @@ namespace game_maple_story_3ds
 				float x = 10, y = 22;
 				int line = 0;
 				string str = _previewPairs.Aggregate(rawString, (s, pair) => s.Replace(pair.Key, pair.Value));
-				font.SetTextColor(Color.White);
+				font.SetColor(Color.White);
 
 				foreach (char c in str)
 				{
 					switch (c)
 					{
 						case '‹': // Player Name
-							font.SetTextColor(Color.FromArgb(255, 254, 254, 149));
+							font.SetColor(Color.FromArgb(255, 254, 254, 149));
 							continue;
 						case '<': // Orange
-							font.SetTextColor(Color.FromArgb(255, 255, 150, 0));
+							font.SetColor(Color.FromArgb(255, 255, 150, 0));
 							continue;
 						case '{':  // Green
-							font.SetTextColor(Color.FromArgb(255, 131, 237, 63));
+							font.SetColor(Color.FromArgb(255, 131, 237, 63));
 							continue;
 						case '[': // Purple
-							font.SetTextColor(Color.FromArgb(255, 255, 100, 255));
+							font.SetColor(Color.FromArgb(255, 255, 100, 255));
 							continue;
 						case '›': // Reset color
 						case '>':
 						case '}':
 						case ']':
-							font.SetTextColor(Color.White);
+							font.SetColor(Color.White);
 							continue;
 						case '\n':
 							x = 10;
@@ -121,7 +121,7 @@ namespace game_maple_story_3ds
 					}
 
 					// Otherwise it's a regular drawable character
-					font.DrawCharacter(c, gfx, x, y, scale);
+					font.Draw(c, gfx, x, y, scale, scale);
 					x += font.GetWidthInfo(c).char_width * scale;
 				}
 
