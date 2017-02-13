@@ -240,6 +240,7 @@ namespace Kukkii
 				var bmp = (Bitmap)Image.FromFile(filename);
 				_imageAdapter.Bitmap = bmp;
 				UpdatePreview();
+				MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			catch (Exception ex)
 			{
@@ -297,7 +298,11 @@ namespace Kukkii
 
 					List<string> files = new List<string>();
 					foreach (string type in types)
-						files.AddRange(Directory.GetFiles(path, type));
+					{
+						string[] subTypes = type.Split(';');
+						foreach (string subType in subTypes)
+							files.AddRange(Directory.GetFiles(path, subType));
+					}
 
 					foreach (string file in files)
 					{
