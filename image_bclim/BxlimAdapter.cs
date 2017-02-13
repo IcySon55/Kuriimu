@@ -4,23 +4,23 @@ using System.IO;
 using Cetera.Image;
 using KuriimuContract;
 
-namespace image_bclim
+namespace image_bxlim
 {
-	public class BclimAdapter : IImageAdapter
+	public class BxlimAdapter : IImageAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private BXLIM _bclim = null;
+		private BXLIM _bxlim = null;
 
 		#region Properties
 
 		// Information
 		public string Name => Properties.Settings.Default.PluginName;
 
-		public string Description => "Binary CLayout Image";
+		public string Description => "Binary Layout Image";
 
-		public string Extension => "*.bclim";
+		public string Extension => "*.bclim;*bxlim";
 
-		public string About => "This is the BCLIM file adapter for Kukkii.";
+		public string About => "This is the BCLIM and BFLIM file adapter for Kukkii.";
 
 		// Feature Support
 		public bool FileHasExtendedProperties => false;
@@ -47,7 +47,8 @@ namespace image_bclim
 			{
 				if (br.BaseStream.Length < 40) return false;
 				br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
-				return br.ReadString(4) == "CLIM";
+				string magic = br.ReadString(4);
+				return magic == "CLIM" || magic == "FLIM";
 			}
 		}
 
@@ -58,7 +59,7 @@ namespace image_bclim
 			_fileInfo = new FileInfo(filename);
 
 			if (_fileInfo.Exists)
-				_bclim = new BXLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+				_bxlim = new BXLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
 			else
 				result = LoadResult.FileNotFound;
 
@@ -74,7 +75,7 @@ namespace image_bclim
 
 			try
 			{
-				_bclim.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+				_bxlim.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
 			}
 			catch (Exception)
 			{
@@ -89,11 +90,11 @@ namespace image_bclim
 		{
 			get
 			{
-				return _bclim.Image;
+				return _bxlim.Image;
 			}
 			set
 			{
-				_bclim.Image = value;
+				_bxlim.Image = value;
 			}
 		}
 	}
