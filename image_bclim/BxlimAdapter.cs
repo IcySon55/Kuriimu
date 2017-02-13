@@ -18,7 +18,7 @@ namespace image_bxlim
 
 		public string Description => "Binary Layout Image";
 
-		public string Extension => "*.bclim;*bxlim";
+		public string Extension => "*.bclim;*bflim";
 
 		public string About => "This is the BCLIM and BFLIM file adapter for Kukkii.";
 
