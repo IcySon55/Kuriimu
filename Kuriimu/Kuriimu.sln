@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_ttbin", "..\file_tt_bi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cetera", "..\Cetera\Cetera\Cetera.csproj", "{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_jtex", "..\image_jtex\image_jtex.csproj", "{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +162,10 @@ Global
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
