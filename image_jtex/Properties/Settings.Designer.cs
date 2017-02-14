@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace image_bclim.Properties {
+namespace image_jtex.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,7 +25,7 @@ namespace image_bclim.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("BCLIM")]
+        [global::System.Configuration.DefaultSettingValueAttribute("JTEX")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));

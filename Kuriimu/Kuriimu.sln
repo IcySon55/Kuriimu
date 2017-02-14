@@ -58,7 +58,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kukkii", "..\Kukkii\Kukkii.
 		{77A182C0-4E86-469D-986E-9FAFAABCD26E} = {77A182C0-4E86-469D-986E-9FAFAABCD26E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_bclim", "..\image_bclim\image_bclim.csproj", "{77A182C0-4E86-469D-986E-9FAFAABCD26E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_bxlim", "..\image_bxlim\image_bxlim.csproj", "{77A182C0-4E86-469D-986E-9FAFAABCD26E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_xi", "..\image_xi\image_xi.csproj", "{1C9D7F75-2E04-441E-83D4-00A406809E09}"
 EndProject
@@ -69,6 +69,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_ttbin", "..\file_tt_bin\file_ttbin.csproj", "{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cetera", "..\Cetera\Cetera\Cetera.csproj", "{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_jtex", "..\image_jtex\image_jtex.csproj", "{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -160,6 +162,10 @@ Global
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

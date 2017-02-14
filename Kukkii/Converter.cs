@@ -70,13 +70,23 @@ namespace Kukkii
 			Close();
 		}
 
-		private void exportToPNGToolStripMenuItem_Click(object sender, EventArgs e)
+		private void exportPNGToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			ExportToPNG();
+			ExportPNG();
 		}
-		private void tsbExportToPNG_Click(object sender, EventArgs e)
+		private void tsbExportPNG_Click(object sender, EventArgs e)
 		{
-			ExportToPNG();
+			ExportPNG();
+		}
+
+
+		private void importPNGToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportPNG();
+		}
+		private void tsbImportPNG_Click(object sender, EventArgs e)
+		{
+			ImportPNG();
 		}
 
 		// File Handling
@@ -215,10 +225,10 @@ namespace Kukkii
 			return result;
 		}
 
-		private void ExportToPNG()
+		private void ExportPNG()
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Title = "Export to PNG...";
+			sfd.Title = "Export PNG...";
 			sfd.InitialDirectory = Settings.Default.LastDirectory;
 			sfd.FileName = _imageAdapter.FileInfo.Name + ".png";
 			sfd.Filter = "Portable Network Graphics (*.png)|*.png";
@@ -228,9 +238,15 @@ namespace Kukkii
 				imbPreview.Image.Save(sfd.FileName, ImageFormat.Png);
 		}
 
-		private void ImportFromPNG()
+		private void ImportPNG()
 		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Import PNG...";
+			ofd.InitialDirectory = Settings.Default.LastDirectory;
+			ofd.Filter = "Portable Network Graphics (*.png)|*.png";
 
+			if (ofd.ShowDialog() == DialogResult.OK)
+				Import(ofd.FileName);
 		}
 
 		private void Import(string filename)
@@ -240,6 +256,7 @@ namespace Kukkii
 				var bmp = (Bitmap)Image.FromFile(filename);
 				_imageAdapter.Bitmap = bmp;
 				UpdatePreview();
+				MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			catch (Exception ex)
 			{
@@ -255,7 +272,7 @@ namespace Kukkii
 
 		private void UpdateForm()
 		{
-			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
+			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Name + " Adapter" : string.Empty);
 
 			if (_imageAdapter != null)
 			{
@@ -266,10 +283,10 @@ namespace Kukkii
 				tsbSaveAs.Enabled = _fileOpen && _imageAdapter.CanSave;
 
 				// Toolbar
-				exportToPNGToolStripMenuItem.Enabled = _fileOpen;
-				tsbExportToPNG.Enabled = _fileOpen;
-				//entryPropertiesToolStripMenuItem.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
-				//tsbEntryProperties.Enabled = itemSelected && _fileAdapter.EntriesHaveExtendedProperties;
+				exportPNGToolStripMenuItem.Enabled = _fileOpen;
+				tsbExportPNG.Enabled = _fileOpen;
+				importPNGToolStripMenuItem.Enabled = _fileOpen;
+				tsbImportPNG.Enabled = _fileOpen;
 			}
 		}
 
@@ -297,7 +314,11 @@ namespace Kukkii
 
 					List<string> files = new List<string>();
 					foreach (string type in types)
-						files.AddRange(Directory.GetFiles(path, type));
+					{
+						string[] subTypes = type.Split(';');
+						foreach (string subType in subTypes)
+							files.AddRange(Directory.GetFiles(path, subType));
+					}
 
 					foreach (string file in files)
 					{
@@ -316,6 +337,61 @@ namespace Kukkii
 					}
 
 					MessageBox.Show("Batch export completed successfully. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+			Settings.Default.Save();
+		}
+
+		private void tsbBatchImport_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.Description = "Select the source directory containing image and png file pairs...";
+			fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
+			fbd.ShowNewFolderButton = false;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				string path = fbd.SelectedPath;
+				int fileCount = 0;
+				int importCount = 0;
+
+				if (Directory.Exists(path))
+				{
+					string[] types = _imageAdapters.Select(x => x.Extension.ToLower()).ToArray();
+
+					List<string> files = new List<string>();
+					foreach (string type in types)
+					{
+						string[] subTypes = type.Split(';');
+						foreach (string subType in subTypes)
+							files.AddRange(Directory.GetFiles(path, subType));
+					}
+
+					foreach (string file in files)
+					{
+						if (File.Exists(file))
+						{
+							FileInfo fi = new FileInfo(file);
+							IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+
+							if (currentAdapter != null && currentAdapter.CanSave && File.Exists(fi.FullName + ".png"))
+								try
+								{
+									var bmp = (Bitmap)Image.FromFile(fi.FullName + ".png");
+									currentAdapter.Load(file);
+									currentAdapter.Bitmap = bmp;
+									currentAdapter.Save();
+									importCount++;
+								}
+								catch (Exception) { }
+
+							fileCount++;
+						}
+					}
+
+					MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 

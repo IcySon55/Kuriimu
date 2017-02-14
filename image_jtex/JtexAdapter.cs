@@ -1,26 +1,30 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Cetera.Image;
 using KuriimuContract;
 
-namespace image_bclim
+namespace image_jtex
 {
-	public class BclimAdapter : IImageAdapter
+	class JtexAdapter : IImageAdapter
 	{
 		private FileInfo _fileInfo = null;
-		private BXLIM _bclim = null;
+		private JTEX _jtex = null;
 
 		#region Properties
 
 		// Information
 		public string Name => Properties.Settings.Default.PluginName;
 
-		public string Description => "Binary CLayout Image";
+		public string Description => "J Texture";
 
-		public string Extension => "*.bclim";
+		public string Extension => "*.jtex";
 
-		public string About => "This is the BCLIM file adapter for Kukkii.";
+		public string About => "This is the JTEX file adapter for Kukkii.";
 
 		// Feature Support
 		public bool FileHasExtendedProperties => false;
@@ -45,9 +49,8 @@ namespace image_bclim
 		{
 			using (var br = new BinaryReaderX(File.OpenRead(filename)))
 			{
-				if (br.BaseStream.Length < 40) return false;
-				br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
-				return br.ReadString(4) == "CLIM";
+				if (br.BaseStream.Length < 4) return false;
+				return br.ReadString(4) == "jIMG";
 			}
 		}
 
@@ -58,7 +61,7 @@ namespace image_bclim
 			_fileInfo = new FileInfo(filename);
 
 			if (_fileInfo.Exists)
-				_bclim = new BXLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+				_jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
 			else
 				result = LoadResult.FileNotFound;
 
@@ -74,7 +77,7 @@ namespace image_bclim
 
 			try
 			{
-				_bclim.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+				_jtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
 			}
 			catch (Exception)
 			{
@@ -89,11 +92,11 @@ namespace image_bclim
 		{
 			get
 			{
-				return _bclim.Image;
+				return _jtex.Image;
 			}
 			set
 			{
-				_bclim.Image = value;
+				_jtex.Image = value;
 			}
 		}
 	}
