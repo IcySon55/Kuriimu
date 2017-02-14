@@ -793,8 +793,6 @@ namespace Kuriimu
 						}
 					}
 
-					// TODO: Ask how to handle overwrites and backups
-
 					foreach (string file in files)
 					{
 						if (File.Exists(file))
@@ -886,7 +884,7 @@ namespace Kuriimu
 			previous = _gameHandler.GetKuriimuString(entry.EditedText);
 			next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _fileAdapter.LineEndings);
 			entry.EditedText = _gameHandler.GetRawString(next);
-			
+
 			if (next != previous)
 			{
 				_hasChanges = true;
