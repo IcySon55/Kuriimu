@@ -159,7 +159,6 @@ namespace file_ttbin
 
 			try
 			{
-				throw new Exception("Tesst");
 				_ttbin.Save(_fileInfo.FullName);
 			}
 			catch (Exception)
