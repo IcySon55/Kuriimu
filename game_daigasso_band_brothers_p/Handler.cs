@@ -169,8 +169,8 @@ namespace game_daigasso_band_brothers_p
 			var rawString = entry.EditedText;
 			if (string.IsNullOrWhiteSpace(rawString))
 				rawString = entry.OriginalText;
-			if (entry.Name.StartsWith("EDT_") || entry.Name.StartsWith("VCL_"))
-			//return GeneratePreviewHelp(entry.EditedText);
+
+			if (entry.Name.StartsWith("EDT_HELP") || entry.Name.StartsWith("VCL_HELP"))
 			{
 				bmp = new Bitmap(Resources.daigasso_box);
 				font = fontBasic;
@@ -180,10 +180,8 @@ namespace game_daigasso_band_brothers_p
 				txtOffsetX = 32;
 				txtOffsetY = 12;
 				scale = 0.6f;
-
 			}
 			else if (entry.Name.StartsWith("Tutorial_") || rawString.Contains("\xE\x1"))
-			//return GeneratePreviewText(entry.EditedText);
 			{
 				bmp = new Bitmap(410, 70);
 				using (var g = Graphics.FromImage(bmp))
@@ -199,7 +197,6 @@ namespace game_daigasso_band_brothers_p
 				scale = 0.84f;
 			}
 			else
-			//return GeneratePreviewWindow(entry.EditedText, 18 * (entry.OriginalText.Count(c => c == '\n') + 1));
 			{
 				int height = 18 * (entry.OriginalText.Count(c => c == '\n') + 1);
 				bmp = new Bitmap(256, height + 10);
@@ -210,12 +207,15 @@ namespace game_daigasso_band_brothers_p
 				}
 				font = fontCbfStd;
 				font.SetColor(Color.Black);
+				fontSisterSymbol.SetColor(Color.Black);
 				fullWidth = 250;
 				txtOffsetX = 3;
 				txtOffsetY = 5;
 				scale = 0.6f;
 			}
 
+			float widthMultiplier = 1;
+			BCFNT baseFont = font;
 			using (var g = Graphics.FromImage(bmp))
 			{
 				g.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -225,12 +225,28 @@ namespace game_daigasso_band_brothers_p
 				for (int i = 0; i < rawString.Length; i++)
 				{
 					var c = rawString[i];
-					if (c == 0xE) { i += 3 + rawString[i + 3]; continue; }
-					if (c == 0xF) { i += 2; continue; }
-					if (font == fontSisterSymbol || font == fontBasic)
-						font = (c >> 8 == 0xE1) ? fontSisterSymbol : fontBasic; // figure out how to merge fonts
+					if (c == 0xE)
+					{
+						if (rawString[i + 1] == 2 && rawString[i + 2] == 0)
+						{
+							widthMultiplier = (rawString[i + 4] + 256 * rawString[i + 5]) / 100f;
+						}
+						else if (rawString[i + 1] == 0 && rawString[i + 2] == 3)
+						{
+							font.SetColor(Color.FromArgb(rawString[i + 7], rawString[i + 4], rawString[i + 5], rawString[i + 6]));
+						}
+						i += 3 + rawString[i + 3];
+						continue;
+					}
+					if (c == 0xF)
+					{
+						i += 2;
+						widthMultiplier = 1;
+						continue;
+					}
+					font = (c >> 8 == 0xE1) ? fontSisterSymbol : baseFont; // figure out how to merge fonts
 
-					var char_width = font.GetWidthInfo(c).char_width * scale;
+					var char_width = font.GetWidthInfo(c).char_width * scale * widthMultiplier;
 					if (c == '\n' || x + char_width >= fullWidth)
 					{
 						x = 0;
