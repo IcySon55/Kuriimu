@@ -312,6 +312,9 @@ namespace Kuriimu
 			{
 				Bitmap bmp = (Bitmap)pbxPreview.Image;
 				bmp.Save(sfd.FileName, ImageFormat.Png);
+
+				Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
+				Settings.Default.Save();
 			}
 		}
 

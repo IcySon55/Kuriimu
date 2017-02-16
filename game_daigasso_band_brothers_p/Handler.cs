@@ -159,6 +159,9 @@ namespace game_daigasso_band_brothers_p
 			}
 		}
 
+		public int Page { get; set; }
+		public int PageCount { get; private set; }
+
 		public Bitmap GeneratePreview(IEntry entry)
 		{
 			Bitmap bmp;

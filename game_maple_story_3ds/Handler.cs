@@ -61,6 +61,9 @@ namespace game_maple_story_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
+		public int Page { get; set; }
+		public int PageCount { get; private set; }
+
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap textBox = new Bitmap(Resources.blank);
 

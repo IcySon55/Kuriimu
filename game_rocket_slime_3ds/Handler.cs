@@ -92,36 +92,44 @@ namespace game_rocket_slime_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		Bitmap textBox = new Bitmap(Resources.blank_top);
+		public int Page { get; set; } = 1;
+		public int PageCount { get; private set; } = 1;
+
+		Bitmap background = new Bitmap(Resources.background);
+		Bitmap nameBox = new Bitmap(Resources.namebox_top);
+		Bitmap textBox = new Bitmap(Resources.textbox_top);
 
 		public Bitmap GeneratePreview(IEntry entry)
 		{
 			string rawString = entry.EditedText;
-			int boxes = rawString.Count(c => c == (char)0x17) + 1;
+			PageCount = rawString.Count(c => c == (char)0x17) + 1;
 
-			Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);
+			Bitmap img = new Bitmap(background.Width, background.Height);
 
 			using (Graphics gfx = Graphics.FromImage(img))
 			{
 				gfx.SmoothingMode = SmoothingMode.HighQuality;
-				gfx.InterpolationMode = InterpolationMode.Bicubic;
+				gfx.InterpolationMode = InterpolationMode.Bilinear;
 				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-				for (int i = 0; i < boxes; i++)
-					gfx.DrawImage(textBox, 0, i * textBox.Height);
+				gfx.DrawImage(background, 0, 0);
 
-				RectangleF rectName = new RectangleF(15, 3, 114, 15);
-				RectangleF rectText = new RectangleF(15, 22, 370, 60);
+				gfx.DrawImage(textBox, 0, 0);
+				gfx.DrawImage(nameBox, 0, 0);
+
+				RectangleF rectName = new RectangleF(16, 2, 128, 17);
+				RectangleF rectText = new RectangleF(30, 18, 340, 37);
 
 				Color colorDefault = Color.FromArgb(255, 37, 66, 167);
 
-				float scaleDefault = 1.0f;
-				float scaleName = 0.86f;
-				float scaleCurrent = scaleDefault;
+				float scaleDefaultX = 1.0f;
+				float scaleDefaultY = 1.05f;
+				float scaleName = 0.8f;
+				float scaleCurrentX = scaleDefaultX;
+				float scaleCurrentY = scaleDefaultY;
 				float x = rectText.X, pX = x;
 				float y = rectText.Y, pY = y;
-				float yAdjust = 4;
-				int box = 0;
+				float lineSpacing = 4;
 
 				string str = rawString.Replace("\x1F\x05", "Player");
 				font.SetColor(colorDefault);
@@ -140,8 +148,9 @@ namespace game_rocket_slime_3ds
 					if (c == 0x001F && c2 == 0x0002) // Start Name
 					{
 						font.SetColor(Color.White);
-						scaleCurrent = scaleName;
-						float width = font.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrent);
+						scaleCurrentX = scaleName;
+						scaleCurrentY = scaleName;
+						float width = font.MeasureString(str.Substring(i + 2), (char)0x0002, scaleCurrentX);
 						pX = x;
 						pY = y;
 						x = rectName.X + (rectName.Width / 2) - (width / 2);
@@ -179,32 +188,32 @@ namespace game_rocket_slime_3ds
 					}
 					else if (c == 0x0017) // Next TextBox
 					{
-						box++;
-						x = rectText.X;
-						pX = x;
-						y = rectText.Y + textBox.Height * box;
-						pY += y;
+						//x = rectText.X;
+						//pX = x;
+						//y = rectText.Y + textBox.Height;
+						//pY += y;
 						continue;
 					}
 					else if (c == 0x0002) // End Name
 					{
 						font.SetColor(colorDefault);
-						scaleCurrent = scaleDefault;
+						scaleCurrentX = scaleDefaultX;
+						scaleCurrentY = scaleDefaultY;
 						x = pX;
 						y = pY;
 						continue;
 					}
-					else if (c == '\n' || x + (widthInfo.char_width * scaleCurrent) - rectText.X > rectText.Width) // New Line/End of Textbox
+					else if (c == '\n' || x + (widthInfo.char_width * scaleCurrentX) - rectText.X > rectText.Width) // New Line/End of Textbox
 					{
 						x = rectText.X;
-						y += (16 * scaleCurrent) + yAdjust;
+						y += (16 * scaleCurrentX) + lineSpacing;
 						if (c == '\n')
 							continue;
 					}
 
 					// Otherwise it's a regular drawable character
-					font.Draw(c, gfx, x, y, scaleCurrent, scaleCurrent);
-					x += widthInfo.char_width * scaleCurrent;
+					font.Draw(c, gfx, x, y, scaleCurrentX, scaleCurrentY);
+					x += widthInfo.char_width * scaleCurrentX;
 				}
 			}
 

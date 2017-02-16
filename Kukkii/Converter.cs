@@ -235,7 +235,7 @@ namespace Kukkii
 			sfd.AddExtension = true;
 
 			if (sfd.ShowDialog() == DialogResult.OK)
-				imbPreview.Image.Save(sfd.FileName, ImageFormat.Png);
+				_imageAdapter.Bitmap.Save(sfd.FileName, ImageFormat.Png);
 		}
 
 		private void ImportPNG()
