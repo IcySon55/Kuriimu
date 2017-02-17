@@ -157,9 +157,8 @@ namespace file_ttbin
 			{
 				_ttbin.Save(_fileInfo.FullName);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw e;
 				result = SaveResult.Failure;
 			}
 
