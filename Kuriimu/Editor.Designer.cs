@@ -747,7 +747,7 @@
 			this.tslPage.Image = global::Kuriimu.Properties.Resources.menu_preview_save;
 			this.tslPage.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tslPage.Name = "tslPage";
-			this.tslPage.Size = new System.Drawing.Size(48, 22);
+			this.tslPage.Size = new System.Drawing.Size(40, 22);
 			this.tslPage.Text = "Page";
 			// 
 			// tsbNextPage

@@ -61,7 +61,7 @@ namespace game_great_detective_pikachu
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		public IEnumerable<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
 
 		Bitmap background = new Bitmap(Resources.background1);
 

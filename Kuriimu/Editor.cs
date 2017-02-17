@@ -533,10 +533,10 @@ namespace Kuriimu
 
 			if (_page < 0)
 				_page = 0;
-			else if (_page > _gameHandler.Pages.Count() - 1)
-				_page = _gameHandler.Pages.Count() - 1;
+			else if (_page > _gameHandler.Pages.Count - 1)
+				_page = _gameHandler.Pages.Count - 1;
 
-			tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count();
+			tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count;
 		}
 
 		private void LoadEntries()
@@ -619,7 +619,7 @@ namespace Kuriimu
 			SetPage(0);
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.Pages.ElementAt(_page);
+				pbxPreview.Image = _gameHandler.Pages[_page];
 			else
 				pbxPreview.Image = null;
 		}
@@ -679,9 +679,9 @@ namespace Kuriimu
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
 
-				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count() > 0 && _page > 0;
-				tslPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count() > 0;
-				tsbNextPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count() > 0 && _page < _gameHandler.Pages.Count() - 1;
+				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page > 0;
+				tslPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0;
+				tsbNextPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page < _gameHandler.Pages.Count - 1;
 
 				treEntries.Enabled = _fileOpen;
 

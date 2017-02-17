@@ -159,7 +159,7 @@ namespace game_daigasso_band_brothers_p
 			}
 		}
 
-		public IEnumerable<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
 
 		public void GeneratePages(IEntry entry)
 		{

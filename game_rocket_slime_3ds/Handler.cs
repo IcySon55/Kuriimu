@@ -92,7 +92,7 @@ namespace game_rocket_slime_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		public IEnumerable<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
 
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap nameBox = new Bitmap(Resources.namebox_top);

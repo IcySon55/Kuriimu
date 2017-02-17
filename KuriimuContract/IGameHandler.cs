@@ -17,7 +17,7 @@ namespace KuriimuContract
 		string GetRawString(string kuriimuString);
 
 		// Previewer
-		IEnumerable<Bitmap> Pages { get; }
+		IList<Bitmap> Pages { get; }
 		void GeneratePages(IEntry entry);
 	}
 
@@ -31,7 +31,7 @@ namespace KuriimuContract
 		public string GetKuriimuString(string rawString) => rawString;
 		public string GetRawString(string kuriimuString) => kuriimuString;
 
-		public IEnumerable<Bitmap> Pages => new List<Bitmap>();
+		public IList<Bitmap> Pages => new List<Bitmap>();
 		public void GeneratePages(IEntry entry) { }
 
 		public int Page { get; set; } = 1;

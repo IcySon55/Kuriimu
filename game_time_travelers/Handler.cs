@@ -45,7 +45,7 @@ namespace game_time_travelers
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		public IEnumerable<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
 
 		Bitmap textBox = new Bitmap(Resources.blank_top);
 
