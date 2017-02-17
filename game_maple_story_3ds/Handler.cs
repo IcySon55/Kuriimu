@@ -61,11 +61,15 @@ namespace game_maple_story_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap textBox = new Bitmap(Resources.blank);
 
-		public Bitmap GeneratePreview(IEntry entry)
+		public void GeneratePages(IEntry entry)
 		{
+			var pages = new List<Bitmap>();
+
 			string rawString = entry.EditedText;
 			int boxes = rawString.Count(c => c == '\n') / 3 + 1;
 
@@ -126,7 +130,9 @@ namespace game_maple_story_3ds
 				}
 
 			}
-			return img;
+
+			pages.Add(img);
+			Pages = pages;
 		}
 	}
 }

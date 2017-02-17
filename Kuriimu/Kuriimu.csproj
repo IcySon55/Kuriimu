@@ -153,6 +153,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="images\previous-page.png" />
+    <None Include="images\next-page.png" />
     <None Include="images\preview-background.png" />
     <None Include="images\menu-unsorted.png" />
     <None Include="images\menu-sorted.png" />

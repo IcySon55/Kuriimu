@@ -45,10 +45,14 @@ namespace game_time_travelers
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+
 		Bitmap textBox = new Bitmap(Resources.blank_top);
 
-		public Bitmap GeneratePreview(IEntry entry)
+		public void GeneratePages(IEntry entry)
 		{
+			var pages = new List<Bitmap>();
+
 			string kuriimuString = GetKuriimuString(entry.EditedText);
 			int boxes = kuriimuString.Count(c => c == (char)0x17) + 1;
 
@@ -190,7 +194,8 @@ namespace game_time_travelers
 				}
 			}
 
-			return img;
+			pages.Add(img);
+			Pages = pages;
 		}
 	}
 }

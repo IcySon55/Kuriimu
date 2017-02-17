@@ -61,10 +61,14 @@ namespace game_great_detective_pikachu
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
+		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+
 		Bitmap background = new Bitmap(Resources.background1);
 
-		public Bitmap GeneratePreview(IEntry entry)
+		public void GeneratePages(IEntry entry)
 		{
+			var pages = new List<Bitmap>();
+
 			string rawString = entry.EditedText;
 			Bitmap img = new Bitmap(background.Width, background.Height);
 
@@ -136,7 +140,8 @@ namespace game_great_detective_pikachu
 				gfx.DrawImage(cursor, rectCursor);
 			}
 
-			return img;
+			pages.Add(img);
+			Pages = pages;
 		}
 	}
 }

@@ -217,4 +217,10 @@
   <data name="menu_import" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\menu-import.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="next_page" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\next-page.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="previous_page" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\previous-page.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

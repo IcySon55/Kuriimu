@@ -73,10 +73,25 @@
     <None Include="resources\MainFont.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\blank_top.png" />
+    <None Include="images\background.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\MainFont.png" />
+    <None Include="images\namebox_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\namebox_center.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\namebox_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\textbox_bottom.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\textbox_center.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\textbox_top.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

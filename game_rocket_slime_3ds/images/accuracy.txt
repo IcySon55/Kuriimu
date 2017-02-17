@@ -1,0 +1,2 @@
+<txt1 name="tb_name" scale="0.8" size="128,17" position="-119,28" maxlength="8"/>
+<txt1 name="tb_main_01" scale="1" size="340,37" position="0,0" maxlength="41" lineSpacing="3"/>
