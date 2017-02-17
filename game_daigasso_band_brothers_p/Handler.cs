@@ -159,11 +159,12 @@ namespace game_daigasso_band_brothers_p
 			}
 		}
 
-		public int Page { get; set; }
-		public int PageCount { get; private set; }
+		public IEnumerable<Bitmap> Pages { get; private set; } = new List<Bitmap>();
 
-		public Bitmap GeneratePreview(IEntry entry)
+		public void GeneratePages(IEntry entry)
 		{
+			var pages = new List<Bitmap>();
+
 			Bitmap bmp;
 			float txtOffsetX, txtOffsetY, scale;
 			float fullWidth;
@@ -260,7 +261,9 @@ namespace game_daigasso_band_brothers_p
 					x += char_width;
 				}
 			}
-			return bmp;
+
+			pages.Add(bmp);
+			Pages = pages;
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace KuriimuContract
 {
@@ -14,11 +15,10 @@ namespace KuriimuContract
 		// Features
 		string GetKuriimuString(string rawString);
 		string GetRawString(string kuriimuString);
-		Bitmap GeneratePreview(IEntry entry);
 
-		// Paging
-		int Page { get; set; }
-		int PageCount { get; }
+		// Previewer
+		IEnumerable<Bitmap> Pages { get; }
+		void GeneratePages(IEntry entry);
 	}
 
 	public sealed class DefaultGameHandler : IGameHandler
@@ -30,7 +30,9 @@ namespace KuriimuContract
 
 		public string GetKuriimuString(string rawString) => rawString;
 		public string GetRawString(string kuriimuString) => kuriimuString;
-		public Bitmap GeneratePreview(IEntry entry) => null;
+
+		public IEnumerable<Bitmap> Pages => new List<Bitmap>();
+		public void GeneratePages(IEntry entry) { }
 
 		public int Page { get; set; } = 1;
 		public int PageCount => 1;

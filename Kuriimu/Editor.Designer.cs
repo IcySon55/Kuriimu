@@ -737,6 +737,7 @@
 			this.tsbPreviousPage.Name = "tsbPreviousPage";
 			this.tsbPreviousPage.Size = new System.Drawing.Size(23, 22);
 			this.tsbPreviousPage.Text = "Previous Page";
+			this.tsbPreviousPage.Click += new System.EventHandler(this.tsbPreviousPage_Click);
 			// 
 			// tslPage
 			// 
@@ -758,6 +759,7 @@
 			this.tsbNextPage.Name = "tsbNextPage";
 			this.tsbNextPage.Size = new System.Drawing.Size(23, 22);
 			this.tsbNextPage.Text = "Next Page";
+			this.tsbNextPage.Click += new System.EventHandler(this.tsbNextPage_Click);
 			// 
 			// tlsHexView
 			// 

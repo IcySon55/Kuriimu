@@ -25,6 +25,8 @@ namespace Kuriimu
 
 		private IEnumerable<IEntry> _entries = null;
 
+		private int _page = 0;
+
 		public frmEditor(string[] args)
 		{
 			InitializeComponent();
@@ -318,6 +320,20 @@ namespace Kuriimu
 			}
 		}
 
+		private void tsbPreviousPage_Click(object sender, EventArgs e)
+		{
+			SetPage(-1);
+			UpdatePreview();
+			UpdateForm();
+		}
+
+		private void tsbNextPage_Click(object sender, EventArgs e)
+		{
+			SetPage(1);
+			UpdatePreview();
+			UpdateForm();
+		}
+
 		// File Handling
 		private void frmEditor_DragEnter(object sender, DragEventArgs e)
 		{
@@ -511,6 +527,18 @@ namespace Kuriimu
 			txtOriginal.Font = new Font(scbFontFamily.Text, size);
 		}
 
+		private void SetPage(int direction)
+		{
+			_page += direction;
+
+			if (_page < 0)
+				_page = 0;
+			else if (_page > _gameHandler.Pages.Count() - 1)
+				_page = _gameHandler.Pages.Count() - 1;
+
+			tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count();
+		}
+
 		private void LoadEntries()
 		{
 			UpdateEntries();
@@ -587,9 +615,11 @@ namespace Kuriimu
 		private void UpdatePreview()
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+			_gameHandler.GeneratePages(entry);
+			SetPage(0);
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.GeneratePreview(entry);
+				pbxPreview.Image = _gameHandler.Pages.ElementAt(_page);
 			else
 				pbxPreview.Image = null;
 		}
@@ -648,6 +678,10 @@ namespace Kuriimu
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
+
+				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count() > 0 && _page > 0;
+				tslPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count() > 0;
+				tsbNextPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count() > 0 && _page < _gameHandler.Pages.Count() - 1;
 
 				treEntries.Enabled = _fileOpen;
 
