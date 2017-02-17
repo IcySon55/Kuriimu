@@ -15,6 +15,10 @@ namespace KuriimuContract
 		string GetKuriimuString(string rawString);
 		string GetRawString(string kuriimuString);
 		Bitmap GeneratePreview(IEntry entry);
+
+		// Paging
+		int Page { get; set; }
+		int PageCount { get; }
 	}
 
 	public sealed class DefaultGameHandler : IGameHandler
@@ -23,9 +27,13 @@ namespace KuriimuContract
 		public Image Icon { get; }
 
 		public bool HandlerCanGeneratePreviews => false;
+
 		public string GetKuriimuString(string rawString) => rawString;
 		public string GetRawString(string kuriimuString) => kuriimuString;
 		public Bitmap GeneratePreview(IEntry entry) => null;
+
+		public int Page { get; set; } = 1;
+		public int PageCount => 1;
 
 		public DefaultGameHandler(Image icon) { Icon = icon; }
 	}
