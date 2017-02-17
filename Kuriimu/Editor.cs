@@ -531,7 +531,7 @@ namespace Kuriimu
 			{
 				float size;
 				float.TryParse(scbFontSize.Text, out size);
-				if (float.IsNaN(size) || float.IsInfinity(size) || size < 1) size = 10;
+				if (float.IsNaN(size) || float.IsInfinity(size) || size <= 0) size = 10;
 				txtEdit.Font = new Font(scbFontFamily.Text, size);
 				txtOriginal.Font = new Font(scbFontFamily.Text, size);
 			}
