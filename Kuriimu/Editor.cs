@@ -123,16 +123,20 @@ namespace Kuriimu
 
 		private void scbFontFamily_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Settings.Default.FontFamily = scbFontFamily.Text;
-			Settings.Default.Save();
-			SetFont();
+			if (SetFont())
+			{
+				Settings.Default.FontFamily = scbFontFamily.Text;
+				Settings.Default.Save();
+			}
 		}
 
 		private void scbFontSize_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Settings.Default.FontSize = scbFontSize.Text;
-			Settings.Default.Save();
-			SetFont();
+			if (SetFont())
+			{
+				Settings.Default.FontSize = scbFontSize.Text;
+				Settings.Default.Save();
+			}
 		}
 
 		private void scbFontFamily_TextChanged(object sender, EventArgs e)
@@ -263,12 +267,12 @@ namespace Kuriimu
 		// Help
 		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
+			Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
 		}
 
 		private void gitHubToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("https://github.com/Icyson55/Kuriimu");
+			Process.Start("https://github.com/Icyson55/Kuriimu");
 		}
 
 		private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -519,12 +523,24 @@ namespace Kuriimu
 			}
 		}
 
-		private void SetFont()
+		private bool SetFont()
 		{
-			float size = 10;
-			float.TryParse(scbFontSize.Text, out size);
-			txtEdit.Font = new Font(scbFontFamily.Text, size);
-			txtOriginal.Font = new Font(scbFontFamily.Text, size);
+			bool result = true;
+
+			try
+			{
+				float size;
+				float.TryParse(scbFontSize.Text, out size);
+				if (size < 1) size = 10;
+				txtEdit.Font = new Font(scbFontFamily.Text, size);
+				txtOriginal.Font = new Font(scbFontFamily.Text, size);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
 		}
 
 		private void SetPage(int direction)
