@@ -105,8 +105,7 @@ namespace game_time_travelers
 				//convert xi image to bmp
 				file = File.OpenRead("img.bin");
 				bmp = XI.Load(file);
-				bmp.Save("bmp.bmp");
-				file.Close(); //File.Delete("img.bin");
+				file.Close(); File.Delete("img.bin");
 
 				//get fnt.bin
 				file = File.OpenWrite("fnt.bin");
@@ -125,7 +124,7 @@ namespace game_time_travelers
 				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
 				byte[] buf3 = XI.Decomp(fnt);
 
-				file.Close(); //File.Delete("fnt.bin");
+				file.Close(); File.Delete("fnt.bin");
 
 				using (var br2 = new BinaryReaderX(new MemoryStream(buf1)))
 					lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();

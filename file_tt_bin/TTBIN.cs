@@ -14,15 +14,17 @@ namespace file_ttbin
 	{
 		public List<Label> Labels = new List<Label>();
 
-		public List<EditorStruct> editPlaceholder = new List<EditorStruct>();
-		public List<TextStruct> textPlaceholder = new List<TextStruct>();
-		public List<int> textPlaceholderCount = new List<int>();
-		public List<int> editPlaceholderCount = new List<int>();
-		public List<int> textCountList = new List<int>();
-		public Header cfgHeader;
-		public byte[] rest;
+		public List<pckEntryStruct> pckEntries = new List<pckEntryStruct>();
+		public List<int> pckCrc32Count = new List<int>();
+
+		public List<Header> headerList = new List<Header>();
+		public List<List<EditorStruct>> editorEntries = new List<List<EditorStruct>>();
+		public List<List<TextStruct>> textEntries = new List<List<TextStruct>>();
+		public List<byte[]> editorRest = new List<byte[]>();
+		public List<byte[]> textRest = new List<byte[]>();
 
 		public byte type = 0;
+		public int labelCount;
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		struct XpckHeader
@@ -108,15 +110,12 @@ namespace file_ttbin
 			}
 
 			//if PCK
-			int firstOff = br.ReadInt32();
-			if (firstOff < br.BaseStream.Length)
+			int entryCount = br.ReadInt32();
+			br.BaseStream.Position = 0x8;
+			if (entryCount * 3 * 4 + 4 == br.ReadInt32())
 			{
-				br.BaseStream.Position = br.ReadInt32() * 3 * 4 + 4;
-				if (br.ReadByte() == 0x64)
-				{
-					type = 2;
-					return null;
-				}
+				type = 2;
+				return null;
 			}
 			br.BaseStream.Position = 0;
 
@@ -160,14 +159,7 @@ namespace file_ttbin
 						extractPck(br);
 						break;
 					case 3: //XPCK
-						if (decomp == null)
-						{
-							extractXpck(br);
-						}
-						else
-						{
-							extractXpck(new BinaryReaderX(new MemoryStream(decomp)));
-						}
+						if (decomp == null) extractXpck(br); else extractXpck(new BinaryReaderX(new MemoryStream(decomp)));
 						break;
 					default:
 						throw new Exception("Unsupported binary format!");
@@ -183,7 +175,6 @@ namespace file_ttbin
 			long bk = br.BaseStream.Position;
 			br.BaseStream.Position = header.filenameTableOffset;
 			byte[] filenameTable = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
-			//File.OpenWrite("nametable.bin").Write(filenameTable, 0, filenameTable.Length);
 			br.BaseStream.Position = bk;
 			int count = 0;
 			using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(filenameTable)))
@@ -199,7 +190,6 @@ namespace file_ttbin
 					{
 						br.BaseStream.Position = xpckEntries[i].offset + header.dataOffset;
 						byte[] cont = br.ReadBytes(xpckEntries[i].fileSize);
-						File.OpenWrite(name).Write(cont, 0, cont.Length);
 						//extractCfgBin(new BinaryReaderX(new MemoryStream(cont)), "XPCK" + count.ToString());
 						count += xpckEntries[i].fileSize;
 						br.BaseStream.Position = bk;
@@ -227,52 +217,66 @@ namespace file_ttbin
 			int pckEntryCount = br.ReadInt32();
 			for (int i = 0; i < pckEntryCount; i++)
 			{
-				textCountList.Add(0);
+				br.BaseStream.Position = 4 + i * 3 * 4;
 				var entry = br.ReadStruct<pckEntryStruct>();
-				br.BaseStream.Position = entry.offset + 2;
-				int blockCountCheck = br.ReadUInt16();
-				br.BaseStream.Position += blockCountCheck * 4;
-				using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(br.ReadBytes((int)entry.length - (blockCountCheck * 4 + 4)))))
+				pckEntries.Add(entry);
+
+				br.BaseStream.Position = entry.offset;
+				if (br.ReadUInt16() == 0x64)
 				{
-					extractCfgBin(br2, "pckEntry" + i.ToString() + "/");
+					int blockCount = br.ReadUInt16();
+					pckCrc32Count.Add(blockCount);
+					br.BaseStream.Position += blockCount * 4;
+					using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(br.ReadBytes((int)entry.length - (blockCount * 4 + 4)))))
+					{
+						extractCfgBin(br2, "pckEntry" + (i + 1).ToString() + "/");
+					}
 				}
-				br.BaseStream.Position = 4 + (i + 1) * 3 * 4;
+				else
+				{
+					pckCrc32Count.Add(-1);
+					using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(br.ReadBytes((int)entry.length))))
+					{
+						extractCfgBin(br2, "pckEntry" + i.ToString() + "/");
+					}
+				}
 			}
 		}
 
 		public void extractCfgBin(BinaryReaderX br, string prefix = "")
 		{
+			long bk;
+
 			//Header
-			cfgHeader = br.ReadStruct<Header>();
-			editPlaceholder.Add(br.ReadStruct<EditorStruct>());
-			int editCount = 1;
-			EditorStruct entryE;
+			Header cfgHeader = br.ReadStruct<Header>();
+			headerList.Add(cfgHeader);
+
+			List<EditorStruct> editorEntriesLocal = new List<EditorStruct>();
+			editorEntriesLocal.Add(br.ReadStruct<EditorStruct>());
 
 			//getting Editor's notes entries
-			int count = 0;
 			while (true)
 			{
 				Label label = new Label();
-				entryE = br.ReadStruct<EditorStruct>();
-				editPlaceholder.Add(entryE);
-				editCount++;
-				string text = "";
 
-				label.Name = prefix + "editor" + count.ToString(); count++;
+				EditorStruct entryE = br.ReadStruct<EditorStruct>();
+				editorEntriesLocal.Add(entryE);
+
+				label.Name = prefix + "editor" + (editorEntriesLocal.Count - 1).ToString();
 				label.TextID = entryE.ID;
 				label.TextOffset = cfgHeader.dataOffset + entryE.entryOffset;
 
-				long posBk = br.BaseStream.Position;
+				bk = br.BaseStream.Position;
 				br.BaseStream.Position = label.TextOffset;
-				while (true)
+				string text = ""; byte part = br.ReadByte();
+				while (part != 0)
 				{
-					byte part = br.ReadByte();
-					if (part == 0x00) break;
-
-					text += (char)part;
+					text += Encoding.GetEncoding("ascii").GetString(new byte[] { part });
+					part = br.ReadByte();
 				}
+				br.BaseStream.Position = label.TextOffset;
 				label.Text = text;
-				br.BaseStream.Position = posBk;
+				br.BaseStream.Position = bk;
 
 				Labels.Add(label);
 
@@ -281,50 +285,73 @@ namespace file_ttbin
 					break;
 				}
 			}
-			editPlaceholderCount.Add(editCount);
-			textPlaceholder.Add(br.ReadStruct<TextStruct>());
-			int textCount = 1;
+			editorEntries.Add(editorEntriesLocal);
 
-			if (br.ReadUInt32() > br.BaseStream.Position) return;
-			br.BaseStream.Position -= 0x4;
-
-			count = 0;
-
-			//getting text entries
-			TextStruct entry; TextStruct entry2;
-			do
+			bool found = false;
+			bk = br.BaseStream.Position;
+			while (br.BaseStream.Position < cfgHeader.dataOffset && found == false)
 			{
-				Label label = new Label();
-
-				if (prefix != "") textCountList[textCountList.Count - 1]++;
-
-				entry = br.ReadStruct<TextStruct>();
-				textPlaceholder.Add(entry);
-				textCount++;
-				entry2 = br.ReadStruct<TextStruct>();
-				br.BaseStream.Position -= 0x14;
-
-				label.Name = prefix + "text" + count.ToString();
-				count += 1;
-				label.TextID = entry.ID;
-				label.TextOffset = cfgHeader.dataOffset + entry.entryOffset;
-
-				long posBk = br.BaseStream.Position;
-				br.BaseStream.Position = label.TextOffset;
-				long textSize = (entry.unk3 == 0xffffff00 || entry2.entryOffset > br.BaseStream.Length) ? br.BaseStream.Length - label.TextOffset : cfgHeader.dataOffset + (entry2.entryOffset - entry.entryOffset);
-				label.Text = getUnicodeString(new BinaryReaderX(new MemoryStream(br.ReadBytes((int)textSize))));
-				br.BaseStream.Position = posBk;
-				Labels.Add(label);
-			} while (entry.unk3 != 0xffffff00 && entry2.entryOffset <= br.BaseStream.Length);
-
-			//fill textEntries to max
-			while (br.BaseStream.Position + 0x14 <= cfgHeader.dataOffset)
-			{
-				textPlaceholder.Add(br.ReadStruct<TextStruct>());
-				textCount++;
+				if (br.ReadInt32() == (int)(editorEntries[editorEntries.Count - 1][editorEntries[editorEntries.Count - 1].Count - 1].entryOffset + Labels[Labels.Count - 1].Text.Length + 1))
+				{
+					found = true;
+				}
 			}
-			textPlaceholderCount.Add(textCount);
-			if (br.BaseStream.Position != cfgHeader.dataOffset) rest = br.ReadBytes((int)cfgHeader.dataOffset - (int)br.BaseStream.Position);
+
+			br.BaseStream.Position = bk;
+			if (found == false)
+			{
+				editorRest.Add(br.ReadBytes((int)(cfgHeader.dataOffset - br.BaseStream.Position)));
+				textRest.Add(null);
+				textEntries.Add(null);
+			}
+			else
+			{
+				editorRest.Add(null);
+
+				List<TextStruct> textEntriesLocal = new List<TextStruct>();
+
+				textEntriesLocal.Add(br.ReadStruct<TextStruct>());
+
+				//getting text entries
+				TextStruct entryT;
+				TextStruct entryT2;
+				int entryCount = 1;
+				do
+				{
+					Label label = new Label();
+
+					entryT = br.ReadStruct<TextStruct>();
+					textEntriesLocal.Add(entryT);
+
+					entryT2 = br.ReadStruct<TextStruct>();
+					br.BaseStream.Position -= 0x14;
+
+					if (entryT.entryOffset != 0xFFFFFFFF)
+					{
+						label.Name = prefix + "text" + entryCount.ToString(); entryCount++;
+						label.TextID = entryT.ID;
+						label.TextOffset = cfgHeader.dataOffset + entryT.entryOffset;
+
+						bk = br.BaseStream.Position;
+						br.BaseStream.Position = label.TextOffset;
+						int count = 0; byte part = br.ReadByte();
+						while (part != 0)
+						{
+							count++;
+							part = br.ReadByte();
+						}
+						count++;
+						br.BaseStream.Position = label.TextOffset;
+						label.Text = getUnicodeString(new BinaryReaderX(new MemoryStream(br.ReadBytes(count))));
+						br.BaseStream.Position = bk;
+
+						Labels.Add(label);
+					}
+				} while (entryT.unk3 != 0xffffff00 && (entryT2.entryOffset <= br.BaseStream.Length || entryT2.entryOffset == 0xFFFFFFFF));
+				textEntries.Add(textEntriesLocal);
+
+				if (br.BaseStream.Position < cfgHeader.dataOffset) textRest.Add(br.ReadBytes((int)cfgHeader.dataOffset - (int)br.BaseStream.Position));
+			}
 		}
 
 		public static string getUnicodeString(BinaryReaderX br)
@@ -342,32 +369,117 @@ namespace file_ttbin
 
 		public void Save(string filename)
 		{
-			using (BinaryWriterX br = new BinaryWriterX(File.Open(filename, FileMode.Open, FileAccess.Write, FileShare.Write)))
+			long bk;
+			labelCount = 0;
+
+			if (type == 2)
 			{
-				br.WriteStruct<Header>(cfgHeader);
-				int labelCount = 0;
-				for (int i = 0; i < textPlaceholderCount.Count; i++)
+				using (BinaryWriterX br = new BinaryWriterX(File.Open(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)))
 				{
-					for (int j = 0; j < editPlaceholderCount[i]; j++)
+					br.Write(pckEntries.Count);
+					for (int i = 0; i < pckEntries.Count; i++)
 					{
-						br.WriteStruct<EditorStruct>(editPlaceholder[j]);
+						br.WriteStruct<pckEntryStruct>(pckEntries[i]);
 					}
-					for (int j = 0; j < textPlaceholderCount[i]; j++)
+					for (int i = 0; i < pckEntries.Count; i++)
 					{
-						br.WriteStruct<TextStruct>(textPlaceholder[j]);
-					}
-					br.Write(rest);
+						int offset = (int)br.BaseStream.Length;
 
-					for (int j = 0; j < textCountList[i]; j++)
-					{
-						br.Write(Encoding.GetEncoding("shift-jis").GetBytes(Labels[labelCount++].Text));
-						br.Write(0x00);
-					}
+						int basis = 0;
+						if (pckCrc32Count[i] != -1)
+						{
+							br.Write((short)0x64);
+							br.Write((short)pckCrc32Count[i]);
+							br.BaseStream.Position += pckCrc32Count[i] * 4;
+							basis = pckCrc32Count[i] * 4 + 4;
+						}
 
-					throw new Exception("Test");
+						BinaryReaderX br2 = createCfg(i);
+						br2.BaseStream.Position = 0;
+						br.Write(br2.ReadBytes((int)br2.BaseStream.Length));
+
+						bk = br.BaseStream.Position;
+						br.BaseStream.Position = i * 3 * 4 + 4 + 4;
+						br.Write(offset);
+						br.Write((int)br2.BaseStream.Length + 4 + pckCrc32Count[i] * 4);
+
+						br.BaseStream.Position = bk;
+					}
+					br.Close();
 				}
-				br.Close();
 			}
+			else if (type == 1)
+			{
+				using (BinaryWriterX br = new BinaryWriterX(File.Open(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)))
+				{
+					BinaryReaderX br2 = createCfg(0);
+					br2.BaseStream.Position = 0;
+					br.Write(br2.ReadBytes((int)br2.BaseStream.Length));
+					br.Close();
+				}
+			}
+		}
+
+		public BinaryReaderX createCfg(int part)
+		{
+			long bk;
+
+			BinaryWriterX br = new BinaryWriterX(new MemoryStream());
+
+			br.WriteStruct<Header>(headerList[part]);
+
+			for (int j = 0; j < editorEntries[part].Count; j++)
+			{
+				if (j > 0)
+				{
+					EditorStruct bk2 = editorEntries[part][j];
+
+					var success1 = (headerList[part].dataOffset > br.BaseStream.Length) ? bk2.entryOffset = 0 : bk2.entryOffset = (uint)br.BaseStream.Length - headerList[part].dataOffset;
+
+					bk = br.BaseStream.Position;
+					var success2 = (headerList[part].dataOffset > br.BaseStream.Length) ? br.BaseStream.Position = headerList[part].dataOffset : br.BaseStream.Position = br.BaseStream.Length;
+					br.Write(Encoding.GetEncoding("shift-jis").GetBytes(Labels[labelCount++].Text));
+					br.Write((byte)0x00);
+					br.BaseStream.Position = bk;
+
+					editorEntries[part][j] = bk2;
+				}
+
+				br.WriteStruct<EditorStruct>(editorEntries[part][j]);
+			}
+
+			if (editorRest[part] != null) br.Write(editorRest[part]);
+			else
+			{
+				for (int j = 0; j < textEntries[part].Count; j++)
+				{
+					if (j > 0 && textEntries[part][j].entryOffset != 0xFFFFFFFF)
+					{
+						TextStruct bk2 = textEntries[part][j];
+
+						var success1 = (headerList[part].dataOffset > br.BaseStream.Length) ? bk2.entryOffset = 0 : bk2.entryOffset = (uint)br.BaseStream.Length - headerList[part].dataOffset;
+
+						bk = br.BaseStream.Position;
+						var success2 = (headerList[part].dataOffset > br.BaseStream.Length) ? br.BaseStream.Position = headerList[part].dataOffset : br.BaseStream.Position = br.BaseStream.Length;
+						br.Write(Encoding.GetEncoding("shift-jis").GetBytes(Labels[labelCount++].Text));
+						br.Write((byte)0x00);
+						br.BaseStream.Position = bk;
+
+						textEntries[part][j] = bk2;
+					}
+
+					br.WriteStruct<TextStruct>(textEntries[part][j]);
+				}
+				if (textRest[part] != null) br.Write(textRest[part]);
+			}
+
+			br.BaseStream.Position = 0x8;
+			br.Write((int)(br.BaseStream.Length - headerList[part].dataOffset));
+
+			br.BaseStream.Position = br.BaseStream.Length;
+			while (br.BaseStream.Position % 16 != 0) br.Write((byte)0xFF);
+
+			return new BinaryReaderX(br.BaseStream);
 		}
 	}
 }
