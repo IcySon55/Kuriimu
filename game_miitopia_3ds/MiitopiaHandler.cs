@@ -12,33 +12,28 @@ using game_miitopia_3ds.Properties;
 using KuriimuContract;
 
 /*
-
-    <0E><00><00><08><02><00><04><00><42><30><8B><30>歩いて
-      ^   ^   ^   ^ <--actual binary data byte[8]-->
-      |   |   |   \- length of control code = 8
-      |   \---\----- this is code type <00,00> <--- this will depend per game
-      \---- 0xE means: parse some binary data
     
-    <02><00><04><00><42><30><8B><30>
-    <-len1-><-len2-><-ruby byte[4]->
+    <n00:> - General text and menu text stuff
     
-    read as little-endian u16s
-    len1 represents the length of the base character (歩 = 2 bytes)
-    len2 represents the length of the ruby text (ある = 4 bytes)
-    where the byte representation for ある is <42><30><8B><30>
-    because it's U+3042 and U+308B
-    for the most part we probably don't need any ruby so instead of parsing you can just skip those bytes since you'll be planning to remove them anyway
-
 
     ***********************************************
     Names of NPCs
     ***********************************************
-    <0x0E><0x0E><0x02><0x1E><0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>K<0x00>i<0x00>n<0x00>g<0x00>0<0x00>0<0x00> // Castle_King
-    <0x0E><0x0E><0x00><0x1E><0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>K<0x00>i<0x00>n<0x00>g<0x00>0<0x00>0<0x00> // Castle_King (name)
-    <0x0E><0x0E><0x02>(&<0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>P<0x00>r<0x00>i<0x00>n<0x00>c<0x00>e<0x00>s<0x00>s<0x00>0<0x00>0<0x00> // Castle_Princess
-    <0x0E><0x0E><0x00>(&<0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>P<0x00>r<0x00>i<0x00>n<0x00>c<0x00>e<0x00>s<0x00>s<0x00>0<0x00>0<0x00> // Castle_Princess (name)
-    <0x0E><0x0E><0x02><0x0A_LF><0x08><0x00>S<0x00>a<0x00>g<0x00>e<0x00> // Sage
-    <0x0E><0x0E><0x00><0x0A_LF><0x08><0x00>S<0x00>a<0x00>g<0x00>e<0x00> // Sage (name)
+    // Castle_King
+    <n02:1E-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-4B-00-69-00-6E-00-67-00-30-00-30-00>
+    <0x0E><0x0E><0x02><0x1E><0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>K<0x00>i<0x00>n<0x00>g<0x00>0<0x00>0<0x00>
+    // Castle_King (name)
+    <n00:1E-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-4B-00-69-00-6E-00-67-00-30-00-30-00>
+    <0x0E><0x0E><0x00><0x1E><0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>K<0x00>i<0x00>n<0x00>g<0x00>0<0x00>0<0x00>
+
+    And so on...
+
+
+    ***********************************************
+    Names of Items
+    ***********************************************
+    
+
 */
 
 namespace game_miitopia_3ds
@@ -238,7 +233,7 @@ namespace game_miitopia_3ds
                                     byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
                                 }
 
-                                return Merge("\x3" + (char)int.Parse(s.Substring(0, 2), NumberStyles.HexNumber), byteArray);
+                                return Merge("\x0" + (char)int.Parse(s.Substring(0, 2), NumberStyles.HexNumber), byteArray);
                             }
                     }
                 }));
