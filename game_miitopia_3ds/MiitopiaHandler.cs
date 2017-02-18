@@ -178,71 +178,77 @@ namespace game_miitopia_3ds
         }
 
         // Displaying the text
-        public string GetKuriimuString(string rawString)
+        public string GetKuriimuString(string str)
         {
-            int j = -1;
-            int hexCounts = 0;
-            string testString = rawString;
-            while ((j = testString.IndexOf('\xE')) >= 0)
+            try
             {
-                testString = testString.Remove(j, 1);
-                ++hexCounts;
-            }
-            hexIndexPairs = new HexIndexPair[hexCounts];
-            for (int h = 0; h < hexCounts; ++h)
-            {
-                hexIndexPairs[h] = new HexIndexPair();
-            }
-            numHexIndexPairs = hexCounts;
-            
-            int i = -1;
-            int loopCounter = 0;
-            while ((i = rawString.IndexOf('\xE')) >= 0)
-            {
-                string hexCode = System.String.Empty;
-
-                // get the starting byte '\xE'
-                hexCode = string.Concat(hexCode, rawString[i]); 
-
-                // read the next 2 code types
-                hexCode = string.Concat(hexCode, rawString[i + 1]);
-                hexCode = string.Concat(hexCode, rawString[i + 2]);
-
-                // read the length of the code
-                uint8 codeLength = (uint8)rawString[i + 3];
-                hexCode = string.Concat(hexCode, rawString[i + 3]);
-
-                int index = i + 4;
-                // read the rest of the hex code
-                for (int k = 0; k<codeLength; ++k)
+                Func<string, byte[], string> Fix = (id, bytes) =>
                 {
-                    hexCode = string.Concat(hexCode, rawString[index]);
-                    ++index;
+                    switch (id)
+                    {
+                        // TODO: Add cases for different codes
+                        default:
+                            return $"n{(int)id[1]:X2}:" + BitConverter.ToString(bytes);
+                    }
+                };
+
+                int i;
+                str = str.Replace("\xF\x2\0", "</>");
+                while ((i = str.IndexOf('\xE')) >= 0)
+                {
+                    var id = str.Substring(i + 1, 2);
+                    var data = str.Substring(i + 4, str[i + 3]).Select(c => (byte)c).ToArray();
+                    str = str.Remove(i, data.Length + 4).Insert(i, $"<{Fix(id, data)}>");
                 }
-
-                int count = codeLength + 4;
-                rawString = rawString.Remove(i, count);
-
-                hexIndexPairs[loopCounter].HexCode = hexCode;
-                hexIndexPairs[loopCounter].StartingIndex = i;
-                hexIndexPairs[loopCounter].Size = count;
-                ++loopCounter;
             }
+            catch
+            {
 
-            originalText = rawString;
-            return rawString;
+            }
+            return str;
         }
 
-        // Calling this when editing the text
-        public string GetRawString(string kuriimuString)
+        public string GetRawString(string str)
         {
-            //for (int i = 0; i < numHexIndexPairs; ++i)
-            //{
-            //    kuriimuString.Insert(hexIndexPairs[i].StartingIndex, hexIndexPairs[i].HexCode);
-            //}
-            
-            //string temp = hexStringPairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
-            return kuriimuString;// hexStringPairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
+            try
+            {
+                if (str.Length < 3) return str;
+
+                string result = string.Empty;
+                result = string.Concat(str.Split("<>".ToArray()).Select((z, i) =>
+                {
+                    if (i % 2 == 0) return z;
+                    if (z == "/") return "\xF\x2\0";
+                    if (z == "v") return "\xE\x1\0\0";
+
+                    Func<string, byte[], string> Merge = (id, data) => $"\xE{id}{(char)data.Length}{string.Concat(data.Select(b => (char)b))}";
+
+                    var s = z.Substring(1);
+                    switch (z[0])
+                    {
+                        // TODO: Add cases for different codes
+                        default:
+                            {
+                                string hexString = s.Substring(3);
+                                string[] hexStringArray = hexString.Split('-');
+                                byte[] byteArray = new byte[hexStringArray.Length];
+
+                                for (int ii = 0; ii < hexStringArray.Length; ii++)
+                                {
+                                    byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
+                                }
+
+                                return Merge("\x3" + (char)int.Parse(s.Substring(0, 2), NumberStyles.HexNumber), byteArray);
+                            }
+                    }
+                }));
+
+                return result;
+            }
+            catch
+            {
+                return str;
+            }
         }
     }
 }
