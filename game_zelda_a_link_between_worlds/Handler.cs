@@ -47,22 +47,8 @@ namespace game_zelda_a_link_between_worlds
             ["✚"] = "\xE006",
 
             // Color
-            ["<c-black>"] = "\xE\x0\x3\x2\x0\x0",
-            ["<c-dkred>"] = "\xE\x0\x3\x2\x1\x0",
-            ["<c-dkgreen>"] = "\xE\x0\x3\x2\x2\x0",
-            ["<c-dkyellow>"] = "\xE\x0\x3\x2\x3\x0",
-            ["<c-dkblue>"] = "\xE\x0\x3\x2\x4\x0",
-            ["<c-dkmagenta>"] = "\xE\x0\x3\x2\x5\x0",
-            ["<c-dkcyan>"] = "\xE\x0\x3\x2\x6\x0",
-            ["<c-ltgray>"] = "\xE\x0\x3\x2\x7\x0",
-            ["<c-dkgray>"] = "\xE\x0\x3\x2\x8\x0",
             ["<c-blue>"] = "\xE\x0\x3\x2\x9\x0",
             ["<c-red>"] = "\xE\x0\x3\x2\xA\x0",
-            ["<c-yellow>"] = "\xE\x0\x3\x2\xB\x0",
-            ["<c-green>"] = "\xE\x0\x3\x2\xC\x0",
-            ["<c-magenta>"] = "\xE\x0\x3\x2\xD\x0",
-            ["<c-cyan>"] = "\xE\x0\x3\x2\xE\x0",
-            ["<c-white>"] = "\xE\x0\x3\x2\xF\x0",
             ["<c-default>"] = "\xE\x0\x3\x2\xFF\xFF",
 
             // Variables
@@ -74,7 +60,7 @@ namespace game_zelda_a_link_between_worlds
             ["<npc>"] = "\xE\x2\x0\x2",
             ["<map>"] = "\xE\x2\x1\x4",
             ["<item>"] = "\xE\x2\x2\x4",
-            ["<measure>"] = "\xE\x1\x5\x6",
+            ["<value>"] = "\xE\x1\x5\x6",
 
             // Special
             ["◀"] = "\xE036",
@@ -109,208 +95,170 @@ namespace game_zelda_a_link_between_worlds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		Bitmap background = new Bitmap(Resources.background);
+        public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+
+        Bitmap background = new Bitmap(Resources.background);
         Bitmap textBox = new Bitmap(Resources.textbox);
 
-        public Bitmap GeneratePreview(IEntry entry)
-		{
-			string rawString = entry.EditedText;
+        // public Bitmap GeneratePreview(IEntry entry)
+        public void GeneratePages(IEntry entry)
+        {
+            var pages = new List<Bitmap>();
+            string rawString = entry.EditedText;
+            // if (rawString.Trim() == string.Empty)
+            //     return;
             int boxes = rawString.Count(c => c == '\n') / 3 + 1;
-            Bitmap img = new Bitmap(400, Math.Max(textBox.Height * boxes, 240));
 
-			using (Graphics gfx = Graphics.FromImage(img))
-			{
-				gfx.SmoothingMode = SmoothingMode.HighQuality;
-				gfx.InterpolationMode = InterpolationMode.Bicubic;
-				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            // foreach (string page in rawString.Split('\n'))
+            {
+                // if (page.Trim() != string.Empty)
+                {
+                    Bitmap img = new Bitmap(400, Math.Max(textBox.Height * boxes, 240));
 
-				gfx.DrawImage(background, 0, 0);
-
-                for (int i = 0; i < boxes; i++)
-                    gfx.DrawImage(textBox, 0, textBox.Height * i);
-
-				// Text
-				Rectangle rectText = new Rectangle(32, 20, 336, 44);
-
-				float scale = 1.0f;
-				float x = rectText.X, y = rectText.Y;
-				int line = 0;
-                bool cmd = false;
-                string param = "", temp = "";
-                int skip = 0, j = 0;
-
-				string str = rawString;
-                font.SetColor(Color.FromArgb(255, 80, 80, 80));
-
-                gfx.InterpolationMode = InterpolationMode.Bicubic;
-                foreach (char c in str)
-				{
-                    if (!cmd) switch (c)
+                    using (Graphics gfx = Graphics.FromImage(img))
                     {
-                        case '\n':
-                            x = rectText.X;
-                            y += rectText.Y;
-                            if (++line % 3 == 0)
-                                y += 28;
-                            continue;
-                        case '\xE':
-                            cmd = true;
-                            param = "";
-                            continue;
-                    }
+                        gfx.SmoothingMode = SmoothingMode.HighQuality;
+                        gfx.InterpolationMode = InterpolationMode.Bicubic;
+                        gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                    switch (param)
-                    {
-                        case "\x0\x3\x2\x0\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 0, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x1\x0":
-                            font.SetColor(Color.FromArgb(255, 128, 0, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x2\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 128, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x3\x0":
-                            font.SetColor(Color.FromArgb(255, 128, 128, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x4\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 0, 128));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x5\x0":
-                            font.SetColor(Color.FromArgb(255, 128, 0, 128));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x6\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 128, 128));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x7\x0":
-                            font.SetColor(Color.FromArgb(255, 192, 192, 192));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x8\x0":
-                            font.SetColor(Color.FromArgb(255, 128, 128, 128));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\x9\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xA\x0":
-                            font.SetColor(Color.FromArgb(255, 255, 0, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xB\x0":
-                            font.SetColor(Color.FromArgb(255, 255, 255, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xC\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 255, 0));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xD\x0":
-                            font.SetColor(Color.FromArgb(255, 255, 0, 255));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xE\x0":
-                            font.SetColor(Color.FromArgb(255, 0, 255, 255));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xF\x0":
-                            font.SetColor(Color.FromArgb(255, 255, 255, 255));
-                            goto case "cleanup";
-                        case "\x0\x3\x2\xFF\xFF":
-                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                            goto case "cleanup";
-                        case "\x1\x0\x0":
-                            temp = "Player";
-                            foreach (char t in temp)
-                            {
-                                font.Draw(t, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(t).char_width * scale;
-                            }
-                            goto case "cleanup";
-                        case "\x1\x2":
-                        case "\x1\x3":
-                        case "\x1\x4":
-                        case "\x1\xA":
-                            temp = "UNKNOWN";
-                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
-                            foreach (char t in temp)
-                            {
-                                font.Draw(t, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(t).char_width * scale;
-                            }
-                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                            skip = 1;
-                            goto case "cleanup";
-                        case "\x0\x2\x2":
-                            scale = (float)c/100.0f;
-                            skip = 2;
-                            goto case "cleanup";
-                        case "\x1\x8\x2":
-                        case "\x1\xE":
-                        case "\x1\xF":
-                        case "\x1\x10":
-                            skip = 2;
-                            goto case "cleanup";
-                        case "\x1\x11\x4":
-                            x += c;
-                            y += rawString[j+2];
-                            skip = 4;
-                            goto case "cleanup";
-                        case "\x1\x5\x6": // measure
-                            temp = "VALUE";
-                            foreach (char t in temp)
-                            {
-                                font.Draw(t, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(t).char_width * scale;
-                            }
-                            skip = 6;
-                            goto case "cleanup";
-                        case "\x2\x0\x2": // npc
-                            temp = "NPC";
-                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
-                            foreach (char t in temp)
-                            {
-                                font.Draw(t, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(t).char_width * scale;
-                            }
-                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                            skip = 2;
-                            goto case "cleanup";
-                        case "\x2\x1\x4": // map
-                            temp = "LOCATION";
-                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
-                            foreach (char t in temp)
-                            {
-                                font.Draw(t, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(t).char_width * scale;
-                            }
-                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                            skip = 4;
-                            goto case "cleanup";
-                        case "\x2\x2\x4": // item
-                            temp = "ITEM";
-                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
-                            foreach (char t in temp)
-                            {
-                                font.Draw(t, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(t).char_width * scale;
-                            }
-                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                            skip = 4;
-                            goto case "cleanup";
-                        case "cleanup":
-                            param = "";
-                            cmd = false;
-                            break;
-                    }
+                        gfx.DrawImage(background, 0, 0);
 
-                    if (cmd)
-                        param += c;
-                    else if (skip > 0)
-                        skip--;
-                    else
-                    {
-                        font.Draw(c, gfx, x, y, scale, scale);
-                        x += font.GetWidthInfo(c).char_width * scale;
-                    }
-                    j++;
-				}
-			}
+                        for (int i = 0; i < boxes; i++)
+                            gfx.DrawImage(textBox, 0, textBox.Height * i);
 
-			return img;
+                        // Text
+                        Rectangle rectText = new Rectangle(32, 20, 336, 44);
+
+                        float scale = 1.0f;
+                        float x = rectText.X, y = rectText.Y;
+                        int line = 0;
+                        bool cmd = false;
+                        string param = "", temp = "";
+                        int skip = 0, j = 0, padding = 0;
+
+                        string str = rawString;
+                        font.SetColor(Color.FromArgb(255, 80, 80, 80));
+
+                        gfx.InterpolationMode = InterpolationMode.Bicubic;
+                        foreach (char c in rawString)
+                        {
+                            if (!cmd) switch (c)
+                                {
+                                    case '\n':
+                                        x = rectText.X;
+                                        y += rectText.Y;
+                                        if (++line % 3 == 0)
+                                        {
+                                            y += 28 - padding;
+                                            padding = 0;
+                                        }
+                                        continue;
+                                    case '\xE':
+                                        cmd = true;
+                                        param = "";
+                                        continue;
+                                }
+
+                            switch (param)
+                            {
+                                case "\x0\x3\x2\x9\x0":
+                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    goto case "cleanup";
+                                case "\x0\x3\x2\xA\x0":
+                                    font.SetColor(Color.FromArgb(255, 255, 0, 0));
+                                    goto case "cleanup";
+                                case "\x0\x3\x2\xFF\xFF":
+                                    font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                                    goto case "cleanup";
+                                case "\x1\x0\x0":
+                                    temp = "Player";
+                                    goto case "placeholder";
+                                case "\x1\x2":
+                                case "\x1\x3":
+                                case "\x1\x4":
+                                case "\x1\xA":
+                                    temp = "UNKNOWN";
+                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    skip = 1;
+                                    goto case "placeholder";
+                                case "\x0\x2\x2": // font size
+                                    scale = (float)c / 100.0f;
+                                    skip = 2;
+                                    goto case "cleanup";
+                                case "\x1\x8\x2": // useless
+                                case "\x1\xE":
+                                case "\x1\xF":
+                                case "\x1\x10":
+                                    skip = 2;
+                                    goto case "cleanup";
+                                case "\x1\x11\x4": // text padding
+                                    x += c;
+                                    padding = rawString[j + 2];
+                                    y += padding;
+                                    skip = 4;
+                                    goto case "cleanup";
+                                case "\x1\x5\x6": // value
+                                    temp = "00";
+                                    skip = 6;
+                                    goto case "placeholder";
+                                case "\x2\x0\x2": // npc
+                                    temp = "NPC";
+                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    skip = 2;
+                                    goto case "placeholder";
+                                case "\x2\x1\x4": // map
+                                    temp = "LOCATION";
+                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    skip = 4;
+                                    goto case "placeholder";
+                                case "\x2\x2\x4": // item
+                                    temp = "ITEM";
+                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    skip = 4;
+                                    goto case "placeholder";
+                                case "placeholder":
+                                    foreach (char t in temp)
+                                    {
+                                        font.Draw(t, gfx, x, y, scale, scale);
+                                        x += font.GetWidthInfo(t).char_width * scale;
+                                    }
+                                    font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                                    goto case "cleanup";
+                                case "cleanup":
+                                    param = "";
+                                    cmd = false;
+                                    break;
+                            }
+
+                            if (cmd)
+                                param += c;
+                            else if (skip > 0)
+                                skip--;
+                            else if (x < 368)
+                            {
+                                font.Draw(c, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(c).char_width * scale;
+                            }
+                            j++;
+                        }
+
+                        pages.Add(img);
+                    }
+                }
+
+                Pages = pages;
+            }
 		}
-	}
+
+        // Settings
+        public bool ShowWhitespace
+        {
+            get { return Settings.Default.ShowWhitespace; }
+            set
+            {
+                Settings.Default.ShowWhitespace = value;
+                Settings.Default.Save();
+            }
+        }
+    }
 }
