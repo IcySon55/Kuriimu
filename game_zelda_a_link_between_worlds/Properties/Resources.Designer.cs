@@ -63,9 +63,9 @@ namespace game_zelda_a_link_between_worlds.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap blank_top {
+        internal static System.Drawing.Bitmap background {
             get {
-                object obj = ResourceManager.GetObject("blank_top", resourceCulture);
+                object obj = ResourceManager.GetObject("background", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -96,6 +96,16 @@ namespace game_zelda_a_link_between_worlds.Properties {
         internal static System.Drawing.Bitmap template {
             get {
                 object obj = ResourceManager.GetObject("template", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap textbox {
+            get {
+                object obj = ResourceManager.GetObject("textbox", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

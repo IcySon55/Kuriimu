@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -28,59 +28,65 @@ namespace game_zelda_a_link_between_worlds
         Dictionary<string, string> _pairs = new Dictionary<string, string>
         {
             // Commands
-            ["<pause>"] = "\xE\x0\x1\x0\x8\x0\x2\x0",
-            ["<selection>"] = "\xE\x0\x1\x0\x6\x0\x2\x0",
+            ["<sel>"] = "\xE\x1\x6\x2",
+            ["<unkcmd1>"] = "\xE\x1\x10\x0",
+            ["<shake>"] = "\xE\x1\xF\x0",
+            ["<pause1>"] = "\xE\x1\x7\x2",
+            ["<pause2>"] = "\xE\x1\x8\x2",
+            ["<size>"] = "\xE\x0\x2\x2",
+            ["<instant>"] = "\xE\x1\xE\x0",
+            ["<padding>"] = "\xE\x1\x11\x4",
 
             // Control
-            ["Ⓐ"] = "\x0\xE0",
-            ["Ⓑ"] = "\x1\xE0",
-            ["Ⓧ"] = "\x2\xE0",
-            ["Ⓨ"] = "\x3\xE0",
-            ["Ⓛ"] = "\x4\xE0",
-            ["Ⓡ"] = "\x5\xE0",
-            ["DPAD"] = "\x6\xE0",
+            ["Ⓐ"] = "\xE000",
+            ["Ⓑ"] = "\xE001",
+            ["Ⓧ"] = "\xE002",
+            ["Ⓨ"] = "\xE003",
+            ["🄻"] = "\xE004",
+            ["🅁"] = "\xE005",
+            ["✚"] = "\xE006",
 
             // Color
-            ["<c-black>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x0\x0",
-            ["<c-dkred>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x1\x0",
-            ["<c-dkgreen>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x2\x0",
-            ["<c-dkyellow>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x3\x0",
-            ["<c-dkblue>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x4\x0",
-            ["<c-dkmagenta>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x5\x0",
-            ["<c-dkcyan>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x6\x0",
-            ["<c-ltgray>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x7\x0",
-            ["<c-dkgray>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x8\x0",
-            ["<c-red>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\x9\x0",
-            ["<c-green>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xA\x0",
-            ["<c-yellow>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xB\x0",
-            ["<c-blue>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xC\x0",
-            ["<c-magenta>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xD\x0",
-            ["<c-cyan>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xE\x0",
-            ["<c-white>"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xF\x0",
-            ["<c-default"] = "\xE\x0\x0\x0\x3\x0\x2\x0\x0\xFF\xFF",
+            ["<c-black>"] = "\xE\x0\x3\x2\x0\x0",
+            ["<c-dkred>"] = "\xE\x0\x3\x2\x1\x0",
+            ["<c-dkgreen>"] = "\xE\x0\x3\x2\x2\x0",
+            ["<c-dkyellow>"] = "\xE\x0\x3\x2\x3\x0",
+            ["<c-dkblue>"] = "\xE\x0\x3\x2\x4\x0",
+            ["<c-dkmagenta>"] = "\xE\x0\x3\x2\x5\x0",
+            ["<c-dkcyan>"] = "\xE\x0\x3\x2\x6\x0",
+            ["<c-ltgray>"] = "\xE\x0\x3\x2\x7\x0",
+            ["<c-dkgray>"] = "\xE\x0\x3\x2\x8\x0",
+            ["<c-blue>"] = "\xE\x0\x3\x2\x9\x0",
+            ["<c-red>"] = "\xE\x0\x3\x2\xA\x0",
+            ["<c-yellow>"] = "\xE\x0\x3\x2\xB\x0",
+            ["<c-green>"] = "\xE\x0\x3\x2\xC\x0",
+            ["<c-magenta>"] = "\xE\x0\x3\x2\xD\x0",
+            ["<c-cyan>"] = "\xE\x0\x3\x2\xE\x0",
+            ["<c-white>"] = "\xE\x0\x3\x2\xF\x0",
+            ["<c-default>"] = "\xE\x0\x3\x2\xFF\xFF",
 
             // Variables
-            ["<player>"] = "\xE\x0\x1\x0\x0\x0\x0",
-            ["<playerb>"] = "\xE\x0\x1\x0\x2\x0\x0",
-            ["<username>"] = "\xE\x0\x1\x0\x3\x0\x0",
-            ["<message>"] = "\xE\x0\x1\x0\x4\x0\x0",
-            ["<medals>"] = "\xE\x0\x1\x0\xA\x0\x0",
-            ["<npc>"] = "\xE\x0\x2\x0\x0\x0\x2\x0",
-            ["<map>"] = "\xE\x0\x2\x0\x1\x0\x4\x0",
-            ["<item>"] = "\xE\x0\x2\x0\x2\x0\x4\x0",
-            ["<measure>"] = "\xE\x0\x1\x0\x5\x0\x6\x0",
+            ["<player>"] = "\xE\x1\x0\x0",
+            ["<playerb>"] = "\xE\x1\x2",
+            ["<username>"] = "\xE\x1\x3",
+            ["<unkvar1>"] = "\xE\x1\x4",
+            ["<unkvar2>"] = "\xE\x1\xA",
+            ["<npc>"] = "\xE\x2\x0\x2",
+            ["<map>"] = "\xE\x2\x1\x4",
+            ["<item>"] = "\xE\x2\x2\x4",
+            ["<measure>"] = "\xE\x1\x5\x6",
 
             // Special
-            ["◀"] = "\x36\xE0",
-            ["▶"] = "\x37\xE0",
-            ["RAVIO"] = "\x5E\xE0",
-            ["ROD"] = "\x6B\xE0",
-            ["BOW"] = "\x6C\xE0",
-            ["BOMB"] = "\x6D\xE0",
-            ["←"] = "\x90\x21",
-            ["↑"] = "\x91\x21",
-            ["→"] = "\x92\x21",
-            ["↓"] = "\x93\x21"
+            ["◀"] = "\xE036",
+            ["▶"] = "\xE037",
+            [":ravio:"] = "\xE05E",
+            [":bow:"] = "\xE06C",
+            [":bomb:"] = "\xE06D",
+            [":rod:"] = "\xE06E",
+            ["←"] = "\x2190",
+            ["↑"] = "\x2191",
+            ["→"] = "\x2192",
+            ["↓"] = "\x2193"
         };
 
 		BCFNT font;
@@ -103,12 +109,14 @@ namespace game_zelda_a_link_between_worlds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		Bitmap background = new Bitmap(Resources.template);
+		Bitmap background = new Bitmap(Resources.background);
+        Bitmap textBox = new Bitmap(Resources.textbox);
 
-		public Bitmap GeneratePreview(IEntry entry)
+        public Bitmap GeneratePreview(IEntry entry)
 		{
 			string rawString = entry.EditedText;
-			Bitmap img = new Bitmap(background.Width, background.Height);
+            int boxes = rawString.Count(c => c == '\n') / 3 + 1;
+            Bitmap img = new Bitmap(400, Math.Max(textBox.Height * boxes, 240));
 
 			using (Graphics gfx = Graphics.FromImage(img))
 			{
@@ -118,64 +126,188 @@ namespace game_zelda_a_link_between_worlds
 
 				gfx.DrawImage(background, 0, 0);
 
-				float[][] fadeToFiftyPercentMatrix = {
-					new float[] { 1, 0, 0, 0, 0 },
-					new float[] { 0, 1, 0, 0, 0 },
-					new float[] { 0, 0, 1, 0, 0 },
-					new float[] { 0, 0, 0, 0.45f, 0 },
-					new float[] { 0, 0, 0, 0, 1 },
-				};
-
-				// Textbox
-				// Bitmap textBox = new Bitmap(Resources.top_speaker_bg);
-				// ColorMatrix textBoxMatrix = new ColorMatrix(fadeToFiftyPercentMatrix);
-
-				// ImageAttributes textBoxAttributes = new ImageAttributes();
-				// textBoxAttributes.SetColorMatrix(textBoxMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-
-				// Rectangle rectTextBox = new Rectangle(0, img.Height - textBox.Height / 2, img.Width, textBox.Height / 2);
-				// gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
-				// gfx.DrawImage(textBox, rectTextBox, 0, 0, textBox.Width, textBox.Height, GraphicsUnit.Pixel, textBoxAttributes);
-
-				// Face
-				Bitmap face = Resources.icon;
-				Rectangle rectFace = new Rectangle(5, img.Height - face.Height - 4, face.Width, face.Height);
-				// gfx.DrawImageUnscaled(face, rectFace);
+                for (int i = 0; i < boxes; i++)
+                    gfx.DrawImage(textBox, 0, textBox.Height * i);
 
 				// Text
-				Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 9, rectFace.Y + 12, 366, 60);
+				Rectangle rectText = new Rectangle(32, 20, 336, 44);
 
 				float scale = 1.0f;
 				float x = rectText.X, y = rectText.Y;
 				int line = 0;
+                bool cmd = false;
+                string param = "", temp = "";
+                int skip = 0, j = 0;
 
 				string str = rawString;
-				font.SetColor(Color.White);
+                font.SetColor(Color.FromArgb(255, 80, 80, 80));
 
-				gfx.InterpolationMode = InterpolationMode.Bicubic;
-				foreach (char c in str)
+                gfx.InterpolationMode = InterpolationMode.Bicubic;
+                foreach (char c in str)
 				{
-					switch (c)
-					{
-						case '\n':
-							x = rectText.X;
-							y += rectText.Y;
-							if (++line % 3 == 0)
-								y += 33;
-							continue;
-					}
+                    if (!cmd) switch (c)
+                    {
+                        case '\n':
+                            x = rectText.X;
+                            y += rectText.Y;
+                            if (++line % 3 == 0)
+                                y += 28;
+                            continue;
+                        case '\xE':
+                            cmd = true;
+                            param = "";
+                            continue;
+                    }
 
-					font.SetColor(Color.FromArgb(255, 63, 3, 3));
-					font.Draw(c, gfx, x + 2f, y + 2f, scale, scale);
-					font.SetColor(Color.White);
-					font.Draw(c, gfx, x, y, scale, scale);
-					x += font.GetWidthInfo(c).char_width * scale;
+                    switch (param)
+                    {
+                        case "\x0\x3\x2\x0\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 0, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x1\x0":
+                            font.SetColor(Color.FromArgb(255, 128, 0, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x2\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 128, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x3\x0":
+                            font.SetColor(Color.FromArgb(255, 128, 128, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x4\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 0, 128));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x5\x0":
+                            font.SetColor(Color.FromArgb(255, 128, 0, 128));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x6\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 128, 128));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x7\x0":
+                            font.SetColor(Color.FromArgb(255, 192, 192, 192));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x8\x0":
+                            font.SetColor(Color.FromArgb(255, 128, 128, 128));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\x9\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xA\x0":
+                            font.SetColor(Color.FromArgb(255, 255, 0, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xB\x0":
+                            font.SetColor(Color.FromArgb(255, 255, 255, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xC\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 255, 0));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xD\x0":
+                            font.SetColor(Color.FromArgb(255, 255, 0, 255));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xE\x0":
+                            font.SetColor(Color.FromArgb(255, 0, 255, 255));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xF\x0":
+                            font.SetColor(Color.FromArgb(255, 255, 255, 255));
+                            goto case "cleanup";
+                        case "\x0\x3\x2\xFF\xFF":
+                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                            goto case "cleanup";
+                        case "\x1\x0\x0":
+                            temp = "Player";
+                            foreach (char t in temp)
+                            {
+                                font.Draw(t, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(t).char_width * scale;
+                            }
+                            goto case "cleanup";
+                        case "\x1\x2":
+                        case "\x1\x3":
+                        case "\x1\x4":
+                        case "\x1\xA":
+                            temp = "UNKNOWN";
+                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                            foreach (char t in temp)
+                            {
+                                font.Draw(t, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(t).char_width * scale;
+                            }
+                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                            skip = 1;
+                            goto case "cleanup";
+                        case "\x0\x2\x2":
+                            scale = (float)c/100.0f;
+                            skip = 2;
+                            goto case "cleanup";
+                        case "\x1\x8\x2":
+                        case "\x1\xE":
+                        case "\x1\xF":
+                        case "\x1\x10":
+                            skip = 2;
+                            goto case "cleanup";
+                        case "\x1\x11\x4":
+                            x += c;
+                            y += rawString[j+2];
+                            skip = 4;
+                            goto case "cleanup";
+                        case "\x1\x5\x6": // measure
+                            temp = "VALUE";
+                            foreach (char t in temp)
+                            {
+                                font.Draw(t, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(t).char_width * scale;
+                            }
+                            skip = 6;
+                            goto case "cleanup";
+                        case "\x2\x0\x2": // npc
+                            temp = "NPC";
+                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                            foreach (char t in temp)
+                            {
+                                font.Draw(t, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(t).char_width * scale;
+                            }
+                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                            skip = 2;
+                            goto case "cleanup";
+                        case "\x2\x1\x4": // map
+                            temp = "LOCATION";
+                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                            foreach (char t in temp)
+                            {
+                                font.Draw(t, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(t).char_width * scale;
+                            }
+                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                            skip = 4;
+                            goto case "cleanup";
+                        case "\x2\x2\x4": // item
+                            temp = "ITEM";
+                            font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                            foreach (char t in temp)
+                            {
+                                font.Draw(t, gfx, x, y, scale, scale);
+                                x += font.GetWidthInfo(t).char_width * scale;
+                            }
+                            font.SetColor(Color.FromArgb(255, 80, 80, 80));
+                            skip = 4;
+                            goto case "cleanup";
+                        case "cleanup":
+                            param = "";
+                            cmd = false;
+                            break;
+                    }
+
+                    if (cmd)
+                        param += c;
+                    else if (skip > 0)
+                        skip--;
+                    else
+                    {
+                        font.Draw(c, gfx, x, y, scale, scale);
+                        x += font.GetWidthInfo(c).char_width * scale;
+                    }
+                    j++;
 				}
-
-				// Cursor
-				// Bitmap cursor = new Bitmap(Resources.top_speaker);
-				// RectangleF rectCursor = new RectangleF(381, 225, 13.9f, 10);
-				// gfx.DrawImage(cursor, rectCursor);
 			}
 
 			return img;

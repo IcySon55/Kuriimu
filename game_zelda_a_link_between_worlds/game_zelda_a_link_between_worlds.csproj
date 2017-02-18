@@ -73,7 +73,8 @@
     <None Include="images\icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="images\blank_top.png" />
+    <None Include="images\textbox.png" />
+    <None Include="images\background.png" />
     <None Include="images\template.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
