@@ -97,41 +97,35 @@ namespace game_time_travelers
 				}
 
 				//get xi image
-				Stream file = File.OpenWrite("img.bin");
+				BinaryWriterX xi = new BinaryWriterX(new MemoryStream());
 				br.BaseStream.Position = header.dataOffset + fileEntries[0].offset;
-				file.Write(br.ReadBytes(fileEntries[0].fileSize), 0, fileEntries[0].fileSize);
-				file.Close();
+				xi.Write(br.ReadBytes(fileEntries[0].fileSize));
+				xi.BaseStream.Position = 0;
 
 				//convert xi image to bmp
-				file = File.OpenRead("img.bin");
-				bmp = XI.Load(file);
-				bmp.Save("bmp.bmp");
-				file.Close(); //File.Delete("img.bin");
+				bmp = XI.Load(xi.BaseStream);
 
 				//get fnt.bin
-				file = File.OpenWrite("fnt.bin");
+				BinaryWriterX fnt = new BinaryWriterX(new MemoryStream());
 				br.BaseStream.Position = header.dataOffset + fileEntries[0].fileSize + 4;
-				file.Write(br.ReadBytes(fileEntries[1].fileSize), 0, fileEntries[1].fileSize);
-				file.Close();
+				fnt.Write(br.ReadBytes(fileEntries[1].fileSize));
+				fnt.BaseStream.Position = 0;
 
 				//decompress fnt.bin
-				file = File.OpenRead("fnt.bin");
-				var fnt = new BinaryReaderX(file);
-				fnt.BaseStream.Position = 0x28;
+				BinaryReaderX fntR = new BinaryReaderX(fnt.BaseStream);
+				fntR.BaseStream.Position = 0x28;
 
-				byte[] buf1 = XI.Decomp(fnt);
-				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
-				byte[] buf2 = XI.Decomp(fnt);
-				while (fnt.BaseStream.Position % 4 != 0) fnt.ReadByte();
-				byte[] buf3 = XI.Decomp(fnt);
+				byte[] buf1 = XI.Decomp(fntR);
+				while (fnt.BaseStream.Position % 4 != 0) fntR.ReadByte();
+				byte[] buf2 = XI.Decomp(fntR);
+				while (fnt.BaseStream.Position % 4 != 0) fntR.ReadByte();
+				byte[] buf3 = XI.Decomp(fntR);
 
-				file.Close(); //File.Delete("fnt.bin");
-
-				using (var br2 = new BinaryReaderX(new MemoryStream(buf1)))
+				using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(buf1)))
 					lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();
-				using (var br2 = new BinaryReaderX(new MemoryStream(buf2)))
+				using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(buf2)))
 					dicGlyphLarge = Enumerable.Range(0, buf2.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
-				using (var br2 = new BinaryReaderX(new MemoryStream(buf3)))
+				using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(buf3)))
 					dicGlyphSmall = Enumerable.Range(0, buf3.Length / 8).Select(i => br2.ReadStruct<CharacterMap>()).ToDictionary(x => x.code_point);
 			}
 		}

@@ -82,6 +82,12 @@
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
 			this.tsbPreviewEnabled = new System.Windows.Forms.ToolStripButton();
 			this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbPreviousPage = new System.Windows.Forms.ToolStripButton();
+			this.tslPage = new System.Windows.Forms.ToolStripLabel();
+			this.tsbNextPage = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbWhitespace = new System.Windows.Forms.ToolStripButton();
 			this.tlsHexView = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
 			this.tlsMain = new System.Windows.Forms.ToolStrip();
@@ -680,7 +686,13 @@
 			this.tlsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel2,
             this.tsbPreviewEnabled,
-            this.tsbPreviewSave});
+            this.tsbPreviewSave,
+            this.toolStripSeparator8,
+            this.tsbPreviousPage,
+            this.tslPage,
+            this.tsbNextPage,
+            this.toolStripSeparator9,
+            this.tsbWhitespace});
 			this.tlsPreview.Location = new System.Drawing.Point(0, 0);
 			this.tlsPreview.Name = "tlsPreview";
 			this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -714,6 +726,60 @@
 			this.tsbPreviewSave.Size = new System.Drawing.Size(23, 22);
 			this.tsbPreviewSave.Text = "Save Preview";
 			this.tsbPreviewSave.Click += new System.EventHandler(this.tsbPreviewSave_Click);
+			// 
+			// toolStripSeparator8
+			// 
+			this.toolStripSeparator8.Name = "toolStripSeparator8";
+			this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbPreviousPage
+			// 
+			this.tsbPreviousPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPreviousPage.Enabled = false;
+			this.tsbPreviousPage.Image = global::Kuriimu.Properties.Resources.previous_page;
+			this.tsbPreviousPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPreviousPage.Name = "tsbPreviousPage";
+			this.tsbPreviousPage.Size = new System.Drawing.Size(23, 22);
+			this.tsbPreviousPage.Text = "Previous Page";
+			this.tsbPreviousPage.Click += new System.EventHandler(this.tsbPreviousPage_Click);
+			// 
+			// tslPage
+			// 
+			this.tslPage.AutoSize = false;
+			this.tslPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.tslPage.Enabled = false;
+			this.tslPage.Image = global::Kuriimu.Properties.Resources.menu_preview_save;
+			this.tslPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tslPage.Name = "tslPage";
+			this.tslPage.Size = new System.Drawing.Size(40, 22);
+			this.tslPage.Text = "Page";
+			// 
+			// tsbNextPage
+			// 
+			this.tsbNextPage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbNextPage.Enabled = false;
+			this.tsbNextPage.Image = global::Kuriimu.Properties.Resources.next_page;
+			this.tsbNextPage.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbNextPage.Name = "tsbNextPage";
+			this.tsbNextPage.Size = new System.Drawing.Size(23, 22);
+			this.tsbNextPage.Text = "Next Page";
+			this.tsbNextPage.Click += new System.EventHandler(this.tsbNextPage_Click);
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbWhitespace
+			// 
+			this.tsbWhitespace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWhitespace.Enabled = false;
+			this.tsbWhitespace.Image = global::Kuriimu.Properties.Resources.whitespace_hidden;
+			this.tsbWhitespace.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWhitespace.Name = "tsbWhitespace";
+			this.tsbWhitespace.Size = new System.Drawing.Size(23, 22);
+			this.tsbWhitespace.Text = "Save Preview";
+			this.tsbWhitespace.Click += new System.EventHandler(this.tsbWhitespace_Click);
 			// 
 			// tlsHexView
 			// 
@@ -1083,5 +1149,11 @@
 		private System.Windows.Forms.ToolStripButton tsbImportKUP;
 		private System.Windows.Forms.ToolStripButton tsbBatchExportKUP;
 		private System.Windows.Forms.ToolStripButton tsbBatchImportKUP;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+		private System.Windows.Forms.ToolStripButton tsbPreviousPage;
+		private System.Windows.Forms.ToolStripLabel tslPage;
+		private System.Windows.Forms.ToolStripButton tsbNextPage;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+		private System.Windows.Forms.ToolStripButton tsbWhitespace;
 	}
 }

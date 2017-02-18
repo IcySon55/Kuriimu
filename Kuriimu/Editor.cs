@@ -25,6 +25,8 @@ namespace Kuriimu
 
 		private IEnumerable<IEntry> _entries = null;
 
+		private int _page = 0;
+
 		public frmEditor(string[] args)
 		{
 			InitializeComponent();
@@ -121,16 +123,20 @@ namespace Kuriimu
 
 		private void scbFontFamily_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Settings.Default.FontFamily = scbFontFamily.Text;
-			Settings.Default.Save();
-			SetFont();
+			if (SetFont())
+			{
+				Settings.Default.FontFamily = scbFontFamily.Text;
+				Settings.Default.Save();
+			}
 		}
 
 		private void scbFontSize_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Settings.Default.FontSize = scbFontSize.Text;
-			Settings.Default.Save();
-			SetFont();
+			if (SetFont())
+			{
+				Settings.Default.FontSize = scbFontSize.Text;
+				Settings.Default.Save();
+			}
 		}
 
 		private void scbFontFamily_TextChanged(object sender, EventArgs e)
@@ -261,12 +267,12 @@ namespace Kuriimu
 		// Help
 		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
+			Process.Start("http://gbatemp.net/threads/release-kuriimu-a-general-purpose-game-translation-toolkit-for-authors-of-fan-translations.452375/");
 		}
 
 		private void gitHubToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			System.Diagnostics.Process.Start("https://github.com/Icyson55/Kuriimu");
+			Process.Start("https://github.com/Icyson55/Kuriimu");
 		}
 
 		private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -312,7 +318,31 @@ namespace Kuriimu
 			{
 				Bitmap bmp = (Bitmap)pbxPreview.Image;
 				bmp.Save(sfd.FileName, ImageFormat.Png);
+
+				Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
+				Settings.Default.Save();
 			}
+		}
+
+		private void tsbPreviousPage_Click(object sender, EventArgs e)
+		{
+			SetPage(-1);
+			UpdatePreview();
+			UpdateForm();
+		}
+
+		private void tsbNextPage_Click(object sender, EventArgs e)
+		{
+			SetPage(1);
+			UpdatePreview();
+			UpdateForm();
+		}
+
+		private void tsbWhitespace_Click(object sender, EventArgs e)
+		{
+			_gameHandler.ShowWhitespace = !_gameHandler.ShowWhitespace;
+			UpdatePreview();
+			UpdateForm();
 		}
 
 		// File Handling
@@ -500,12 +530,36 @@ namespace Kuriimu
 			}
 		}
 
-		private void SetFont()
+		private bool SetFont()
 		{
-			float size = 10;
-			float.TryParse(scbFontSize.Text, out size);
-			txtEdit.Font = new Font(scbFontFamily.Text, size);
-			txtOriginal.Font = new Font(scbFontFamily.Text, size);
+			bool result = true;
+
+			try
+			{
+				float size;
+				float.TryParse(scbFontSize.Text, out size);
+				if (float.IsNaN(size) || float.IsInfinity(size) || size <= 0) size = 10;
+				txtEdit.Font = new Font(scbFontFamily.Text, size);
+				txtOriginal.Font = new Font(scbFontFamily.Text, size);
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
+
+		private void SetPage(int direction)
+		{
+			_page += direction;
+
+			if (_page < 0)
+				_page = 0;
+			else if (_page > _gameHandler.Pages.Count - 1)
+				_page = _gameHandler.Pages.Count - 1;
+
+			tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count;
 		}
 
 		private void LoadEntries()
@@ -584,9 +638,11 @@ namespace Kuriimu
 		private void UpdatePreview()
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+			_gameHandler.GeneratePages(entry);
+			SetPage(0);
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.GeneratePreview(entry);
+				pbxPreview.Image = _gameHandler.Pages[_page];
 			else
 				pbxPreview.Image = null;
 		}
@@ -641,10 +697,22 @@ namespace Kuriimu
 				sortEntriesToolStripMenuItem.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+
+				// Preview
 				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
+
+				// Paging
+				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page > 0;
+				tslPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0;
+				tsbNextPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page < _gameHandler.Pages.Count - 1;
+
+				// Whitespace
+				tsbWhitespace.Enabled = _fileOpen;
+				tsbWhitespace.Image = _gameHandler.ShowWhitespace ? Resources.whitespace_shown : Resources.whitespace_hidden;
+				tsbWhitespace.Text = _gameHandler.ShowWhitespace ? "Hide Whitespace" : "Show Whitespace";
 
 				treEntries.Enabled = _fileOpen;
 

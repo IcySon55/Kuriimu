@@ -82,14 +82,11 @@ namespace file_ttbin
 				br.BaseStream.Position = 0;
 
 				//if PCK
-				int firstOff = br.ReadInt32();
-				if (firstOff < br.BaseStream.Length)
+				int entryCount = br.ReadInt32();
+				br.BaseStream.Position = 0x8;
+				if (entryCount * 3 * 4 + 4 == br.ReadInt32())
 				{
-					br.BaseStream.Position = br.ReadInt32() * 3 * 4 + 4;
-					if (br.ReadByte() == 0x64)
-					{
-						return true;
-					}
+					return true;
 				}
 				br.BaseStream.Position = 0;
 
@@ -102,7 +99,6 @@ namespace file_ttbin
 				{
 					br.BaseStream.Position = 0;
 					byte[] result = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
-					File.OpenWrite("uncomp.bin").Write(result, 0, result.Length);
 					using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(result)))
 					{
 						if (br2.ReadString(4) == "XPCK")
