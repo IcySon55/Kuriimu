@@ -265,5 +265,16 @@ namespace game_daigasso_band_brothers_p
 			pages.Add(bmp);
 			Pages = pages;
 		}
+
+		// Settings
+		public bool ShowWhitespace
+		{
+			get { return Settings.Default.ShowWhitespace; }
+			set
+			{
+				Settings.Default.ShowWhitespace = value;
+				Settings.Default.Save();
+			}
+		}
 	}
 }

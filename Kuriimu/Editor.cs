@@ -338,6 +338,13 @@ namespace Kuriimu
 			UpdateForm();
 		}
 
+		private void tsbWhitespace_Click(object sender, EventArgs e)
+		{
+			_gameHandler.ShowWhitespace = !_gameHandler.ShowWhitespace;
+			UpdatePreview();
+			UpdateForm();
+		}
+
 		// File Handling
 		private void frmEditor_DragEnter(object sender, DragEventArgs e)
 		{
@@ -690,14 +697,22 @@ namespace Kuriimu
 				sortEntriesToolStripMenuItem.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+
+				// Preview
 				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
 				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
 
+				// Paging
 				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page > 0;
 				tslPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0;
 				tsbNextPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page < _gameHandler.Pages.Count - 1;
+
+				// Whitespace
+				tsbWhitespace.Enabled = _fileOpen;
+				tsbWhitespace.Image = _gameHandler.ShowWhitespace ? Resources.whitespace_shown : Resources.whitespace_hidden;
+				tsbWhitespace.Text = _gameHandler.ShowWhitespace ? "Hide Whitespace" : "Show Whitespace";
 
 				treEntries.Enabled = _fileOpen;
 

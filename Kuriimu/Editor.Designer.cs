@@ -86,6 +86,8 @@
 			this.tsbPreviousPage = new System.Windows.Forms.ToolStripButton();
 			this.tslPage = new System.Windows.Forms.ToolStripLabel();
 			this.tsbNextPage = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.tsbWhitespace = new System.Windows.Forms.ToolStripButton();
 			this.tlsHexView = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
 			this.tlsMain = new System.Windows.Forms.ToolStrip();
@@ -688,7 +690,9 @@
             this.toolStripSeparator8,
             this.tsbPreviousPage,
             this.tslPage,
-            this.tsbNextPage});
+            this.tsbNextPage,
+            this.toolStripSeparator9,
+            this.tsbWhitespace});
 			this.tlsPreview.Location = new System.Drawing.Point(0, 0);
 			this.tlsPreview.Name = "tlsPreview";
 			this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -760,6 +764,22 @@
 			this.tsbNextPage.Size = new System.Drawing.Size(23, 22);
 			this.tsbNextPage.Text = "Next Page";
 			this.tsbNextPage.Click += new System.EventHandler(this.tsbNextPage_Click);
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+			// 
+			// tsbWhitespace
+			// 
+			this.tsbWhitespace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbWhitespace.Enabled = false;
+			this.tsbWhitespace.Image = global::Kuriimu.Properties.Resources.whitespace_hidden;
+			this.tsbWhitespace.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbWhitespace.Name = "tsbWhitespace";
+			this.tsbWhitespace.Size = new System.Drawing.Size(23, 22);
+			this.tsbWhitespace.Text = "Save Preview";
+			this.tsbWhitespace.Click += new System.EventHandler(this.tsbWhitespace_Click);
 			// 
 			// tlsHexView
 			// 
@@ -1133,5 +1153,7 @@
 		private System.Windows.Forms.ToolStripButton tsbPreviousPage;
 		private System.Windows.Forms.ToolStripLabel tslPage;
 		private System.Windows.Forms.ToolStripButton tsbNextPage;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+		private System.Windows.Forms.ToolStripButton tsbWhitespace;
 	}
 }

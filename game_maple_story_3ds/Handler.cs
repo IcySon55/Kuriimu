@@ -134,5 +134,16 @@ namespace game_maple_story_3ds
 			pages.Add(img);
 			Pages = pages;
 		}
+
+		// Settings
+		public bool ShowWhitespace
+		{
+			get { return Settings.Default.ShowWhitespace; }
+			set
+			{
+				Settings.Default.ShowWhitespace = value;
+				Settings.Default.Save();
+			}
+		}
 	}
 }

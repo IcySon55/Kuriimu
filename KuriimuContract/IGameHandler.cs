@@ -19,6 +19,9 @@ namespace KuriimuContract
 		// Previewer
 		IList<Bitmap> Pages { get; }
 		void GeneratePages(IEntry entry);
+
+		// Settings
+		bool ShowWhitespace { get; set; }
 	}
 
 	public sealed class DefaultGameHandler : IGameHandler
@@ -34,8 +37,7 @@ namespace KuriimuContract
 		public IList<Bitmap> Pages => new List<Bitmap>();
 		public void GeneratePages(IEntry entry) { }
 
-		public int Page { get; set; } = 1;
-		public int PageCount => 1;
+		public bool ShowWhitespace { get; set; } = false;
 
 		public DefaultGameHandler(Image icon) { Icon = icon; }
 	}

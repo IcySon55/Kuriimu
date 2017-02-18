@@ -153,6 +153,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="images\whitespace-hidden.png" />
+    <None Include="images\whitespace-shown.png" />
     <None Include="images\previous-page.png" />
     <None Include="images\next-page.png" />
     <None Include="images\preview-background.png" />

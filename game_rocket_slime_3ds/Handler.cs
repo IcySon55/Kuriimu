@@ -225,5 +225,16 @@ namespace game_rocket_slime_3ds
 
 			Pages = pages;
 		}
+
+		// Settings
+		public bool ShowWhitespace
+		{
+			get { return Settings.Default.ShowWhitespace; }
+			set
+			{
+				Settings.Default.ShowWhitespace = value;
+				Settings.Default.Save();
+			}
+		}
 	}
 }
