@@ -232,14 +232,12 @@ namespace game_miitopia_3ds
                     }
                     else
                     {
-                        Func<string, byte[], string> MergeEmpty = (id, data) => $"\xE{id}{(char)data.Length}";
+                        Func<string, int, string> MergeEmpty = (id, length) => $"\xE{id}{(char)length}";
                         
-                        byte[] byteArray = { };
-
                         string idHex = "" + (char)int.Parse(s.Substring(0, 1), NumberStyles.HexNumber) +
                                             (char)int.Parse(s.Substring(1, 1), NumberStyles.HexNumber);
 
-                        return MergeEmpty(idHex, byteArray);
+                        return MergeEmpty(idHex, 0);
                     }
                     
                 }));
