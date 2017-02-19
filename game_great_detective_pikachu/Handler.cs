@@ -42,18 +42,18 @@ namespace game_great_detective_pikachu
 			["？"] = "?"
 		};
 
-		Dictionary<string, string> _previewPairs = new Dictionary<string, string>
-		{
-			["…"] = "\x85",
-			["？"] = "?"
-		};
+		//Dictionary<string, string> _previewPairs = new Dictionary<string, string>
+		//{
+		//	["…"] = "\x85",
+		//	["？"] = "?"
+		//};
 
 		BCFNT font;
 
 		public Handler()
 		{
 			var ms = new MemoryStream();
-			new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
+			new GZipStream(new MemoryStream(Resources.cbf_std_bcfnt), CompressionMode.Decompress).CopyTo(ms);
 			ms.Position = 0;
 			font = new BCFNT(ms);
 		}
@@ -76,8 +76,8 @@ namespace game_great_detective_pikachu
 		{
 			var pages = new List<Bitmap>();
 
-			string rawString = _previewPairs.Aggregate(entry.EditedText, (str, pair) => str.Replace(pair.Value, pair.Key));
-			
+			string rawString = _pairs.Aggregate(entry.EditedText, (str, pair) => str.Replace(pair.Value, pair.Key));
+
 			foreach (string page in rawString.Split('\n'))
 			{
 				if (page.Trim() != string.Empty)
@@ -117,37 +117,69 @@ namespace game_great_detective_pikachu
 						gfx.DrawImageUnscaled(face, rectFace);
 
 						// Text
-						Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 9, rectFace.Y + 12, 366, 60);
+						Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 8, rectFace.Y + 10, 366, 60);
 
-						float scale = 1.0f;
+						float scale = 0.775f;
 						float x = rectText.X, y = rectText.Y;
-						int line = 0;
+						bool control = false;
+						string parameter = string.Empty;
+						Color backgroundBrown = Color.FromArgb(255, 64, 0, 0);
+						Color foregroundRed = Color.FromArgb(255, 255, 75, 75);
 
-						font.SetColor(Color.White);
-
+						Color foregroundColor = Color.White;
+						Color backgroundColor = backgroundBrown;
 						gfx.InterpolationMode = InterpolationMode.Bicubic;
 						foreach (char c in page)
 						{
-							switch (c)
+							if (!control)
+								switch (c)
+								{
+									case '\n':
+										x = rectText.X;
+										y += rectText.Y;
+										continue;
+									case '<':
+										control = true;
+										parameter += c;
+										continue;
+								}
+							else
 							{
-								case '\n':
-									x = rectText.X;
-									y += rectText.Y;
-									if (++line % 3 == 0)
-										y += 33;
+								parameter += c;
+								if (c == ' ')
+								{
+									control = false;
+									parameter = string.Empty;
+								}
+							}
+
+							switch (parameter)
+							{
+								case "<color-red>":
+									foregroundColor = foregroundRed;
+									control = false;
+									parameter = string.Empty;
+									continue;
+								case "<color-white>":
+									foregroundColor = Color.White;
+									control = false;
+									parameter = string.Empty;
 									continue;
 							}
 
-							font.SetColor(Color.FromArgb(255, 63, 3, 3));
-							font.Draw(c, gfx, x + 2f, y + 2f, scale, scale);
-							font.SetColor(Color.White);
-							font.Draw(c, gfx, x, y, scale, scale);
-							x += font.GetWidthInfo(c).char_width * scale;
+							if (!control)
+							{
+								font.SetColor(backgroundColor);
+								font.Draw(c, gfx, x + 1.5f, y + 1f, scale, scale);
+								font.SetColor(foregroundColor);
+								font.Draw(c, gfx, x, y, scale, scale);
+								x += font.GetWidthInfo(c).char_width * scale;
+							}
 						}
 
 						// Cursor
 						Bitmap cursor = new Bitmap(Resources.top_speaker);
-						RectangleF rectCursor = new RectangleF(381, 225, 13.9f, 10);
+						RectangleF rectCursor = new RectangleF(381, 227, 13.9f, 10);
 						gfx.DrawImage(cursor, rectCursor);
 					}
 
