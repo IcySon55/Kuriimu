@@ -179,16 +179,11 @@ namespace game_miitopia_3ds
             {
                 Func<string, byte[], string> Fix = (id, bytes) =>
                 {
-                    switch (id)
-                    {
-                        // TODO: Add cases for different codes
-                        default:
-                            return $"n{(int)id[1]:X2}:" + BitConverter.ToString(bytes);
-                    }
+                    return $"n{(int)id[0]}{(int)id[1]}:" + BitConverter.ToString(bytes);
                 };
 
                 int i;
-                str = str.Replace("\xF\x2\0", "</>");
+                //str = str.Replace("\xF\x2\0", "</>");
                 while ((i = str.IndexOf('\xE')) >= 0)
                 {
                     var id = str.Substring(i + 1, 2);
@@ -213,29 +208,40 @@ namespace game_miitopia_3ds
                 result = string.Concat(str.Split("<>".ToArray()).Select((z, i) =>
                 {
                     if (i % 2 == 0) return z;
-                    if (z == "/") return "\xF\x2\0";
-                    if (z == "v") return "\xE\x1\0\0";
-
-                    Func<string, byte[], string> Merge = (id, data) => $"\xE{id}{(char)data.Length}{string.Concat(data.Select(b => (char)b))}";
+                    //if (z == "/") return "\xF\x2\0";
+                    //if (z == "v") return "\xE\x1\0\0";
 
                     var s = z.Substring(1);
-                    switch (z[0])
+                    string hexString = s.Substring(3);
+                    int hexStringLen = hexString.Length;
+                    if (hexStringLen > 0)
                     {
-                        // TODO: Add cases for different codes
-                        default:
-                            {
-                                string hexString = s.Substring(3);
-                                string[] hexStringArray = hexString.Split('-');
-                                byte[] byteArray = new byte[hexStringArray.Length];
+                        Func<string, byte[], string> Merge = (id, data) => $"\xE{id}{(char)data.Length}{string.Concat(data.Select(b => (char)b))}";
 
-                                for (int ii = 0; ii < hexStringArray.Length; ii++)
-                                {
-                                    byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
-                                }
+                        string[] hexStringArray = hexString.Split('-');
+                        byte[] byteArray = new byte[hexStringArray.Length];
 
-                                return Merge("\x0" + (char)int.Parse(s.Substring(0, 2), NumberStyles.HexNumber), byteArray);
-                            }
+                        for (int ii = 0; ii < hexStringArray.Length; ii++)
+                        {
+                            byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
+                        }
+
+                        string idHex = "" + (char)int.Parse(s.Substring(0, 1), NumberStyles.HexNumber) +
+                                            (char)int.Parse(s.Substring(1, 1), NumberStyles.HexNumber);
+                        return Merge(idHex, byteArray);
                     }
+                    else
+                    {
+                        Func<string, byte[], string> MergeEmpty = (id, data) => $"\xE{id}{(char)data.Length}";
+                        
+                        byte[] byteArray = { };
+
+                        string idHex = "" + (char)int.Parse(s.Substring(0, 1), NumberStyles.HexNumber) +
+                                            (char)int.Parse(s.Substring(1, 1), NumberStyles.HexNumber);
+
+                        return MergeEmpty(idHex, byteArray);
+                    }
+                    
                 }));
 
                 return result;
