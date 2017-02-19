@@ -324,6 +324,11 @@ namespace Kuriimu
 			}
 		}
 
+		private void tsbPreviewCopy_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetImage(pbxPreview.Image);
+		}
+
 		private void tsbPreviousPage_Click(object sender, EventArgs e)
 		{
 			SetPage(-1);
@@ -705,7 +710,8 @@ namespace Kuriimu
 				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
-				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
+				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled && _gameHandler.HandlerCanGeneratePreviews && _gameHandler.Pages.Count > 0;
+				tsbPreviewCopy.Enabled = tsbPreviewSave.Enabled;
 
 				// Paging
 				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page > 0;

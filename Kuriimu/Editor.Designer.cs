@@ -82,6 +82,7 @@
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
 			this.tsbPreviewEnabled = new System.Windows.Forms.ToolStripButton();
 			this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
+			this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbPreviousPage = new System.Windows.Forms.ToolStripButton();
 			this.tslPage = new System.Windows.Forms.ToolStripLabel();
@@ -687,6 +688,7 @@
             this.toolStripLabel2,
             this.tsbPreviewEnabled,
             this.tsbPreviewSave,
+            this.tsbPreviewCopy,
             this.toolStripSeparator8,
             this.tsbPreviousPage,
             this.tslPage,
@@ -726,6 +728,17 @@
 			this.tsbPreviewSave.Size = new System.Drawing.Size(23, 22);
 			this.tsbPreviewSave.Text = "Save Preview";
 			this.tsbPreviewSave.Click += new System.EventHandler(this.tsbPreviewSave_Click);
+			// 
+			// tsbPreviewCopy
+			// 
+			this.tsbPreviewCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPreviewCopy.Enabled = false;
+			this.tsbPreviewCopy.Image = global::Kuriimu.Properties.Resources.menu_preview_copy;
+			this.tsbPreviewCopy.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPreviewCopy.Name = "tsbPreviewCopy";
+			this.tsbPreviewCopy.Size = new System.Drawing.Size(23, 22);
+			this.tsbPreviewCopy.Text = "Copy Preview";
+			this.tsbPreviewCopy.Click += new System.EventHandler(this.tsbPreviewCopy_Click);
 			// 
 			// toolStripSeparator8
 			// 
@@ -1155,5 +1168,6 @@
 		private System.Windows.Forms.ToolStripButton tsbNextPage;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 		private System.Windows.Forms.ToolStripButton tsbWhitespace;
+		private System.Windows.Forms.ToolStripButton tsbPreviewCopy;
 	}
 }
