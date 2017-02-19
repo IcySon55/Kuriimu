@@ -53,10 +53,10 @@ namespace game_zelda_a_link_between_worlds
 
             // Variables
             ["<player>"] = "\xE\x1\x0\x0",
-            ["<playerb>"] = "\xE\x1\x2",
-            ["<username>"] = "\xE\x1\x3",
-            ["<unkvar1>"] = "\xE\x1\x4",
-            ["<unkvar2>"] = "\xE\x1\xA",
+            ["<unkvar1>"] = "\xE\x1\x2",
+            ["<unkvar2>"] = "\xE\x1\x3",
+            ["<unkvar3>"] = "\xE\x1\x4",
+            ["<unkvar4>"] = "\xE\x1\xA",
             ["<npc>"] = "\xE\x2\x0\x2",
             ["<map>"] = "\xE\x2\x1\x4",
             ["<item>"] = "\xE\x2\x2\x4",
@@ -105,15 +105,29 @@ namespace game_zelda_a_link_between_worlds
         {
             var pages = new List<Bitmap>();
             string rawString = entry.EditedText;
-            // if (rawString.Trim() == string.Empty)
-            //     return;
-            int boxes = rawString.Count(c => c == '\n') / 3 + 1;
+            var pagestr = new List<string>();
+            int curline = 0;
+            string curstr = "";
+            // int boxes = rawString.Count(c => c == '\n') / 3 + 1;
 
-            // foreach (string page in rawString.Split('\n'))
+            foreach (string l in rawString.Split('\n'))
             {
-                // if (page.Trim() != string.Empty)
+                curstr += l + '\n';
+                curline++;
+                if (curline % 3 == 0)
                 {
-                    Bitmap img = new Bitmap(400, Math.Max(textBox.Height * boxes, 240));
+                    pagestr.Add(curstr);
+                    curstr = "";
+                }
+            }
+            if (curline % 3 != 0)
+                pagestr.Add(curstr);
+
+            foreach (string p in pagestr)
+            {
+                if (p.Trim() != string.Empty)
+                {
+                    Bitmap img = new Bitmap(400, 240);
 
                     using (Graphics gfx = Graphics.FromImage(img))
                     {
@@ -123,14 +137,14 @@ namespace game_zelda_a_link_between_worlds
 
                         gfx.DrawImage(background, 0, 0);
 
-                        for (int i = 0; i < boxes; i++)
-                            gfx.DrawImage(textBox, 0, textBox.Height * i);
+                        // for (int i = 0; i < boxes; i++)
+                        gfx.DrawImage(textBox, 0, 240 - textBox.Height);
 
                         // Text
                         Rectangle rectText = new Rectangle(32, 20, 336, 44);
 
                         float scale = 1.0f;
-                        float x = rectText.X, y = rectText.Y;
+                        float x = rectText.X, y = 240 - textBox.Height + 20; // y = rectText.Y;
                         int line = 0;
                         bool cmd = false;
                         string param = "", temp = "";
@@ -140,24 +154,24 @@ namespace game_zelda_a_link_between_worlds
                         font.SetColor(Color.FromArgb(255, 80, 80, 80));
 
                         gfx.InterpolationMode = InterpolationMode.Bicubic;
-                        foreach (char c in rawString)
+                        foreach (char c in p)
                         {
                             if (!cmd) switch (c)
-                                {
-                                    case '\n':
-                                        x = rectText.X;
-                                        y += rectText.Y;
-                                        if (++line % 3 == 0)
-                                        {
-                                            y += 28 - padding;
-                                            padding = 0;
-                                        }
-                                        continue;
-                                    case '\xE':
-                                        cmd = true;
-                                        param = "";
-                                        continue;
-                                }
+                            {
+                                case '\n':
+                                    x = rectText.X;
+                                    y += rectText.Y;
+                                    if (++line % 3 == 0)
+                                    {
+                                        y += 28 - padding;
+                                        padding = 0;
+                                    }
+                                    continue;
+                                case '\xE':
+                                    cmd = true;
+                                    param = "";
+                                    continue;
+                            }
 
                             switch (param)
                             {
@@ -248,7 +262,7 @@ namespace game_zelda_a_link_between_worlds
 
                 Pages = pages;
             }
-		}
+        }
 
         // Settings
         public bool ShowWhitespace
