@@ -70,68 +70,84 @@ namespace game_maple_story_3ds
 		{
 			var pages = new List<Bitmap>();
 
-			string rawString = entry.EditedText;
-			int boxes = rawString.Count(c => c == '\n') / 3 + 1;
-
-			const int txtOffsetX = 2;
-			const int txtOffsetY = 2;
-			Bitmap img = new Bitmap(400, Math.Max((txtOffsetY + textBox.Height) * boxes + txtOffsetY, background.Height));
-
-			using (Graphics gfx = Graphics.FromImage(img))
+			// Paging evety 3rd new line
+			List<string> strings = new List<string>();
+			string[] lines = entry.EditedText.Split('\n');
+			string built = string.Empty;
+			int current = 0;
+			for (int i = 0; i < lines.Length; i++)
 			{
-				gfx.SmoothingMode = SmoothingMode.HighQuality;
-				gfx.InterpolationMode = InterpolationMode.Bicubic;
-				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+				built += lines[i] + (i != lines.Length - 1 ? "\n" : string.Empty);
+				current++;
 
-				gfx.DrawImage(background, 0, 0);
-
-				for (int i = 0; i < boxes; i++)
-					gfx.DrawImage(textBox, txtOffsetX, (txtOffsetY + textBox.Height) * i + txtOffsetY);
-
-				float scale = 0.625f;
-				float x = 10, y = 22;
-				int line = 0;
-				string str = _previewPairs.Aggregate(rawString, (s, pair) => s.Replace(pair.Key, pair.Value));
-				font.SetColor(Color.White);
-
-				foreach (char c in str)
+				if (current % 3 == 0)
 				{
-					switch (c)
+					strings.Add(built);
+					built = string.Empty;
+				}
+			}
+			if ((strings.Count == 0 && built != string.Empty) || (strings.Count > 0 && strings.Last().EndsWith("\n")))
+				strings.Add(built);
+
+			foreach (string page in strings)
+			{
+				const int txtOffsetX = 2;
+				const int txtOffsetY = 2;
+				Bitmap img = new Bitmap(background.Width, background.Height);
+
+				using (Graphics gfx = Graphics.FromImage(img))
+				{
+					gfx.SmoothingMode = SmoothingMode.HighQuality;
+					gfx.InterpolationMode = InterpolationMode.Bicubic;
+					gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+					gfx.DrawImage(background, 0, 0);
+
+					gfx.DrawImage(textBox, txtOffsetX, txtOffsetY);
+
+					float scale = 0.625f;
+					float x = 10, y = 22;
+					string str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value));
+					font.SetColor(Color.White);
+
+					foreach (char c in str)
 					{
-						case '‹': // Player Name
-							font.SetColor(Color.FromArgb(255, 254, 254, 149));
-							continue;
-						case '<': // Orange
-							font.SetColor(Color.FromArgb(255, 255, 150, 0));
-							continue;
-						case '{':  // Green
-							font.SetColor(Color.FromArgb(255, 131, 237, 63));
-							continue;
-						case '[': // Purple
-							font.SetColor(Color.FromArgb(255, 255, 100, 255));
-							continue;
-						case '›': // Reset color
-						case '>':
-						case '}':
-						case ']':
-							font.SetColor(Color.White);
-							continue;
-						case '\n':
-							x = 10;
-							y += 16;
-							if (++line % 3 == 0)
-								y += 33;
-							continue;
+						switch (c)
+						{
+							case '‹': // Player Name
+								font.SetColor(Color.FromArgb(255, 254, 254, 149));
+								continue;
+							case '<': // Orange
+								font.SetColor(Color.FromArgb(255, 255, 150, 0));
+								continue;
+							case '{':  // Green
+								font.SetColor(Color.FromArgb(255, 131, 237, 63));
+								continue;
+							case '[': // Purple
+								font.SetColor(Color.FromArgb(255, 255, 100, 255));
+								continue;
+							case '›': // Reset color
+							case '>':
+							case '}':
+							case ']':
+								font.SetColor(Color.White);
+								continue;
+							case '\n':
+								x = 10;
+								y += 16;
+								continue;
+						}
+
+						// Otherwise it's a regular drawable character
+						font.Draw(c, gfx, x, y, scale, scale);
+						x += font.GetWidthInfo(c).char_width * scale;
 					}
 
-					// Otherwise it's a regular drawable character
-					font.Draw(c, gfx, x, y, scale, scale);
-					x += font.GetWidthInfo(c).char_width * scale;
 				}
 
+				pages.Add(img);
 			}
 
-			pages.Add(img);
 			Pages = pages;
 		}
 
