@@ -559,7 +559,10 @@ namespace Kuriimu
 			else if (_page > _gameHandler.Pages.Count - 1)
 				_page = _gameHandler.Pages.Count - 1;
 
-			tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count;
+			if (_gameHandler.Pages.Count > 0)
+				tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count;
+			else
+				tslPage.Text = "0/0";
 		}
 
 		private void LoadEntries()
@@ -641,7 +644,7 @@ namespace Kuriimu
 			_gameHandler.GeneratePages(entry);
 			SetPage(0);
 
-			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
+			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled && _gameHandler.Pages.Count > 0)
 				pbxPreview.Image = _gameHandler.Pages[_page];
 			else
 				pbxPreview.Image = null;
