@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -104,15 +103,15 @@ namespace game_zelda_a_link_between_worlds
         public void GeneratePages(IEntry entry)
         {
             var pages = new List<Bitmap>();
-            string rawString = entry.EditedText;
+            string rawString = GetKuriimuString(entry.EditedText);
             var pagestr = new List<string>();
             int curline = 0;
             string curstr = "";
             // int boxes = rawString.Count(c => c == '\n') / 3 + 1;
 
-            foreach (string l in rawString.Split('\n'))
+            foreach (string line in rawString.Split('\n'))
             {
-                curstr += l + '\n';
+                curstr += line + '\n';
                 curline++;
                 if (curline % 3 == 0)
                 {
@@ -123,8 +122,9 @@ namespace game_zelda_a_link_between_worlds
             if (curline % 3 != 0)
                 pagestr.Add(curstr);
 
-            foreach (string p in pagestr)
+            foreach (string page in pagestr)
             {
+                string p = GetRawString(page);
                 if (p.Trim() != string.Empty)
                 {
                     Bitmap img = new Bitmap(400, 240);
@@ -150,7 +150,6 @@ namespace game_zelda_a_link_between_worlds
                         string param = "", temp = "";
                         int skip = 0, j = 0, padding = 0;
 
-                        string str = rawString;
                         font.SetColor(Color.FromArgb(255, 80, 80, 80));
 
                         gfx.InterpolationMode = InterpolationMode.Bicubic;
@@ -176,10 +175,10 @@ namespace game_zelda_a_link_between_worlds
                             switch (param)
                             {
                                 case "\x0\x3\x2\x9\x0":
-                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    font.SetColor(Color.Blue);
                                     goto case "cleanup";
                                 case "\x0\x3\x2\xA\x0":
-                                    font.SetColor(Color.FromArgb(255, 255, 0, 0));
+                                    font.SetColor(Color.Red);
                                     goto case "cleanup";
                                 case "\x0\x3\x2\xFF\xFF":
                                     font.SetColor(Color.FromArgb(255, 80, 80, 80));
@@ -192,7 +191,7 @@ namespace game_zelda_a_link_between_worlds
                                 case "\x1\x4":
                                 case "\x1\xA":
                                     temp = "UNKNOWN";
-                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    font.SetColor(Color.Blue);
                                     skip = 1;
                                     goto case "placeholder";
                                 case "\x0\x2\x2": // font size
@@ -200,6 +199,7 @@ namespace game_zelda_a_link_between_worlds
                                     skip = 2;
                                     goto case "cleanup";
                                 case "\x1\x8\x2": // useless
+                                case "\x1\x7\x2":
                                 case "\x1\xE":
                                 case "\x1\xF":
                                 case "\x1\x10":
@@ -217,17 +217,17 @@ namespace game_zelda_a_link_between_worlds
                                     goto case "placeholder";
                                 case "\x2\x0\x2": // npc
                                     temp = "NPC";
-                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    font.SetColor(Color.Blue);
                                     skip = 2;
                                     goto case "placeholder";
                                 case "\x2\x1\x4": // map
                                     temp = "LOCATION";
-                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    font.SetColor(Color.Blue);
                                     skip = 4;
                                     goto case "placeholder";
                                 case "\x2\x2\x4": // item
                                     temp = "ITEM";
-                                    font.SetColor(Color.FromArgb(255, 0, 0, 255));
+                                    font.SetColor(Color.Blue);
                                     skip = 4;
                                     goto case "placeholder";
                                 case "placeholder":
@@ -248,7 +248,7 @@ namespace game_zelda_a_link_between_worlds
                                 param += c;
                             else if (skip > 0)
                                 skip--;
-                            else if (x < 368)
+                            else
                             {
                                 font.Draw(c, gfx, x, y, scale, scale);
                                 x += font.GetWidthInfo(c).char_width * scale;
