@@ -41,8 +41,6 @@ namespace game_miitopia_3ds
     using uint8 = System.Byte;
     using uint16 = System.UInt16;
 
-    
-
     public class MiitopiaHandler : IGameHandler
     {
         class ControlCodeHandler
@@ -202,17 +200,24 @@ namespace game_miitopia_3ds
         {
             try
             {
-                if (str.Length < 3) return str;
+                if (str.Length < 3)
+                {
+                    return str;
+                }
 
                 string result = string.Empty;
-                result = string.Concat(str.Split("<>".ToArray()).Select((z, i) =>
+                result = string.Concat(str.Split("<>".ToArray()).Select((codeString, i) =>
                 {
-                    if (i % 2 == 0) return z;
+                    // codeString = "n00:code"
+                    if (i % 2 == 0)
+                    {
+                        return codeString;
+                    }
                     //if (z == "/") return "\xF\x2\0";
                     //if (z == "v") return "\xE\x1\0\0";
 
-                    var s = z.Substring(1);
-                    string hexString = s.Substring(3);
+                    var codeStringRaw = codeString.Substring(1); // "00:code" part, the identyfier ("n") infront of 00 is stripped
+                    string hexString = codeStringRaw.Substring(3);
                     int hexStringLen = hexString.Length;
                     if (hexStringLen > 0)
                     {
@@ -226,16 +231,16 @@ namespace game_miitopia_3ds
                             byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
                         }
 
-                        string idHex = "" + (char)int.Parse(s.Substring(0, 1), NumberStyles.HexNumber) +
-                                            (char)int.Parse(s.Substring(1, 1), NumberStyles.HexNumber);
+                        string idHex = "" + (char)int.Parse(codeStringRaw.Substring(0, 1), NumberStyles.HexNumber) +
+                                            (char)int.Parse(codeStringRaw.Substring(1, 1), NumberStyles.HexNumber);
                         return Merge(idHex, byteArray);
                     }
                     else
                     {
                         Func<string, int, string> MergeEmpty = (id, length) => $"\xE{id}{(char)length}";
                         
-                        string idHex = "" + (char)int.Parse(s.Substring(0, 1), NumberStyles.HexNumber) +
-                                            (char)int.Parse(s.Substring(1, 1), NumberStyles.HexNumber);
+                        string idHex = "" + (char)int.Parse(codeStringRaw.Substring(0, 1), NumberStyles.HexNumber) +
+                                            (char)int.Parse(codeStringRaw.Substring(1, 1), NumberStyles.HexNumber);
 
                         return MergeEmpty(idHex, 0);
                     }
