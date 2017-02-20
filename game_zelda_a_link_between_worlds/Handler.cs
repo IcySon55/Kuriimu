@@ -36,15 +36,6 @@ namespace game_zelda_a_link_between_worlds
             ["<instant>"] = "\xE\x1\xE\x0",
             ["<padding>"] = "\xE\x1\x11\x4",
 
-            // Control
-            ["Ⓐ"] = "\xE000",
-            ["Ⓑ"] = "\xE001",
-            ["Ⓧ"] = "\xE002",
-            ["Ⓨ"] = "\xE003",
-            ["🄻"] = "\xE004",
-            ["🅁"] = "\xE005",
-            ["✚"] = "\xE006",
-
             // Color
             ["<c-blue>"] = "\xE\x0\x3\x2\x9\x0",
             ["<c-red>"] = "\xE\x0\x3\x2\xA\x0",
@@ -62,6 +53,13 @@ namespace game_zelda_a_link_between_worlds
             ["<value>"] = "\xE\x1\x5\x6",
 
             // Special
+            ["Ⓐ"] = "\xE000",
+            ["Ⓑ"] = "\xE001",
+            ["Ⓧ"] = "\xE002",
+            ["Ⓨ"] = "\xE003",
+            ["🄻"] = "\xE004",
+            ["🅁"] = "\xE005",
+            ["✚"] = "\xE006",
             ["◀"] = "\xE036",
             ["▶"] = "\xE037",
             [":ravio:"] = "\xE05E",
@@ -99,7 +97,6 @@ namespace game_zelda_a_link_between_worlds
         Bitmap background = new Bitmap(Resources.background);
         Bitmap textBox = new Bitmap(Resources.textbox);
 
-        // public Bitmap GeneratePreview(IEntry entry)
         public void GeneratePages(IEntry entry)
         {
             var pages = new List<Bitmap>();
@@ -107,7 +104,6 @@ namespace game_zelda_a_link_between_worlds
             var pagestr = new List<string>();
             int curline = 0;
             string curstr = "";
-            // int boxes = rawString.Count(c => c == '\n') / 3 + 1;
 
             foreach (string line in rawString.Split('\n'))
             {
@@ -137,15 +133,13 @@ namespace game_zelda_a_link_between_worlds
 
                         gfx.DrawImage(background, 0, 0);
 
-                        // for (int i = 0; i < boxes; i++)
                         gfx.DrawImage(textBox, 0, 240 - textBox.Height);
 
                         // Text
                         Rectangle rectText = new Rectangle(32, 20, 336, 44);
 
                         float scale = 1.0f;
-                        float x = rectText.X, y = 240 - textBox.Height + 20; // y = rectText.Y;
-                        int line = 0;
+                        float x = rectText.X, y = 240 - textBox.Height + 20;
                         bool cmd = false;
                         string param = "", temp = "";
                         int skip = 0, j = 0, padding = 0;
@@ -160,11 +154,6 @@ namespace game_zelda_a_link_between_worlds
                                 case '\n':
                                     x = rectText.X;
                                     y += rectText.Y;
-                                    if (++line % 3 == 0)
-                                    {
-                                        y += 28 - padding;
-                                        padding = 0;
-                                    }
                                     continue;
                                 case '\xE':
                                     cmd = true;
@@ -207,7 +196,7 @@ namespace game_zelda_a_link_between_worlds
                                     goto case "cleanup";
                                 case "\x1\x11\x4": // text padding
                                     x += c;
-                                    padding = rawString[j + 2];
+                                    padding = p[j + 2];
                                     y += padding;
                                     skip = 4;
                                     goto case "cleanup";
