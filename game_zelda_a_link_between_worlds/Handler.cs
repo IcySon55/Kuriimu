@@ -22,55 +22,55 @@ namespace game_zelda_a_link_between_worlds
 		// Feature Support
 		public bool HandlerCanGeneratePreviews => true;
 
-        #endregion
+		#endregion
 
-        Dictionary<string, string> _pairs = new Dictionary<string, string>
-        {
-            // Commands
-            ["<sel>"] = "\xE\x1\x6\x2",
-            ["<unkcmd1>"] = "\xE\x1\x10\x0",
-            ["<shake>"] = "\xE\x1\xF\x0",
-            ["<pause1>"] = "\xE\x1\x7\x2",
-            ["<pause2>"] = "\xE\x1\x8\x2",
-            ["<size>"] = "\xE\x0\x2\x2",
-            ["<instant>"] = "\xE\x1\xE\x0",
-            ["<padding>"] = "\xE\x1\x11\x4",
+		Dictionary<string, string> _pairs = new Dictionary<string, string>
+		{
+			// Commands
+			["<sel>"] = "\xE\x1\x6\x2",
+			["<unkcmd1>"] = "\xE\x1\x10\x0",
+			["<shake>"] = "\xE\x1\xF\x0",
+			["<pause1>"] = "\xE\x1\x7\x2",
+			["<pause2>"] = "\xE\x1\x8\x2",
+			["<size>"] = "\xE\x0\x2\x2",
+			["<instant>"] = "\xE\x1\xE\x0",
+			["<padding>"] = "\xE\x1\x11\x4",
 
-            // Color
-            ["<c-blue>"] = "\xE\x0\x3\x2\x9\x0",
-            ["<c-red>"] = "\xE\x0\x3\x2\xA\x0",
-            ["<c-default>"] = "\xE\x0\x3\x2\xFF\xFF",
+			// Color
+			["<c-blue>"] = "\xE\x0\x3\x2\x9\x0",
+			["<c-red>"] = "\xE\x0\x3\x2\xA\x0",
+			["<c-default>"] = "\xE\x0\x3\x2\xFF\xFF",
 
-            // Variables
-            ["<player>"] = "\xE\x1\x0\x0",
-            ["<unkvar1>"] = "\xE\x1\x2",
-            ["<unkvar2>"] = "\xE\x1\x3",
-            ["<unkvar3>"] = "\xE\x1\x4",
-            ["<unkvar4>"] = "\xE\x1\xA",
-            ["<npc>"] = "\xE\x2\x0\x2",
-            ["<map>"] = "\xE\x2\x1\x4",
-            ["<item>"] = "\xE\x2\x2\x4",
-            ["<value>"] = "\xE\x1\x5\x6",
+			// Variables
+			["<player>"] = "\xE\x1\x0\x0",
+			["<unkvar1>"] = "\xE\x1\x2",
+			["<unkvar2>"] = "\xE\x1\x3",
+			["<unkvar3>"] = "\xE\x1\x4",
+			["<unkvar4>"] = "\xE\x1\xA",
+			["<npc>"] = "\xE\x2\x0\x2",
+			["<map>"] = "\xE\x2\x1\x4",
+			["<item>"] = "\xE\x2\x2\x4",
+			["<value>"] = "\xE\x1\x5\x6",
 
-            // Special
-            ["Ⓐ"] = "\xE000",
-            ["Ⓑ"] = "\xE001",
-            ["Ⓧ"] = "\xE002",
-            ["Ⓨ"] = "\xE003",
-            ["🄻"] = "\xE004",
-            ["🅁"] = "\xE005",
-            ["✚"] = "\xE006",
-            ["◀"] = "\xE036",
-            ["▶"] = "\xE037",
-            [":ravio:"] = "\xE05E",
-            [":bow:"] = "\xE06C",
-            [":bomb:"] = "\xE06D",
-            [":rod:"] = "\xE06E",
-            ["←"] = "\x2190",
-            ["↑"] = "\x2191",
-            ["→"] = "\x2192",
-            ["↓"] = "\x2193"
-        };
+			// Special
+			["Ⓐ"] = "\xE000",
+			["Ⓑ"] = "\xE001",
+			["Ⓧ"] = "\xE002",
+			["Ⓨ"] = "\xE003",
+			["🄻"] = "\xE004",
+			["🅁"] = "\xE005",
+			["✚"] = "\xE006",
+			["◀"] = "\xE036",
+			["▶"] = "\xE037",
+			[":ravio:"] = "\xE05E",
+			[":bow:"] = "\xE06C",
+			[":bomb:"] = "\xE06D",
+			[":rod:"] = "\xE06E",
+			["←"] = "\x2190",
+			["↑"] = "\x2191",
+			["→"] = "\x2192",
+			["↓"] = "\x2193"
+		};
 
 		BCFNT font;
 
@@ -92,176 +92,201 @@ namespace game_zelda_a_link_between_worlds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-        public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		// Settings
+		public string Scene
+		{
+			get { return Settings.Default.Scene; }
+			set
+			{
+				Settings.Default.Scene = value;
+				Settings.Default.Save();
+			}
+		}
 
-        Bitmap background = new Bitmap(Resources.background);
-        Bitmap textBox = new Bitmap(Resources.textbox);
+		public string PlayerName
+		{
+			get { return Settings.Default.PlayerName; }
+			set
+			{
+				Settings.Default.PlayerName = value;
+				Settings.Default.Save();
+			}
+		}
 
-        public void GeneratePages(IEntry entry)
-        {
-            var pages = new List<Bitmap>();
-            string rawString = GetKuriimuString(entry.EditedText);
-            var pagestr = new List<string>();
-            int curline = 0;
-            string curstr = "";
+		public bool ShowWhitespace
+		{
+			get { return Settings.Default.ShowWhitespace; }
+			set
+			{
+				Settings.Default.ShowWhitespace = value;
+				Settings.Default.Save();
+			}
+		}
 
-            foreach (string line in rawString.Split('\n'))
-            {
-                curstr += line + '\n';
-                curline++;
-                if (curline % 3 == 0)
-                {
-                    pagestr.Add(curstr);
-                    curstr = "";
-                }
-            }
-            if (curline % 3 != 0)
-                pagestr.Add(curstr);
+		Bitmap background = new Bitmap(Resources.background);
+		Bitmap textBox = new Bitmap(Resources.textbox);
 
-            foreach (string page in pagestr)
-            {
-                string p = GetRawString(page);
-                if (p.Trim() != string.Empty)
-                {
-                    Bitmap img = new Bitmap(400, 240);
+		public IList<Bitmap> GeneratePages(IEntry entry)
+		{
+			var pages = new List<Bitmap>();
+			string rawString = GetKuriimuString(entry.EditedText);
+			var pagestr = new List<string>();
+			int curline = 0;
+			string curstr = "";
 
-                    using (Graphics gfx = Graphics.FromImage(img))
-                    {
-                        gfx.SmoothingMode = SmoothingMode.HighQuality;
-                        gfx.InterpolationMode = InterpolationMode.Bicubic;
-                        gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+			foreach (string line in rawString.Split('\n'))
+			{
+				curstr += line + '\n';
+				curline++;
+				if (curline % 3 == 0)
+				{
+					pagestr.Add(curstr);
+					curstr = "";
+				}
+			}
+			if (curline % 3 != 0)
+				pagestr.Add(curstr);
 
-                        gfx.DrawImage(background, 0, 0);
+			foreach (string page in pagestr)
+			{
+				string p = GetRawString(page);
+				if (p.Trim() != string.Empty)
+				{
+					Bitmap img = new Bitmap(400, 240);
 
-                        gfx.DrawImage(textBox, 0, 240 - textBox.Height);
+					using (Graphics gfx = Graphics.FromImage(img))
+					{
+						gfx.SmoothingMode = SmoothingMode.HighQuality;
+						gfx.InterpolationMode = InterpolationMode.Bicubic;
+						gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                        // Text
-                        Rectangle rectText = new Rectangle(32, 20, 336, 44);
+						gfx.DrawImage(background, 0, 0);
 
-                        float scale = 1.0f;
-                        float x = rectText.X, y = 240 - textBox.Height + 20;
-                        bool cmd = false;
-                        string param = "", temp = "";
-                        int skip = 0, j = 0, padding = 0;
+						gfx.DrawImage(textBox, 0, 240 - textBox.Height);
 
-                        font.SetColor(Color.FromArgb(255, 80, 80, 80));
+						// Text
+						Rectangle rectText = new Rectangle(32, 20, 336, 44);
 
-                        gfx.InterpolationMode = InterpolationMode.Bicubic;
-                        foreach (char c in p)
-                        {
-                            switch (param)
-                            {
-                                case "\x0\x3\x2\x9\x0":
-                                    font.SetColor(Color.Blue);
-                                    goto case "cleanup";
-                                case "\x0\x3\x2\xA\x0":
-                                    font.SetColor(Color.Red);
-                                    goto case "cleanup";
-                                case "\x0\x3\x2\xFF\xFF":
-                                    font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                                    goto case "cleanup";
-                                case "\x1\x0\x0":
-                                    temp = "Player";
-                                    goto case "placeholder";
-                                case "\x1\x2":
-                                case "\x1\x3":
-                                case "\x1\x4":
-                                case "\x1\xA":
-                                    temp = "UNKNOWN";
-                                    font.SetColor(Color.Blue);
-                                    skip = 1;
-                                    goto case "placeholder";
-                                case "\x0\x2\x2": // font size
-                                    scale = (float)c / 100.0f;
-                                    skip = 2;
-                                    goto case "cleanup";
-                                case "\x1\x8\x2": // useless
-                                case "\x1\x7\x2":
-                                case "\x1\xE":
-                                case "\x1\xF":
-                                case "\x1\x10":
-                                    skip = 2;
-                                    goto case "cleanup";
-                                case "\x1\x11\x4": // text padding
-                                    x += c;
-                                    padding = p[j + 2];
-                                    y += padding;
-                                    skip = 4;
-                                    goto case "cleanup";
-                                case "\x1\x5\x6": // value
-                                    temp = "00";
-                                    skip = 6;
-                                    goto case "placeholder";
-                                case "\x2\x0\x2": // npc
-                                    temp = "NPC";
-                                    font.SetColor(Color.Blue);
-                                    skip = 2;
-                                    goto case "placeholder";
-                                case "\x2\x1\x4": // map
-                                    temp = "LOCATION";
-                                    font.SetColor(Color.Blue);
-                                    skip = 4;
-                                    goto case "placeholder";
-                                case "\x2\x2\x4": // item
-                                    temp = "ITEM";
-                                    font.SetColor(Color.Blue);
-                                    skip = 4;
-                                    goto case "placeholder";
-                                case "placeholder":
-                                    foreach (char t in temp)
-                                    {
-                                        font.Draw(t, gfx, x, y, scale, scale);
-                                        x += font.GetWidthInfo(t).char_width * scale;
-                                    }
-                                    font.SetColor(Color.FromArgb(255, 80, 80, 80));
-                                    goto case "cleanup";
-                                case "cleanup":
-                                    param = "";
-                                    cmd = false;
-                                    break;
-                            }
+						float scale = 1.0f;
+						float x = rectText.X, y = 240 - textBox.Height + 20;
+						bool cmd = false;
+						string param = "", temp = "";
+						int skip = 0, j = 0, padding = 0;
 
-                            if (!cmd) switch (c)
-                            {
-                                case '\n':
-                                    x = rectText.X;
-                                    y += rectText.Y;
-                                    continue;
-                                case '\xE':
-                                    cmd = true;
-                                    param = "";
-                                    continue;
-                            }
+						font.SetColor(Color.FromArgb(255, 80, 80, 80));
 
-                            if (cmd)
-                                param += c;
-                            else if (skip > 0)
-                                skip--;
-                            else
-                            {
-                                font.Draw(c, gfx, x, y, scale, scale);
-                                x += font.GetWidthInfo(c).char_width * scale;
-                            }
-                            j++;
-                        }
+						gfx.InterpolationMode = InterpolationMode.Bicubic;
+						foreach (char c in p)
+						{
+							switch (param)
+							{
+								case "\x0\x3\x2\x9\x0":
+									font.SetColor(Color.Blue);
+									goto case "cleanup";
+								case "\x0\x3\x2\xA\x0":
+									font.SetColor(Color.Red);
+									goto case "cleanup";
+								case "\x0\x3\x2\xFF\xFF":
+									font.SetColor(Color.FromArgb(255, 80, 80, 80));
+									goto case "cleanup";
+								case "\x1\x0\x0":
+									temp = "Player";
+									goto case "placeholder";
+								case "\x1\x2":
+								case "\x1\x3":
+								case "\x1\x4":
+								case "\x1\xA":
+									temp = "UNKNOWN";
+									font.SetColor(Color.Blue);
+									skip = 1;
+									goto case "placeholder";
+								case "\x0\x2\x2": // font size
+									scale = (float)c / 100.0f;
+									skip = 2;
+									goto case "cleanup";
+								case "\x1\x8\x2": // useless
+								case "\x1\x7\x2":
+								case "\x1\xE":
+								case "\x1\xF":
+								case "\x1\x10":
+									skip = 2;
+									goto case "cleanup";
+								case "\x1\x11\x4": // text padding
+									x += c;
+									padding = p[j + 2];
+									y += padding;
+									skip = 4;
+									goto case "cleanup";
+								case "\x1\x5\x6": // value
+									temp = "00";
+									skip = 6;
+									goto case "placeholder";
+								case "\x2\x0\x2": // npc
+									temp = "NPC";
+									font.SetColor(Color.Blue);
+									skip = 2;
+									goto case "placeholder";
+								case "\x2\x1\x4": // map
+									temp = "LOCATION";
+									font.SetColor(Color.Blue);
+									skip = 4;
+									goto case "placeholder";
+								case "\x2\x2\x4": // item
+									temp = "ITEM";
+									font.SetColor(Color.Blue);
+									skip = 4;
+									goto case "placeholder";
+								case "placeholder":
+									foreach (char t in temp)
+									{
+										font.Draw(t, gfx, x, y, scale, scale);
+										x += font.GetWidthInfo(t).char_width * scale;
+									}
+									font.SetColor(Color.FromArgb(255, 80, 80, 80));
+									goto case "cleanup";
+								case "cleanup":
+									param = "";
+									cmd = false;
+									break;
+							}
 
-                        pages.Add(img);
-                    }
-                }
+							if (!cmd) switch (c)
+								{
+									case '\n':
+										x = rectText.X;
+										y += rectText.Y;
+										continue;
+									case '\xE':
+										cmd = true;
+										param = "";
+										continue;
+								}
 
-                Pages = pages;
-            }
-        }
+							if (cmd)
+								param += c;
+							else if (skip > 0)
+								skip--;
+							else
+							{
+								font.Draw(c, gfx, x, y, scale, scale);
+								x += font.GetWidthInfo(c).char_width * scale;
+							}
+							j++;
+						}
+					}
 
-        // Settings
-        public bool ShowWhitespace
-        {
-            get { return Settings.Default.ShowWhitespace; }
-            set
-            {
-                Settings.Default.ShowWhitespace = value;
-                Settings.Default.Save();
-            }
-        }
-    }
+					pages.Add(img);
+				}
+			}
+
+			return pages;
+		}
+
+		public IEnumerable<string> GetScenes()
+		{
+			var scenes = new List<string>();
+			scenes.Add("Default");
+			return scenes;
+		}
+	}
 }
