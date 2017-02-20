@@ -16,12 +16,14 @@ namespace KuriimuContract
 		string GetKuriimuString(string rawString);
 		string GetRawString(string kuriimuString);
 
-		// Previewer
-		IList<Bitmap> Pages { get; }
-		void GeneratePages(IEntry entry);
-
 		// Settings
+		string Scene { get; set; }
+		string PlayerName { get; set; }
 		bool ShowWhitespace { get; set; }
+
+		// Previewer
+		IList<Bitmap> GeneratePages(IEntry entry);
+		IEnumerable<string> GetScenes();
 	}
 
 	public sealed class DefaultGameHandler : IGameHandler
@@ -34,10 +36,12 @@ namespace KuriimuContract
 		public string GetKuriimuString(string rawString) => rawString;
 		public string GetRawString(string kuriimuString) => kuriimuString;
 
-		public IList<Bitmap> Pages => new List<Bitmap>();
-		public void GeneratePages(IEntry entry) { }
-
+		public string Scene { get; set; } = string.Empty;
+		public string PlayerName { get; set; } = string.Empty;
 		public bool ShowWhitespace { get; set; } = false;
+
+		public IList<Bitmap> GeneratePages(IEntry entry) => new List<Bitmap>();
+		public IEnumerable<string> GetScenes() => new List<string>();
 
 		public DefaultGameHandler(Image icon) { Icon = icon; }
 	}

@@ -48,6 +48,18 @@ namespace KuriimuContract
 			return gameHandlers;
 		}
 
+		public static void LoadScenes(IGameHandler gameHandler, ToolStripDropDownButton tsb, EventHandler selectedIndexChanged)
+		{
+			tsb.DropDownItems.Clear();
+
+			foreach (string scene in gameHandler.GetScenes())
+			{
+				ToolStripMenuItem tsiScene = new ToolStripMenuItem(scene, null, selectedIndexChanged);
+				tsiScene.Tag = scene;
+				tsb.DropDownItems.Add(tsiScene);
+			}
+		}
+
 		public static void LoadSupportedEncodings(ComboBox cmb, Encoding encoding)
 		{
 			List<ListItem> items = new List<ListItem>();

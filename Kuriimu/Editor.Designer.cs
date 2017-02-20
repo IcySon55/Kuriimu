@@ -112,6 +112,8 @@
 			this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
 			this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
 			this.imlEntries = new System.Windows.Forms.ImageList(this.components);
+			this.tsbSceneSelect = new System.Windows.Forms.ToolStripDropDownButton();
+			this.tstPlayerName = new System.Windows.Forms.ToolStripTextBox();
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -143,12 +145,12 @@
 			// mnuMain
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
-            this.entriesToolStripMenuItem,
-            this.tolsToolStripMenuItem,
-            this.extensionsToolStripMenuItem,
-            this.aboutToolStripMenuItem});
+			this.fileToolStripMenuItem,
+			this.editToolStripMenuItem,
+			this.entriesToolStripMenuItem,
+			this.tolsToolStripMenuItem,
+			this.extensionsToolStripMenuItem,
+			this.aboutToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
 			this.mnuMain.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -158,12 +160,12 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.openToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.exitToolStripMenuItem});
+			this.newToolStripMenuItem,
+			this.openToolStripMenuItem,
+			this.saveToolStripMenuItem,
+			this.saveAsToolStripMenuItem,
+			this.toolStripSeparator1,
+			this.exitToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
@@ -223,9 +225,9 @@
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.findToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.propertiesToolStripMenuItem});
+			this.findToolStripMenuItem,
+			this.toolStripMenuItem1,
+			this.propertiesToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
@@ -258,12 +260,12 @@
 			// entriesToolStripMenuItem
 			// 
 			this.entriesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addEntryToolStripMenuItem,
-            this.renameEntryToolStripMenuItem,
-            this.deleteEntryToolStripMenuItem,
-            this.entryPropertiesToolStripMenuItem,
-            this.toolStripSeparator4,
-            this.sortEntriesToolStripMenuItem});
+			this.addEntryToolStripMenuItem,
+			this.renameEntryToolStripMenuItem,
+			this.deleteEntryToolStripMenuItem,
+			this.entryPropertiesToolStripMenuItem,
+			this.toolStripSeparator4,
+			this.sortEntriesToolStripMenuItem});
 			this.entriesToolStripMenuItem.Name = "entriesToolStripMenuItem";
 			this.entriesToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
 			this.entriesToolStripMenuItem.Text = "E&ntries";
@@ -318,8 +320,8 @@
 			this.sortEntriesToolStripMenuItem.Enabled = false;
 			this.sortEntriesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_unsorted;
 			this.sortEntriesToolStripMenuItem.Name = "sortEntriesToolStripMenuItem";
-			this.sortEntriesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.S)));
+			this.sortEntriesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+			| System.Windows.Forms.Keys.S)));
 			this.sortEntriesToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
 			this.sortEntriesToolStripMenuItem.Text = "&Sort Entries";
 			this.sortEntriesToolStripMenuItem.Click += new System.EventHandler(this.sortEntriesToolStripMenuItem_Click);
@@ -333,7 +335,7 @@
 			// extensionsToolStripMenuItem
 			// 
 			this.extensionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.noExtensionsLoadedToolStripMenuItem});
+			this.noExtensionsLoadedToolStripMenuItem});
 			this.extensionsToolStripMenuItem.Name = "extensionsToolStripMenuItem";
 			this.extensionsToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
 			this.extensionsToolStripMenuItem.Text = "E&xtensions";
@@ -348,10 +350,10 @@
 			// aboutToolStripMenuItem
 			// 
 			this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.gBATempToolStripMenuItem,
-            this.gitHubToolStripMenuItem,
-            this.toolStripSeparator7,
-            this.aboutToolStripMenuItem1});
+			this.gBATempToolStripMenuItem,
+			this.gitHubToolStripMenuItem,
+			this.toolStripSeparator7,
+			this.aboutToolStripMenuItem1});
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
 			this.aboutToolStripMenuItem.Text = "&Help";
@@ -444,12 +446,12 @@
 			this.tlsEntries.BackColor = System.Drawing.Color.Transparent;
 			this.tlsEntries.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tslEntries,
-            this.tsbEntryAdd,
-            this.tsbEntryRename,
-            this.tsbEntryDelete,
-            this.tsbEntryProperties,
-            this.tsbSortEntries});
+			this.tslEntries,
+			this.tsbEntryAdd,
+			this.tsbEntryRename,
+			this.tsbEntryDelete,
+			this.tsbEntryProperties,
+			this.tsbSortEntries});
 			this.tlsEntries.Location = new System.Drawing.Point(0, 0);
 			this.tlsEntries.Name = "tlsEntries";
 			this.tlsEntries.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -579,8 +581,8 @@
 			this.tlsEdit.BackColor = System.Drawing.Color.Transparent;
 			this.tlsEdit.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tslText,
-            this.tsbGameSelect});
+			this.tslText,
+			this.tsbGameSelect});
 			this.tlsEdit.Location = new System.Drawing.Point(0, 0);
 			this.tlsEdit.Name = "tlsEdit";
 			this.tlsEdit.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -623,7 +625,7 @@
 			this.tlsOriginal.BackColor = System.Drawing.Color.Transparent;
 			this.tlsOriginal.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsOriginal.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel1});
+			this.toolStripLabel1});
 			this.tlsOriginal.Location = new System.Drawing.Point(0, 0);
 			this.tlsOriginal.Name = "tlsOriginal";
 			this.tlsOriginal.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -685,16 +687,18 @@
 			this.tlsPreview.BackColor = System.Drawing.Color.Transparent;
 			this.tlsPreview.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel2,
-            this.tsbPreviewEnabled,
-            this.tsbPreviewSave,
-            this.tsbPreviewCopy,
-            this.toolStripSeparator8,
-            this.tsbPreviousPage,
-            this.tslPage,
-            this.tsbNextPage,
-            this.toolStripSeparator9,
-            this.tsbWhitespace});
+			this.toolStripLabel2,
+			this.tsbPreviewEnabled,
+			this.tsbPreviewSave,
+			this.tsbPreviewCopy,
+			this.toolStripSeparator8,
+			this.tsbPreviousPage,
+			this.tslPage,
+			this.tsbNextPage,
+			this.toolStripSeparator9,
+			this.tsbSceneSelect,
+			this.tstPlayerName,
+			this.tsbWhitespace});
 			this.tlsPreview.Location = new System.Drawing.Point(0, 0);
 			this.tlsPreview.Name = "tlsPreview";
 			this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -800,7 +804,7 @@
 			this.tlsHexView.BackColor = System.Drawing.Color.Transparent;
 			this.tlsHexView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsHexView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel3});
+			this.toolStripLabel3});
 			this.tlsHexView.Location = new System.Drawing.Point(0, 0);
 			this.tlsHexView.Name = "tlsHexView";
 			this.tlsHexView.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -819,25 +823,25 @@
 			this.tlsMain.BackColor = System.Drawing.Color.Transparent;
 			this.tlsMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbNew,
-            this.tsbOpen,
-            this.tsbSave,
-            this.tsbSaveAs,
-            this.toolStripSeparator2,
-            this.tsbFind,
-            this.toolStripSeparator3,
-            this.tsbKukki,
-            this.tsbProperties,
-            this.toolStripSeparator5,
-            this.tsbExportKUP,
-            this.tsbImportKUP,
-            this.tsbBatchExportKUP,
-            this.tsbBatchImportKUP,
-            this.toolStripSeparator6,
-            this.tslFontFamily,
-            this.scbFontFamily,
-            this.tslFontSize,
-            this.scbFontSize});
+			this.tsbNew,
+			this.tsbOpen,
+			this.tsbSave,
+			this.tsbSaveAs,
+			this.toolStripSeparator2,
+			this.tsbFind,
+			this.toolStripSeparator3,
+			this.tsbKukki,
+			this.tsbProperties,
+			this.toolStripSeparator5,
+			this.tsbExportKUP,
+			this.tsbImportKUP,
+			this.tsbBatchExportKUP,
+			this.tsbBatchImportKUP,
+			this.toolStripSeparator6,
+			this.tslFontFamily,
+			this.scbFontFamily,
+			this.tslFontSize,
+			this.scbFontSize});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -1027,6 +1031,24 @@
 			this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
 			this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
 			// 
+			// tsbSceneSelect
+			// 
+			this.tsbSceneSelect.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbSceneSelect.Enabled = false;
+			this.tsbSceneSelect.Image = global::Kuriimu.Properties.Resources.menu_preview_visible;
+			this.tsbSceneSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbSceneSelect.Name = "tsbSceneSelect";
+			this.tsbSceneSelect.Size = new System.Drawing.Size(74, 22);
+			this.tsbSceneSelect.Text = "Default";
+			// 
+			// tstPlayerName
+			// 
+			this.tstPlayerName.AutoSize = false;
+			this.tstPlayerName.Enabled = false;
+			this.tstPlayerName.Name = "tstPlayerName";
+			this.tstPlayerName.Size = new System.Drawing.Size(72, 25);
+			this.tstPlayerName.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tstPlayerName_KeyUp);
+			// 
 			// frmEditor
 			// 
 			this.AllowDrop = true;
@@ -1169,5 +1191,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 		private System.Windows.Forms.ToolStripButton tsbWhitespace;
 		private System.Windows.Forms.ToolStripButton tsbPreviewCopy;
+		private System.Windows.Forms.ToolStripDropDownButton tsbSceneSelect;
+		private System.Windows.Forms.ToolStripTextBox tstPlayerName;
 	}
 }

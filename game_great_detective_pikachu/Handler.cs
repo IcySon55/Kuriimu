@@ -42,21 +42,7 @@ namespace game_great_detective_pikachu
 			["？"] = "?"
 		};
 
-		//Dictionary<string, string> _previewPairs = new Dictionary<string, string>
-		//{
-		//	["…"] = "\x85",
-		//	["？"] = "?"
-		//};
-
 		BCFNT font;
-
-		public Handler()
-		{
-			var ms = new MemoryStream();
-			new GZipStream(new MemoryStream(Resources.cbf_std_bcfnt), CompressionMode.Decompress).CopyTo(ms);
-			ms.Position = 0;
-			font = new BCFNT(ms);
-		}
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -68,13 +54,52 @@ namespace game_great_detective_pikachu
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		// Settings
+		public string Scene
+		{
+			get { return Settings.Default.Scene; }
+			set
+			{
+				Settings.Default.Scene = value;
+				Settings.Default.Save();
+			}
+		}
 
-		Bitmap background = new Bitmap(Resources.background1);
+		public string PlayerName
+		{
+			get { return Settings.Default.PlayerName; }
+			set
+			{
+				Settings.Default.PlayerName = value;
+				Settings.Default.Save();
+			}
+		}
 
-		public void GeneratePages(IEntry entry)
+		public bool ShowWhitespace
+		{
+			get { return Settings.Default.ShowWhitespace; }
+			set
+			{
+				Settings.Default.ShowWhitespace = value;
+				Settings.Default.Save();
+			}
+		}
+
+		Bitmap background = new Bitmap(Resources.background);
+
+		// Previewer
+		public IList<Bitmap> GeneratePages(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+
+			// Font
+			if (font == null)
+			{
+				var ms = new MemoryStream();
+				new GZipStream(new MemoryStream(Resources.cbf_std_bcfnt), CompressionMode.Decompress).CopyTo(ms);
+				ms.Position = 0;
+				font = new BCFNT(ms);
+			}
 
 			string rawString = _pairs.Aggregate(entry.EditedText, (str, pair) => str.Replace(pair.Value, pair.Key));
 
@@ -187,18 +212,14 @@ namespace game_great_detective_pikachu
 				}
 			}
 
-			Pages = pages;
+			return pages;
 		}
 
-		// Settings
-		public bool ShowWhitespace
+		public IEnumerable<string> GetScenes()
 		{
-			get { return Settings.Default.ShowWhitespace; }
-			set
-			{
-				Settings.Default.ShowWhitespace = value;
-				Settings.Default.Save();
-			}
+			var scenes = new List<string>();
+			scenes.Add("Default");
+			return scenes;
 		}
 	}
 }
