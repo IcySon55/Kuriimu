@@ -12,27 +12,14 @@ using game_miitopia_3ds.Properties;
 using KuriimuContract;
 
 /*
+    ***********************************************
+    Codes
+    ***********************************************
+    <n0.0:> - General text and menu text stuff
     
-    <n00:> - General text and menu text stuff
-    
-
-    ***********************************************
-    Names of NPCs
-    ***********************************************
-    // Castle_King
-    <n02:1E-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-4B-00-69-00-6E-00-67-00-30-00-30-00>
-    <0x0E><0x0E><0x02><0x1E><0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>K<0x00>i<0x00>n<0x00>g<0x00>0<0x00>0<0x00>
-    // Castle_King (name)
-    <n00:1E-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-4B-00-69-00-6E-00-67-00-30-00-30-00>
-    <0x0E><0x0E><0x00><0x1E><0x00>C<0x00>a<0x00>s<0x00>t<0x00>l<0x00>e<0x00>0<0x00>0<0x00>_<0x00>K<0x00>i<0x00>n<0x00>g<0x00>0<0x00>0<0x00>
-
-    And so on...
-
-
-    ***********************************************
-    Names of Items
-    ***********************************************
-    
+    <n3.0:00-CD> - Mii's name
+    <n9.0:00-CD> - Weapon
+    <n10.0:00-CD> - Armour
 
 */
 
@@ -177,7 +164,7 @@ namespace game_miitopia_3ds
             {
                 Func<string, byte[], string> Fix = (id, bytes) =>
                 {
-                    return $"n{(int)id[0]}{(int)id[1]}:" + BitConverter.ToString(bytes);
+                    return $"n{(int)id[0]}.{(int)id[1]}:" + BitConverter.ToString(bytes);
                 };
 
                 int i;
@@ -216,8 +203,17 @@ namespace game_miitopia_3ds
                     //if (z == "/") return "\xF\x2\0";
                     //if (z == "v") return "\xE\x1\0\0";
 
-                    var codeStringRaw = codeString.Substring(1); // "00:code" part, the identyfier ("n") infront of 00 is stripped
-                    string hexString = codeStringRaw.Substring(3);
+                    // "0.0:code" part, the identyfier ("n") infront of 0.0 is stripped
+                    var codeStringRaw = codeString.Substring(1);
+
+                    // separate the code id "00.00" and the hex code "00-00""
+                    string[] codeStringArray = codeStringRaw.Split(':');
+
+                    // get the ID part
+                    string[] idString = codeStringArray[0].Split('.');
+
+                    // get the hex string with the ID ("X.X") part stripped
+                    string hexString = codeStringArray[1];//codeStringRaw.Substring(3); 
                     int hexStringLen = hexString.Length;
                     if (hexStringLen > 0)
                     {
@@ -231,16 +227,16 @@ namespace game_miitopia_3ds
                             byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
                         }
 
-                        string idHex = "" + (char)int.Parse(codeStringRaw.Substring(0, 1), NumberStyles.HexNumber) +
-                                            (char)int.Parse(codeStringRaw.Substring(1, 1), NumberStyles.HexNumber);
+                        string idHex = "" + (char)int.Parse(idString[0]) +
+                                            (char)int.Parse(idString[1]);
                         return Merge(idHex, byteArray);
                     }
                     else
                     {
                         Func<string, int, string> MergeEmpty = (id, length) => $"\xE{id}{(char)length}";
                         
-                        string idHex = "" + (char)int.Parse(codeStringRaw.Substring(0, 1), NumberStyles.HexNumber) +
-                                            (char)int.Parse(codeStringRaw.Substring(1, 1), NumberStyles.HexNumber);
+                        string idHex = "" + (char)int.Parse(idString[0]) +
+                                            (char)int.Parse(idString[1]);
 
                         return MergeEmpty(idHex, 0);
                     }
