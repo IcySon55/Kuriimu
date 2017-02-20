@@ -149,18 +149,6 @@ namespace game_zelda_a_link_between_worlds
                         gfx.InterpolationMode = InterpolationMode.Bicubic;
                         foreach (char c in p)
                         {
-                            if (!cmd) switch (c)
-                            {
-                                case '\n':
-                                    x = rectText.X;
-                                    y += rectText.Y;
-                                    continue;
-                                case '\xE':
-                                    cmd = true;
-                                    param = "";
-                                    continue;
-                            }
-
                             switch (param)
                             {
                                 case "\x0\x3\x2\x9\x0":
@@ -231,6 +219,18 @@ namespace game_zelda_a_link_between_worlds
                                     param = "";
                                     cmd = false;
                                     break;
+                            }
+
+                            if (!cmd) switch (c)
+                            {
+                                case '\n':
+                                    x = rectText.X;
+                                    y += rectText.Y;
+                                    continue;
+                                case '\xE':
+                                    cmd = true;
+                                    param = "";
+                                    continue;
                             }
 
                             if (cmd)
