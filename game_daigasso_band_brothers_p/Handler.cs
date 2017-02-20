@@ -85,19 +85,65 @@ namespace game_daigasso_band_brothers_p
 				str = symbols.Aggregate(str, (s, kvp) => s.Replace(kvp.Key, kvp.Value));
 				Func<string, byte[], string> Fix = (id, bytes) =>
 				{
+					// [0] System Codes ------------------
+					//		0,0 = System.Ruby(Type8 rt)
+					//		0,1 = System.Font(Type8 face)
+					//		0,2 = System.Size(Type1 percent)
+					//		0,3 = System.Color(Type0 r, Type0 g, Type0 b, Type0 a, Type8 name)
+					//		0,4 = PageBreak()
+					// [1] Cmd Codes ---------------------
+					//		1,0 = Cmd.once_stop()
+					//		1,1 = Cmd.key()
+					//		1,2 = Cmd.event(no)
+					//		1,3 = Cmd.wait(frame)
+					//		1,4 = Cmd.deprecated_event_ff(Type9<Enum0> Cmd_deprecated_event_ff_id)
+					//		1,5 = Cmd.event_ff(Type9<Enum1> Cmd_event_ff_id)
+					//		1,6 = Cmd.event_scout(Type9<Enum2> Cmd_event_scout_id)
+					//		1,7 = Cmd.voice(Type8 sound_id)
+					//		1,8 = Cmd.wait_voice()
+					// [2] Style Codes -------------------
+					//		2,0 = Style.ScaleX(Type4 scale_x)
+					//		2,1 = Style.VSpace(Type4 space_v)
+					// [3] Replace Codes -----------------
+					//		3,0 = Replace.Num(Type3 id, Type9<Enum3> Replace_Num_char_type, Type3 length)
+					//		3,1 = Replace.Name(Type3 id)
+					//		3,2 = Replace.Year(Type3 id)
+					//		3,3 = Replace.Month(Type3 id)
+					//		3,4 = Replace.MonthZero(Type3 id)
+					//		3,5 = Replace.Day(Type3 id)
+					//		3,6 = Replace.DayZero(Type3 id)
+					//		3,7 = Replace.Hour(Type3 id)
+					//		3,8 = Replace.HourZero(Type3 id)
+					//		3,9 = Replace.Minute(Type3 id)
+					//		3,A = Replace.MinuteZero(Type3 id)
+					//		3,B = Replace.String(Type3 id, Type9<Enum4> Replace_String_char_type, Type9<Enum5> Replace_String_length_type, x)
+					// [Enum values] ---------------------
+					//		Enum0[32] = none,SaluteSeq,Profile,Dlg_ProfileOK,MovePaper_Photo,CameraSequence,SwitchBalloon_toLower,SingerOn,SwitchBalloon_toUpper,SingerOff,BarbaraOn,BarbaraOff,FacePreview,Dlg_FaceOK,HairSelect,ColorSelect,VocaloidExteriorMenu,Dlg_IsVoiceRecordable,VoiceRecording,VoiceEstimation,VoiceEstimation_Hamoduo,VoiceEstimation_Result,VoiceEstimation_NoVoice,ToVocaloVoiceSequence,VocaloVoice,VocaloidStyleGamePlay,Signature,ShimobeSequence,Dlg_WaveOut,WaveOut_Tune_Play,Dlg_WaveOut_Really,SceneEnd
+					//		Enum1[20] = none,CameraSequence,PlayBGM,NameInput,BarbaraOn,BarbaraOff,BarbaraNormal,BarbaraAngry,BarbaraSmile,DialogKickMe,DialogYes,VoiceRecording,VoiceEstimation,ShowNamePlate,HideNamePlate,Signature,SingerSalute,BlackOut,BlackIn,SceneEnd
+					//		Enum2[6]  = none,Dlg_WhoMakeSinger,GoToRegistFlow,CameraSequence,MySingerRemakeConfirm,SceneEnd_WithoutSave
+					//		Enum3[2]  = hankaku,zenkaku
+					//		Enum4[3]  = plain,hankaku,zenkaku
+					//		Enum5[7]  = Default,Specify,ShortInstName,ShortInstName_Num,SongPostID,SongDB_ID,BandName
+					// [Other type information]
+					//		Type0 = uint8
+					//		Type1 = uint16, then divided by 100
+					//		Type4 = int16, then divided by 100
+					//		Type8 = no length / hidden?
+					//		Type9 = Enum
+
 					switch (id)
 					{
-						case "\0\x2":
+						case "\0\x2": // Size
 							return "s" + BitConverter.ToInt16(bytes, 0);
-						case "\0\x3":
+						case "\0\x3": // Color
 							return "c" + colours[BitConverter.ToUInt32(bytes, 0)];
 						case "\x1\x0":
 							return "v";
 						case "\x1\x7":
 							return "v" + Encoding.Unicode.GetString(bytes).Substring(1);
-						case "\x2\0":
+						case "\x2\0": // ScaleX
 							return "w" + BitConverter.ToInt16(bytes, 0);
-						case "\x2\x1":
+						case "\x2\x1": // VSpace
 							return "h" + BitConverter.ToInt16(bytes, 0);
 						default:
 							return $"n{(int)id[1]:X2}:" + Convert.ToBase64String(bytes);
@@ -257,7 +303,7 @@ namespace game_daigasso_band_brothers_p
 						y += font.LineFeed * scale;
 						if (c == '\n') continue;
 					}
-					font.Draw(c, g, x + txtOffsetX, y + txtOffsetY, scale, scale);
+					font.Draw(c, g, x + txtOffsetX, y + txtOffsetY, scale * widthMultiplier, scale);
 					x += char_width;
 				}
 			}
