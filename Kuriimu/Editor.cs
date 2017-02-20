@@ -366,7 +366,6 @@ namespace Kuriimu
 			ToolStripItem tsi = (ToolStripItem)sender;
 			_gameHandler.Scene = (string)tsi.Tag;
 			tsbSceneSelect.Text = tsi.Text;
-			tstPlayerName.Text = _gameHandler.PlayerName;
 
 			UpdatePreview();
 			UpdateForm();

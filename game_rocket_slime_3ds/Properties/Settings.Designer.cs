@@ -34,18 +34,6 @@ namespace game_rocket_slime_3ds.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowWhitespace {
-            get {
-                return ((bool)(this["ShowWhitespace"]));
-            }
-            set {
-                this["ShowWhitespace"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Default")]
         public string Scene {
             get {
@@ -65,6 +53,18 @@ namespace game_rocket_slime_3ds.Properties {
             }
             set {
                 this["PlayerName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowWhitespace {
+            get {
+                return ((bool)(this["ShowWhitespace"]));
+            }
+            set {
+                this["ShowWhitespace"] = value;
             }
         }
     }
