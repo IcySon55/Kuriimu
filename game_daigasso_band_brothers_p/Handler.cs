@@ -249,16 +249,16 @@ namespace game_daigasso_band_brothers_p
 			else
 			{
 				int height = 18 * (entry.OriginalText.Count(c => c == '\n') + 1);
-				bmp = new Bitmap(256, height + 10);
+				bmp = new Bitmap(226, height + 10);
 				using (var g = Graphics.FromImage(bmp))
 				{
 					g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
-					g.FillRectangle(Brushes.LightYellow, 3, 5, 250, height);
+					g.FillRectangle(Brushes.LightYellow, 3, 5, 220, height);
 				}
 				font = fontCbfStd;
 				font.SetColor(Color.Black);
 				fontSisterSymbol.SetColor(Color.Black);
-				fullWidth = 250;
+				fullWidth = 220;
 				txtOffsetX = 3;
 				txtOffsetY = 5;
 				scale = 0.6f;
