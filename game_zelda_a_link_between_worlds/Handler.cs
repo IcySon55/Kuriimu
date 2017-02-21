@@ -19,7 +19,7 @@ namespace game_zelda_a_link_between_worlds
 		public Image Icon => Resources.icon;
 
 		// Feature Support
-		public bool HandlerHasSettings => false;
+		public bool HandlerHasSettings => true;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -121,7 +121,8 @@ namespace game_zelda_a_link_between_worlds
 
 			foreach (string page in pagestr)
 			{
-				string p = GetRawString(page);
+				string p = GetRawString(page).Replace("\xE\x1\x0\x0", Settings.Default.PlayerName == string.Empty ? "Player" : Settings.Default.PlayerName);
+
 				if (p.Trim() != string.Empty)
 				{
 					Bitmap img = new Bitmap(400, 240);
@@ -161,9 +162,6 @@ namespace game_zelda_a_link_between_worlds
 								case "\x0\x3\x2\xFF\xFF":
 									font.SetColor(Color.FromArgb(255, 80, 80, 80));
 									goto case "cleanup";
-								case "\x1\x0\x0":
-									temp = "Player";
-									goto case "placeholder";
 								case "\x1\x2":
 								case "\x1\x3":
 								case "\x1\x4":
@@ -254,6 +252,10 @@ namespace game_zelda_a_link_between_worlds
 			return pages;
 		}
 
-		public bool ShowSettings(Icon icon) => false;
+        public bool ShowSettings(Icon icon) {
+            var settings = new frmSettings(icon);
+            settings.ShowDialog();
+            return settings.HasChanges;
+        }
 	}
 }
