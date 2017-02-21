@@ -16,10 +16,10 @@ namespace game_rocket_slime_3ds
 
 		// Information
 		public string Name => "Rocket Slime 3DS";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => true;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -92,45 +92,15 @@ namespace game_rocket_slime_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		// Settings
-		public string Scene
-		{
-			get { return Settings.Default.Scene; }
-			set
-			{
-				Settings.Default.Scene = value;
-				Settings.Default.Save();
-			}
-		}
-
-		public string PlayerName
-		{
-			get { return Settings.Default.PlayerName; }
-			set
-			{
-				Settings.Default.PlayerName = value;
-				Settings.Default.Save();
-			}
-		}
-
-		public bool ShowWhitespace
-		{
-			get { return Settings.Default.ShowWhitespace; }
-			set
-			{
-				Settings.Default.ShowWhitespace = value;
-				Settings.Default.Save();
-			}
-		}
-
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap nameBox = new Bitmap(Resources.namebox_top);
 		Bitmap textBox = new Bitmap(Resources.textbox_top);
 
 		// Previewer
-		public IList<Bitmap> GeneratePages(IEntry entry)
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
 			foreach (string page in entry.EditedText.Split('\x17'))
 			{
@@ -256,11 +226,11 @@ namespace game_rocket_slime_3ds
 			return pages;
 		}
 
-		public IEnumerable<string> GetScenes()
+		public bool ShowSettings(Icon icon)
 		{
-			var scenes = new List<string>();
-			scenes.Add("Default");
-			return scenes;
+			var settings = new frmSettings(icon);
+			settings.ShowDialog();
+			return settings.HasChanges;
 		}
 	}
 }

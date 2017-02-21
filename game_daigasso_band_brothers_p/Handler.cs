@@ -31,6 +31,7 @@ namespace game_daigasso_band_brothers_p
 		public Image Icon => Resources.p;
 
 		// Feature Support
+		public bool HandlerHasSettings => false;
 		public bool HandlerCanGeneratePreviews => true;
 
 		static Dictionary<uint, string> colours = new Dictionary<uint, string>
@@ -205,13 +206,13 @@ namespace game_daigasso_band_brothers_p
 			}
 		}
 
-		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
-
-		public void GeneratePages(IEntry entry)
+		// Previewer
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
-			Bitmap bmp;
+			Bitmap img;
 			float txtOffsetX, txtOffsetY, scale;
 			float fullWidth;
 			BCFNT font;
@@ -222,7 +223,7 @@ namespace game_daigasso_band_brothers_p
 
 			if (entry.Name.StartsWith("EDT_HELP") || entry.Name.StartsWith("VCL_HELP"))
 			{
-				bmp = new Bitmap(Resources.daigasso_box);
+				img = new Bitmap(Resources.daigasso_box);
 				font = fontBasic;
 				font.SetColor(Color.Black);
 				fontSisterSymbol.SetColor(Color.Black);
@@ -233,10 +234,10 @@ namespace game_daigasso_band_brothers_p
 			}
 			else if (entry.Name.StartsWith("Tutorial_") || rawString.Contains("\xE\x1"))
 			{
-				bmp = new Bitmap(410, 70);
-				using (var g = Graphics.FromImage(bmp))
+				img = new Bitmap(410, 70);
+				using (var g = Graphics.FromImage(img))
 				{
-					g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
+					g.FillRectangle(Brushes.White, 0, 0, img.Width, img.Height);
 					g.FillRectangle(Brushes.LightYellow, 5, 6, 400, 58);
 				}
 				font = fontBasicRim;
@@ -249,10 +250,10 @@ namespace game_daigasso_band_brothers_p
 			else
 			{
 				int height = 18 * (entry.OriginalText.Count(c => c == '\n') + 1);
-				bmp = new Bitmap(226, height + 10);
-				using (var g = Graphics.FromImage(bmp))
+				img = new Bitmap(226, height + 10);
+				using (var g = Graphics.FromImage(img))
 				{
-					g.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
+					g.FillRectangle(Brushes.White, 0, 0, img.Width, img.Height);
 					g.FillRectangle(Brushes.LightYellow, 3, 5, 220, height);
 				}
 				font = fontCbfStd;
@@ -266,7 +267,7 @@ namespace game_daigasso_band_brothers_p
 
 			float widthMultiplier = 1;
 			BCFNT baseFont = font;
-			using (var g = Graphics.FromImage(bmp))
+			using (var g = Graphics.FromImage(img))
 			{
 				g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 				g.SmoothingMode = SmoothingMode.HighQuality;
@@ -308,19 +309,11 @@ namespace game_daigasso_band_brothers_p
 				}
 			}
 
-			pages.Add(bmp);
-			Pages = pages;
+			pages.Add(img);
+
+			return pages;
 		}
 
-		// Settings
-		public bool ShowWhitespace
-		{
-			get { return Settings.Default.ShowWhitespace; }
-			set
-			{
-				Settings.Default.ShowWhitespace = value;
-				Settings.Default.Save();
-			}
-		}
+		public bool ShowSettings(Icon icon) => false;
 	}
 }

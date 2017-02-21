@@ -17,10 +17,10 @@ namespace game_great_detective_pikachu
 
 		// Information
 		public string Name => "Great Detective Pikachu";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => false;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -54,43 +54,13 @@ namespace game_great_detective_pikachu
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		// Settings
-		public string Scene
-		{
-			get { return Settings.Default.Scene; }
-			set
-			{
-				Settings.Default.Scene = value;
-				Settings.Default.Save();
-			}
-		}
-
-		public string PlayerName
-		{
-			get { return Settings.Default.PlayerName; }
-			set
-			{
-				Settings.Default.PlayerName = value;
-				Settings.Default.Save();
-			}
-		}
-
-		public bool ShowWhitespace
-		{
-			get { return Settings.Default.ShowWhitespace; }
-			set
-			{
-				Settings.Default.ShowWhitespace = value;
-				Settings.Default.Save();
-			}
-		}
-
 		Bitmap background = new Bitmap(Resources.background);
 
 		// Previewer
-		public IList<Bitmap> GeneratePages(IEntry entry)
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
 			// Font
 			if (font == null)
@@ -215,11 +185,6 @@ namespace game_great_detective_pikachu
 			return pages;
 		}
 
-		public IEnumerable<string> GetScenes()
-		{
-			var scenes = new List<string>();
-			scenes.Add("Default");
-			return scenes;
-		}
+		public bool ShowSettings(Icon icon) => false;
 	}
 }

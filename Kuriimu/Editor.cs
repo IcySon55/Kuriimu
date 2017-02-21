@@ -289,9 +289,6 @@ namespace Kuriimu
 			_gameHandler = (IGameHandler)tsi.Tag;
 			tsbGameSelect.Text = tsi.Text;
 			tsbGameSelect.Image = tsi.Image;
-			tstPlayerName.Text = _gameHandler.PlayerName;
-
-			Tools.LoadScenes(_gameHandler, tsbSceneSelect, tsbSceneSelect_SelectedIndexChanged);
 
 			UpdateTextView();
 			UpdatePreview();
@@ -347,28 +344,13 @@ namespace Kuriimu
 			UpdateForm();
 		}
 
-		private void tstPlayerName_KeyUp(object sender, KeyEventArgs e)
+		private void tsbHandlerSettings_Click(object sender, EventArgs e)
 		{
-			_gameHandler.PlayerName = tstPlayerName.Text;
-			UpdatePreview();
-			UpdateForm();
-		}
-
-		private void tsbWhitespace_Click(object sender, EventArgs e)
-		{
-			_gameHandler.ShowWhitespace = !_gameHandler.ShowWhitespace;
-			UpdatePreview();
-			UpdateForm();
-		}
-
-		private void tsbSceneSelect_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ToolStripItem tsi = (ToolStripItem)sender;
-			_gameHandler.Scene = (string)tsi.Tag;
-			tsbSceneSelect.Text = tsi.Text;
-
-			UpdatePreview();
-			UpdateForm();
+			if (_gameHandler.ShowSettings(Resources.kuriimu))
+			{
+				UpdatePreview();
+				UpdateForm();
+			}
 		}
 
 		// File Handling
@@ -438,9 +420,7 @@ namespace Kuriimu
 								_gameHandler = (IGameHandler)tsi.Tag;
 								tsbGameSelect.Text = tsi.Text;
 								tsbGameSelect.Image = tsi.Image;
-								tstPlayerName.Text = _gameHandler.PlayerName;
 
-								Tools.LoadScenes(_gameHandler, tsbSceneSelect, tsbSceneSelect_SelectedIndexChanged);
 								break;
 							}
 						if (_gameHandler == null)
@@ -670,7 +650,7 @@ namespace Kuriimu
 		private void UpdatePreview()
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-			_gameHandlerPages = _gameHandler.GeneratePages(entry);
+			_gameHandlerPages = _gameHandler.GeneratePreviews(entry);
 			SetPage(0);
 
 			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled && _gameHandlerPages.Count > 0)
@@ -742,16 +722,8 @@ namespace Kuriimu
 				tslPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0;
 				tsbNextPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0 && _page < _gameHandlerPages.Count - 1;
 
-				// PlayerName
-				tstPlayerName.Enabled = _gameHandler != null;
-
-				// Whitespace
-				tsbWhitespace.Enabled = _fileOpen;
-				tsbWhitespace.Image = _gameHandler.ShowWhitespace ? Resources.whitespace_shown : Resources.whitespace_hidden;
-				tsbWhitespace.Text = _gameHandler.ShowWhitespace ? "Hide Whitespace" : "Show Whitespace";
-
-				// Scene Selection
-				tsbSceneSelect.Enabled = _gameHandler != null;
+				// Handler Settings
+				tsbHandlerSettings.Enabled = _gameHandler != null && _gameHandler.HandlerHasSettings;
 
 				treEntries.Enabled = _fileOpen;
 

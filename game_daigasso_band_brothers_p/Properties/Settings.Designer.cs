@@ -31,17 +31,5 @@ namespace game_daigasso_band_brothers_p.Properties {
                 return ((string)(this["PluginName"]));
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowWhitespace {
-            get {
-                return ((bool)(this["ShowWhitespace"]));
-            }
-            set {
-                this["ShowWhitespace"] = value;
-            }
-        }
     }
 }

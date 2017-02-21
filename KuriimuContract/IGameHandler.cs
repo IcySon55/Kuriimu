@@ -10,20 +10,16 @@ namespace KuriimuContract
 		Image Icon { get; }
 
 		// Feature Support
-		bool HandlerCanGeneratePreviews { get; } // Is this handler capable of generating previews?
+		bool HandlerHasSettings { get; } // Does the handler provide a custom settings dialog?
+		bool HandlerCanGeneratePreviews { get; } // Is the handler capable of generating previews?
 
-		// Features
+		// String Handling
 		string GetKuriimuString(string rawString);
 		string GetRawString(string kuriimuString);
 
-		// Settings
-		string Scene { get; set; }
-		string PlayerName { get; set; }
-		bool ShowWhitespace { get; set; }
-
-		// Previewer
-		IList<Bitmap> GeneratePages(IEntry entry);
-		IEnumerable<string> GetScenes();
+		// Features
+		bool ShowSettings(Icon icon); // Show the settings dialog
+		IList<Bitmap> GeneratePreviews(IEntry entry);
 	}
 
 	public sealed class DefaultGameHandler : IGameHandler
@@ -31,17 +27,14 @@ namespace KuriimuContract
 		public string Name => "No Game";
 		public Image Icon { get; }
 
+		public bool HandlerHasSettings => false;
 		public bool HandlerCanGeneratePreviews => false;
 
 		public string GetKuriimuString(string rawString) => rawString;
 		public string GetRawString(string kuriimuString) => kuriimuString;
 
-		public string Scene { get; set; } = string.Empty;
-		public string PlayerName { get; set; } = string.Empty;
-		public bool ShowWhitespace { get; set; } = false;
-
-		public IList<Bitmap> GeneratePages(IEntry entry) => new List<Bitmap>();
-		public IEnumerable<string> GetScenes() => new List<string>();
+		public bool ShowSettings(Icon icon) => false;
+		public IList<Bitmap> GeneratePreviews(IEntry entry) => new List<Bitmap>();
 
 		public DefaultGameHandler(Image icon) { Icon = icon; }
 	}

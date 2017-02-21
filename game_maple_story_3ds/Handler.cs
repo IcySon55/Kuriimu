@@ -17,10 +17,10 @@ namespace game_maple_story_3ds
 
 		// Information
 		public string Name => "MapleStory Girl of Destiny";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => true;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -38,7 +38,7 @@ namespace game_maple_story_3ds
 			// Control
 			["\\["] = "[",
 			["\\]"] = "]",
-			["[NAME:B]"] = "‹NameMugi›",
+			["[NAME:B]"] = "‹PlayerName›",
 		};
 
 		BCFNT font;
@@ -61,14 +61,14 @@ namespace game_maple_story_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
-
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap textBox = new Bitmap(Resources.blank);
 
-		public void GeneratePages(IEntry entry)
+		// Previewer
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
 			// Paging evety 3rd new line
 			List<string> strings = new List<string>();
@@ -107,7 +107,7 @@ namespace game_maple_story_3ds
 
 					float scale = 0.625f;
 					float x = 10, y = 22;
-					string str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value));
+					string str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value)).Replace("‹PlayerName›", "‹" + Settings.Default.PlayerName + "›");
 					font.SetColor(Color.White);
 
 					foreach (char c in str)
@@ -148,18 +148,14 @@ namespace game_maple_story_3ds
 				pages.Add(img);
 			}
 
-			Pages = pages;
+			return pages;
 		}
 
-		// Settings
-		public bool ShowWhitespace
+		public bool ShowSettings(Icon icon)
 		{
-			get { return Settings.Default.ShowWhitespace; }
-			set
-			{
-				Settings.Default.ShowWhitespace = value;
-				Settings.Default.Save();
-			}
+			var settings = new frmSettings(icon);
+			settings.ShowDialog();
+			return settings.HasChanges;
 		}
 	}
 }

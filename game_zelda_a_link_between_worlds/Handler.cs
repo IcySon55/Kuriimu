@@ -16,10 +16,10 @@ namespace game_zelda_a_link_between_worlds
 
 		// Information
 		public string Name => "A Link Between Worlds";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => false;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -92,43 +92,15 @@ namespace game_zelda_a_link_between_worlds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		// Settings
-		public string Scene
-		{
-			get { return Settings.Default.Scene; }
-			set
-			{
-				Settings.Default.Scene = value;
-				Settings.Default.Save();
-			}
-		}
-
-		public string PlayerName
-		{
-			get { return Settings.Default.PlayerName; }
-			set
-			{
-				Settings.Default.PlayerName = value;
-				Settings.Default.Save();
-			}
-		}
-
-		public bool ShowWhitespace
-		{
-			get { return Settings.Default.ShowWhitespace; }
-			set
-			{
-				Settings.Default.ShowWhitespace = value;
-				Settings.Default.Save();
-			}
-		}
-
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap textBox = new Bitmap(Resources.textbox);
 
-		public IList<Bitmap> GeneratePages(IEntry entry)
+		// Previewer
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
+
 			string rawString = GetKuriimuString(entry.EditedText);
 			var pagestr = new List<string>();
 			int curline = 0;
@@ -282,11 +254,6 @@ namespace game_zelda_a_link_between_worlds
 			return pages;
 		}
 
-		public IEnumerable<string> GetScenes()
-		{
-			var scenes = new List<string>();
-			scenes.Add("Default");
-			return scenes;
-		}
+		public bool ShowSettings(Icon icon) => false;
 	}
 }

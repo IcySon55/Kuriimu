@@ -31,41 +31,5 @@ namespace game_great_detective_pikachu.Properties {
                 return ((string)(this["PluginName"]));
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
-        public string Scene {
-            get {
-                return ((string)(this["Scene"]));
-            }
-            set {
-                this["Scene"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Player")]
-        public string PlayerName {
-            get {
-                return ((string)(this["PlayerName"]));
-            }
-            set {
-                this["PlayerName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowWhitespace {
-            get {
-                return ((bool)(this["ShowWhitespace"]));
-            }
-            set {
-                this["ShowWhitespace"] = value;
-            }
-        }
     }
 }

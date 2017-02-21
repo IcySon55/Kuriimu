@@ -34,13 +34,13 @@ namespace game_maple_story_3ds.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ShowWhitespace {
+        [global::System.Configuration.DefaultSettingValueAttribute("Player")]
+        public string PlayerName {
             get {
-                return ((bool)(this["ShowWhitespace"]));
+                return ((string)(this["PlayerName"]));
             }
             set {
-                this["ShowWhitespace"] = value;
+                this["PlayerName"] = value;
             }
         }
     }
