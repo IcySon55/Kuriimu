@@ -54,25 +54,7 @@ namespace game_miitopia_3ds
         {
         }
 
-        public bool HandlerCanGeneratePreviews
-        {
-            get { return true; }
-        }
-
-        public Image Icon
-        {
-            get { return Resources.icon_2; }
-        }
-
-        public string Name
-        {
-            get { return "Miitopia"; }
-        }
-
-        public Bitmap GeneratePreview(IEntry entry)
-        {
-            return new Bitmap(Resources.blank_top);
-        }
+        public string Name { get; } = "Miitopia";
 
         // Displaying the text
         public string GetKuriimuString(string str)
@@ -166,6 +148,31 @@ namespace game_miitopia_3ds
             {
                 return str;
             }
+        }
+
+        public bool HandlerCanGeneratePreviews { get; } = true;
+
+        public bool HandlerHasSettings { get; } = false;
+
+        // Show the settings dialog
+        public bool ShowSettings(Icon icon)
+        {
+            return false;
+        }
+
+        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        {
+            return new List<Bitmap>();
+        }
+
+        public Image Icon
+        {
+            get { return Resources.icon_2; }
+        }
+
+        public Bitmap GeneratePreview(IEntry entry)
+        {
+            return new Bitmap(Resources.blank_top);
         }
     }
 }
