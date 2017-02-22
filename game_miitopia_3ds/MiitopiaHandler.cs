@@ -118,13 +118,7 @@ namespace game_miitopia_3ds
                     {
                         Func<string, byte[], string> Merge = (id, data) => $"\xE{id}{(char)data.Length}{string.Concat(data.Select(b => (char)b))}";
 
-                        string[] hexStringArray = hexString.Split('-');
-                        byte[] byteArray = new byte[hexStringArray.Length];
-
-                        for (int ii = 0; ii < hexStringArray.Length; ii++)
-                        {
-                            byteArray[ii] = Convert.ToByte(hexStringArray[ii], 16);
-                        }
+                        byte[] byteArray = hexString.Split('-').Select(piece => Convert.ToByte(piece, 16)).ToArray();
 
                         string idHex = "" + (char)int.Parse(idString[0]) +
                                             (char)int.Parse(idString[1]);
