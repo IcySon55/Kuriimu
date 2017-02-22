@@ -30,107 +30,24 @@ namespace game_miitopia_3ds
 
     public class MiitopiaHandler : IGameHandler
     {
-        class ControlCodeHandler
+        Dictionary<string, string> codeLabelPair = new Dictionary<string, string>
         {
-            uint8 startCode;
-            uint16 codeType;
-            uint8 controlCodeSize; // in bytes
-            uint16 baseCharLength;
-            uint16 rubyTextLength;
-            uint8[] rubyText; //with size of rubyTextLength
-        };
-
-        ControlCodeHandler codeHandler;
-
-        class HexIndexPair
-        {
-            public HexIndexPair()
-            {
-
-            }
-
-            private string hexCode;
-            public string HexCode
-            {
-                get
-                {
-                    return hexCode;
-                }
-                set
-                {
-                    hexCode = value;
-                }
-            }
-
-            private int startingIndex;
-            public int StartingIndex
-            {
-                get
-                {
-                    return startingIndex;
-                }
-                set
-                {
-                    startingIndex = value;
-                }
-            }
-
-            private int size;
-            public int Size
-            {
-                get
-                {
-                    return size;
-                }
-                set
-                {
-                    size = value;
-                }
-            }
-        };
-
-        HexIndexPair[] hexIndexPairs;
-        int numHexIndexPairs;
-         
-        string originalText;
-
-        Dictionary<string, string> hexStringPairs = new Dictionary<string, string>
-        {
-            ["\x0000"] = "<0x00>", // NULL
-            ["\x0001"] = "<0x01>", // Start of Heading
-            ["\x0002"] = "<0x02>", // Start of Text
-            ["\x0003"] = "<0x03>", // End of Text
-            ["\x0004"] = "<0x04>", // End of Transmission
-            ["\x0005"] = "<0x05>", // Enquiry
-            ["\x0006"] = "<0x06>", // Acknowledge
-            ["\x0007"] = "<0x07>", // Bell
-            ["\x0008"] = "<0x08>",  // Backspace
-            ["\x0009"] = "<0x09>",  // Horizontal Tabulation
-            ["\x000A"] = "<0x0A_LF>",  // New Line, it looks like this is always used as a new line
-            ["\x000B"] = "<0x0B>",  // Vertical Tabulation
-            ["\x000C"] = "<0x0C>",  // Form Feed
-            ["\x000D"] = "<0x0D>",  // Carriage Return
-            ["\x000E"] = "<0x0E>",  // Shift Out
-            ["\x000F"] = "<0x0F>",  // Shift In
-            ["\x0010"] = "<0x10>", // Data link Escape
-            ["\x0011"] = "<0x11>", // Device Control 1
-            ["\x0012"] = "<0x12>", // Device Control 2
-            ["\x0013"] = "<0x13>", // Device Control 3
-            ["\x0014"] = "<0x14>", // Device Control 4
-            ["\x0015"] = "<0x15>", // Negative Acknowledge
-            ["\x0016"] = "<0x16>", // Synchronous Idle
-            ["\x0017"] = "<0x17>", // End of Transmission Block
-            ["\x0018"] = "<0x18>", // Cancel
-            ["\x0019"] = "<0x19>",  // End of Medium
-            ["\x001A"] = "<0x1A>", // Substitute
-            ["\x001B"] = "<0x1B>", // Escape
-            ["\x001C"] = "<0x1C>",  // File Separator
-            ["\x001D"] = "<0x1D>",  // Group Separator
-            ["\x001E"] = "<0x1E>",  // Record Separator
-            ["\x001F"] = "<0x1F>",  // Unit Separator
-            
-            // still not sure about the meaning of this one
-            ["\x007F"] = "<0x7F>",
+            ["<n3.0:00-CD>"] = "<miiname>",
+            ["<n9.0:00-CD>"] = "<weapon>",
+            ["<n10.0:00-CD>"] = "<armor>",
+            ["<n2.0:00-06>"] = "<#gold>",
+            ["<n2.0:01-06>"] = "<#needgold>",
+            ["<n14.0:1E-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-4B-00-69-00-6E-00-67-00-30-00-30-00>"] = "<king>",
+            ["<n14.0:26-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-4E-00-6F-00-62-00-6C-00-65-00-4B-00-69-00-64-00-30-00-30-00>"] = "<noble>",
+            ["<n14.0:26-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-50-00-72-00-69-00-6E-00-63-00-65-00-73-00-73-00-30-00-30-00>"] = "<princess>",
+            ["<n14.0:22-00-43-00-61-00-73-00-74-00-6C-00-65-00-30-00-30-00-5F-00-50-00-72-00-69-00-6E-00-63-00-65-00-30-00-30-00>"] = "<prince>",
+            ["<n14.0:18-00-54-00-6F-00-77-00-6E-00-30-00-31-00-5F-00-47-00-65-00-6E-00-69-00-65-00>"] = "<genie>",
+            ["<n14.0:24-00-54-00-6F-00-77-00-6E-00-30-00-32-00-5F-00-53-00-69-00-73-00-74-00-65-00-72-00-46-00-69-00-72-00-73-00-74-00>"] = "<yellowelf>",
+            ["<n14.0:26-00-54-00-6F-00-77-00-6E-00-30-00-32-00-5F-00-53-00-69-00-73-00-74-00-65-00-72-00-53-00-65-00-63-00-6F-00-6E-00-64-00>"] = "<redelf>",
+            ["<n14.0:24-00-54-00-6F-00-77-00-6E-00-30-00-32-00-5F-00-53-00-69-00-73-00-74-00-65-00-72-00-54-00-68-00-69-00-72-00-64-00>"] = "<purpleelf>",
+            ["<n14.0:0A-00-53-00-61-00-74-00-61-00-6E-00>"] = "<satan>",
+            ["<n14.0:08-00-53-00-61-00-67-00-65-00>"] = "<sage>",
+            ["<n14.0:1A-00-52-00-65-00-69-00-6E-00-63-00-61-00-72-00-6E-00-61-00-74-00-69-00-6F-00-6E-00>"] = "<reincarn>",
         };
 
         public MiitopiaHandler()
@@ -168,7 +85,6 @@ namespace game_miitopia_3ds
                 };
 
                 int i;
-                //str = str.Replace("\xF\x2\0", "</>");
                 while ((i = str.IndexOf('\xE')) >= 0)
                 {
                     var id = str.Substring(i + 1, 2);
@@ -180,6 +96,8 @@ namespace game_miitopia_3ds
             {
 
             }
+            str = codeLabelPair.Aggregate(str, (s, pair) => s.Replace(pair.Key, pair.Value));
+
             return str;
         }
 
@@ -192,6 +110,7 @@ namespace game_miitopia_3ds
                     return str;
                 }
 
+                str = codeLabelPair.Aggregate(str, (s, pair) => s.Replace(pair.Value, pair.Key));
                 string result = string.Empty;
                 result = string.Concat(str.Split("<>".ToArray()).Select((codeString, i) =>
                 {
@@ -200,8 +119,6 @@ namespace game_miitopia_3ds
                     {
                         return codeString;
                     }
-                    //if (z == "/") return "\xF\x2\0";
-                    //if (z == "v") return "\xE\x1\0\0";
 
                     // "0.0:code" part, the identyfier ("n") infront of 0.0 is stripped
                     var codeStringRaw = codeString.Substring(1);
@@ -213,7 +130,7 @@ namespace game_miitopia_3ds
                     string[] idString = codeStringArray[0].Split('.');
 
                     // get the hex string with the ID ("X.X") part stripped
-                    string hexString = codeStringArray[1];//codeStringRaw.Substring(3); 
+                    string hexString = codeStringArray[1];
                     int hexStringLen = hexString.Length;
                     if (hexStringLen > 0)
                     {
