@@ -18,13 +18,12 @@ namespace game_daigasso_band_brothers_p
 		static Lazy<BCFNT[]> fontInitializer = new Lazy<BCFNT[]>(() => new[] {
 				new BCFNT(new MemoryStream(GZip.Decompress(Resources.Basic_bcfnt))),
 				new BCFNT(new MemoryStream(GZip.Decompress(Resources.BasicRim_bcfnt))),
-				new BCFNT(new MemoryStream(GZip.Decompress(Resources.cbf_std_bcfnt))),
 				new BCFNT(new MemoryStream(GZip.Decompress(Resources.SisterSymbol_bcfnt))),
 			});
 		BCFNT fontBasic => fontInitializer.Value[0];
 		BCFNT fontBasicRim => fontInitializer.Value[1];
-		BCFNT fontCbfStd => fontInitializer.Value[2];
-		BCFNT fontSisterSymbol => fontInitializer.Value[3];
+		BCFNT fontCbfStd => BCFNT.StandardFont;
+		BCFNT fontSisterSymbol => fontInitializer.Value[2];
 
 		// Information
 		public string Name => "Jam With The Band P";

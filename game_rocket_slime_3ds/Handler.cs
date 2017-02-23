@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Cetera.Compression;
 using Cetera.Font;
 using game_rocket_slime_3ds.Properties;
 using KuriimuContract;
@@ -72,15 +74,8 @@ namespace game_rocket_slime_3ds
 			["\x87"] = "♥"
 		};
 
-		BCFNT font;
-
-		public Handler()
-		{
-			var ms = new MemoryStream();
-			new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
-			ms.Position = 0;
-			font = new BCFNT(ms);
-		}
+		static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.MainFont_bcfnt))));
+		BCFNT font => fontInitializer.Value;
 
 		public string GetKuriimuString(string rawString)
 		{

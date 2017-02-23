@@ -42,7 +42,7 @@ namespace game_great_detective_pikachu
 			["？"] = "?"
 		};
 
-		BCFNT font;
+		BCFNT font => BCFNT.StandardFont;
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -61,15 +61,6 @@ namespace game_great_detective_pikachu
 		{
 			var pages = new List<Bitmap>();
 			if (entry == null) return pages;
-
-			// Font
-			if (font == null)
-			{
-				var ms = new MemoryStream();
-				new GZipStream(new MemoryStream(Resources.cbf_std_bcfnt), CompressionMode.Decompress).CopyTo(ms);
-				ms.Position = 0;
-				font = new BCFNT(ms);
-			}
 
 			string rawString = _pairs.Aggregate(entry.EditedText, (str, pair) => str.Replace(pair.Value, pair.Key));
 

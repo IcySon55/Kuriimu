@@ -78,7 +78,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="resources\cbf_std.bcfnt.gz" />
     <None Include="resources\MainFont.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>

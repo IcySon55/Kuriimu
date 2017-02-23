@@ -69,7 +69,6 @@
     </None>
     <None Include="resources\Basic.bcfnt.gz" />
     <None Include="resources\BasicRim.bcfnt.gz" />
-    <None Include="resources\cbf_std.bcfnt.gz" />
     <None Include="resources\SisterSymbol.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
