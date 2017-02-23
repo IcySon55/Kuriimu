@@ -774,7 +774,7 @@ namespace Kuriimu
 					//var bmp = (Bitmap)Image.FromFile(filename);
 					//_imageAdapter.Bitmap = bmp;
 					UpdatePreview();
-					MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					//MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 				catch (Exception ex)
 				{
