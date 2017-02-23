@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using Cetera.Compression;
 using Cetera.Font;
+using Cetera.Text;
 using game_daigasso_band_brothers_p.Properties;
 using KuriimuContract;
 
@@ -78,92 +79,82 @@ namespace game_daigasso_band_brothers_p
 			["\uE11B"] = "◀"
 		};
 
+		enum ReplaceCode
+		{
+			Num, Name, Year, Month, MonthZero, Day, DayZero, Hour, HourZero, Minute, MinuteZero, String
+		}
+
 		public string GetKuriimuString(string str)
 		{
 			try
 			{
-				str = symbols.Aggregate(str, (s, kvp) => s.Replace(kvp.Key, kvp.Value));
-				Func<string, byte[], string> Fix = (id, bytes) =>
-				{
-					// [0] System Codes ------------------
-					//		0,0 = System.Ruby(Type8 rt)
-					//		0,1 = System.Font(Type8 face)
-					//		0,2 = System.Size(Type1 percent)
-					//		0,3 = System.Color(Type0 r, Type0 g, Type0 b, Type0 a, Type8 name)
-					//		0,4 = PageBreak()
-					// [1] Cmd Codes ---------------------
-					//		1,0 = Cmd.once_stop()
-					//		1,1 = Cmd.key()
-					//		1,2 = Cmd.event(no)
-					//		1,3 = Cmd.wait(frame)
-					//		1,4 = Cmd.deprecated_event_ff(Type9<Enum0> Cmd_deprecated_event_ff_id)
-					//		1,5 = Cmd.event_ff(Type9<Enum1> Cmd_event_ff_id)
-					//		1,6 = Cmd.event_scout(Type9<Enum2> Cmd_event_scout_id)
-					//		1,7 = Cmd.voice(Type8 sound_id)
-					//		1,8 = Cmd.wait_voice()
-					// [2] Style Codes -------------------
-					//		2,0 = Style.ScaleX(Type4 scale_x)
-					//		2,1 = Style.VSpace(Type4 space_v)
-					// [3] Replace Codes -----------------
-					//		3,0 = Replace.Num(Type3 id, Type9<Enum3> Replace_Num_char_type, Type3 length)
-					//		3,1 = Replace.Name(Type3 id)
-					//		3,2 = Replace.Year(Type3 id)
-					//		3,3 = Replace.Month(Type3 id)
-					//		3,4 = Replace.MonthZero(Type3 id)
-					//		3,5 = Replace.Day(Type3 id)
-					//		3,6 = Replace.DayZero(Type3 id)
-					//		3,7 = Replace.Hour(Type3 id)
-					//		3,8 = Replace.HourZero(Type3 id)
-					//		3,9 = Replace.Minute(Type3 id)
-					//		3,A = Replace.MinuteZero(Type3 id)
-					//		3,B = Replace.String(Type3 id, Type9<Enum4> Replace_String_char_type, Type9<Enum5> Replace_String_length_type, x)
-					// [Enum values] ---------------------
-					//		Enum0[32] = none,SaluteSeq,Profile,Dlg_ProfileOK,MovePaper_Photo,CameraSequence,SwitchBalloon_toLower,SingerOn,SwitchBalloon_toUpper,SingerOff,BarbaraOn,BarbaraOff,FacePreview,Dlg_FaceOK,HairSelect,ColorSelect,VocaloidExteriorMenu,Dlg_IsVoiceRecordable,VoiceRecording,VoiceEstimation,VoiceEstimation_Hamoduo,VoiceEstimation_Result,VoiceEstimation_NoVoice,ToVocaloVoiceSequence,VocaloVoice,VocaloidStyleGamePlay,Signature,ShimobeSequence,Dlg_WaveOut,WaveOut_Tune_Play,Dlg_WaveOut_Really,SceneEnd
-					//		Enum1[20] = none,CameraSequence,PlayBGM,NameInput,BarbaraOn,BarbaraOff,BarbaraNormal,BarbaraAngry,BarbaraSmile,DialogKickMe,DialogYes,VoiceRecording,VoiceEstimation,ShowNamePlate,HideNamePlate,Signature,SingerSalute,BlackOut,BlackIn,SceneEnd
-					//		Enum2[6]  = none,Dlg_WhoMakeSinger,GoToRegistFlow,CameraSequence,MySingerRemakeConfirm,SceneEnd_WithoutSave
-					//		Enum3[2]  = hankaku,zenkaku
-					//		Enum4[3]  = plain,hankaku,zenkaku
-					//		Enum5[7]  = Default,Specify,ShortInstName,ShortInstName_Num,SongPostID,SongDB_ID,BandName
-					// [Other type information]
-					//		Type0 = uint8
-					//		Type1 = uint16, then divided by 100
-					//		Type4 = int16, then divided by 100
-					//		Type8 = no length / hidden?
-					//		Type9 = Enum
+				// [0] System Codes ------------------
+				//		0,0 = System.Ruby(Type8 rt)
+				//		0,1 = System.Font(Type8 face)
+				//		0,2 = System.Size(Type1 percent)
+				//		0,3 = System.Color(Type0 r, Type0 g, Type0 b, Type0 a, Type8 name)
+				//		0,4 = PageBreak()
+				// [1] Cmd Codes ---------------------
+				//		1,0 = Cmd.once_stop()
+				//		1,1 = Cmd.key()
+				//		1,2 = Cmd.event(no)
+				//		1,3 = Cmd.wait(frame)
+				//		1,4 = Cmd.deprecated_event_ff(Type9<Enum0> Cmd_deprecated_event_ff_id)
+				//		1,5 = Cmd.event_ff(Type9<Enum1> Cmd_event_ff_id)
+				//		1,6 = Cmd.event_scout(Type9<Enum2> Cmd_event_scout_id)
+				//		1,7 = Cmd.voice(Type8 sound_id)
+				//		1,8 = Cmd.wait_voice()
+				// [2] Style Codes -------------------
+				//		2,0 = Style.ScaleX(Type4 scale_x)
+				//		2,1 = Style.VSpace(Type4 space_v)
+				// [3] Replace Codes -----------------
+				//		3,0 = Replace.Num(Type3 id, Type9<Enum3> Replace_Num_char_type, Type3 length)
+				//		3,1 = Replace.Name(Type3 id)
+				//		3,2 = Replace.Year(Type3 id)
+				//		3,3 = Replace.Month(Type3 id)
+				//		3,4 = Replace.MonthZero(Type3 id)
+				//		3,5 = Replace.Day(Type3 id)
+				//		3,6 = Replace.DayZero(Type3 id)
+				//		3,7 = Replace.Hour(Type3 id)
+				//		3,8 = Replace.HourZero(Type3 id)
+				//		3,9 = Replace.Minute(Type3 id)
+				//		3,A = Replace.MinuteZero(Type3 id)
+				//		3,B = Replace.String(Type3 id, Type9<Enum4> Replace_String_char_type, Type9<Enum5> Replace_String_length_type, x)
+				// [Enum values] ---------------------
+				//		Enum0[32] = none,SaluteSeq,Profile,Dlg_ProfileOK,MovePaper_Photo,CameraSequence,SwitchBalloon_toLower,SingerOn,SwitchBalloon_toUpper,SingerOff,BarbaraOn,BarbaraOff,FacePreview,Dlg_FaceOK,HairSelect,ColorSelect,VocaloidExteriorMenu,Dlg_IsVoiceRecordable,VoiceRecording,VoiceEstimation,VoiceEstimation_Hamoduo,VoiceEstimation_Result,VoiceEstimation_NoVoice,ToVocaloVoiceSequence,VocaloVoice,VocaloidStyleGamePlay,Signature,ShimobeSequence,Dlg_WaveOut,WaveOut_Tune_Play,Dlg_WaveOut_Really,SceneEnd
+				//		Enum1[20] = none,CameraSequence,PlayBGM,NameInput,BarbaraOn,BarbaraOff,BarbaraNormal,BarbaraAngry,BarbaraSmile,DialogKickMe,DialogYes,VoiceRecording,VoiceEstimation,ShowNamePlate,HideNamePlate,Signature,SingerSalute,BlackOut,BlackIn,SceneEnd
+				//		Enum2[6]  = none,Dlg_WhoMakeSinger,GoToRegistFlow,CameraSequence,MySingerRemakeConfirm,SceneEnd_WithoutSave
+				//		Enum3[2]  = hankaku,zenkaku
+				//		Enum4[3]  = plain,hankaku,zenkaku
+				//		Enum5[7]  = Default,Specify,ShortInstName,ShortInstName_Num,SongPostID,SongDB_ID,BandName
+				// [Other type information]
+				//		Type0 = uint8
+				//		Type1 = uint16, then divided by 100
+				//		Type4 = int16, then divided by 100
+				//		Type8 = no length / hidden?
+				//		Type9 = Enum
 
-					switch (id)
+				str = string.Concat(MSBT.ToAtoms(str).Select(atom =>
+				{
+					if (atom.type == MSBT.Atom.Type.Char) return atom.ToReadableString();
+					else if (atom.type == MSBT.Atom.Type.EndCode) return "</>";
+					switch (atom.id1 * 10 + atom.id2)
 					{
-						case "\0\x2": // Size
-							return "s" + BitConverter.ToInt16(bytes, 0);
-						case "\0\x3": // Color
-							return "c" + colours[BitConverter.ToUInt32(bytes, 0)];
-						case "\x1\x0":
-							return "v";
-						case "\x1\x7":
-							return "v" + Encoding.Unicode.GetString(bytes).Substring(1);
-						case "\x2\0": // ScaleX
-							return "w" + BitConverter.ToInt16(bytes, 0);
-						case "\x2\x1": // VSpace
-							return "h" + BitConverter.ToInt16(bytes, 0);
-						default:
-							return $"n{(int)id[1]:X2}:" + Convert.ToBase64String(bytes);
+						case 02: return $"<s{BitConverter.ToInt16(atom.bytes, 0)}>"; // System.Size
+						case 03: return $"<c{colours[BitConverter.ToUInt32(atom.bytes, 0)]}>"; // System.Color
+						case 10: return $"<v>"; // Cmd.once_stop
+						case 17: return $"<v{Encoding.Unicode.GetString(atom.bytes).Substring(1)}>"; // Cmd.voice
+						case 20: return $"<w{BitConverter.ToInt16(atom.bytes, 0)}>"; // Style.ScaleX
+						case 21: return $"<h{BitConverter.ToInt16(atom.bytes, 0)}>"; // Style.VSpace
 					}
-				};
-
-				int i;
-				str = str.Replace("\xF\x2\0", "</>");
-				while ((i = str.IndexOf('\xE')) >= 0)
-				{
-					var id = str.Substring(i + 1, 2);
-					var data = str.Substring(i + 4, str[i + 3]).Select(c => (byte)c).ToArray();
-					str = str.Remove(i, data.Length + 4).Insert(i, $"<{Fix(id, data)}>");
-				}
+					return $"<r{(ReplaceCode)atom.id2}:{BitConverter.ToString(atom.bytes)}>"; // Replace.*
+				}));
+				return symbols.Aggregate(str, (s, kvp) => s.Replace(kvp.Key, kvp.Value));
 			}
 			catch
 			{
-
+				return str;
 			}
-			return str;
 		}
 
 		public string GetRawString(string str)
@@ -176,27 +167,21 @@ namespace game_daigasso_band_brothers_p
 				return string.Concat(str.Split("<>".ToArray()).Select((z, i) =>
 				{
 					if (i % 2 == 0) return z;
-					if (z == "/") return "\xF\x2\0";
-					if (z == "v") return "\xE\x1\0\0";
+					if (z == "/") return new MSBT.Atom(2, 0).ToRawString();
+					if (z == "v") return new MSBT.Atom(1, 0, new byte[0]).ToRawString();
 
-					Func<string, byte[], string> Merge = (id, data) => $"\xE{id}{(char)data.Length}{string.Concat(data.Select(b => (char)b))}";
-
-					var s = z.Substring(1);
+					var s = z.Substring(1); // shorthand
 					switch (z[0])
 					{
-						case 's':
-							return Merge("\0\x2", BitConverter.GetBytes(short.Parse(s)));
-						case 'c':
-							return Merge("\0\x3", BitConverter.GetBytes(colours.First(e => e.Value == s).Key));
-						case 'v':
-							return Merge("\x1\x7", new byte[] { 0x1A, 0 }.Concat(Encoding.Unicode.GetBytes(s)).ToArray());
-						case 'w':
-							return Merge("\x2\0", BitConverter.GetBytes(short.Parse(s)));
-						case 'h':
-							return Merge("\x2\x1", BitConverter.GetBytes(short.Parse(s)));
-						default:
-							return Merge("\x3" + (char)int.Parse(s.Substring(0, 2), NumberStyles.HexNumber), Convert.FromBase64String(s.Substring(3)));
+						case 's': return new MSBT.Atom(0, 2, BitConverter.GetBytes(short.Parse(s))).ToRawString();
+						case 'c': return new MSBT.Atom(0, 3, BitConverter.GetBytes(colours.First(e => e.Value == s).Key)).ToRawString();
+						case 'v': return new MSBT.Atom(1, 7, new byte[] { 0x1A, 0 }.Concat(Encoding.Unicode.GetBytes(s)).ToArray()).ToRawString();
+						case 'w': return new MSBT.Atom(2, 0, BitConverter.GetBytes(short.Parse(s))).ToRawString();
+						case 'h': return new MSBT.Atom(2, 1, BitConverter.GetBytes(short.Parse(s))).ToRawString();
 					}
+					var spl = z.Split(':');
+					int id2 = (int)Enum.Parse(typeof(ReplaceCode), spl[0].Substring(1));
+					return new MSBT.Atom(3, id2, spl[1].Split('-').Select(b => Convert.ToByte(b, 16)).ToArray()).ToRawString();
 				}));
 			}
 			catch
