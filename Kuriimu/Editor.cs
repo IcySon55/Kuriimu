@@ -762,7 +762,25 @@ namespace Kuriimu
 
 		private void tsbImportKUP_Click(object sender, EventArgs e)
 		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Import KUP...";
+			ofd.InitialDirectory = Settings.Default.LastDirectory;
+			ofd.Filter = "Kuriimu Archive (*.kup)|*.kup";
 
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					//var bmp = (Bitmap)Image.FromFile(filename);
+					//_imageAdapter.Bitmap = bmp;
+					UpdatePreview();
+					MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 
 		private void tsbBatchExportKUP_Click(object sender, EventArgs e)
