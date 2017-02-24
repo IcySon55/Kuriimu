@@ -56,9 +56,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\blank_top.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera\Cetera.csproj">
       <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
@@ -76,6 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\icon_2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\preview_bg.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
