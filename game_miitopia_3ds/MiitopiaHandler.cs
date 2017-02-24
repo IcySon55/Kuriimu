@@ -25,9 +25,6 @@ using KuriimuContract;
 
 namespace game_miitopia_3ds
 {
-    using uint8 = System.Byte;
-    using uint16 = System.UInt16;
-
     public class MiitopiaHandler : IGameHandler
     {
         Dictionary<string, string> codeLabelPair = new Dictionary<string, string>
@@ -148,17 +145,19 @@ namespace game_miitopia_3ds
 
         public bool HandlerHasSettings { get; } = false;
 
+        // TODO: Implement this
         // Show the settings dialog
         public bool ShowSettings(Icon icon)
         {
             return false;
         }
 
+        // TODO: Implement this
         public IList<Bitmap> GeneratePreviews(IEntry entry)
         {
             // temporary solution for now, so we can show the background preview image
             List<Bitmap> bitmapList = new List<Bitmap>(1);
-            bitmapList.Add(new Bitmap(Resources.preview_bg, 420, 290));
+            bitmapList.Add(new Bitmap(Resources.preview_bg, 400, 240));
             return bitmapList;
         }
 
