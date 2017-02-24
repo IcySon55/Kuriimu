@@ -156,17 +156,15 @@ namespace game_miitopia_3ds
 
         public IList<Bitmap> GeneratePreviews(IEntry entry)
         {
-            return new List<Bitmap>();
+            // temporary solution for now, so we can show the background preview image
+            List<Bitmap> bitmapList = new List<Bitmap>(1);
+            bitmapList.Add(new Bitmap(Resources.preview_bg, 420, 290));
+            return bitmapList;
         }
 
         public Image Icon
         {
             get { return Resources.icon_2; }
-        }
-
-        public Bitmap GeneratePreview(IEntry entry)
-        {
-            return new Bitmap(Resources.blank_top);
         }
     }
 }
