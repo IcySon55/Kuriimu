@@ -61,6 +61,16 @@ namespace game_miitopia_3ds.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] FontCaptionOutline_bcfnt {
+            get {
+                object obj = ResourceManager.GetObject("FontCaptionOutline_bcfnt", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap icon {
@@ -81,11 +91,31 @@ namespace game_miitopia_3ds.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MainFont_bcfnt {
+            get {
+                object obj = ResourceManager.GetObject("MainFont_bcfnt", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap preview_bg {
             get {
                 object obj = ResourceManager.GetObject("preview_bg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap previewbg {
+            get {
+                object obj = ResourceManager.GetObject("previewbg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

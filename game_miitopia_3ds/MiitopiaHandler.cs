@@ -8,6 +8,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Cetera.Font;
+using Cetera.Compression;
 using game_miitopia_3ds.Properties;
 using KuriimuContract;
 
@@ -25,9 +26,42 @@ using KuriimuContract;
 
 namespace game_miitopia_3ds
 {
+    public class TextPreviewFormat
+    {
+        public float offsetX;
+        public float offsetY;
+        public float scale;
+        public float maxWidth;
+        public float widthMultiplier;
+        public float marginX;
+        public float marginY;
+
+        // Set some defaults for now
+        public TextPreviewFormat()
+        {
+            offsetX = 5;
+            offsetY = 6;
+            scale = 0.9f;
+            marginX = 10.0f;
+            marginY = 10.0f;
+            maxWidth = 400 - marginX*2;
+            widthMultiplier = 1;
+        }
+    };
+
     public class MiitopiaHandler : IGameHandler
     {
-        Dictionary<string, string> codeLabelPair = new Dictionary<string, string>
+        static Lazy<BCFNT[]> fontInitializer = new Lazy<BCFNT[]>(() => new[] {
+                new BCFNT(new MemoryStream(GZip.Decompress(Resources.FontCaptionOutline_bcfnt))),
+                new BCFNT(new MemoryStream(GZip.Decompress(Resources.FontCaptionOutline_bcfnt)))
+            });
+
+        BCFNT baseFont => fontInitializer.Value[0];
+        BCFNT outlineFont => fontInitializer.Value[1];
+
+
+
+        static Dictionary<string, string> codeLabelPair = new Dictionary<string, string>
         {
             ["<n3.0:00-CD>"] = "<miiname>",
             ["<n9.0:00-CD>"] = "<weapon>",
@@ -76,7 +110,6 @@ namespace game_miitopia_3ds
 
             }
             str = codeLabelPair.Aggregate(str, (s, pair) => s.Replace(pair.Key, pair.Value));
-
             return str;
         }
 
@@ -155,9 +188,53 @@ namespace game_miitopia_3ds
         // TODO: Implement this
         public IList<Bitmap> GeneratePreviews(IEntry entry)
         {
-            // temporary solution for now, so we can show the background preview image
-            List<Bitmap> bitmapList = new List<Bitmap>(1);
-            bitmapList.Add(new Bitmap(Resources.preview_bg, 400, 240));
+            string labelString = GetKuriimuString(entry.EditedText);
+            if (string.IsNullOrWhiteSpace(labelString))
+            {
+                labelString = entry.OriginalText;
+            }
+
+            List<Bitmap> bitmapList = new List<Bitmap>();
+            Bitmap backgroundImg = new Bitmap(Resources.previewbg, 400, 120);
+
+            // gold FromArgb(218, 165, 32)
+            baseFont.SetColor(Color.FromArgb(218, 165, 32));
+            outlineFont.SetColor(Color.Black);
+
+            float txtOffsetX = 5;
+            float txtOffsetY = 6;
+            float scale = 0.9f;
+            float fullWidth = 380;
+            float widthMultiplier = 1;
+            float marginX = 10.0f;
+            float marginY = 10.0f;
+
+            using (var g = Graphics.FromImage(backgroundImg))
+            {
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.InterpolationMode = InterpolationMode.Bicubic;
+                float x = 0, y = 0;
+
+                for (int i = 0; i < labelString.Length; ++i)
+                {
+                    var c = labelString[i];
+
+                    var charWidth = baseFont.GetWidthInfo(c).char_width * scale * widthMultiplier;
+                    if (c == '\n' || x + charWidth >= fullWidth)
+                    {
+                        x = 0;
+                        y += baseFont.LineFeed * scale;
+                        if (c == '\n') continue;
+                    }
+                    outlineFont.Draw(c, g, x + txtOffsetX + marginX + 2, y + txtOffsetY+2 + marginY, scale * widthMultiplier, scale);
+                    baseFont.Draw(c, g, x + txtOffsetX + marginX, y + txtOffsetY + marginY, scale * widthMultiplier, scale);
+                    
+                    x += charWidth;
+                }
+            }
+
+            bitmapList.Add(backgroundImg);
             return bitmapList;
         }
 
