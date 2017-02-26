@@ -59,7 +59,7 @@ namespace game_miitopia_3ds
         BCFNT baseFont => fontInitializer.Value[0];
         BCFNT outlineFont => fontInitializer.Value[1];
 
-
+        public TextPreviewFormat txtPreview;
 
         static Dictionary<string, string> codeLabelPair = new Dictionary<string, string>
         {
@@ -201,13 +201,8 @@ namespace game_miitopia_3ds
             baseFont.SetColor(Color.FromArgb(218, 165, 32));
             outlineFont.SetColor(Color.Black);
 
-            float txtOffsetX = 5;
-            float txtOffsetY = 6;
-            float scale = 0.9f;
-            float fullWidth = 380;
-            float widthMultiplier = 1;
-            float marginX = 10.0f;
-            float marginY = 10.0f;
+            // create default preview settings
+            txtPreview = new TextPreviewFormat();
 
             using (var g = Graphics.FromImage(backgroundImg))
             {
@@ -220,15 +215,15 @@ namespace game_miitopia_3ds
                 {
                     var c = labelString[i];
 
-                    var charWidth = baseFont.GetWidthInfo(c).char_width * scale * widthMultiplier;
-                    if (c == '\n' || x + charWidth >= fullWidth)
+                    var charWidth = baseFont.GetWidthInfo(c).char_width * txtPreview.scale * txtPreview.widthMultiplier;
+                    if (c == '\n' || x + charWidth >= txtPreview.maxWidth)
                     {
                         x = 0;
-                        y += baseFont.LineFeed * scale;
+                        y += baseFont.LineFeed * txtPreview.scale;
                         if (c == '\n') continue;
                     }
-                    outlineFont.Draw(c, g, x + txtOffsetX + marginX + 2, y + txtOffsetY+2 + marginY, scale * widthMultiplier, scale);
-                    baseFont.Draw(c, g, x + txtOffsetX + marginX, y + txtOffsetY + marginY, scale * widthMultiplier, scale);
+                    outlineFont.Draw(c, g, x+txtPreview.offsetX+txtPreview.marginX+2, y+txtPreview.offsetY+txtPreview.marginY+2, txtPreview.scale*txtPreview.widthMultiplier, txtPreview.scale);
+                    baseFont.Draw(c, g, x+txtPreview.offsetX+txtPreview.marginX, y+ txtPreview.offsetY+txtPreview.marginY, txtPreview.scale*txtPreview.widthMultiplier, txtPreview.scale);
                     
                     x += charWidth;
                 }
