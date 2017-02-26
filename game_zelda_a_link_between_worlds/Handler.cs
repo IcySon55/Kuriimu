@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using Cetera.Compression;
 using Cetera.Font;
@@ -41,6 +40,7 @@ namespace game_zelda_a_link_between_worlds
 			// Color
 			["<c-blue>"] = "\xE\x0\x3\x2\x9\x0",
 			["<c-red>"] = "\xE\x0\x3\x2\xA\x0",
+			["<c-cyan>"] = "\xE\x0\x3\x2\xB\x0",
 			["<c-default>"] = "\xE\x0\x3\x2\xFF\xFF",
 
 			// Variables
@@ -76,6 +76,9 @@ namespace game_zelda_a_link_between_worlds
 
 		static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.MainFont_bcfnt))));
 		BCFNT font => fontInitializer.Value;
+		string[] it_name = Resources.item.Split('\n');
+		string[] loc_name = Resources.location.Split('\n');
+		string[] npc_name = Resources.npc.Split('\n');
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -154,6 +157,9 @@ namespace game_zelda_a_link_between_worlds
 								case "\x0\x3\x2\xA\x0":
 									font.SetColor(Color.Red);
 									goto case "cleanup";
+								case "\x0\x3\x2\xB\x0":
+									font.SetColor(Color.Cyan);
+									goto case "cleanup";
 								case "\x0\x3\x2\xFF\xFF":
 									font.SetColor(Color.FromArgb(255, 80, 80, 80));
 									goto case "cleanup";
@@ -178,7 +184,7 @@ namespace game_zelda_a_link_between_worlds
 									goto case "cleanup";
 								case "\x1\x11\x4": // text padding
 									x += c;
-									padding = p[j + 2];
+									padding = p[j + 2] / 2 - 4;
 									y += padding;
 									skip = 4;
 									goto case "cleanup";
@@ -187,17 +193,17 @@ namespace game_zelda_a_link_between_worlds
 									skip = 6;
 									goto case "placeholder";
 								case "\x2\x0\x2": // npc
-									temp = "NPC";
+									temp = npc_name[c];
 									font.SetColor(Color.Blue);
 									skip = 2;
 									goto case "placeholder";
 								case "\x2\x1\x4": // map
-									temp = "LOCATION";
+									temp = loc_name[c];
 									font.SetColor(Color.Blue);
 									skip = 4;
 									goto case "placeholder";
 								case "\x2\x2\x4": // item
-									temp = "ITEM";
+									temp = it_name[c];
 									font.SetColor(Color.Blue);
 									skip = 4;
 									goto case "placeholder";
@@ -214,6 +220,8 @@ namespace game_zelda_a_link_between_worlds
 									cmd = false;
 									break;
 							}
+
+							j++;
 
 							if (!cmd) switch (c)
 								{
@@ -236,7 +244,6 @@ namespace game_zelda_a_link_between_worlds
 								font.Draw(c, gfx, x, y, scale, scale);
 								x += font.GetWidthInfo(c).char_width * scale;
 							}
-							j++;
 						}
 					}
 

@@ -97,6 +97,18 @@
     <None Include="images\background.png" />
     <None Include="images\template.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\item.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\location.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\npc.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\items.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
