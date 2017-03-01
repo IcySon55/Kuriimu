@@ -16,6 +16,7 @@ namespace Kuriimu
 	{
 		private IFileAdapter _fileAdapter = null;
 		private IGameHandler _gameHandler = null;
+		private IList<Bitmap> _gameHandlerPages = new List<Bitmap>();
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
 
@@ -47,6 +48,19 @@ namespace Kuriimu
 			Tools.DoubleBuffer(treEntries, true);
 			LoadForm();
 			UpdateForm();
+		}
+
+		private void frmEditor_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (_hasChanges)
+			{
+				DialogResult dr = MessageBox.Show("Would you like to save your changes before exiting?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+				if (dr == DialogResult.Yes)
+					SaveFile();
+				else if (dr == DialogResult.Cancel)
+					e.Cancel = true;
+			}
 		}
 
 		// Menu/Toolbar
@@ -324,6 +338,11 @@ namespace Kuriimu
 			}
 		}
 
+		private void tsbPreviewCopy_Click(object sender, EventArgs e)
+		{
+			Clipboard.SetImage(pbxPreview.Image);
+		}
+
 		private void tsbPreviousPage_Click(object sender, EventArgs e)
 		{
 			SetPage(-1);
@@ -336,6 +355,15 @@ namespace Kuriimu
 			SetPage(1);
 			UpdatePreview();
 			UpdateForm();
+		}
+
+		private void tsbHandlerSettings_Click(object sender, EventArgs e)
+		{
+			if (_gameHandler.ShowSettings(Resources.kuriimu))
+			{
+				UpdatePreview();
+				UpdateForm();
+			}
 		}
 
 		// File Handling
@@ -405,6 +433,7 @@ namespace Kuriimu
 								_gameHandler = (IGameHandler)tsi.Tag;
 								tsbGameSelect.Text = tsi.Text;
 								tsbGameSelect.Image = tsi.Image;
+
 								break;
 							}
 						if (_gameHandler == null)
@@ -549,10 +578,13 @@ namespace Kuriimu
 
 			if (_page < 0)
 				_page = 0;
-			else if (_page > _gameHandler.Pages.Count - 1)
-				_page = _gameHandler.Pages.Count - 1;
+			else if (_page > _gameHandlerPages.Count - 1)
+				_page = _gameHandlerPages.Count - 1;
 
-			tslPage.Text = (_page + 1) + "/" + _gameHandler.Pages.Count;
+			if (_gameHandlerPages.Count > 0)
+				tslPage.Text = (_page + 1) + "/" + _gameHandlerPages.Count;
+			else
+				tslPage.Text = "0/0";
 		}
 
 		private void LoadEntries()
@@ -631,11 +663,11 @@ namespace Kuriimu
 		private void UpdatePreview()
 		{
 			IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-			_gameHandler.GeneratePages(entry);
+			_gameHandlerPages = _gameHandler.GeneratePreviews(entry);
 			SetPage(0);
 
-			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled)
-				pbxPreview.Image = _gameHandler.Pages[_page];
+			if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled && _gameHandlerPages.Count > 0)
+				pbxPreview.Image = _gameHandlerPages[_page];
 			else
 				pbxPreview.Image = null;
 		}
@@ -690,14 +722,21 @@ namespace Kuriimu
 				sortEntriesToolStripMenuItem.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 				tsbSortEntries.Enabled = _fileOpen && _fileAdapter.CanSortEntries;
 				tsbSortEntries.Image = _fileAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+
+				// Preview
 				tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
 				tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
 				tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
-				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled;
+				tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled && _gameHandler.HandlerCanGeneratePreviews && _gameHandlerPages.Count > 0;
+				tsbPreviewCopy.Enabled = tsbPreviewSave.Enabled;
 
-				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page > 0;
-				tslPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0;
-				tsbNextPage.Enabled = _gameHandler != null && _gameHandler.Pages.Count > 0 && _page < _gameHandler.Pages.Count - 1;
+				// Paging
+				tsbPreviousPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0 && _page > 0;
+				tslPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0;
+				tsbNextPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0 && _page < _gameHandlerPages.Count - 1;
+
+				// Handler Settings
+				tsbHandlerSettings.Enabled = _gameHandler != null && _gameHandler.HandlerHasSettings;
 
 				treEntries.Enabled = _fileOpen;
 
@@ -736,7 +775,25 @@ namespace Kuriimu
 
 		private void tsbImportKUP_Click(object sender, EventArgs e)
 		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Import KUP...";
+			ofd.InitialDirectory = Settings.Default.LastDirectory;
+			ofd.Filter = "Kuriimu Archive (*.kup)|*.kup";
 
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					//var bmp = (Bitmap)Image.FromFile(filename);
+					//_imageAdapter.Bitmap = bmp;
+					UpdatePreview();
+					//MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 
 		private void tsbBatchExportKUP_Click(object sender, EventArgs e)

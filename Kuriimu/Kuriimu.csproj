@@ -153,6 +153,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="images\whitespace-hidden.png" />
+    <None Include="images\whitespace-shown.png" />
     <None Include="images\previous-page.png" />
     <None Include="images\next-page.png" />
     <None Include="images\preview-background.png" />
@@ -183,6 +185,7 @@
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />
     <None Include="images\menu-properties.png" />
+    <None Include="images\menu-preview-copy.png" />
     <Content Include="images\menu-preview-invisible.png" />
     <None Include="images\menu-preview-save.png" />
     <Content Include="images\menu-preview-visible.png" />

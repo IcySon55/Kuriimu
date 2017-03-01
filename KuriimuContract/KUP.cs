@@ -190,6 +190,14 @@ namespace KuriimuContract
 		[XmlIgnore]
 		public List<IEntry> SubEntries { get; set; }
 
+		[XmlArray("subEntries")]
+		[XmlArrayItem("subEntry")]
+		public List<Entry> SubEntriesXML
+		{
+			get { return SubEntries.ConvertAll(o => (Entry)o); }
+			set { SubEntries = value.ConvertAll(o => (IEntry)o); }
+		}
+
 		public Entry()
 		{
 			Name = string.Empty;

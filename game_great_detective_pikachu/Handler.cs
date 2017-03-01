@@ -17,10 +17,10 @@ namespace game_great_detective_pikachu
 
 		// Information
 		public string Name => "Great Detective Pikachu";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => false;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -38,18 +38,11 @@ namespace game_great_detective_pikachu
 			["<color-white>"] = "\xE\x0\x3\x4\xFD\xFD\xFD\xFF",
 
 			// Special
-			["…"] = "\x85"
+			["…"] = "\x85",
+			["？"] = "?"
 		};
 
-		BCFNT font;
-
-		public Handler()
-		{
-			var ms = new MemoryStream();
-			new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
-			ms.Position = 0;
-			font = new BCFNT(ms);
-		}
+		BCFNT font => BCFNT.StandardFont;
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -61,87 +54,128 @@ namespace game_great_detective_pikachu
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Key, pair.Value));
 		}
 
-		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
+		Bitmap background = new Bitmap(Resources.background);
 
-		Bitmap background = new Bitmap(Resources.background1);
-
-		public void GeneratePages(IEntry entry)
+		// Previewer
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
-			string rawString = entry.EditedText;
-			Bitmap img = new Bitmap(background.Width, background.Height);
+			string rawString = _pairs.Aggregate(entry.EditedText, (str, pair) => str.Replace(pair.Value, pair.Key));
 
-			using (Graphics gfx = Graphics.FromImage(img))
+			foreach (string page in rawString.Split('\n'))
 			{
-				gfx.SmoothingMode = SmoothingMode.HighQuality;
-				gfx.InterpolationMode = InterpolationMode.Bicubic;
-				gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-				gfx.DrawImage(background, 0, 0);
-
-				float[][] fadeToFiftyPercentMatrix = {
-					new float[] { 1, 0, 0, 0, 0 },
-					new float[] { 0, 1, 0, 0, 0 },
-					new float[] { 0, 0, 1, 0, 0 },
-					new float[] { 0, 0, 0, 0.45f, 0 },
-					new float[] { 0, 0, 0, 0, 1 },
-				};
-
-				// Textbox
-				Bitmap textBox = new Bitmap(Resources.top_speaker_bg);
-				ColorMatrix textBoxMatrix = new ColorMatrix(fadeToFiftyPercentMatrix);
-
-				ImageAttributes textBoxAttributes = new ImageAttributes();
-				textBoxAttributes.SetColorMatrix(textBoxMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-
-				Rectangle rectTextBox = new Rectangle(0, img.Height - textBox.Height / 2, img.Width, textBox.Height / 2);
-				gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
-				gfx.DrawImage(textBox, rectTextBox, 0, 0, textBox.Width, textBox.Height, GraphicsUnit.Pixel, textBoxAttributes);
-
-				// Face
-				Bitmap face = Resources.face_icon_pikachu_surprised;
-				Rectangle rectFace = new Rectangle(5, img.Height - face.Height - 4, face.Width, face.Height);
-				gfx.DrawImageUnscaled(face, rectFace);
-
-				// Text
-				Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 9, rectFace.Y + 12, 366, 60);
-
-				float scale = 1.0f;
-				float x = rectText.X, y = rectText.Y;
-				int line = 0;
-
-				string str = rawString;
-				font.SetColor(Color.White);
-
-				gfx.InterpolationMode = InterpolationMode.Bicubic;
-				foreach (char c in str)
+				if (page.Trim() != string.Empty)
 				{
-					switch (c)
+					Bitmap img = new Bitmap(background.Width, background.Height);
+
+					using (Graphics gfx = Graphics.FromImage(img))
 					{
-						case '\n':
-							x = rectText.X;
-							y += rectText.Y;
-							if (++line % 3 == 0)
-								y += 33;
-							continue;
+						gfx.SmoothingMode = SmoothingMode.HighQuality;
+						gfx.InterpolationMode = InterpolationMode.Bicubic;
+						gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+						gfx.DrawImage(background, 0, 0);
+
+						float[][] fadeToFiftyPercentMatrix = {
+							new float[] { 1, 0, 0, 0, 0 },
+							new float[] { 0, 1, 0, 0, 0 },
+							new float[] { 0, 0, 1, 0, 0 },
+							new float[] { 0, 0, 0, 0.45f, 0 },
+							new float[] { 0, 0, 0, 0, 1 },
+						};
+
+						// Textbox
+						Bitmap textBox = new Bitmap(Resources.top_speaker_bg);
+						ColorMatrix textBoxMatrix = new ColorMatrix(fadeToFiftyPercentMatrix);
+
+						ImageAttributes textBoxAttributes = new ImageAttributes();
+						textBoxAttributes.SetColorMatrix(textBoxMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+						Rectangle rectTextBox = new Rectangle(0, img.Height - textBox.Height / 2, img.Width, textBox.Height / 2);
+						gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
+						gfx.DrawImage(textBox, rectTextBox, 0, 0, textBox.Width, textBox.Height, GraphicsUnit.Pixel, textBoxAttributes);
+
+						// Face
+						Bitmap face = Resources.face_icon_pikachu_surprised;
+						Rectangle rectFace = new Rectangle(5, img.Height - face.Height - 4, face.Width, face.Height);
+						gfx.DrawImageUnscaled(face, rectFace);
+
+						// Text
+						Rectangle rectText = new Rectangle(rectFace.X + rectFace.Width + 8, rectFace.Y + 10, 366, 60);
+
+						float scale = 0.775f;
+						float x = rectText.X, y = rectText.Y;
+						bool control = false;
+						string parameter = string.Empty;
+						Color backgroundBrown = Color.FromArgb(255, 64, 0, 0);
+						Color foregroundRed = Color.FromArgb(255, 255, 75, 75);
+
+						Color foregroundColor = Color.White;
+						Color backgroundColor = backgroundBrown;
+						gfx.InterpolationMode = InterpolationMode.Bicubic;
+						foreach (char c in page)
+						{
+							if (!control)
+								switch (c)
+								{
+									case '\n':
+										x = rectText.X;
+										y += rectText.Y;
+										continue;
+									case '<':
+										control = true;
+										parameter += c;
+										continue;
+								}
+							else
+							{
+								parameter += c;
+								if (c == ' ')
+								{
+									control = false;
+									parameter = string.Empty;
+								}
+							}
+
+							switch (parameter)
+							{
+								case "<color-red>":
+									foregroundColor = foregroundRed;
+									control = false;
+									parameter = string.Empty;
+									continue;
+								case "<color-white>":
+									foregroundColor = Color.White;
+									control = false;
+									parameter = string.Empty;
+									continue;
+							}
+
+							if (!control)
+							{
+								font.SetColor(backgroundColor);
+								font.Draw(c, gfx, x + 1.5f, y + 1f, scale, scale);
+								font.SetColor(foregroundColor);
+								font.Draw(c, gfx, x, y, scale, scale);
+								x += font.GetWidthInfo(c).char_width * scale;
+							}
+						}
+
+						// Cursor
+						Bitmap cursor = new Bitmap(Resources.top_speaker);
+						RectangleF rectCursor = new RectangleF(381, 227, 13.9f, 10);
+						gfx.DrawImage(cursor, rectCursor);
 					}
 
-					font.SetColor(Color.FromArgb(255, 63, 3, 3));
-					font.Draw(c, gfx, x + 2f, y + 2f, scale, scale);
-					font.SetColor(Color.White);
-					font.Draw(c, gfx, x, y, scale, scale);
-					x += font.GetWidthInfo(c).char_width * scale;
+					pages.Add(img);
 				}
-
-				// Cursor
-				Bitmap cursor = new Bitmap(Resources.top_speaker);
-				RectangleF rectCursor = new RectangleF(381, 225, 13.9f, 10);
-				gfx.DrawImage(cursor, rectCursor);
 			}
 
-			pages.Add(img);
-			Pages = pages;
+			return pages;
 		}
+
+		public bool ShowSettings(Icon icon) => false;
 	}
 }

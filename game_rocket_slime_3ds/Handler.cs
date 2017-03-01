@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Cetera.Compression;
 using Cetera.Font;
 using game_rocket_slime_3ds.Properties;
 using KuriimuContract;
@@ -16,10 +18,10 @@ namespace game_rocket_slime_3ds
 
 		// Information
 		public string Name => "Rocket Slime 3DS";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => true;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -72,15 +74,8 @@ namespace game_rocket_slime_3ds
 			["\x87"] = "♥"
 		};
 
-		BCFNT font;
-
-		public Handler()
-		{
-			var ms = new MemoryStream();
-			new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
-			ms.Position = 0;
-			font = new BCFNT(ms);
-		}
+		static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.MainFont_bcfnt))));
+		BCFNT font => fontInitializer.Value;
 
 		public string GetKuriimuString(string rawString)
 		{
@@ -92,15 +87,15 @@ namespace game_rocket_slime_3ds
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
-
 		Bitmap background = new Bitmap(Resources.background);
 		Bitmap nameBox = new Bitmap(Resources.namebox_top);
 		Bitmap textBox = new Bitmap(Resources.textbox_top);
 
-		public void GeneratePages(IEntry entry)
+		// Previewer
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
 			foreach (string page in entry.EditedText.Split('\x17'))
 			{
@@ -133,7 +128,7 @@ namespace game_rocket_slime_3ds
 						float y = rectText.Y, pY = y;
 						float lineSpacing = 4;
 
-						string str = page.Replace("\x1F\x05", "Player");
+						string str = page.Replace("\x1F\x05", Settings.Default.PlayerName == string.Empty ? "Player" : Settings.Default.PlayerName);
 						font.SetColor(colorDefault);
 
 						for (int i = 0; i < str.Length; i++)
@@ -223,7 +218,14 @@ namespace game_rocket_slime_3ds
 				}
 			}
 
-			Pages = pages;
+			return pages;
+		}
+
+		public bool ShowSettings(Icon icon)
+		{
+			var settings = new frmSettings(icon);
+			settings.ShowDialog();
+			return settings.HasChanges;
 		}
 	}
 }

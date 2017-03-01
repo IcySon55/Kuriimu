@@ -32,22 +32,26 @@ namespace KuriimuContract
 				{
 					if (assembly != null)
 					{
-						Type[] types = assembly.GetTypes();
-
-						foreach (Type type in types)
+						try
 						{
-							if (type.IsInterface || type.IsAbstract)
+							Type[] types = assembly.GetTypes();
+
+							foreach (Type type in types)
 							{
-								continue;
-							}
-							else
-							{
-								if (type.GetInterface(pluginType.FullName) != null)
+								if (type.IsInterface || type.IsAbstract)
 								{
-									pluginTypes.Add(type);
+									continue;
+								}
+								else
+								{
+									if (type.GetInterface(pluginType.FullName) != null)
+									{
+										pluginTypes.Add(type);
+									}
 								}
 							}
 						}
+						catch (Exception) { }
 					}
 				}
 

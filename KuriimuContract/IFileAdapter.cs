@@ -22,7 +22,7 @@ namespace KuriimuContract
 		bool CanSortEntries { get; } // Should the option to sort entries even be allowed?
 		bool EntriesHaveSubEntries { get; } // Do entries contain multiple text values?
 		bool EntriesHaveUniqueNames { get; } // Must entry names be unique?
-		bool EntriesHaveExtendedProperties { get; } // Entries provides an extended properties dialog?
+		bool EntriesHaveExtendedProperties { get; } // Entries provide an extended properties dialog?
 
 		// I/O
 		FileInfo FileInfo { get; set; }

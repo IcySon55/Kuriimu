@@ -303,6 +303,16 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_preview_copy {
+            get {
+                object obj = ResourceManager.GetObject("menu_preview_copy", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_preview_invisible {
             get {
                 object obj = ResourceManager.GetObject("menu_preview_invisible", resourceCulture);
@@ -406,6 +416,26 @@ namespace Kuriimu.Properties {
         internal static System.Drawing.Bitmap previous_page {
             get {
                 object obj = ResourceManager.GetObject("previous_page", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap whitespace_hidden {
+            get {
+                object obj = ResourceManager.GetObject("whitespace_hidden", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap whitespace_shown {
+            get {
+                object obj = ResourceManager.GetObject("whitespace_shown", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

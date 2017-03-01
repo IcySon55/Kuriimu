@@ -79,7 +79,6 @@ namespace Kukkii
 			ExportPNG();
 		}
 
-
 		private void importPNGToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ImportPNG();

@@ -15,10 +15,10 @@ namespace game_time_travelers
 
 		// Information
 		public string Name => "Time Travelers";
-
 		public Image Icon => Resources.icon;
 
 		// Feature Support
+		public bool HandlerHasSettings => false;
 		public bool HandlerCanGeneratePreviews => true;
 
 		#endregion
@@ -45,13 +45,13 @@ namespace game_time_travelers
 			return _pairs.Aggregate(kuriimuString, (str, pair) => str.Replace(pair.Value, pair.Key));
 		}
 
-		public IList<Bitmap> Pages { get; private set; } = new List<Bitmap>();
-
 		Bitmap textBox = new Bitmap(Resources.blank_top);
 
-		public void GeneratePages(IEntry entry)
+		// Previewer
+		public IList<Bitmap> GeneratePreviews(IEntry entry)
 		{
 			var pages = new List<Bitmap>();
+			if (entry == null) return pages;
 
 			string kuriimuString = GetKuriimuString(entry.EditedText);
 			int boxes = kuriimuString.Count(c => c == (char)0x17) + 1;
@@ -195,7 +195,10 @@ namespace game_time_travelers
 			}
 
 			pages.Add(img);
-			Pages = pages;
+
+			return pages;
 		}
+
+		public bool ShowSettings(Icon icon) => false;
 	}
 }

@@ -82,10 +82,12 @@
 			this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
 			this.tsbPreviewEnabled = new System.Windows.Forms.ToolStripButton();
 			this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
+			this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbPreviousPage = new System.Windows.Forms.ToolStripButton();
 			this.tslPage = new System.Windows.Forms.ToolStripLabel();
 			this.tsbNextPage = new System.Windows.Forms.ToolStripButton();
+			this.tsbHandlerSettings = new System.Windows.Forms.ToolStripButton();
 			this.tlsHexView = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
 			this.tlsMain = new System.Windows.Forms.ToolStrip();
@@ -685,10 +687,12 @@
             this.toolStripLabel2,
             this.tsbPreviewEnabled,
             this.tsbPreviewSave,
+            this.tsbPreviewCopy,
             this.toolStripSeparator8,
             this.tsbPreviousPage,
             this.tslPage,
-            this.tsbNextPage});
+            this.tsbNextPage,
+            this.tsbHandlerSettings});
 			this.tlsPreview.Location = new System.Drawing.Point(0, 0);
 			this.tlsPreview.Name = "tlsPreview";
 			this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -722,6 +726,17 @@
 			this.tsbPreviewSave.Size = new System.Drawing.Size(23, 22);
 			this.tsbPreviewSave.Text = "Save Preview";
 			this.tsbPreviewSave.Click += new System.EventHandler(this.tsbPreviewSave_Click);
+			// 
+			// tsbPreviewCopy
+			// 
+			this.tsbPreviewCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbPreviewCopy.Enabled = false;
+			this.tsbPreviewCopy.Image = global::Kuriimu.Properties.Resources.menu_preview_copy;
+			this.tsbPreviewCopy.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbPreviewCopy.Name = "tsbPreviewCopy";
+			this.tsbPreviewCopy.Size = new System.Drawing.Size(23, 22);
+			this.tsbPreviewCopy.Text = "Copy Preview";
+			this.tsbPreviewCopy.Click += new System.EventHandler(this.tsbPreviewCopy_Click);
 			// 
 			// toolStripSeparator8
 			// 
@@ -760,6 +775,18 @@
 			this.tsbNextPage.Size = new System.Drawing.Size(23, 22);
 			this.tsbNextPage.Text = "Next Page";
 			this.tsbNextPage.Click += new System.EventHandler(this.tsbNextPage_Click);
+			// 
+			// tsbHandlerSettings
+			// 
+			this.tsbHandlerSettings.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbHandlerSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbHandlerSettings.Enabled = false;
+			this.tsbHandlerSettings.Image = global::Kuriimu.Properties.Resources.menu_manage;
+			this.tsbHandlerSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbHandlerSettings.Name = "tsbHandlerSettings";
+			this.tsbHandlerSettings.Size = new System.Drawing.Size(23, 22);
+			this.tsbHandlerSettings.Text = "Handler Settings";
+			this.tsbHandlerSettings.Click += new System.EventHandler(this.tsbHandlerSettings_Click);
 			// 
 			// tlsHexView
 			// 
@@ -1007,6 +1034,7 @@
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "frmEditor";
 			this.Text = "Kuriimu";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmEditor_FormClosing);
 			this.Load += new System.EventHandler(this.frmEditor_Load);
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmEditor_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmEditor_DragEnter);
@@ -1084,8 +1112,6 @@
 		private System.Windows.Forms.ToolStripMenuItem gitHubToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
 		private System.Windows.Forms.SplitContainer splPreview;
-		private System.Windows.Forms.ToolStrip tlsPreview;
-		private System.Windows.Forms.ToolStripLabel toolStripLabel2;
 		private System.Windows.Forms.ToolStrip tlsHexView;
 		private System.Windows.Forms.ToolStripLabel toolStripLabel3;
 		private System.Windows.Forms.PictureBox pbxPreview;
@@ -1103,7 +1129,6 @@
 		private System.Windows.Forms.TreeView treEntries;
 		private System.Windows.Forms.ImageList imlEntries;
 		private System.Windows.Forms.ToolStripButton tsbSortEntries;
-		private System.Windows.Forms.ToolStripButton tsbPreviewEnabled;
 		private System.Windows.Forms.ToolStripMenuItem extensionsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem tolsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
@@ -1122,16 +1147,21 @@
 		private System.Windows.Forms.ToolStripComboBox scbFontFamily;
 		private System.Windows.Forms.ToolStripLabel tslFontSize;
 		private System.Windows.Forms.ToolStripComboBox scbFontSize;
-		private System.Windows.Forms.ToolStripButton tsbPreviewSave;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripButton tsbExportKUP;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripButton tsbImportKUP;
 		private System.Windows.Forms.ToolStripButton tsbBatchExportKUP;
 		private System.Windows.Forms.ToolStripButton tsbBatchImportKUP;
+		private System.Windows.Forms.ToolStrip tlsPreview;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+		private System.Windows.Forms.ToolStripButton tsbPreviewEnabled;
+		private System.Windows.Forms.ToolStripButton tsbPreviewSave;
+		private System.Windows.Forms.ToolStripButton tsbPreviewCopy;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 		private System.Windows.Forms.ToolStripButton tsbPreviousPage;
 		private System.Windows.Forms.ToolStripLabel tslPage;
 		private System.Windows.Forms.ToolStripButton tsbNextPage;
+		private System.Windows.Forms.ToolStripButton tsbHandlerSettings;
 	}
 }
