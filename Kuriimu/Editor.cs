@@ -50,6 +50,19 @@ namespace Kuriimu
 			UpdateForm();
 		}
 
+		private void frmEditor_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (_hasChanges)
+			{
+				DialogResult dr = MessageBox.Show("Would you like to save your changes before exiting?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+				if (dr == DialogResult.Yes)
+					SaveFile();
+				else if (dr == DialogResult.Cancel)
+					e.Cancel = true;
+			}
+		}
+
 		// Menu/Toolbar
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{

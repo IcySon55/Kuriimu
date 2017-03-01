@@ -1034,6 +1034,7 @@
 			this.MainMenuStrip = this.mnuMain;
 			this.Name = "frmEditor";
 			this.Text = "Kuriimu";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmEditor_FormClosing);
 			this.Load += new System.EventHandler(this.frmEditor_Load);
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmEditor_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmEditor_DragEnter);
