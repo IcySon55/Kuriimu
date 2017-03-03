@@ -66,18 +66,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\FontCaption.bffnt.gz" />
     <None Include="Resources\FontCaptionOutline.bcfnt.gz" />
     <None Include="Resources\MainFont.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\icon.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="images\icon_2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\preview_bg.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="images\previewbg.png" />
