@@ -12,18 +12,6 @@ using Cetera.Compression;
 using game_miitopia_3ds.Properties;
 using KuriimuContract;
 
-/*
-    ***********************************************
-    Codes
-    ***********************************************
-    <n0.0:> - General text and menu text stuff
-    
-    <n3.0:00-CD> - Mii's name
-    <n9.0:00-CD> - Weapon
-    <n10.0:00-CD> - Armour
-
-*/
-
 namespace game_miitopia_3ds
 {
     public class TextPreviewFormat
@@ -64,6 +52,7 @@ namespace game_miitopia_3ds
         static Dictionary<string, string> codeLabelPair = new Dictionary<string, string>
         {
             ["<n3.0:00-CD>"] = "<miiname>",
+            ["<n3.2:01-CD>"] = "<fperson>",
             ["<n9.0:00-CD>"] = "<weapon>",
             ["<n10.0:00-CD>"] = "<armor>",
             ["<n2.0:00-06>"] = "<#gold>",
