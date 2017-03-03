@@ -14,6 +14,7 @@ using KuriimuContract;
 
 namespace game_miitopia_3ds
 {
+    // A class for text formatting settings for the preview
     public class TextPreviewFormat
     {
         public float offsetX;
@@ -191,7 +192,6 @@ namespace game_miitopia_3ds
 
         public bool HandlerHasSettings { get; } = false;
 
-        // TODO: Implement this
         // Show the settings dialog
         public bool ShowSettings(Icon icon)
         {
