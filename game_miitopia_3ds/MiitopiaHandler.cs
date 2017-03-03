@@ -116,13 +116,14 @@ namespace game_miitopia_3ds
                         str = str.Remove(i, data.Length + 4).Insert(i, $"<{Fix(id, data)}>");
                     }
                 }
+
+                str = codeLabelPair.Aggregate(str, (s, pair) => s.Replace(pair.Key, pair.Value));
+                return str;
             }
             catch
             {
-
+                return str;
             }
-            str = codeLabelPair.Aggregate(str, (s, pair) => s.Replace(pair.Key, pair.Value));
-            return str;
         }
 
         public string GetRawString(string str)
