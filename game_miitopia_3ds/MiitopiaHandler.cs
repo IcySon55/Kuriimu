@@ -91,7 +91,16 @@ namespace game_miitopia_3ds
                 {
                     var id = str.Substring(i + 1, 2);
                     var data = str.Substring(i + 4, str[i + 3]).Select(c => (byte)c).ToArray();
-                    str = str.Remove(i, data.Length + 4).Insert(i, $"<{Fix(id, data)}>");
+
+                    if (id == "\0\0")
+                    {
+                        // remove the code starting with "\0\0" - it is useless
+                        str = str.Remove(i, data.Length + 4);
+                    }
+                    else
+                    {
+                        str = str.Remove(i, data.Length + 4).Insert(i, $"<{Fix(id, data)}>");
+                    }
                 }
             }
             catch
