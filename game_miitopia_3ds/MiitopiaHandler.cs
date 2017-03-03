@@ -70,6 +70,10 @@ namespace game_miitopia_3ds
             ["<n14.0:1A-00-52-00-65-00-69-00-6E-00-63-00-61-00-72-00-6E-00-61-00-74-00-69-00-6F-00-6E-00>"] = "<reincarn>",
         };
 
+        // ruby code ID, appended to the label for each new ruby code
+        // this value is incremented after a new (key, value) pair is added to the dictionary
+        int rubyCodeID = 0;
+
         public MiitopiaHandler()
         {
         }
@@ -94,8 +98,18 @@ namespace game_miitopia_3ds
 
                     if (id == "\0\0")
                     {
-                        // remove the code starting with "\0\0" - it is useless
-                        str = str.Remove(i, data.Length + 4);
+                        // Replace the ruby code with labels <rubyN>, where "N" is 0, 1, 2....
+                        string key = $"<{Fix(id, data)}>";
+                        string value = $"<ruby{rubyCodeID}>";
+
+                        // Add the new (key, value) pairs for the ruby code
+                        if (!codeLabelPair.ContainsKey(key))
+                        {
+                            codeLabelPair.Add(key, value);
+                            ++rubyCodeID;
+                        }
+
+                        str = str.Remove(i, data.Length + 4).Insert(i, key);
                     }
                     else
                     {
