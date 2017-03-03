@@ -195,7 +195,6 @@ namespace file_ttbin
 						br.BaseStream.Position = bk;
 					}
 				}
-				throw new Exception(count.ToString());
 			}
 		}
 
