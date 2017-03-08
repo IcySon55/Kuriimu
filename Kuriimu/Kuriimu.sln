@@ -79,6 +79,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_zelda_a_link_between_w
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_bclyt", "..\image_bclyt\image_bclyt.csproj", "{508881F8-E128-4D4E-A38B-D3E60D8A668E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_miitopia_3ds", "..\game_miitopia_3ds\game_miitopia_3ds.csproj", "{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +183,10 @@ Global
 		{508881F8-E128-4D4E-A38B-D3E60D8A668E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{508881F8-E128-4D4E-A38B-D3E60D8A668E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{508881F8-E128-4D4E-A38B-D3E60D8A668E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
