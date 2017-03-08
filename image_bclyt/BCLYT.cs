@@ -97,13 +97,26 @@ namespace image_bclyt
                         float wndYPos = (wnd.translation.y == (float)BclytSupport.Window.YOrigin.Top) ? 0 - wndHeight / 2 : (wnd.translation.y == (float)BclytSupport.Window.YOrigin.Bottom) ? height - wndHeight / 2 : height / 2 - wndHeight / 2;
 
                         //draw Window
-                        BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight);
+                        BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 255, 255, 255));
+                        break;
+                    case "pan1":
+                        //create placeholder
+                        BclytSupport.Pane pan = (BclytSupport.Pane)sec.Obj;
+                        float panWidth = pan.size.x * pan.scale.x;
+                        float panHeight = pan.size.y * pan.scale.y;
+                        float panXPos = (pan.translation.x == (float)BclytSupport.Pane.XOrigin.Left) ? 0 - panWidth / 2 : (pan.translation.x == (float)BclytSupport.Pane.XOrigin.Right) ? width - panWidth / 2 : width / 2 - panWidth / 2;
+                        float panYPos = (pan.translation.y == (float)BclytSupport.Pane.YOrigin.Top) ? 0 - panHeight / 2 : (pan.translation.y == (float)BclytSupport.Pane.YOrigin.Bottom) ? height - panHeight / 2 : height / 2 - panHeight / 2;
+
+                        //draw Pane
+                        BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
                         break;
                     default:
                         break;
                 }
             }
 
+            //mark border from rootpane
+            BclytSupport.DrawBorder(layout, 0, 0, width, height, Color.FromArgb(255, 0, 255, 0));
             return layout;
         }
     }
