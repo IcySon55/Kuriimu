@@ -11,35 +11,52 @@ namespace image_bclyt
 {
     class BclytSupport
     {
-        public static Bitmap DrawLYTPart(Bitmap bitmap, int posX, int posY, int width, int height)
+        public static Bitmap DrawLYTPart(Bitmap bitmap, int posX, int posY, int width, int height, Color color, Color border)
         {
             int wndWidth = bitmap.Width;
             int wndHeight = bitmap.Height;
-            Color pixel = new Color();
-            pixel = Color.FromArgb(255, 0, 0, 0);
             Point topLeftPos = new Point((posX < 0) ? 0 : posX, (posY < 0) ? 0 : posY);
             Size recSize = new Size(width, height);
             Rectangle rec = new Rectangle(topLeftPos, recSize);
 
-            //BitmapData bData = bitmap.LockBits(rec, ImageLockMode.WriteOnly, PixelFormat.Format32bppRgb);
-            for (int i = posX; i < posX + width; i++)
+            for (int i = posY; i < posY + height; i++)
             {
-                int z = 0;
-                for (int j = posY; j < posY + height; j++)
+                for (int j = posX; j < posX + width; j++)
                 {
-
-                    if ((i >= 0 && i < wndWidth) && (j >= 0 && j < wndHeight))
+                    if ((i >= 0 && i < wndHeight) && (j >= 0 && j < wndWidth))
                     {
-                        //bData[(j * wndWidth * 4) + i * 4];
-                        bitmap.SetPixel(i, j, pixel);
-                    }
-                    if (i == width / 2)
-                    {
-                        z = 0;
+                        bitmap.SetPixel(j, i, color);
+                        if (i == posY || i == posY + height - 1 || j == posX || j == posX + width - 1)
+                        {
+                            bitmap.SetPixel(j, i, border);
+                        }
                     }
                 }
             }
-            //bitmap.UnlockBits();
+
+            return bitmap;
+        }
+        public static Bitmap DrawBorder(Bitmap bitmap, int posX, int posY, int width, int height, Color border)
+        {
+            int wndWidth = bitmap.Width;
+            int wndHeight = bitmap.Height;
+            Point topLeftPos = new Point((posX < 0) ? 0 : posX, (posY < 0) ? 0 : posY);
+            Size recSize = new Size(width, height);
+            Rectangle rec = new Rectangle(topLeftPos, recSize);
+
+            for (int i = posY; i < posY + height; i++)
+            {
+                for (int j = posX; j < posX + width; j++)
+                {
+                    if ((i >= 0 && i < wndHeight) && (j >= 0 && j < wndWidth))
+                    {
+                        if (i == posY || i == posY + height - 1 || j == posX || j == posX + width - 1)
+                        {
+                            bitmap.SetPixel(j, i, border);
+                        }
+                    }
+                }
+            }
 
             return bitmap;
         }
@@ -58,8 +75,8 @@ namespace image_bclyt
         {
             public Vector2D(BinaryReaderX br)
             {
-                x = br.ReadUInt32();
-                y = br.ReadUInt32();
+                x = br.ReadSingle();
+                y = br.ReadSingle();
             }
             public float x;
             public float y;
@@ -69,9 +86,9 @@ namespace image_bclyt
         {
             public Vector3D(BinaryReaderX br)
             {
-                x = br.ReadUInt32();
-                y = br.ReadUInt32();
-                z = br.ReadUInt32();
+                x = br.ReadSingle();
+                y = br.ReadSingle();
+                z = br.ReadSingle();
             }
             public float x;
             public float y;
