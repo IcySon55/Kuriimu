@@ -62,6 +62,9 @@ namespace image_bclyt
                         case "pic1":
                             sec.Obj = new BclytSupport.Picture(br2);
                             break;
+                        case "bnd1":
+                            sec.Obj = new BclytSupport.Bound(br2);
+                            break;
                         case "pas1":
                         case "pae1":
                         case "grs1":
@@ -93,8 +96,8 @@ namespace image_bclyt
                         BclytSupport.Window wnd = (BclytSupport.Window)sec.Obj;
                         float wndWidth = wnd.size.x * wnd.scale.x;
                         float wndHeight = wnd.size.y * wnd.scale.y;
-                        float wndXPos = (wnd.translation.x == (float)BclytSupport.Window.XOrigin.Left) ? 0 - wndWidth / 2 : (wnd.translation.x == (float)BclytSupport.Window.XOrigin.Right) ? width - wndWidth / 2 : width / 2 - wndWidth / 2;
-                        float wndYPos = (wnd.translation.y == (float)BclytSupport.Window.YOrigin.Top) ? 0 - wndHeight / 2 : (wnd.translation.y == (float)BclytSupport.Window.YOrigin.Bottom) ? height - wndHeight / 2 : height / 2 - wndHeight / 2;
+                        float wndXPos = (wnd.xorigin == BclytSupport.Window.XOrigin.Left) ? 0 - wndWidth / 2 + wnd.translation.x : (wnd.xorigin == BclytSupport.Window.XOrigin.Right) ? width - wndWidth / 2 + wnd.translation.x : width / 2 - wndWidth / 2 + wnd.translation.x;
+                        float wndYPos = (wnd.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - wndHeight / 2 - wnd.translation.y : (wnd.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - wndHeight / 2 - wnd.translation.y : height / 2 - wndHeight / 2 - wnd.translation.y;
 
                         //draw Window
                         BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 255, 255, 255));
@@ -104,11 +107,22 @@ namespace image_bclyt
                         BclytSupport.Pane pan = (BclytSupport.Pane)sec.Obj;
                         float panWidth = pan.size.x * pan.scale.x;
                         float panHeight = pan.size.y * pan.scale.y;
-                        float panXPos = (pan.translation.x == (float)BclytSupport.Pane.XOrigin.Left) ? 0 - panWidth / 2 : (pan.translation.x == (float)BclytSupport.Pane.XOrigin.Right) ? width - panWidth / 2 : width / 2 - panWidth / 2;
-                        float panYPos = (pan.translation.y == (float)BclytSupport.Pane.YOrigin.Top) ? 0 - panHeight / 2 : (pan.translation.y == (float)BclytSupport.Pane.YOrigin.Bottom) ? height - panHeight / 2 : height / 2 - panHeight / 2;
+                        float panXPos = (pan.xorigin == BclytSupport.Window.XOrigin.Left) ? 0 - panWidth / 2 + pan.translation.x : (pan.xorigin == BclytSupport.Window.XOrigin.Right) ? width - panWidth / 2 + pan.translation.x : width / 2 - panWidth / 2 + pan.translation.x;
+                        float panYPos = (pan.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - panHeight / 2 - pan.translation.y : (pan.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - panHeight / 2 - pan.translation.y : height / 2 - panHeight / 2 - pan.translation.y;
 
                         //draw Pane
                         BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
+                        break;
+                    case "bnd1":
+                        //create placeholder
+                        BclytSupport.Bound bnd = (BclytSupport.Bound)sec.Obj;
+                        float bndWidth = bnd.size.x * bnd.scale.x;
+                        float bndHeight = bnd.size.y * bnd.scale.y;
+                        float bndXPos = (bnd.xorigin == BclytSupport.Window.XOrigin.Left) ? 0 - bndWidth / 2 + bnd.translation.x : (bnd.xorigin == BclytSupport.Window.XOrigin.Right) ? width - bndWidth / 2 + bnd.translation.x : width / 2 - bndWidth / 2 + bnd.translation.x;
+                        float bndYPos = (bnd.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - bndHeight / 2 - bnd.translation.y : (bnd.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - bndHeight / 2 - bnd.translation.y : height / 2 - bndHeight / 2 - bnd.translation.y;
+
+                        //draw Bound
+                        BclytSupport.DrawLYTPart(layout, (int)bndXPos, (int)bndYPos, (int)bndWidth, (int)bndHeight, Color.FromArgb(127, 127, 255, 127), Color.FromArgb(255, 127, 255, 127));
                         break;
                     default:
                         break;
