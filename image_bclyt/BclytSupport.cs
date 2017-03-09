@@ -15,9 +15,6 @@ namespace image_bclyt
         {
             int wndWidth = bitmap.Width;
             int wndHeight = bitmap.Height;
-            Point topLeftPos = new Point((posX < 0) ? 0 : posX, (posY < 0) ? 0 : posY);
-            Size recSize = new Size(width, height);
-            Rectangle rec = new Rectangle(topLeftPos, recSize);
 
             for (int i = posY; i < posY + height; i++)
             {
@@ -40,9 +37,6 @@ namespace image_bclyt
         {
             int wndWidth = bitmap.Width;
             int wndHeight = bitmap.Height;
-            Point topLeftPos = new Point((posX < 0) ? 0 : posX, (posY < 0) ? 0 : posY);
-            Size recSize = new Size(width, height);
-            Rectangle rec = new Rectangle(topLeftPos, recSize);
 
             for (int i = posY; i < posY + height; i++)
             {
@@ -402,6 +396,14 @@ namespace image_bclyt
             public ushort matID;
             public ushort texCoordEntryCount;
             public TexCoord[] TexCoordEntries;
+        }
+
+        public class Bound : Pane
+        {
+            public Bound(BinaryReaderX br) : base(br)
+            {
+
+            }
         }
 
         public class Group
