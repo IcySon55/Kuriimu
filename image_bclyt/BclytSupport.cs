@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KuriimuContract;
+using Cetera.Font;
 
 namespace image_bclyt
 {
@@ -16,43 +17,74 @@ namespace image_bclyt
             int wndWidth = bitmap.Width;
             int wndHeight = bitmap.Height;
 
-            for (int i = posY; i < posY + height; i++)
-            {
-                for (int j = posX; j < posX + width; j++)
-                {
-                    if ((i >= 0 && i < wndHeight) && (j >= 0 && j < wndWidth))
-                    {
-                        bitmap.SetPixel(j, i, color);
-                        if (i == posY || i == posY + height - 1 || j == posX || j == posX + width - 1)
-                        {
-                            bitmap.SetPixel(j, i, border);
-                        }
-                    }
-                }
-            }
+            Graphics g = Graphics.FromImage(bitmap);
+            Pen pen = new Pen(border);
+            pen.Width = 1;
+            Brush brush = new SolidBrush(color);
 
-            return bitmap;
+            Point point = new Point(posX, posY);
+            Size size = new Size(width, height);
+            Rectangle rect = new Rectangle(point, size);
+
+            g.FillRectangle(brush, rect);
+            g.DrawRectangle(pen, rect);
+
+            return new Bitmap(wndWidth, wndHeight, g);
         }
         public static Bitmap DrawBorder(Bitmap bitmap, int posX, int posY, int width, int height, Color border)
         {
             int wndWidth = bitmap.Width;
             int wndHeight = bitmap.Height;
 
-            for (int i = posY; i < posY + height; i++)
-            {
-                for (int j = posX; j < posX + width; j++)
-                {
-                    if ((i >= 0 && i < wndHeight) && (j >= 0 && j < wndWidth))
-                    {
-                        if (i == posY || i == posY + height - 1 || j == posX || j == posX + width - 1)
-                        {
-                            bitmap.SetPixel(j, i, border);
-                        }
-                    }
-                }
-            }
+            Graphics g = Graphics.FromImage(bitmap);
+            Pen pen = new Pen(border);
 
-            return bitmap;
+            Point point = new Point(posX, posY);
+            Size size = new Size(width, height);
+            Rectangle rect = new Rectangle(point, size);
+
+            g.DrawRectangle(pen, rect);
+
+            return new Bitmap(wndWidth, wndHeight, g);
+        }
+        public static Bitmap DrawText(Bitmap bitmap, String text, int posX, int posY, Color fontColor)
+        {
+            int wndWidth = bitmap.Width;
+            int wndHeight = bitmap.Height;
+
+            Graphics g = Graphics.FromImage(bitmap);
+
+            Font font = new Font("Arial", 12);
+            SolidBrush brush = new SolidBrush(fontColor);
+            StringFormat drawFormat = new StringFormat();
+            g.DrawString(text, font, brush, new Point(posX, posY), drawFormat);
+
+            return new Bitmap(wndWidth, wndHeight, g);
+        }
+        /*public static void DrawTextBcfnt(Bitmap bitmap, String text, BCFNT font, float posX, float posY)
+        {
+            int wndWidth = bitmap.Width;
+            int wndHeight = bitmap.Height;
+
+            Graphics g = Graphics.FromImage(bitmap);
+
+            for (int i = 0; i < text.Count(); i++)
+            {
+                font.Draw(text[i], g, posX, posY, 1, 1);
+            }
+        }*/
+
+        public static String readUnicode(BinaryReaderX br)
+        {
+            Encoding unicode = Encoding.GetEncoding("unicode");
+            string uni = ""; byte part; byte part2;
+
+            do
+            {
+                part = br.ReadByte(); part2 = br.ReadByte();
+                uni += unicode.GetString(new byte[] { part, part2 });
+            } while (part != 0x00 || part2 != 0x00);
+            return uni;
         }
 
         public static NW4CSectionList readSections(BinaryReaderX br)
@@ -166,15 +198,15 @@ namespace image_bclyt
             Vector2D canvas_size;
         }
 
-        public class TextureList
+        public class NameList
         {
-            public TextureList(BinaryReaderX br)
+            public NameList(BinaryReaderX br)
             {
-                txlCount = br.ReadInt32();
-                offsetList = br.ReadMultiple(txlCount, _ => br.ReadInt32());
-                nameList = br.ReadMultiple(txlCount, _ => br.ReadCStringA());
+                elemCount = br.ReadInt32();
+                offsetList = br.ReadMultiple(elemCount, _ => br.ReadInt32());
+                nameList = br.ReadMultiple(elemCount, _ => br.ReadCStringA());
             }
-            public int txlCount;
+            public int elemCount;
             public List<int> offsetList;
             public List<String> nameList;
         }
@@ -404,6 +436,44 @@ namespace image_bclyt
             {
 
             }
+        }
+
+        public class Text : Pane
+        {
+            public Text(BinaryReaderX br) : base(br)
+            {
+                nrCharacters = br.ReadUInt16();
+                nrCharacters2 = br.ReadUInt16();
+                matID = br.ReadUInt16();
+                fntID = br.ReadUInt16();
+                posType = br.ReadByte();
+                textAlignment = br.ReadByte();
+                textFlags = br.ReadByte();
+                padding = br.ReadByte();
+                stringOffset = br.ReadUInt32();
+                topColor = new Color4(br);
+                bottomColor = new Color4(br);
+                fontSize = new Vector2D(br);
+                charSpace = br.ReadSingle();
+                lineSpace = br.ReadSingle();
+                br.BaseStream.Position = stringOffset - 8;
+                text = readUnicode(br);
+            }
+            public ushort nrCharacters;
+            public ushort nrCharacters2;
+            public ushort matID;
+            public ushort fntID;
+            public byte posType;
+            public byte textAlignment;
+            public byte textFlags;
+            public byte padding;
+            public uint stringOffset;
+            public Color4 topColor;
+            public Color4 bottomColor;
+            public Vector2D fontSize;
+            public float charSpace;
+            public float lineSpace;
+            public String text;
         }
 
         public class Group

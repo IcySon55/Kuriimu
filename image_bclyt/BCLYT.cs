@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KuriimuContract;
+using Cetera.Font;
 
 namespace image_bclyt
 {
@@ -44,7 +45,10 @@ namespace image_bclyt
                             break;
                         //Texture List
                         case "txl1":
-                            sec.Obj = new BclytSupport.TextureList(br2);
+                            sec.Obj = new BclytSupport.NameList(br2);
+                            break;
+                        case "fnl1":
+                            sec.Obj = new BclytSupport.NameList(br2);
                             break;
                         //Materials
                         case "mat1":
@@ -65,6 +69,9 @@ namespace image_bclyt
                         case "bnd1":
                             sec.Obj = new BclytSupport.Bound(br2);
                             break;
+                        case "txt1":
+                            sec.Obj = new BclytSupport.Text(br2);
+                            break;
                         case "pas1":
                         case "pae1":
                         case "grs1":
@@ -83,8 +90,8 @@ namespace image_bclyt
 
         public static Bitmap createBMP(BclytSupport.NW4CSectionList sections)
         {
-            int height = 200;
-            int width = 420;
+            int height = 240;
+            int width = 400;
             Bitmap layout = new Bitmap(width, height);
 
             foreach (var sec in sections)
@@ -107,8 +114,8 @@ namespace image_bclyt
                         BclytSupport.Pane pan = (BclytSupport.Pane)sec.Obj;
                         float panWidth = pan.size.x * pan.scale.x;
                         float panHeight = pan.size.y * pan.scale.y;
-                        float panXPos = (pan.xorigin == BclytSupport.Window.XOrigin.Left) ? 0 - panWidth / 2 + pan.translation.x : (pan.xorigin == BclytSupport.Window.XOrigin.Right) ? width - panWidth / 2 + pan.translation.x : width / 2 - panWidth / 2 + pan.translation.x;
-                        float panYPos = (pan.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - panHeight / 2 - pan.translation.y : (pan.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - panHeight / 2 - pan.translation.y : height / 2 - panHeight / 2 - pan.translation.y;
+                        float panXPos = (pan.xorigin == BclytSupport.Pane.XOrigin.Left) ? 0 - panWidth / 2 + pan.translation.x : (pan.xorigin == BclytSupport.Pane.XOrigin.Right) ? width - panWidth / 2 + pan.translation.x : width / 2 - panWidth / 2 + pan.translation.x;
+                        float panYPos = (pan.yorigin == BclytSupport.Pane.YOrigin.Top) ? 0 - panHeight / 2 - pan.translation.y : (pan.yorigin == BclytSupport.Pane.YOrigin.Bottom) ? height - panHeight / 2 - pan.translation.y : height / 2 - panHeight / 2 - pan.translation.y;
 
                         //draw Pane
                         BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
@@ -118,11 +125,23 @@ namespace image_bclyt
                         BclytSupport.Bound bnd = (BclytSupport.Bound)sec.Obj;
                         float bndWidth = bnd.size.x * bnd.scale.x;
                         float bndHeight = bnd.size.y * bnd.scale.y;
-                        float bndXPos = (bnd.xorigin == BclytSupport.Window.XOrigin.Left) ? 0 - bndWidth / 2 + bnd.translation.x : (bnd.xorigin == BclytSupport.Window.XOrigin.Right) ? width - bndWidth / 2 + bnd.translation.x : width / 2 - bndWidth / 2 + bnd.translation.x;
-                        float bndYPos = (bnd.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - bndHeight / 2 - bnd.translation.y : (bnd.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - bndHeight / 2 - bnd.translation.y : height / 2 - bndHeight / 2 - bnd.translation.y;
+                        float bndXPos = (bnd.xorigin == BclytSupport.Bound.XOrigin.Left) ? 0 - bndWidth / 2 + bnd.translation.x : (bnd.xorigin == BclytSupport.Bound.XOrigin.Right) ? width - bndWidth / 2 + bnd.translation.x : width / 2 - bndWidth / 2 + bnd.translation.x;
+                        float bndYPos = (bnd.yorigin == BclytSupport.Bound.YOrigin.Top) ? 0 - bndHeight / 2 - bnd.translation.y : (bnd.yorigin == BclytSupport.Bound.YOrigin.Bottom) ? height - bndHeight / 2 - bnd.translation.y : height / 2 - bndHeight / 2 - bnd.translation.y;
 
                         //draw Bound
                         BclytSupport.DrawLYTPart(layout, (int)bndXPos, (int)bndYPos, (int)bndWidth, (int)bndHeight, Color.FromArgb(127, 127, 255, 127), Color.FromArgb(255, 127, 255, 127));
+                        break;
+                    case "txt1":
+                        //create placeholder
+                        BclytSupport.Text txt = (BclytSupport.Text)sec.Obj;
+                        float txtWidth = txt.size.x * txt.scale.x;
+                        float txtHeight = txt.size.y * txt.scale.y;
+                        float txtXPos = (txt.xorigin == BclytSupport.Text.XOrigin.Left) ? 0 - txtWidth / 2 + txt.translation.x : (txt.xorigin == BclytSupport.Text.XOrigin.Right) ? width - txtWidth / 2 + txt.translation.x : width / 2 - txtWidth / 2 + txt.translation.x;
+                        float txtYPos = (txt.yorigin == BclytSupport.Text.YOrigin.Top) ? 0 - txtHeight / 2 - txt.translation.y : (txt.yorigin == BclytSupport.Text.YOrigin.Bottom) ? height - txtHeight / 2 - txt.translation.y : height / 2 - txtHeight / 2 - txt.translation.y;
+
+                        //draw Textbox and Text
+                        BclytSupport.DrawLYTPart(layout, (int)txtXPos, (int)txtYPos, (int)txtWidth, (int)txtHeight, Color.FromArgb(63, 127, 127, 127), Color.FromArgb(255, 127, 127, 127));
+                        BclytSupport.DrawText(layout, txt.text, (int)txtXPos, (int)txtYPos, Color.FromArgb(255, 255, 255, 255));
                         break;
                     default:
                         break;
@@ -130,7 +149,7 @@ namespace image_bclyt
             }
 
             //mark border from rootpane
-            BclytSupport.DrawBorder(layout, 0, 0, width, height, Color.FromArgb(255, 0, 255, 0));
+            BclytSupport.DrawBorder(layout, 0, 0, width - 1, height - 1, Color.FromArgb(255, 0, 255, 0));
             return layout;
         }
     }
