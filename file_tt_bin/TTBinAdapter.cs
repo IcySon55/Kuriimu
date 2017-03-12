@@ -69,11 +69,6 @@ namespace file_ttbin
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                byte[] decomp = LZ11.Decompress(br.BaseStream);
-                File.OpenWrite("test.decomp").Write(decomp, 0, decomp.Length);
-                byte[] comp = LZ10.Compress(new MemoryStream(decomp));
-                File.OpenWrite("test.comp").Write(comp, 0, comp.Length);
-
                 //possible identifications: PCK, cfg.bin, XPCK-Archive
                 //if cfg.bin
                 br.BaseStream.Position = 0x18;
