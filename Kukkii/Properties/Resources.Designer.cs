@@ -93,6 +93,16 @@ namespace Kukkii.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap kuriimu {
+            get {
+                object obj = ResourceManager.GetObject("kuriimu", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_about {
             get {
                 object obj = ResourceManager.GetObject("menu_about", resourceCulture);

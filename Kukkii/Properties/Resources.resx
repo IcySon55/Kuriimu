@@ -127,6 +127,9 @@
   <data name="kukkii" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\kukkii.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="kuriimu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\kuriimu.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="menu_about" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\menu-about.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

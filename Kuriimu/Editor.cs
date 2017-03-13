@@ -819,7 +819,7 @@ namespace Kuriimu
 						{
 							string[] subTypes = type.Split(';');
 							foreach (string subType in subTypes)
-								files.AddRange(Directory.GetFiles(path, subType));
+								files.AddRange(Directory.GetFiles(path, subType, SearchOption.AllDirectories));
 						}
 					}
 
@@ -899,7 +899,7 @@ namespace Kuriimu
 						{
 							string[] subTypes = type.Split(';');
 							foreach (string subType in subTypes)
-								files.AddRange(Directory.GetFiles(path, subType));
+								files.AddRange(Directory.GetFiles(path, subType, SearchOption.AllDirectories));
 						}
 					}
 

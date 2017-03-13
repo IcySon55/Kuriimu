@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -396,6 +397,16 @@ namespace Kukkii
 
 			Settings.Default.LastBatchDirectory = fbd.SelectedPath;
 			Settings.Default.Save();
+		}
+
+		private void tsbKuriimu_Click(object sender, EventArgs e)
+		{
+			ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kuriimu.exe"));
+			start.WorkingDirectory = Application.StartupPath;
+
+			Process p = new Process();
+			p.StartInfo = start;
+			p.Start();
 		}
 
 		// Image Box

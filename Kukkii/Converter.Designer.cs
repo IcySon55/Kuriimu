@@ -54,6 +54,7 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbBatchExport = new System.Windows.Forms.ToolStripButton();
 			this.tsbBatchImport = new System.Windows.Forms.ToolStripButton();
+			this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
 			this.imbPreview = new Cyotek.Windows.Forms.ImageBox();
@@ -227,7 +228,8 @@
             this.tsbImportPNG,
             this.toolStripSeparator3,
             this.tsbBatchExport,
-            this.tsbBatchImport});
+            this.tsbBatchImport,
+            this.tsbKuriimu});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
 			this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -317,6 +319,17 @@
 			this.tsbBatchImport.Size = new System.Drawing.Size(23, 22);
 			this.tsbBatchImport.Text = "Batch Import";
 			this.tsbBatchImport.Click += new System.EventHandler(this.tsbBatchImport_Click);
+			// 
+			// tsbKuriimu
+			// 
+			this.tsbKuriimu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbKuriimu.Image = global::Kukkii.Properties.Resources.kuriimu;
+			this.tsbKuriimu.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbKuriimu.Name = "tsbKuriimu";
+			this.tsbKuriimu.Size = new System.Drawing.Size(69, 22);
+			this.tsbKuriimu.Text = "Kuriimu";
+			this.tsbKuriimu.ToolTipText = "Kuriimu";
+			this.tsbKuriimu.Click += new System.EventHandler(this.tsbKuriimu_Click);
 			// 
 			// pnlMain
 			// 
@@ -478,6 +491,7 @@
 		private System.Windows.Forms.ToolStripButton tsbImportPNG;
 		private System.Windows.Forms.ToolStripMenuItem importPNGToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
+		private System.Windows.Forms.ToolStripButton tsbKuriimu;
 	}
 }
 
