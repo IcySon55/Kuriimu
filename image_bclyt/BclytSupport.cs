@@ -405,9 +405,9 @@ namespace image_bclyt
             public byte padding;
         }
 
-        public class Picture
+        public class Picture : Pane
         {
-            public Picture(BinaryReaderX br)
+            public Picture(BinaryReaderX br) : base(br)
             {
                 vertexColorLT = new Color4(br);
                 vertexColorRT = new Color4(br);

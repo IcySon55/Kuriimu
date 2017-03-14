@@ -81,6 +81,8 @@ namespace image_bclyt
                         case "grp1":
                             sec.Obj = new BclytSupport.Group(br2);
                             break;
+                        default:
+                            throw new Exception(sec.Magic);
                     }
                 }
             }
@@ -142,6 +144,17 @@ namespace image_bclyt
                         //draw Textbox and Text
                         BclytSupport.DrawLYTPart(layout, (int)txtXPos, (int)txtYPos, (int)txtWidth, (int)txtHeight, Color.FromArgb(63, 127, 127, 127), Color.FromArgb(255, 127, 127, 127));
                         BclytSupport.DrawText(layout, txt.text, (int)txtXPos, (int)txtYPos, Color.FromArgb(255, 255, 255, 255));
+                        break;
+                    case "pic1":
+                        //create placeholder
+                        BclytSupport.Picture pic = (BclytSupport.Picture)sec.Obj;
+                        float picWidth = pic.size.x * pic.scale.x;
+                        float picHeight = pic.size.y * pic.scale.y;
+                        float picXPos = (pic.xorigin == BclytSupport.Picture.XOrigin.Left) ? 0 - picWidth / 2 + pic.translation.x : (pic.xorigin == BclytSupport.Picture.XOrigin.Right) ? width - picWidth / 2 + pic.translation.x : width / 2 - picWidth / 2 + pic.translation.x;
+                        float picYPos = (pic.yorigin == BclytSupport.Picture.YOrigin.Top) ? 0 - picHeight / 2 - pic.translation.y : (pic.yorigin == BclytSupport.Picture.YOrigin.Bottom) ? height - picHeight / 2 - pic.translation.y : height / 2 - picHeight / 2 - pic.translation.y;
+
+                        //draw Bound
+                        BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, (int)picWidth, (int)picHeight, Color.FromArgb(127, 0, 0, 255), Color.FromArgb(255, 255, 255, 255));
                         break;
                     default:
                         break;
