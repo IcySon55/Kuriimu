@@ -69,9 +69,9 @@ namespace game_rocket_slime_3ds
 			["\x13\x03"] = "<color-blue>",
 
 			// Special
-			["\x85"] = "…",
-			["\x86"] = "©",
-			["\x87"] = "♥"
+			//["\x2026"] = "…",
+			["\x2020"] = "©",
+			["\x2021"] = "♥"
 		};
 
 		static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.MainFont_bcfnt))));
