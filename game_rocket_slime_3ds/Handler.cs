@@ -74,6 +74,14 @@ namespace game_rocket_slime_3ds
 			["\x87"] = "♥"
 		};
 
+		Dictionary<string, string> _previwPairs = new Dictionary<string, string>
+		{
+			// Special
+			["\x85"] = "…",
+			["\x86"] = "†",
+			["\x87"] = "‡"
+		};
+
 		static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.MainFont_bcfnt))));
 		BCFNT font => fontInitializer.Value;
 
@@ -129,6 +137,7 @@ namespace game_rocket_slime_3ds
 						float lineSpacing = 4;
 
 						string str = page.Replace("\x1F\x05", Settings.Default.PlayerName == string.Empty ? "Player" : Settings.Default.PlayerName);
+						str = _previwPairs.Aggregate(str, (_str, pair) => _str.Replace(pair.Key, pair.Value));
 						font.SetColor(colorDefault);
 
 						for (int i = 0; i < str.Length; i++)
