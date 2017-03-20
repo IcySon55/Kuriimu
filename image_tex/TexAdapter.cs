@@ -1,31 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cetera.Image;
-using KuriimuContract;
+using System.IO;
+using System.Drawing;
 using Cetera.Compression;
+using KuriimuContract;
 
-namespace image_jtex
+namespace image_tex
 {
-    class JtexAdapter : IImageAdapter
+    public class TexAdapter : IImageAdapter
     {
         private FileInfo _fileInfo = null;
-        private JTEX _jtex = null;
+        private TEX _tex = null;
 
         #region Properties
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
 
-        public string Description => "J Texture";
+        public string Description => "Normal Texture";
 
-        public string Extension => "*.jtex";
+        public string Extension => "*.tex";
 
-        public string About => "This is the JTEX file adapter for Kukkii.";
+        public string About => "This is the TEX file adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -51,7 +50,22 @@ namespace image_jtex
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "jIMG";
+
+                //check for compression
+                if (br.ReadByte() == 0x11)
+                {
+                    br.BaseStream.Position = 0;
+                    uint size = br.ReadUInt32() >> 8;
+                    br.BaseStream.Position = 0;
+                    byte[] decomp = LZ11.Decompress(br.BaseStream);
+                    if (decomp.Length == size)
+                    {
+                        return true;
+                    }
+                }
+                br.BaseStream.Position = 0;
+
+                return br.ReadString(4) == "F3XT";
             }
         }
 
@@ -62,7 +76,7 @@ namespace image_jtex
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                _tex = new TEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
             else
                 result = LoadResult.FileNotFound;
 
@@ -78,7 +92,7 @@ namespace image_jtex
 
             try
             {
-                _jtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                _tex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
             }
             catch (Exception)
             {
@@ -93,11 +107,11 @@ namespace image_jtex
         {
             get
             {
-                return _jtex.Image;
+                return _tex.Image;
             }
             set
             {
-                _jtex.Image = value;
+                _tex.Image = value;
             }
         }
     }
