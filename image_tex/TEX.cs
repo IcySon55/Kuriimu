@@ -16,6 +16,8 @@ namespace image_tex
     {
         public static bool lz11_compressed = false;
         public Bitmap Image;
+        public ImageSettings settings;
+        public Header header;
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Header
@@ -58,9 +60,9 @@ namespace image_tex
                 }
 
                 //map the file
-                Header header = stream.ReadStruct<Header>();
+                header = stream.ReadStruct<Header>();
 
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = header.width,
                     Height = header.height,
@@ -78,7 +80,25 @@ namespace image_tex
 
         public void Save(Stream input)
         {
-            int t = 0;
+            byte[] data = Common.Save(Image, settings);
+            using (BinaryWriterX br = new BinaryWriterX(new MemoryStream()))
+            {
+                br.WriteStruct<Header>(header);
+                br.BaseStream.Position = header.dataStart;
+                br.Write(data);
+                br.BaseStream.Position = 0;
+
+                if (lz11_compressed)
+                {
+                    byte[] comp = LZ11.Compress(br.BaseStream);
+                    input.Write(comp, 0, comp.Length);
+                }
+                else
+                {
+                    input.Write(new BinaryReaderX(br.BaseStream).ReadBytes((int)br.BaseStream.Length), 0, (int)br.BaseStream.Length);
+                }
+                input.Close();
+            }
         }
     }
 }
