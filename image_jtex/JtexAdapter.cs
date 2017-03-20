@@ -15,6 +15,7 @@ namespace image_jtex
     {
         private FileInfo _fileInfo = null;
         private JTEX _jtex = null;
+        private bool raw = false;
 
         #region Properties
 
@@ -51,6 +52,11 @@ namespace image_jtex
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
+                if (filename.Split('.')[filename.Split('.').Length - 1] == "jtex")
+                {
+                    raw = true;
+                    return true;
+                }
                 return br.ReadString(4) == "jIMG";
             }
         }
@@ -62,7 +68,7 @@ namespace image_jtex
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                _jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read), raw);
             else
                 result = LoadResult.FileNotFound;
 
@@ -78,7 +84,14 @@ namespace image_jtex
 
             try
             {
-                _jtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                if (raw)
+                {
+                    _jtex.SaveRaw(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                }
+                else
+                {
+                    _jtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                }
             }
             catch (Exception)
             {

@@ -80,9 +80,14 @@ namespace image_tex
 
         public void Save(Stream input)
         {
-            byte[] data = Common.Save(Image, settings);
+            ImageSettings modSettings = settings;
+            modSettings.Width = Image.Width;
+            modSettings.Height = Image.Height;
+
+            byte[] data = Common.Save(Image, modSettings);
             using (BinaryWriterX br = new BinaryWriterX(new MemoryStream()))
             {
+                header.width = (ushort)Image.Width; header.height = (ushort)Image.Height;
                 br.WriteStruct<Header>(header);
                 br.BaseStream.Position = header.dataStart;
                 br.Write(data);
