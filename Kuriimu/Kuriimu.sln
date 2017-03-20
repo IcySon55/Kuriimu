@@ -56,6 +56,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kukkii", "..\Kukkii\Kukkii.csproj", "{DDF760B7-1273-4048-A052-4E396245937B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1C9D7F75-2E04-441E-83D4-00A406809E09} = {1C9D7F75-2E04-441E-83D4-00A406809E09}
+		{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4} = {9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}
 		{515D26A0-26DD-49DE-A66D-BF4CAD0029E8} = {515D26A0-26DD-49DE-A66D-BF4CAD0029E8}
 		{77A182C0-4E86-469D-986E-9FAFAABCD26E} = {77A182C0-4E86-469D-986E-9FAFAABCD26E}
 		{508881F8-E128-4D4E-A38B-D3E60D8A668E} = {508881F8-E128-4D4E-A38B-D3E60D8A668E}
@@ -80,6 +81,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_bclyt", "..\image_bclyt\image_bclyt.csproj", "{508881F8-E128-4D4E-A38B-D3E60D8A668E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_miitopia_3ds", "..\game_miitopia_3ds\game_miitopia_3ds.csproj", "{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tex", "..\image_tex\image_tex.csproj", "{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -187,6 +190,10 @@ Global
 		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
