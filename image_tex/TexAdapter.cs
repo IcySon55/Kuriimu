@@ -60,7 +60,10 @@ namespace image_tex
                     byte[] decomp = LZ11.Decompress(br.BaseStream);
                     if (decomp.Length == size)
                     {
-                        return true;
+                        if (new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "F3XT")
+                        {
+                            return true;
+                        }
                     }
                 }
                 br.BaseStream.Position = 0;
