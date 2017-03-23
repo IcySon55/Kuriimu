@@ -38,7 +38,7 @@ namespace game_miitopia_3ds
         }
     };
 
-    public class MiitopiaHandler : IGameHandler
+    public class Handler : IGameHandler
     {
         static Lazy<BCFNT[]> fontInitializer = new Lazy<BCFNT[]>(() => new[] {
                 new BCFNT(new MemoryStream(GZip.Decompress(Resources.FontCaptionOutline_bcfnt))),
@@ -75,7 +75,7 @@ namespace game_miitopia_3ds
         // this value is incremented after a new (key, value) pair is added to the dictionary
         int rubyCodeID = 0;
 
-        public MiitopiaHandler()
+        public Handler()
         {
         }
 

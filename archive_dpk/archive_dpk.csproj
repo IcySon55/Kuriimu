@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}</ProjectGuid>
+    <ProjectGuid>{1BFF38F5-1848-45B1-B84D-1270A25B7675}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>game_miitopia_3ds</RootNamespace>
-    <AssemblyName>game_miitopia_3ds</AssemblyName>
+    <RootNamespace>archive_dpk</RootNamespace>
+    <AssemblyName>archive_dpk</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,39 +41,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handler.cs" />
+    <Compile Include="DPK4.cs" />
+    <Compile Include="DpkSupport.cs" />
+    <Compile Include="DpkManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera\Cetera.csproj">
-      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
-      <Name>Cetera</Name>
-    </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
-      <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
+      <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\FontCaptionOutline.bcfnt.gz" />
-    <None Include="resources\MainFont.bcfnt.gz" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\icon_2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\previewbg.png" />
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

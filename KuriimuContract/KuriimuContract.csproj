@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="BinaryTools.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="IArchiveManager.cs" />
     <Compile Include="IImageAdapter.cs" />
     <Compile Include="IGameHandler.cs" />
     <Compile Include="IExtension.cs" />
