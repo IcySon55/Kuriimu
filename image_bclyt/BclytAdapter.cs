@@ -53,7 +53,7 @@ namespace image_bclyt
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _bclyt = BCLYT.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                _bclyt = BCLYT.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read),filename);
             else
                 result = LoadResult.FileNotFound;
 

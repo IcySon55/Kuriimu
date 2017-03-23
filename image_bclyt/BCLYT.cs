@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KuriimuContract;
-using Cetera.Font;
+using Cetera.Image;
 
 namespace image_bclyt
 {
@@ -17,8 +17,12 @@ namespace image_bclyt
     {
         public static string ToCString(byte[] bytes) => string.Concat(from b in bytes where b != 0 select (char)b);
 
-        public static Bitmap Load(Stream input)
+        public static String filename;
+
+        public static Bitmap Load(Stream input, String name)
         {
+            filename = name;
+
             BclytSupport.NW4CSectionList sections = new BclytSupport.NW4CSectionList();
             using (var br = new BinaryReaderX(input)) sections = BclytSupport.readSections(br);
 
@@ -92,24 +96,44 @@ namespace image_bclyt
 
         public static Bitmap createBMP(BclytSupport.NW4CSectionList sections)
         {
-            int height = 240;
-            int width = 400;
-            Bitmap layout = new Bitmap(width, height);
+            float height = 0;
+            float width = 0;
+            Bitmap layout = new Bitmap(1, 1);
+            BclytSupport.NameList names = null;
+            BclytSupport.Material mats = null;
+
+            foreach (var sec in sections) if (sec.Magic == "mat1") mats = (BclytSupport.Material)sec.Obj; else if (sec.Magic == "txl1") names = (BclytSupport.NameList)sec.Obj;
 
             foreach (var sec in sections)
             {
                 switch (sec.Magic)
                 {
+                    case "lyt1":
+                        BclytSupport.Layout lyt = (BclytSupport.Layout)sec.Obj;
+                        width = lyt.canvas_size.x;
+                        height = lyt.canvas_size.y;
+                        layout = new Bitmap((int)width, (int)height);
+                        break;
                     case "wnd1":
                         //create placeholder
                         BclytSupport.Window wnd = (BclytSupport.Window)sec.Obj;
+                        bool withPicture = false;
+                        bool fileExists = false;
+                        String filename = Path.GetDirectoryName(BCLYT.filename) + "\\";
+
+                        if (mats.maters[wnd.content.matID].texMaps.Length > 0) { filename += names.nameList2[mats.maters[wnd.content.matID].texMaps[0].index]; withPicture = true; }
+                        if (File.Exists(filename)) fileExists = true;
+
                         float wndWidth = wnd.size.x * wnd.scale.x;
                         float wndHeight = wnd.size.y * wnd.scale.y;
                         float wndXPos = (wnd.xorigin == BclytSupport.Window.XOrigin.Left) ? 0 - wndWidth / 2 + wnd.translation.x : (wnd.xorigin == BclytSupport.Window.XOrigin.Right) ? width - wndWidth / 2 + wnd.translation.x : width / 2 - wndWidth / 2 + wnd.translation.x;
                         float wndYPos = (wnd.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - wndHeight / 2 - wnd.translation.y : (wnd.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - wndHeight / 2 - wnd.translation.y : height / 2 - wndHeight / 2 - wnd.translation.y;
 
                         //draw Window
-                        BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight, Color.FromArgb(255, 0, 0, 0), Color.FromArgb(255, 255, 255, 255));
+                        if (fileExists && withPicture)
+                            BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, new BXLIM(File.OpenRead(filename)));
+                        else
+                            BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight, Color.FromArgb(0, 0, 0, 0), Color.FromArgb(255, 0, 0, 0));
                         break;
                     case "pan1":
                         //create placeholder
@@ -120,7 +144,7 @@ namespace image_bclyt
                         float panYPos = (pan.yorigin == BclytSupport.Pane.YOrigin.Top) ? 0 - panHeight / 2 - pan.translation.y : (pan.yorigin == BclytSupport.Pane.YOrigin.Bottom) ? height - panHeight / 2 - pan.translation.y : height / 2 - panHeight / 2 - pan.translation.y;
 
                         //draw Pane
-                        BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
+                        //BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
                         break;
                     case "bnd1":
                         //create placeholder
@@ -131,7 +155,7 @@ namespace image_bclyt
                         float bndYPos = (bnd.yorigin == BclytSupport.Bound.YOrigin.Top) ? 0 - bndHeight / 2 - bnd.translation.y : (bnd.yorigin == BclytSupport.Bound.YOrigin.Bottom) ? height - bndHeight / 2 - bnd.translation.y : height / 2 - bndHeight / 2 - bnd.translation.y;
 
                         //draw Bound
-                        BclytSupport.DrawLYTPart(layout, (int)bndXPos, (int)bndYPos, (int)bndWidth, (int)bndHeight, Color.FromArgb(127, 127, 255, 127), Color.FromArgb(255, 127, 255, 127));
+                        //BclytSupport.DrawLYTPart(layout, (int)bndXPos, (int)bndYPos, (int)bndWidth, (int)bndHeight, Color.FromArgb(127, 127, 255, 127), Color.FromArgb(255, 127, 255, 127));
                         break;
                     case "txt1":
                         //create placeholder
@@ -142,19 +166,29 @@ namespace image_bclyt
                         float txtYPos = (txt.yorigin == BclytSupport.Text.YOrigin.Top) ? 0 - txtHeight / 2 - txt.translation.y : (txt.yorigin == BclytSupport.Text.YOrigin.Bottom) ? height - txtHeight / 2 - txt.translation.y : height / 2 - txtHeight / 2 - txt.translation.y;
 
                         //draw Textbox and Text
-                        BclytSupport.DrawLYTPart(layout, (int)txtXPos, (int)txtYPos, (int)txtWidth, (int)txtHeight, Color.FromArgb(63, 127, 127, 127), Color.FromArgb(255, 127, 127, 127));
+                        //BclytSupport.DrawLYTPart(layout, (int)txtXPos, (int)txtYPos, (int)txtWidth, (int)txtHeight, Color.FromArgb(63, 127, 127, 127), Color.FromArgb(255, 127, 127, 127));
                         BclytSupport.DrawText(layout, txt.text, (int)txtXPos, (int)txtYPos, Color.FromArgb(255, 255, 255, 255));
                         break;
                     case "pic1":
                         //create placeholder
                         BclytSupport.Picture pic = (BclytSupport.Picture)sec.Obj;
+                        bool withPicturep = false;
+                        bool fileExistsp = false;
+                        String filenamep = Path.GetDirectoryName(BCLYT.filename) + "\\";
+
+                        if (mats.maters[pic.matID].texMaps.Length > 0) { filenamep += names.nameList2[mats.maters[pic.matID].texMaps[0].index]; withPicturep = true; }
+                        if (File.Exists(filenamep)) fileExistsp = true;
+
                         float picWidth = pic.size.x * pic.scale.x;
                         float picHeight = pic.size.y * pic.scale.y;
                         float picXPos = (pic.xorigin == BclytSupport.Picture.XOrigin.Left) ? 0 - picWidth / 2 + pic.translation.x : (pic.xorigin == BclytSupport.Picture.XOrigin.Right) ? width - picWidth / 2 + pic.translation.x : width / 2 - picWidth / 2 + pic.translation.x;
                         float picYPos = (pic.yorigin == BclytSupport.Picture.YOrigin.Top) ? 0 - picHeight / 2 - pic.translation.y : (pic.yorigin == BclytSupport.Picture.YOrigin.Bottom) ? height - picHeight / 2 - pic.translation.y : height / 2 - picHeight / 2 - pic.translation.y;
 
-                        //draw Bound
-                        BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, (int)picWidth, (int)picHeight, Color.FromArgb(127, 0, 0, 255), Color.FromArgb(255, 255, 255, 255));
+                        //draw Picture
+                        if (fileExistsp && withPicturep)
+                            BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, new BXLIM(File.OpenRead(filenamep)));
+                        else
+                            BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, (int)picWidth, (int)picHeight, Color.FromArgb(255, 0, 0, 255), Color.FromArgb(255, 255, 255, 255));
                         break;
                     default:
                         break;
@@ -162,7 +196,7 @@ namespace image_bclyt
             }
 
             //mark border from rootpane
-            BclytSupport.DrawBorder(layout, 0, 0, width - 1, height - 1, Color.FromArgb(255, 0, 255, 0));
+            BclytSupport.DrawBorder(layout, 0, 0, (int)width - 1, (int)height - 1, Color.FromArgb(255, 0, 255, 0));
             return layout;
         }
     }
