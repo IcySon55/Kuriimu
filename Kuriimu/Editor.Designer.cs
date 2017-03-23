@@ -111,6 +111,7 @@
 			this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
 			this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
 			this.imlEntries = new System.Windows.Forms.ImageList(this.components);
+			this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
 			this.mnuMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -820,6 +821,7 @@
             this.toolStripSeparator2,
             this.tsbFind,
             this.toolStripSeparator3,
+            this.tsbKarameru,
             this.tsbKukki,
             this.tsbProperties,
             this.toolStripSeparator5,
@@ -1021,6 +1023,14 @@
 			this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
 			this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
 			// 
+			// tsbKarameru
+			// 
+			this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbKarameru.Name = "tsbKarameru";
+			this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
+			this.tsbKarameru.Text = "Karameru";
+			// 
 			// frmEditor
 			// 
 			this.AllowDrop = true;
@@ -1163,5 +1173,6 @@
 		private System.Windows.Forms.ToolStripLabel tslPage;
 		private System.Windows.Forms.ToolStripButton tsbNextPage;
 		private System.Windows.Forms.ToolStripButton tsbHandlerSettings;
+		private System.Windows.Forms.ToolStripButton tsbKarameru;
 	}
 }

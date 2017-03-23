@@ -30,6 +30,7 @@ namespace KuriimuContract
 		CompressionType Compression { get; set; } // Compression type used by the archive (can be overriden by individual files)
 		IEnumerable<ArchiveFileInfo> Files { get; } // File list.
 		bool AddFile(ArchiveFileInfo afi);
+		byte[] GetFile(ArchiveFileInfo afi);
 		bool DeleteFile(ArchiveFileInfo afi);
 
 		// Features
@@ -51,14 +52,14 @@ namespace KuriimuContract
 
 	public class ArchiveFileInfo // This might need to be an interface.
 	{
-		string Filename { get; set; } // Complete filename including path and extension.
-		long Filesize { get; set; }
+		public string Filename { get; set; } // Complete filename including path and extension.
+		public long Filesize { get; set; }
 
-		CompressionType Compression { get; set; } // Compression type used by the file.
-		long CompressedSize { get; set; } // Size of file when compressed.
+		public CompressionType Compression { get; set; } // Compression type used by the file.
+		public long CompressedSize { get; set; } // Size of file when compressed.
 
-		LocationType Location { get; set; } // Where the current file is stored.
-		FileInfo FileInfo { get; set; }
+		public LocationType Location { get; set; } // Where the current file is stored.
+		public FileInfo FileInfo { get; set; }
 
 		public ArchiveFileInfo()
 		{
