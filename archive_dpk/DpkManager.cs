@@ -27,6 +27,9 @@ namespace archive_dpk
 		public bool CanAddFiles => false;
 		public bool CanRenameFiles => false;
 		public bool CanDeleteFiles => false;
+		public bool CanAddDirectories => false;
+		public bool CanRenameDirectories => false;
+		public bool CanDeleteDirectories => false;
 		public bool CanSave => false;
 
 		public FileInfo FileInfo
@@ -86,7 +89,9 @@ namespace archive_dpk
 			return result;
 		}
 
-		public CompressionType Compression { get; set; }
+		public string Compression => "zlib";
+
+		public bool FilesHaveVaryingCompressions => true;
 
 		// Files
 		public IEnumerable<ArchiveFileInfo> Files
