@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
@@ -18,6 +17,9 @@ namespace KuriimuContract
 		bool CanAddFiles { get; } // Is the plugin able to add files?
 		bool CanRenameFiles { get; } // Is the plugin able to rename files?
 		bool CanDeleteFiles { get; } // Is the plugin able to delete files?
+		bool CanAddDirectories { get; } // Is the plugin able to add directories?
+		bool CanRenameDirectories { get; } // Is the plugin able to rename directories?
+		bool CanDeleteDirectories { get; } // Is the plugin able to delete directories?
 		bool CanSave { get; } // Is saving supported?
 
 		// I/O
@@ -27,7 +29,8 @@ namespace KuriimuContract
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
 		// Files
-		CompressionType Compression { get; set; } // Compression type used by the archive (can be overriden by individual files)
+		string Compression { get; } // Compression type used by the archive (can be overriden by individual files)
+		bool FilesHaveVaryingCompressions { get; } // Do files in this archive have verying compression formats?
 		IEnumerable<ArchiveFileInfo> Files { get; } // File list.
 		bool AddFile(ArchiveFileInfo afi);
 		byte[] GetFile(ArchiveFileInfo afi);
@@ -36,40 +39,25 @@ namespace KuriimuContract
 		// Features
 		bool ShowProperties(Icon icon);
 	}
-	public enum CompressionType
-	{
-		None,
-		LZ10,
-		LZ11,
-		GZIP
-	}
-
-	public enum LocationType
-	{
-		Archive,
-		Storage
-	}
 
 	public class ArchiveFileInfo // This might need to be an interface.
 	{
 		public string Filename { get; set; } // Complete filename including path and extension.
-		public long Filesize { get; set; }
+		public string Compression { get; } // Compression type used by the file.
 
-		public CompressionType Compression { get; set; } // Compression type used by the file.
+		public long Filesize { get; set; } // Size of the file.
 		public long CompressedSize { get; set; } // Size of file when compressed.
 
-		public LocationType Location { get; set; } // Where the current file is stored.
-		public FileInfo FileInfo { get; set; }
+		public FileInfo FileInfo { get; set; } // If this is not null, then the file is on storage media
 
 		public ArchiveFileInfo()
 		{
 			Filename = string.Empty;
 			Filesize = 0;
 
-			Compression = CompressionType.None;
+			Compression = "(none)";
 			CompressedSize = 0;
 
-			Location = LocationType.Archive;
 			FileInfo = null;
 		}
 
@@ -78,10 +66,9 @@ namespace KuriimuContract
 			Filename = fi.Name;
 			Filesize = fi.Length;
 
-			Compression = CompressionType.None;
-			CompressedSize = fi.Length;
+			Compression = "(none)";
+			CompressedSize = 0;
 
-			Location = LocationType.Storage;
 			FileInfo = fi;
 		}
 	}
