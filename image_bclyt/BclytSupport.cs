@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KuriimuContract;
-using Cetera.Font;
+using Cetera.Image;
 
 namespace image_bclyt
 {
@@ -31,6 +31,16 @@ namespace image_bclyt
 
             return new Bitmap(wndWidth, wndHeight, g);
         }
+        public static Bitmap DrawLYTPart(Bitmap bitmap, int posX, int posY, BXLIM drawPic)
+        {
+            Graphics g = Graphics.FromImage(bitmap);
+            Point point = new Point(posX, posY);
+
+            g.DrawImage(drawPic.Image, point);
+
+            return new Bitmap(bitmap.Width, bitmap.Height, g);
+        }
+
         public static Bitmap DrawBorder(Bitmap bitmap, int posX, int posY, int width, int height, Color border)
         {
             int wndWidth = bitmap.Width;
@@ -54,7 +64,7 @@ namespace image_bclyt
 
             Graphics g = Graphics.FromImage(bitmap);
 
-            Font font = new Font("Arial", 12);
+            Font font = new Font("Arial", 10);
             SolidBrush brush = new SolidBrush(fontColor);
             StringFormat drawFormat = new StringFormat();
             g.DrawString(text, font, brush, new Point(posX, posY), drawFormat);
@@ -73,6 +83,21 @@ namespace image_bclyt
                 font.Draw(text[i], g, posX, posY, 1, 1);
             }
         }*/
+
+        public static String readASCII(BinaryReaderX br)
+        {
+            Encoding ascii = Encoding.GetEncoding("ascii");
+            String result = "";
+
+            byte[] part = br.ReadBytes(1);
+            do
+            {
+                result += ascii.GetString(part);
+                part = br.ReadBytes(1);
+            } while (part[0] != 0x00);
+
+            return result;
+        }
 
         public static String readUnicode(BinaryReaderX br)
         {
@@ -194,8 +219,8 @@ namespace image_bclyt
                 origin = br.ReadInt32();
                 canvas_size = new Vector2D(br);
             }
-            int origin; //0=Classic, 1=Normal
-            Vector2D canvas_size;
+            public int origin; //0=Classic, 1=Normal
+            public Vector2D canvas_size;
         }
 
         public class NameList
@@ -203,17 +228,39 @@ namespace image_bclyt
             public NameList(BinaryReaderX br)
             {
                 elemCount = br.ReadInt32();
-                offsetList = br.ReadMultiple(elemCount, _ => br.ReadInt32());
-                nameList = br.ReadMultiple(elemCount, _ => br.ReadCStringA());
+                offsetList2 = new int[elemCount];
+                nameList2 = new String[elemCount];
+                for (int i = 0; i < elemCount; i++) offsetList2[i] = br.ReadInt32();
+                for (int i = 0; i < elemCount; i++) nameList2[i] = readASCII(br);
             }
             public int elemCount;
-            public List<int> offsetList;
-            public List<String> nameList;
+            public int[] offsetList2;
+            public String[] nameList2;
         }
 
         public class Material
         {
             public Material(BinaryReaderX br)
+            {
+                entryCount = br.ReadInt32();
+
+                offsetList = new int[entryCount];
+                for (int i = 0; i < entryCount; i++) offsetList[i] = br.ReadInt32();
+
+                maters = new MaterialEntry[entryCount];
+                for (int i = 0; i < entryCount; i++)
+                {
+                    br.BaseStream.Position = offsetList[i] - 8;
+                    maters[i] = new MaterialEntry(br);
+                }
+            }
+            public int entryCount;
+            public int[] offsetList;
+            public MaterialEntry[] maters;
+        }
+        public class MaterialEntry
+        {
+            public MaterialEntry(BinaryReaderX br)
             {
                 name = br.ReadString(20);
                 tevColor = br.ReadInt32();
@@ -245,6 +292,7 @@ namespace image_bclyt
             public byte tevStage_count;
             public bool alphaCompare;
             public bool blendMode;
+
 
             public TextureMap[] texMaps;
             public TextureMatrix[] texMats;
@@ -349,10 +397,10 @@ namespace image_bclyt
                 frameTableOffset = br.ReadUInt32();
 
                 br.BaseStream.Position = contOffset - 0x8;
-                WindowContent content = new WindowContent(br);
+                content = new WindowContent(br);
 
                 br.BaseStream.Position = frameTableOffset - 0x8;
-                WindowFrame frame = new WindowFrame(br);
+                frame = new WindowFrame(br);
             }
             public ushort inflatLeft;
             public ushort inflatRight;
@@ -367,6 +415,8 @@ namespace image_bclyt
             public ushort padding;
             public uint contOffset;
             public uint frameTableOffset;
+            public WindowContent content;
+            public WindowFrame frame;
         }
         public class WindowContent
         {
