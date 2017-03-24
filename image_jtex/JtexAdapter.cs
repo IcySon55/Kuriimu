@@ -15,6 +15,7 @@ namespace image_jtex
     {
         private FileInfo _fileInfo = null;
         private JTEX _jtex = null;
+        private RawJTEX _rawjtex = null;
         private bool raw = false;
 
         #region Properties
@@ -68,7 +69,14 @@ namespace image_jtex
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read), raw);
+                if (raw)
+                {
+                    _rawjtex = new RawJTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                }
+                else
+                {
+                    _jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                }
             else
                 result = LoadResult.FileNotFound;
 
@@ -86,7 +94,7 @@ namespace image_jtex
             {
                 if (raw)
                 {
-                    _jtex.SaveRaw(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                    _rawjtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
                 }
                 else
                 {
@@ -106,11 +114,22 @@ namespace image_jtex
         {
             get
             {
+                if (raw)
+                {
+                    return _rawjtex.Image;
+                }
                 return _jtex.Image;
             }
             set
             {
-                _jtex.Image = value;
+                if (raw)
+                {
+                    _rawjtex.Image = value;
+                }
+                else
+                {
+                    _jtex.Image = value;
+                }
             }
         }
     }

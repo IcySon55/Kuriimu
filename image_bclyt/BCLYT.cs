@@ -144,7 +144,7 @@ namespace image_bclyt
                         float panYPos = (pan.yorigin == BclytSupport.Pane.YOrigin.Top) ? 0 - panHeight / 2 - pan.translation.y : (pan.yorigin == BclytSupport.Pane.YOrigin.Bottom) ? height - panHeight / 2 - pan.translation.y : height / 2 - panHeight / 2 - pan.translation.y;
 
                         //draw Pane
-                        //BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
+                        BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
                         break;
                     case "bnd1":
                         //create placeholder
@@ -155,7 +155,7 @@ namespace image_bclyt
                         float bndYPos = (bnd.yorigin == BclytSupport.Bound.YOrigin.Top) ? 0 - bndHeight / 2 - bnd.translation.y : (bnd.yorigin == BclytSupport.Bound.YOrigin.Bottom) ? height - bndHeight / 2 - bnd.translation.y : height / 2 - bndHeight / 2 - bnd.translation.y;
 
                         //draw Bound
-                        //BclytSupport.DrawLYTPart(layout, (int)bndXPos, (int)bndYPos, (int)bndWidth, (int)bndHeight, Color.FromArgb(127, 127, 255, 127), Color.FromArgb(255, 127, 255, 127));
+                        BclytSupport.DrawLYTPart(layout, (int)bndXPos, (int)bndYPos, (int)bndWidth, (int)bndHeight, Color.FromArgb(127, 127, 255, 127), Color.FromArgb(255, 127, 255, 127));
                         break;
                     case "txt1":
                         //create placeholder
@@ -166,7 +166,7 @@ namespace image_bclyt
                         float txtYPos = (txt.yorigin == BclytSupport.Text.YOrigin.Top) ? 0 - txtHeight / 2 - txt.translation.y : (txt.yorigin == BclytSupport.Text.YOrigin.Bottom) ? height - txtHeight / 2 - txt.translation.y : height / 2 - txtHeight / 2 - txt.translation.y;
 
                         //draw Textbox and Text
-                        //BclytSupport.DrawLYTPart(layout, (int)txtXPos, (int)txtYPos, (int)txtWidth, (int)txtHeight, Color.FromArgb(63, 127, 127, 127), Color.FromArgb(255, 127, 127, 127));
+                        BclytSupport.DrawLYTPart(layout, (int)txtXPos, (int)txtYPos, (int)txtWidth, (int)txtHeight, Color.FromArgb(63, 127, 127, 127), Color.FromArgb(255, 127, 127, 127));
                         BclytSupport.DrawText(layout, txt.text, (int)txtXPos, (int)txtYPos, Color.FromArgb(255, 255, 255, 255));
                         break;
                     case "pic1":
