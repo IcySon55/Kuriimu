@@ -63,6 +63,7 @@
 			this.tslTool = new System.Windows.Forms.ToolStripLabel();
 			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+			this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
@@ -229,6 +230,7 @@
             this.toolStripSeparator3,
             this.tsbBatchExport,
             this.tsbBatchImport,
+            this.tsbKarameru,
             this.tsbKuriimu});
 			this.tlsMain.Location = new System.Drawing.Point(0, 24);
 			this.tlsMain.Name = "tlsMain";
@@ -425,6 +427,15 @@
 			this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
 			this.propertyGrid1.TabIndex = 0;
 			// 
+			// tsbKarameru
+			// 
+			this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbKarameru.Name = "tsbKarameru";
+			this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
+			this.tsbKarameru.Text = "Karameru";
+			this.tsbKarameru.Click += new System.EventHandler(this.tsbKarameru_Click);
+			// 
 			// frmConverter
 			// 
 			this.AllowDrop = true;
@@ -492,6 +503,7 @@
 		private System.Windows.Forms.ToolStripMenuItem importPNGToolStripMenuItem;
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
 		private System.Windows.Forms.ToolStripButton tsbKuriimu;
+		private System.Windows.Forms.ToolStripButton tsbKarameru;
 	}
 }
 
