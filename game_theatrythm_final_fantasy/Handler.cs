@@ -30,11 +30,6 @@ namespace game_theatrythm_final_fantasy
             ["bhetshnes"] = "eatheathes"
         };
 
-        Dictionary<string, string> _previewPairs = new Dictionary<string, string>
-        {
-            ["bhetshnes"] = "eatheathes"
-        };
-
         BCFNT font;
 
         public Handler()
@@ -96,6 +91,11 @@ namespace game_theatrythm_final_fantasy
                     if (kuriimuString[i] == ' ')
                     {
                         x += 5;
+                    }
+                    else if (kuriimuString[i] == '\xa')
+                    {
+                        x = rectText.X;
+                        y += 15;
                     }
                     else
                     {

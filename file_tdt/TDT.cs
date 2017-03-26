@@ -122,7 +122,7 @@ namespace file_tdt
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)))
             {
-                bw.WriteStruct<Header>(header);
+                bw.WriteStruct(header);
 
                 for (int i = 0; i < header.entryCount; i++)
                 {
