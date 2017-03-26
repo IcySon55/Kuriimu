@@ -409,6 +409,16 @@ namespace Kukkii
 			p.Start();
 		}
 
+		private void tsbKarameru_Click(object sender, EventArgs e)
+		{
+			ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "karameru.exe"));
+			start.WorkingDirectory = Application.StartupPath;
+
+			Process p = new Process();
+			p.StartInfo = start;
+			p.Start();
+		}
+
 		// Image Box
 		private void imbPreview_Zoomed(object sender, Cyotek.Windows.Forms.ImageBoxZoomEventArgs e)
 		{
