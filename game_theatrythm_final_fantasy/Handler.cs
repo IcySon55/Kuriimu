@@ -27,7 +27,7 @@ namespace game_theatrythm_final_fantasy
 
         Dictionary<string, string> _pairs = new Dictionary<string, string>
         {
-            ["bhetshnes"] = "eatheathes"
+
         };
 
         BCFNT font;
