@@ -31,14 +31,74 @@ namespace image_bclyt
 
             return new Bitmap(wndWidth, wndHeight, g);
         }
-        public static Bitmap DrawLYTPart(Bitmap bitmap, int posX, int posY, BXLIM drawPic)
+        public static Bitmap DrawLYTPart(Bitmap bitmap, int posX, int posY, Bitmap drawPic)
         {
             Graphics g = Graphics.FromImage(bitmap);
             Point point = new Point(posX, posY);
 
-            g.DrawImage(drawPic.Image, point);
+            g.DrawImage(drawPic, point);
 
             return new Bitmap(bitmap.Width, bitmap.Height, g);
+        }
+        public static Bitmap Rotate(Bitmap image, WindowFrame.TexFlip flip)
+        {
+            Bitmap result = new Bitmap(image.Width, image.Height);
+
+            switch (flip)
+            {
+                case WindowFrame.TexFlip.FlipH:
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    result = new Bitmap(image);
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    return result;
+                case WindowFrame.TexFlip.FlipV:
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    result = new Bitmap(image);
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+                    return result;
+                case WindowFrame.TexFlip.FlipHV:
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+                    result = new Bitmap(image);
+                    image.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+                    return result;
+                case WindowFrame.TexFlip.Rotate90:
+                    image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    result = new Bitmap(image);
+                    image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    return result;
+                case WindowFrame.TexFlip.Rotate180:
+                    image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    result = new Bitmap(image);
+                    image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    return result;
+                case WindowFrame.TexFlip.Rotate270:
+                    image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    result = new Bitmap(image);
+                    image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    return result;
+                default:
+                    return image;
+            }
+        }
+
+        public enum StretchType : byte
+        {
+            ToRight = 0,
+            Down = 1,
+            ToLeft = 2,
+            Up = 3
+        }
+        public static Bitmap Stretch(Bitmap image, int length, StretchType type)
+        {
+            Bitmap result;
+            switch (type)
+            {
+                case StretchType.ToRight:
+                    result = new Bitmap(image, length, image.Height);
+                    return result;
+                default:
+                    return image;
+            }
         }
 
         public static Bitmap DrawBorder(Bitmap bitmap, int posX, int posY, int width, int height, Color border)
@@ -400,7 +460,11 @@ namespace image_bclyt
                 content = new WindowContent(br);
 
                 br.BaseStream.Position = frameTableOffset - 0x8;
-                frame = new WindowFrame(br);
+                frames = new WindowFrame[nrFrames];
+                for (int i = 0; i < nrFrames; i++)
+                {
+                    frames[i] = new WindowFrame(br);
+                }
             }
             public ushort inflatLeft;
             public ushort inflatRight;
@@ -416,7 +480,7 @@ namespace image_bclyt
             public uint contOffset;
             public uint frameTableOffset;
             public WindowContent content;
-            public WindowFrame frame;
+            public WindowFrame[] frames;
         }
         public class WindowContent
         {
@@ -447,12 +511,23 @@ namespace image_bclyt
             public WindowFrame(BinaryReaderX br)
             {
                 matID = br.ReadUInt16();
-                textureFlip = br.ReadByte();
+                textureFlip = (TexFlip)br.ReadByte();
                 padding = br.ReadByte();
             }
             public ushort matID;
-            public byte textureFlip;
+            public TexFlip textureFlip;
             public byte padding;
+
+            public enum TexFlip : byte
+            {
+                None = 0,
+                FlipH = 1,
+                FlipV = 2,
+                Rotate90 = 3,
+                Rotate180 = 4,
+                Rotate270 = 5,
+                FlipHV = 6
+            }
         }
 
         public class Picture : Pane
