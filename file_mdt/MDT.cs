@@ -61,7 +61,7 @@ namespace file_mdt
 
         public void Save(String filename)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)))
+            using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.Write)))
             {
                 List<List<ushort>> chars = new List<List<ushort>>();
                 for (int i = 0; i < Labels.Count; i++)

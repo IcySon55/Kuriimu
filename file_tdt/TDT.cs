@@ -120,7 +120,7 @@ namespace file_tdt
 
         public void Save(String filename)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write)))
+            using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.Write)))
             {
                 bw.WriteStruct(header);
 
