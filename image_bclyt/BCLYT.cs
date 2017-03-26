@@ -117,12 +117,10 @@ namespace image_bclyt
                     case "wnd1":
                         //create placeholder
                         BclytSupport.Window wnd = (BclytSupport.Window)sec.Obj;
-                        bool withPicture = false;
-                        bool fileExists = false;
+                        //bool withPicture = false;
                         String filename = Path.GetDirectoryName(BCLYT.filename) + "\\";
 
-                        if (mats.maters[wnd.content.matID].texMaps.Length > 0) { filename += names.nameList2[mats.maters[wnd.content.matID].texMaps[0].index]; withPicture = true; }
-                        if (File.Exists(filename)) fileExists = true;
+                        //if (mats.maters[wnd.content.matID].texMaps.Length > 0) { withPicture = true; }
 
                         float wndWidth = wnd.size.x * wnd.scale.x;
                         float wndHeight = wnd.size.y * wnd.scale.y;
@@ -130,10 +128,57 @@ namespace image_bclyt
                         float wndYPos = (wnd.yorigin == BclytSupport.Window.YOrigin.Top) ? 0 - wndHeight / 2 - wnd.translation.y : (wnd.yorigin == BclytSupport.Window.YOrigin.Bottom) ? height - wndHeight / 2 - wnd.translation.y : height / 2 - wndHeight / 2 - wnd.translation.y;
 
                         //draw Window
-                        if (fileExists && withPicture)
-                            BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, new BXLIM(File.OpenRead(filename)));
-                        else
-                            BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight, Color.FromArgb(0, 0, 0, 0), Color.FromArgb(255, 0, 0, 0));
+                        //if (fileExists && withPicture)
+                        //{
+                        BXLIM bxlim;
+                        switch (wnd.nrFrames)
+                        {
+                            case 1:
+                                filename += names.nameList2[mats.maters[wnd.content.matID].texMaps[0].index];
+                                if (File.Exists(filename))
+                                {
+                                    bxlim = new BXLIM(File.OpenRead(filename));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, BclytSupport.Stretch(bxlim.Image, (int)(wndWidth - bxlim.Settings.Width), BclytSupport.StretchType.ToRight));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos, BclytSupport.Rotate(bxlim.Image, BclytSupport.WindowFrame.TexFlip.FlipV));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos + (int)wndHeight - bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, BclytSupport.WindowFrame.TexFlip.FlipHV));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos + (int)wndHeight - bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, BclytSupport.WindowFrame.TexFlip.FlipH));
+                                }
+                                break;
+                            case 4:
+                                filename += names.nameList2[mats.maters[wnd.frames[0].matID].texMaps[0].index];
+                                if (File.Exists(filename))
+                                {
+                                    bxlim = new BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[0].matID].texMaps[0].index]));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, BclytSupport.Rotate(bxlim.Image, wnd.frames[0].textureFlip));
+                                }
+
+                                filename += names.nameList2[mats.maters[wnd.frames[1].matID].texMaps[0].index];
+                                if (File.Exists(filename))
+                                {
+                                    bxlim = new BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[1].matID].texMaps[0].index]));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos, BclytSupport.Rotate(bxlim.Image, wnd.frames[1].textureFlip));
+                                }
+
+                                filename += names.nameList2[mats.maters[wnd.frames[2].matID].texMaps[0].index];
+                                if (File.Exists(filename))
+                                {
+                                    bxlim = new BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[2].matID].texMaps[0].index]));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos - (int)wndHeight + bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, wnd.frames[2].textureFlip));
+                                }
+
+                                filename += names.nameList2[mats.maters[wnd.frames[3].matID].texMaps[0].index];
+                                if (File.Exists(filename))
+                                {
+                                    bxlim = new BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[3].matID].texMaps[0].index]));
+                                    BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos - (int)wndHeight + bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, wnd.frames[3].textureFlip));
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        //}
+                        //else
+                        //  BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, (int)wndWidth, (int)wndHeight, Color.FromArgb(0, 0, 0, 0), Color.FromArgb(255, 0, 0, 0));
                         break;
                     case "pan1":
                         //create placeholder
@@ -144,7 +189,7 @@ namespace image_bclyt
                         float panYPos = (pan.yorigin == BclytSupport.Pane.YOrigin.Top) ? 0 - panHeight / 2 - pan.translation.y : (pan.yorigin == BclytSupport.Pane.YOrigin.Bottom) ? height - panHeight / 2 - pan.translation.y : height / 2 - panHeight / 2 - pan.translation.y;
 
                         //draw Pane
-                        BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
+                        //BclytSupport.DrawLYTPart(layout, (int)panXPos, (int)panYPos, (int)panWidth, (int)panHeight, Color.FromArgb(255, 255, 0, 0), Color.FromArgb(255, 255, 255, 255));
                         break;
                     case "bnd1":
                         //create placeholder
@@ -186,7 +231,7 @@ namespace image_bclyt
 
                         //draw Picture
                         if (fileExistsp && withPicturep)
-                            BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, new BXLIM(File.OpenRead(filenamep)));
+                            BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, new BXLIM(File.OpenRead(filenamep)).Image);
                         else
                             BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, (int)picWidth, (int)picHeight, Color.FromArgb(255, 0, 0, 255), Color.FromArgb(255, 255, 255, 255));
                         break;
