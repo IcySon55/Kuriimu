@@ -117,7 +117,7 @@ namespace archive_dpk
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "dir1/subdir2/filez.ext";
+				file.Filename = "dir1/subdir2/filez.xi";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
