@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Karameru.Properties;
@@ -21,6 +22,8 @@ namespace Karameru
 		private bool _hasChanges = false;
 
 		private List<IArchiveManager> _archiveManagers = null;
+		private List<IImageAdapter> _imageAdapters = null;
+		private List<string> _imageExtensions = new List<string>();
 
 		private IEnumerable<ArchiveFileInfo> _files = null;
 
@@ -28,8 +31,22 @@ namespace Karameru
 		{
 			InitializeComponent();
 
+			// Populate image list
+			imlFiles.Images.Add(Resources.tree_directory);
+			imlFiles.Images.SetKeyName(0, "tree-directory");
+			imlFiles.Images.Add(Resources.tree_directory_open);
+			imlFiles.Images.SetKeyName(1, "tree-directory-open");
+			imlFiles.Images.Add(Resources.tree_binary_file);
+			imlFiles.Images.SetKeyName(2, "tree-binary-file");
+			imlFiles.Images.Add(Resources.tree_image_file);
+			imlFiles.Images.SetKeyName(3, "tree-image-file");
+
 			// Load Plugins
 			_archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
+			_imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
+
+			// TODO: This needs to split up all of the joined extensions (incomplete)
+			_imageExtensions = _imageAdapters.Select(o => o.Extension.TrimStart('*')).ToList();
 
 			// Load passed in file
 			if (args.Length > 0 && File.Exists(args[0]))
@@ -427,6 +444,7 @@ namespace Karameru
 			UpdateFiles();
 
 			treEntries.BeginUpdate();
+			treEntries.ImageList = imlFiles;
 
 			ArchiveFileInfo selectedFile = null;
 			if (treEntries.SelectedNode != null)
@@ -435,20 +453,47 @@ namespace Karameru
 			treEntries.Nodes.Clear();
 			if (_files != null)
 			{
+				TreeNode root = new TreeNode("/");
+				TreeNode current = root;
+
 				// Build directory tree
 				foreach (ArchiveFileInfo file in _files)
 				{
-					// TODO: This part is not as easy as I'd like it to be
+					string[] parts = Regex.Split(file.Filename, @"[\\/]");
+
+					current = root;
+
+					foreach (string part in parts)
+					{
+						TreeNode child = null;
+
+						TreeNode found = FindChild(current, part);
+						if (found == null)
+						{
+							child = new TreeNode(part);
+
+							// Node settings
+							child.ImageKey = "tree-directory";
+
+							if (parts.Last() == part)
+								if (_imageExtensions.Contains(Regex.Match(part, @"\.(.*?)$").Value))
+									child.ImageKey = "tree-image-file";
+								else
+									child.ImageKey = "tree-binary-file";
+
+							child.SelectedImageKey = child.ImageKey;
+
+							current.Nodes.Add(child);
+						}
+						else
+							child = found;
+
+						current = child;
+					}
 				}
 
-				foreach (ArchiveFileInfo file in _files)
-				{
-					TreeNode node = new TreeNode(file.Filename);
-					node.Tag = file;
+				foreach (TreeNode node in root.Nodes)
 					treEntries.Nodes.Add(node);
-
-					//node.Expand();
-				}
 			}
 
 			//if ((selectedEntry == null || !_files.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
@@ -459,6 +504,16 @@ namespace Karameru
 			treEntries.EndUpdate();
 
 			treEntries.Focus();
+		}
+
+		private TreeNode FindChild(TreeNode parent, string childText)
+		{
+			if (parent != null)
+				foreach (TreeNode node in parent.Nodes)
+					if (node.Text == childText)
+						return node;
+
+			return null;
 		}
 
 		private void UpdateFiles()

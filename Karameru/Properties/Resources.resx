@@ -196,4 +196,16 @@
   <data name="preview_background" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\preview-background.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="tree_binary_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-binary-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_directory" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-directory.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_directory_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-directory-open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_image_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-image-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

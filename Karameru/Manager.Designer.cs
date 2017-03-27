@@ -399,12 +399,9 @@
 			this.treEntries.FullRowSelect = true;
 			this.treEntries.HideSelection = false;
 			this.treEntries.Indent = 16;
-			this.treEntries.ItemHeight = 14;
+			this.treEntries.ItemHeight = 18;
 			this.treEntries.Location = new System.Drawing.Point(0, 27);
 			this.treEntries.Name = "treEntries";
-			this.treEntries.ShowLines = false;
-			this.treEntries.ShowPlusMinus = false;
-			this.treEntries.ShowRootLines = false;
 			this.treEntries.Size = new System.Drawing.Size(320, 537);
 			this.treEntries.TabIndex = 4;
 			// 
