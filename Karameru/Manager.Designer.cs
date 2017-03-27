@@ -538,6 +538,7 @@
 			// 
 			// frmManager
 			// 
+			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(949, 627);
@@ -546,6 +547,10 @@
 			this.Controls.Add(this.mnuMain);
 			this.Name = "frmManager";
 			this.Text = "Karameru";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmManager_FormClosing);
+			this.Load += new System.EventHandler(this.frmManager_Load);
+			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmManager_DragDrop);
+			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmManager_DragEnter);
 			this.mnuMain.ResumeLayout(false);
 			this.mnuMain.PerformLayout();
 			this.tlsMain.ResumeLayout(false);
