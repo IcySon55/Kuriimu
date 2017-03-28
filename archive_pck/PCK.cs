@@ -16,8 +16,6 @@ namespace archive_pck
         {
             public String filename;
             public Entry entry;
-            public byte[] crcBlock;
-            public byte[] fileData;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -48,8 +46,6 @@ namespace archive_pck
                     {
                         entry = entry,
                         filename = "File" + i.ToString(),
-                        crcBlock = crcBlocks,
-                        fileData = br.ReadBytes((int)(entry.length - crcBlocks.Length))
                     });
                 }
             }

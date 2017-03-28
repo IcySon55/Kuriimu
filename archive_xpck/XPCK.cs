@@ -16,7 +16,6 @@ namespace archive_xpck
         {
             public String filename;
             public Entry entry;
-            public byte[] fileData;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -112,7 +111,6 @@ namespace archive_xpck
                         {
                             filename = nameList[i],
                             entry = entries[i],
-                            fileData = br.ReadBytes((int)entries[i].fileSize)
                         });
                     }
 

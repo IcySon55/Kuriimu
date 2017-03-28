@@ -105,7 +105,7 @@ namespace archive_sarc
                 foreach (var node in _sarc)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.fileData.Length;
+                    file.Filesize = (node.nodeEntry != null) ? node.nodeEntry.dataEnd - node.nodeEntry.dataStart : node.sNodeEntry.dataLength;
                     file.Filename = node.fileName;
                     files.Add(file);
                 }

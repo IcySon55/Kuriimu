@@ -48,6 +48,11 @@ namespace archive_pck
 
         #endregion
 
+        public class PckAfi : ArchiveFileInfo
+        {
+            PCK.Entry pckEntry;
+        }
+
         public bool Identify(string filename)
         {
             if (filename.Contains(".pck"))
@@ -105,7 +110,7 @@ namespace archive_pck
                 foreach (var node in _pck)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.fileData.Length;
+                    file.Filesize = node.entry.length;
                     file.Filename = node.filename;
                     files.Add(file);
                 }

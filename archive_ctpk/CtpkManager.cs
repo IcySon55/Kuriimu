@@ -6,23 +6,23 @@ using System.Threading.Tasks;
 using KuriimuContract;
 using System.Drawing;
 using System.IO;
-using archive_xpck.Properties;
+using archive_ctpk.Properties;
 using Cetera.Compression;
 
-namespace archive_xpck
+namespace archive_ctpk
 {
-    public class SarcAdapter : IArchiveManager
+    public class CTPKAdapter : IArchiveManager
     {
         private FileInfo _fileInfo = null;
-        private XPCK _xpck = null;
+        private CTPK _ctpk = null;
 
         #region Properties
 
         // Information
         public string Name => Settings.Default.PluginName;
-        public string Description => "Level 5 eXtractable PaCKage";
-        public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
-        public string About => "This is the XPCK archive manager for Karameru.";
+        public string Description => "CTR Texture PacKage";
+        public string Extension => "*.ctpk";
+        public string About => "This is the CTPK archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -53,11 +53,7 @@ namespace archive_xpck
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                if (br.ReadString(4) == "XPCK") return true;
-
-                br.BaseStream.Position = 0;
-                byte[] decomp = CriWare.GetDecompressedBytes(br.BaseStream);
-                return new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "XPCK";
+                return br.ReadString(4) == "CTPK";
             }
         }
 
@@ -68,7 +64,7 @@ namespace archive_xpck
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _xpck = new XPCK(_fileInfo.FullName);
+                _ctpk = new CTPK(_fileInfo.FullName);
             else
                 result = LoadResult.FileNotFound;
 
@@ -84,7 +80,7 @@ namespace archive_xpck
 
             try
             {
-                //_xpck.Save(_fileInfo.FullName);
+                //_ctpk.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {
@@ -105,10 +101,10 @@ namespace archive_xpck
             {
                 var files = new List<ArchiveFileInfo>();
 
-                foreach (var node in _xpck)
+                foreach (var node in _ctpk)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.entry.fileSize;
+                    file.Filesize = node.nodeEntry.entry.texDataSize;
                     file.Filename = node.filename;
                     files.Add(file);
                 }
