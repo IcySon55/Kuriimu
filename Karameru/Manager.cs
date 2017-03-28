@@ -23,30 +23,25 @@ namespace Karameru
 
 		private List<IArchiveManager> _archiveManagers = null;
 		private List<IImageAdapter> _imageAdapters = null;
-		private List<string> _imageExtensions = new List<string>();
+		private HashSet<string> _imageExtensions = null;
 
-		private IEnumerable<ArchiveFileInfo> _files = null;
+		private List<ArchiveFileInfo> _files = null;
 
 		public frmManager(string[] args)
 		{
 			InitializeComponent();
 
 			// Populate image list
-			imlFiles.Images.Add(Resources.tree_directory);
-			imlFiles.Images.SetKeyName(0, "tree-directory");
-			imlFiles.Images.Add(Resources.tree_directory_open);
-			imlFiles.Images.SetKeyName(1, "tree-directory-open");
-			imlFiles.Images.Add(Resources.tree_binary_file);
-			imlFiles.Images.SetKeyName(2, "tree-binary-file");
-			imlFiles.Images.Add(Resources.tree_image_file);
-			imlFiles.Images.SetKeyName(3, "tree-image-file");
+			imlFiles.Images.Add("tree-directory", Resources.tree_directory);
+			imlFiles.Images.Add("tree-directory-open", Resources.tree_directory_open);
+			imlFiles.Images.Add("tree-binary-file", Resources.tree_binary_file);
+			imlFiles.Images.Add("tree-image-file", Resources.tree_image_file);
 
 			// Load Plugins
 			_archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
 			_imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
 
-			// TODO: This needs to split up all of the joined extensions (incomplete)
-			_imageExtensions = _imageAdapters.Select(o => o.Extension.TrimStart('*')).ToList();
+			_imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
 
 			// Load passed in file
 			if (args.Length > 0 && File.Exists(args[0]))
@@ -358,7 +353,7 @@ namespace Karameru
 
 				try
 				{
-					if (_tempAdapter != null && _tempAdapter.Load(filename) == LoadResult.Success)
+					if (_tempAdapter?.Load(filename) == LoadResult.Success)
 					{
 						_archiveManager = _tempAdapter;
 						_fileOpen = true;
@@ -446,31 +441,24 @@ namespace Karameru
 			treEntries.BeginUpdate();
 			treEntries.ImageList = imlFiles;
 
-			ArchiveFileInfo selectedFile = null;
-			if (treEntries.SelectedNode != null)
-				selectedFile = (ArchiveFileInfo)treEntries.SelectedNode.Tag;
+			var selectedFile = treEntries.SelectedNode?.Tag as ArchiveFileInfo;
 
 			treEntries.Nodes.Clear();
 			if (_files != null)
 			{
-				TreeNode root = new TreeNode("/");
-				TreeNode current = root;
-
 				// Build directory tree
 				foreach (ArchiveFileInfo file in _files)
 				{
-					string[] parts = Regex.Split(file.Filename, @"[\\/]");
+					string[] parts = file.Filename.Split(new[] { '\\', '/' });
 
-					current = root;
+					var current = treEntries.Nodes;
 
 					foreach (string part in parts)
 					{
-						TreeNode child = null;
-
-						TreeNode found = FindChild(current, part);
-						if (found == null)
+						var child = current[part];
+						if (child == null)
 						{
-							child = new TreeNode(part);
+							child = current.Add(part, part);
 
 							// Node settings
 							child.ImageKey = "tree-directory";
@@ -479,21 +467,15 @@ namespace Karameru
 								if (_imageExtensions.Contains(Regex.Match(part, @"\.(.*?)$").Value))
 									child.ImageKey = "tree-image-file";
 								else
-									child.ImageKey = "tree-binary-file";
+								child.ImageKey = "tree-binary-file";
 
 							child.SelectedImageKey = child.ImageKey;
-
-							current.Nodes.Add(child);
 						}
-						else
-							child = found;
 
-						current = child;
+						current = child.Nodes;
 					}
 				}
 
-				foreach (TreeNode node in root.Nodes)
-					treEntries.Nodes.Add(node);
 			}
 
 			//if ((selectedEntry == null || !_files.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
@@ -506,19 +488,9 @@ namespace Karameru
 			treEntries.Focus();
 		}
 
-		private TreeNode FindChild(TreeNode parent, string childText)
-		{
-			if (parent != null)
-				foreach (TreeNode node in parent.Nodes)
-					if (node.Text == childText)
-						return node;
-
-			return null;
-		}
-
 		private void UpdateFiles()
 		{
-			_files = _archiveManager.Files;
+			_files = _archiveManager.Files.ToList();
 
 			//if (_archiveManager.SortEntries)
 			//	_files = _files.OrderBy(x => x);
@@ -592,7 +564,7 @@ namespace Karameru
 
 		private string FileName()
 		{
-			return _archiveManager == null || _archiveManager.FileInfo == null ? string.Empty : _archiveManager.FileInfo.Name;
+			return _archiveManager?.FileInfo?.Name ?? string.Empty;
 		}
 
 		// List
