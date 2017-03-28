@@ -90,6 +90,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tex", "..\image_tex\i
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karameru", "..\Karameru\Karameru.csproj", "{F069B9AB-356C-4ED6-AF84-2EAB83B5D55F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{2D92596C-C00E-49E4-AF88-57C3A2379CCA} = {2D92596C-C00E-49E4-AF88-57C3A2379CCA}
 		{EFDC3079-B1ED-493D-B9DC-55658A84B1A4} = {EFDC3079-B1ED-493D-B9DC-55658A84B1A4}
 		{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7} = {948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}
 		{7360B4B4-A589-4C07-938C-BADAAE4C97D5} = {7360B4B4-A589-4C07-938C-BADAAE4C97D5}
@@ -110,6 +111,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_xpck", "..\archive_xpck\archive_xpck.csproj", "{95F859B9-118C-4F39-AA04-76901412413E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_pck", "..\archive_pck\archive_pck.csproj", "{7360B4B4-A589-4C07-938C-BADAAE4C97D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_ctpk", "..\archive_ctpk\archive_ctpk.csproj", "{2D92596C-C00E-49E4-AF88-57C3A2379CCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -253,6 +256,10 @@ Global
 		{7360B4B4-A589-4C07-938C-BADAAE4C97D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7360B4B4-A589-4C07-938C-BADAAE4C97D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7360B4B4-A589-4C07-938C-BADAAE4C97D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D92596C-C00E-49E4-AF88-57C3A2379CCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D92596C-C00E-49E4-AF88-57C3A2379CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D92596C-C00E-49E4-AF88-57C3A2379CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D92596C-C00E-49E4-AF88-57C3A2379CCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
