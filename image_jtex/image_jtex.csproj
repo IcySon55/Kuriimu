@@ -50,8 +50,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera\Cetera.csproj">
-      <Project>{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}</Project>
+    <ProjectReference Include="..\Cetera\Cetera.csproj">
+      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
     </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">

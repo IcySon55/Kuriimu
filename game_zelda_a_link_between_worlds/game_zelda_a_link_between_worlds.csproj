@@ -72,7 +72,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera\Cetera.csproj">
+    <ProjectReference Include="..\Cetera\Cetera.csproj">
       <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
     </ProjectReference>

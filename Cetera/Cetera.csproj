@@ -4,70 +4,93 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}</ProjectGuid>
+    <ProjectGuid>{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>image_tex</RootNamespace>
-    <AssemblyName>image_tex</AssemblyName>
+    <RootNamespace>Cetera</RootNamespace>
+    <AssemblyName>Cetera</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Kuriimu\bin\Debug\plugins\</OutputPath>
+    <OutputPath>..\Kuriimu\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Kuriimu\bin\Release\plugins\</OutputPath>
+    <OutputPath>..\Kuriimu\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\Settings.Designer.cs" />
-    <Compile Include="Properties\Settings1.Designer.cs">
+    <Compile Include="Archive\SARC.cs" />
+    <Compile Include="Compression\Huffman.cs" />
+    <Compile Include="Compression\LZ10.cs" />
+    <Compile Include="Compression\LZ11.cs" />
+    <Compile Include="Compression\LZSS.cs" />
+    <Compile Include="Compression\RLE.cs" />
+    <Compile Include="Image\JTEX.cs" />
+    <Compile Include="Image\RawJTEX.cs" />
+    <Compile Include="IO\BinaryReaderX.cs" />
+    <Compile Include="IO\BinaryWriterX.cs" />
+    <Compile Include="Compression\GZip.cs" />
+    <Compile Include="Font\BCFNT.cs" />
+    <Compile Include="Compression\CriWare.cs" />
+    <Compile Include="Font\XF.cs" />
+    <Compile Include="Image\BXLIM.cs" />
+    <Compile Include="Layout\BCLYT.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="Archive\DARC.cs" />
+    <Compile Include="Image\Common.cs" />
+    <Compile Include="Image\XI.cs" />
+    <Compile Include="IO\IOExtensions.cs" />
+    <Compile Include="Hardware\OnionFS.cs" />
+    <Compile Include="Image\Etc1.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TEX.cs" />
-    <Compile Include="TexAdapter.cs" />
+    <Compile Include="Text\MSBT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Resources\cbf_std.bcfnt.gz" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera.csproj">
-      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
-      <Name>Cetera</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
-      <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
-      <Name>KuriimuContract</Name>
-    </ProjectReference>
+    <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
