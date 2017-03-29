@@ -13,6 +13,11 @@ namespace archive_pck
 {
     public class SarcAdapter : IArchiveManager
     {
+        public class PckAfi : ArchiveFileInfo
+        {
+            public PCK.Entry pckEntry;
+        }
+
         private FileInfo _fileInfo = null;
         private PCK _pck = null;
 
@@ -47,11 +52,6 @@ namespace archive_pck
         }
 
         #endregion
-
-        public class PckAfi : ArchiveFileInfo
-        {
-            PCK.Entry pckEntry;
-        }
 
         public bool Identify(string filename)
         {

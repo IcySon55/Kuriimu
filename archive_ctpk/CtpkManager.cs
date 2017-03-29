@@ -13,6 +13,11 @@ namespace archive_ctpk
 {
     public class CTPKAdapter : IArchiveManager
     {
+        public class CtpkAfi : ArchiveFileInfo
+        {
+            public CTPK.NodeEntry nodeEntry;
+        }
+
         private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
 

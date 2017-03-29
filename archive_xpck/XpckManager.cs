@@ -13,6 +13,11 @@ namespace archive_xpck
 {
     public class SarcAdapter : IArchiveManager
     {
+        public class XpckAfi : ArchiveFileInfo
+        {
+            XPCK.Entry pckEntry;
+        }
+
         private FileInfo _fileInfo = null;
         private XPCK _xpck = null;
 
