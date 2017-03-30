@@ -26,10 +26,8 @@ namespace archive_dpk
 		public bool ArchiveHasExtendedProperties => false;
 		public bool CanAddFiles => false;
 		public bool CanRenameFiles => false;
+		public bool CanReplaceFiles => false;
 		public bool CanDeleteFiles => false;
-		public bool CanAddDirectories => false;
-		public bool CanRenameDirectories => false;
-		public bool CanDeleteDirectories => false;
 		public bool CanSave => false;
 
 		public FileInfo FileInfo
@@ -89,10 +87,6 @@ namespace archive_dpk
 			return result;
 		}
 
-		public string Compression => "zlib";
-
-		public bool FilesHaveVaryingCompressions => true;
-
 		// Files
 		public IEnumerable<ArchiveFileInfo> Files
 		{
@@ -102,6 +96,7 @@ namespace archive_dpk
 
 				var file = new ArchiveFileInfo();
 				file.Filename = "somefile1.ext";
+				file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
@@ -137,9 +132,14 @@ namespace archive_dpk
 			return false;
 		}
 
-		public byte[] GetFile(ArchiveFileInfo afi)
+		public bool RenameFile(ArchiveFileInfo afi)
 		{
-			return new byte[] { 64, 64, 64, 64 };
+			return false;
+		}
+
+		public bool ReplaceFile(ArchiveFileInfo afi)
+		{
+			return false;
 		}
 
 		public bool DeleteFile(ArchiveFileInfo afi)

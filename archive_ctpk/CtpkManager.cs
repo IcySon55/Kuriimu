@@ -28,10 +28,8 @@ namespace archive_ctpk
         public bool ArchiveHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
+        public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
-        public bool CanAddDirectories => false;
-        public bool CanRenameDirectories => false;
-        public bool CanDeleteDirectories => false;
         public bool CanSave => false;
 
         public FileInfo FileInfo
@@ -90,10 +88,6 @@ namespace archive_ctpk
             return result;
         }
 
-        public string Compression => "none";
-
-        public bool FilesHaveVaryingCompressions => false;
-
         // Files
         public IEnumerable<ArchiveFileInfo> Files
         {
@@ -118,9 +112,14 @@ namespace archive_ctpk
             return false;
         }
 
-        public byte[] GetFile(ArchiveFileInfo afi)
+        public bool RenameFile(ArchiveFileInfo afi)
         {
-            return new byte[] { 64, 64, 64, 64 };
+            return false;
+        }
+
+        public bool ReplaceFile(ArchiveFileInfo afi)
+        {
+            return false;
         }
 
         public bool DeleteFile(ArchiveFileInfo afi)
