@@ -6,36 +6,39 @@ using System.Threading.Tasks;
 using KuriimuContract;
 using System.Drawing;
 using System.IO;
-using archive_pck.Properties;
-using Cetera.Archive;
+using archive_hpi_hpb.Properties;
+using Cetera.Compression;
 
-namespace archive_pck
+namespace archive_hpi_hpb
 {
-    public class SarcAdapter : IArchiveManager
+    public class HpiHpbAdapter : IArchiveManager
     {
-        public class PckAfi : ArchiveFileInfo
+        public class HpiHpbAfi : ArchiveFileInfo
         {
-            public PCK.Entry pckEntry;
+            public HPIHPB.Entry entry;
         }
 
         private FileInfo _fileInfo = null;
-        private PCK _pck = null;
+        private HPIHPB _hpihpb = null;
 
         #region Properties
 
         // Information
         public string Name => Settings.Default.PluginName;
-        public string Description => "Level 5 PaCKage";
-        public string Extension => "*.pck";
-        public string About => "This is the PCK archive manager for Karameru.";
+        public string Description => "Atlus Archive (for EOV)";
+        public string Extension => "*.HPI;*.HPB";
+        public string About => "This is the HPI/HPB archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanAddDirectories => false;
+        public bool CanRenameDirectories => false;
+        public bool CanDeleteDirectories => false;
         public bool CanSave => false;
+        public bool CanReplaceFiles => false;
 
         public FileInfo FileInfo
         {
@@ -53,12 +56,11 @@ namespace archive_pck
 
         public bool Identify(string filename)
         {
-            if (filename.Contains(".pck"))
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return true;
+                if (br.BaseStream.Length < 4) return false;
+                return br.ReadString(4) == "HPIH";
             }
-
-            return false;
         }
 
         public LoadResult Load(string filename)
@@ -68,7 +70,7 @@ namespace archive_pck
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _pck = new PCK(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                _hpihpb = new HPIHPB(_fileInfo.FullName);
             else
                 result = LoadResult.FileNotFound;
 
@@ -84,7 +86,7 @@ namespace archive_pck
 
             try
             {
-                _pck.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                //_hpihpb.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {
@@ -94,6 +96,10 @@ namespace archive_pck
             return result;
         }
 
+        public string Compression => "none";
+
+        public bool FilesHaveVaryingCompressions => false;
+
         // Files
         public IEnumerable<ArchiveFileInfo> Files
         {
@@ -101,21 +107,16 @@ namespace archive_pck
             {
                 var files = new List<ArchiveFileInfo>();
 
-                foreach (var node in _pck)
+                foreach (var node in _hpihpb)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.entry.length;
+                    file.Filesize = node.entry.fileSize;
                     file.Filename = node.filename;
                     files.Add(file);
                 }
 
                 return files;
             }
-        }
-
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
         }
 
         public bool RenameFile(ArchiveFileInfo afi)
@@ -126,6 +127,16 @@ namespace archive_pck
         public bool ReplaceFile(ArchiveFileInfo afi)
         {
             return false;
+        }
+
+        public bool AddFile(ArchiveFileInfo afi)
+        {
+            return false;
+        }
+
+        public byte[] GetFile(ArchiveFileInfo afi)
+        {
+            return new byte[] { 64, 64, 64, 64 };
         }
 
         public bool DeleteFile(ArchiveFileInfo afi)

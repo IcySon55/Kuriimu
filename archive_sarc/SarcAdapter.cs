@@ -13,6 +13,13 @@ namespace archive_sarc
 {
     public class SarcAdapter : IArchiveManager
     {
+        public class SarcAfi : ArchiveFileInfo
+        {
+            public SARC.State state;
+            public SARC.SimplerSFATNode sFatNode;
+            public SARC.SFATNode fatNode;
+        }
+
         private FileInfo _fileInfo = null;
         private SARC _sarc = null;
 

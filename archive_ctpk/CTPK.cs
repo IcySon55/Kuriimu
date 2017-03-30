@@ -79,7 +79,11 @@ namespace archive_ctpk
 
                 for (int i = 0; i < header.texCount; i++)
                 {
-                    Add(new Node());
+                    Add(new Node()
+                    {
+                        filename = "",
+                        nodeEntry = new NodeEntry()
+                    });
                 }
 
                 for (int i = 0; i < header.texCount; i++)
