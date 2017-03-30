@@ -107,8 +107,8 @@ namespace archive_xpck
                 foreach (var node in _xpck)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.entry.fileSize;
-                    file.Filename = node.filename;
+                    //file.Filesize = node.entry.fileSize;
+                    file.FileName = node.filename;
                     files.Add(file);
                 }
 

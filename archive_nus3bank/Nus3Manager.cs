@@ -121,8 +121,8 @@ namespace archive_nus3bank
                 foreach (var node in _nus3)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.entry.size;
-                    file.Filename = node.filename;
+                    //file.Filesize = node.entry.size;
+                    file.FileName = node.filename;
                     file.FileData = node.FileData;
                     files.Add(file);
                 }

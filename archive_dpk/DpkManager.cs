@@ -95,36 +95,36 @@ namespace archive_dpk
 				var files = new List<ArchiveFileInfo>();
 
 				var file = new ArchiveFileInfo();
-				file.Filename = "archive_file.ctpk";
+				file.FileName = "archive_file.ctpk";
 				file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "image_file.bclim";
+				file.FileName = "image_file.bclim";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "text_file.msbt";
+				file.FileName = "text_file.msbt";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "dir1/subfile1.ext";
+				file.FileName = "dir1/subfile1.ext";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "dir1/subfile2.ext";
+				file.FileName = "dir1/subfile2.ext";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "dir1/subdir2/filez.xi";
+				file.FileName = "dir1/subdir2/filez.xi";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "dir2/zilla.ext";
+				file.FileName = "dir2/zilla.ext";
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
-				file.Filename = "dir2/somefile.ext";
+				file.FileName = "dir2/somefile.ext";
 				files.Add(file);
 
 				return files;
