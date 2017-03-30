@@ -16,10 +16,8 @@ namespace KuriimuContract
 		bool ArchiveHasExtendedProperties { get; } // Format provides an extended properties dialog?
 		bool CanAddFiles { get; } // Is the plugin able to add files?
 		bool CanRenameFiles { get; } // Is the plugin able to rename files?
+		bool CanReplaceFiles { get; } // Is the plugin able to replace files?
 		bool CanDeleteFiles { get; } // Is the plugin able to delete files?
-		bool CanAddDirectories { get; } // Is the plugin able to add directories?
-		bool CanRenameDirectories { get; } // Is the plugin able to rename directories?
-		bool CanDeleteDirectories { get; } // Is the plugin able to delete directories?
 		bool CanSave { get; } // Is saving supported?
 
 		// I/O
@@ -29,11 +27,10 @@ namespace KuriimuContract
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
 		// Files
-		string Compression { get; } // Compression type used by the archive (can be overriden by individual files)
-		bool FilesHaveVaryingCompressions { get; } // Do files in this archive have verying compression formats?
 		IEnumerable<ArchiveFileInfo> Files { get; } // File list.
 		bool AddFile(ArchiveFileInfo afi);
-		byte[] GetFile(ArchiveFileInfo afi);
+		bool RenameFile(ArchiveFileInfo afi);
+		bool ReplaceFile(ArchiveFileInfo afi);
 		bool DeleteFile(ArchiveFileInfo afi);
 
 		// Features
@@ -43,10 +40,10 @@ namespace KuriimuContract
 	public class ArchiveFileInfo // This might need to be an interface.
 	{
 		public string Filename { get; set; } // Complete filename including path and extension.
-		public string Compression { get; } // Compression type used by the file.
-
 		public long Filesize { get; set; } // Size of the file.
 		public long CompressedSize { get; set; } // Size of file when compressed.
+
+		public virtual Stream FileData { get; set; } // Provides a stream to read the file data from.
 
 		public FileInfo FileInfo { get; set; } // If this is not null, then the file is on storage media
 
@@ -54,8 +51,6 @@ namespace KuriimuContract
 		{
 			Filename = string.Empty;
 			Filesize = 0;
-
-			Compression = "(none)";
 			CompressedSize = 0;
 
 			FileInfo = null;
@@ -65,8 +60,6 @@ namespace KuriimuContract
 		{
 			Filename = fi.Name;
 			Filesize = fi.Length;
-
-			Compression = "(none)";
 			CompressedSize = 0;
 
 			FileInfo = fi;

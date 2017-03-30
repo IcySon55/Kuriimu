@@ -464,10 +464,13 @@ namespace Karameru
 							child.ImageKey = "tree-directory";
 
 							if (parts.Last() == part)
+							{
 								if (_imageExtensions.Contains(Regex.Match(part, @"\.(.*?)$").Value))
 									child.ImageKey = "tree-image-file";
 								else
-								child.ImageKey = "tree-binary-file";
+									child.ImageKey = "tree-binary-file";
+								child.Tag = file;
+							}
 
 							child.SelectedImageKey = child.ImageKey;
 						}
@@ -513,6 +516,9 @@ namespace Karameru
 		{
 			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Name + " Adapter" : string.Empty);
 
+			openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
+			tsbOpen.Enabled = _archiveManagers.Count > 0;
+
 			if (_fileOpen)
 				tslFiles.Text = (_archiveManager.Files?.Count() + " Files").Trim();
 			else
@@ -523,6 +529,7 @@ namespace Karameru
 				bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
 				bool canAdd = _fileOpen && _archiveManager.CanAddFiles;
 				bool canRename = itemSelected && _archiveManager.CanRenameFiles;
+				bool canReplace = itemSelected && _archiveManager.CanReplaceFiles;
 				bool canDelete = itemSelected && _archiveManager.CanDeleteFiles;
 
 				splMain.Enabled = _fileOpen;
@@ -587,6 +594,51 @@ namespace Karameru
 		private void treEntries_Leave(object sender, EventArgs e)
 		{
 			UpdateForm();
+		}
+
+		private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			treEntries.SelectedNode = e.Node;
+		}
+
+		// Context strip
+		private void extractToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			TreeNode selectedNode = treEntries.SelectedNode;
+
+			if (selectedNode.Tag == null) // Directory
+			{
+				MessageBox.Show("Directory extraction is not yet implemented.", "Extract Directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			else // File
+			{
+				var afi = selectedNode.Tag as ArchiveFileInfo;
+
+				if (afi != null)
+				{
+					string filename = Path.GetFileName(afi.Filename);
+
+					if (afi.FileData != null)
+					{
+						var sfd = new SaveFileDialog();
+						sfd.InitialDirectory = Settings.Default.LastDirectory;
+						sfd.FileName =  filename;
+						sfd.Filter = "File (*.*)|*.*";
+
+						if (sfd.ShowDialog() == DialogResult.OK)
+						{
+							using (var fs = File.Create(sfd.FileName))
+							{
+								afi.FileData.CopyTo(fs);
+							}
+						}
+					}
+					else
+					{
+						MessageBox.Show($"Uninitialized file stream. Unable to extract {filename}.", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+				}
+			}
 		}
 	}
 }

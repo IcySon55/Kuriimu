@@ -74,6 +74,8 @@
 			this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
 			this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
 			this.imlFiles = new System.Windows.Forms.ImageList(this.components);
+			this.mnuEntries = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
@@ -83,6 +85,7 @@
 			this.splMain.SuspendLayout();
 			this.tlsEntries.SuspendLayout();
 			this.tlsPreview.SuspendLayout();
+			this.mnuEntries.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -395,6 +398,7 @@
 			// 
 			// treEntries
 			// 
+			this.treEntries.ContextMenuStrip = this.mnuEntries;
 			this.treEntries.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treEntries.FullRowSelect = true;
 			this.treEntries.HideSelection = false;
@@ -404,6 +408,7 @@
 			this.treEntries.Name = "treEntries";
 			this.treEntries.Size = new System.Drawing.Size(320, 537);
 			this.treEntries.TabIndex = 4;
+			this.treEntries.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseClick);
 			// 
 			// tlsEntries
 			// 
@@ -536,6 +541,21 @@
 			this.imlFiles.ImageSize = new System.Drawing.Size(16, 16);
 			this.imlFiles.TransparentColor = System.Drawing.Color.Transparent;
 			// 
+			// mnuEntries
+			// 
+			this.mnuEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractToolStripMenuItem});
+			this.mnuEntries.Name = "mnuEntries";
+			this.mnuEntries.Size = new System.Drawing.Size(153, 48);
+			// 
+			// extractToolStripMenuItem
+			// 
+			this.extractToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_export;
+			this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
+			this.extractToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.extractToolStripMenuItem.Text = "&Extract...";
+			this.extractToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
+			// 
 			// frmManager
 			// 
 			this.AllowDrop = true;
@@ -564,6 +584,7 @@
 			this.tlsEntries.PerformLayout();
 			this.tlsPreview.ResumeLayout(false);
 			this.tlsPreview.PerformLayout();
+			this.mnuEntries.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -616,6 +637,8 @@
 		private System.Windows.Forms.ToolStripButton tsbPreviewCopy;
 		private System.Windows.Forms.Panel pnlPreview;
 		private System.Windows.Forms.ImageList imlFiles;
+		private System.Windows.Forms.ContextMenuStrip mnuEntries;
+		private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
 	}
 }
 
