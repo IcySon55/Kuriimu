@@ -155,7 +155,7 @@ namespace Cetera.Archive
                     {
                         Add(new Node());
                         this[i].state = State.Normal;
-                        this[i].nodeEntry = br.ReadStruct<SFATNode>();
+                        this[i].nodeEntry = new SFATNode(br.BaseStream);
                     }
 
                     sfntHeader = br.ReadStruct<SFNTHeader>();
@@ -185,7 +185,7 @@ namespace Cetera.Archive
                 {
                     Add(new Node());
                     this[i].state = State.Simpler;
-                    this[i].sNodeEntry = br.ReadStruct<SimplerSFATNode>();
+                    this[i].sNodeEntry = new SimplerSFATNode(br.BaseStream);
                 }
 
                 for (int i = 0; i < ssarcHeader.nodeCount; i++)

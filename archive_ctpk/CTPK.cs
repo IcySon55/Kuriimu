@@ -79,14 +79,25 @@ namespace archive_ctpk
 
                 for (int i = 0; i < header.texCount; i++)
                 {
-                    Add(new Node());
+                    Add(new Node()
+                    {
+                        filename = "",
+                        nodeEntry = new NodeEntry()
+                    });
                 }
 
                 for (int i = 0; i < header.texCount; i++)
                 {
                     //Entry
                     br.BaseStream.Position = 0x20 + i * 0x20;
-                    this[i].nodeEntry.entry = new Entry(br.BaseStream);
+                    try
+                    {
+                        this[i].nodeEntry.entry = new Entry(br.BaseStream);
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception(i.ToString());
+                    }
                 }
 
                 for (int i = 0; i < header.texCount; i++)
