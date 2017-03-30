@@ -39,6 +39,8 @@
 			this.exportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.batchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.batchExportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.batchImportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,6 +56,7 @@
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.tsbBatchExport = new System.Windows.Forms.ToolStripButton();
 			this.tsbBatchImport = new System.Windows.Forms.ToolStripButton();
+			this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
 			this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
@@ -63,7 +66,6 @@
 			this.tslTool = new System.Windows.Forms.ToolStripLabel();
 			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-			this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
@@ -173,9 +175,32 @@
 			// 
 			// batchToolStripMenuItem
 			// 
+			this.batchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.batchExportPNGToolStripMenuItem,
+            this.batchImportPNGToolStripMenuItem});
 			this.batchToolStripMenuItem.Name = "batchToolStripMenuItem";
 			this.batchToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
 			this.batchToolStripMenuItem.Text = "&Batch";
+			// 
+			// batchExportPNGToolStripMenuItem
+			// 
+			this.batchExportPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_batch_export;
+			this.batchExportPNGToolStripMenuItem.Name = "batchExportPNGToolStripMenuItem";
+			this.batchExportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.E)));
+			this.batchExportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.batchExportPNGToolStripMenuItem.Text = "Batch &Export PNG";
+			this.batchExportPNGToolStripMenuItem.Click += new System.EventHandler(this.batchExportPNGToolStripMenuItem_Click);
+			// 
+			// batchImportPNGToolStripMenuItem
+			// 
+			this.batchImportPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_batch_import;
+			this.batchImportPNGToolStripMenuItem.Name = "batchImportPNGToolStripMenuItem";
+			this.batchImportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.I)));
+			this.batchImportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
+			this.batchImportPNGToolStripMenuItem.Text = "Batch &Import PNG";
+			this.batchImportPNGToolStripMenuItem.Click += new System.EventHandler(this.batchImportPNGToolStripMenuItem_Click);
 			// 
 			// aboutToolStripMenuItem
 			// 
@@ -322,6 +347,15 @@
 			this.tsbBatchImport.Text = "Batch Import";
 			this.tsbBatchImport.Click += new System.EventHandler(this.tsbBatchImport_Click);
 			// 
+			// tsbKarameru
+			// 
+			this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbKarameru.Name = "tsbKarameru";
+			this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
+			this.tsbKarameru.Text = "Karameru";
+			this.tsbKarameru.Click += new System.EventHandler(this.tsbKarameru_Click);
+			// 
 			// tsbKuriimu
 			// 
 			this.tsbKuriimu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -427,15 +461,6 @@
 			this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
 			this.propertyGrid1.TabIndex = 0;
 			// 
-			// tsbKarameru
-			// 
-			this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbKarameru.Name = "tsbKarameru";
-			this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
-			this.tsbKarameru.Text = "Karameru";
-			this.tsbKarameru.Click += new System.EventHandler(this.tsbKarameru_Click);
-			// 
 			// frmConverter
 			// 
 			this.AllowDrop = true;
@@ -504,6 +529,8 @@
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
 		private System.Windows.Forms.ToolStripButton tsbKuriimu;
 		private System.Windows.Forms.ToolStripButton tsbKarameru;
+		private System.Windows.Forms.ToolStripMenuItem batchExportPNGToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem batchImportPNGToolStripMenuItem;
 	}
 }
 
