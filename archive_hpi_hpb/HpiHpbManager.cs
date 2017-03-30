@@ -56,6 +56,13 @@ namespace archive_hpi_hpb
 
         public bool Identify(string filename)
         {
+            //get HPB filename
+            String hpbFilename = Path.GetDirectoryName(filename) + "\\" + Path.GetFileName(filename).Split('.')[0] + ".HPB";
+            if (File.Exists(hpbFilename) == false)
+            {
+                return false;
+            }
+
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
@@ -67,10 +74,12 @@ namespace archive_hpi_hpb
         {
             LoadResult result = LoadResult.Success;
 
+            String hpbFilename = Path.GetDirectoryName(filename) + "\\" + Path.GetFileName(filename).Split('.')[0] + ".HPB";
+
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _hpihpb = new HPIHPB(_fileInfo.FullName);
+                _hpihpb = new HPIHPB(_fileInfo.FullName, hpbFilename);
             else
                 result = LoadResult.FileNotFound;
 
@@ -110,8 +119,9 @@ namespace archive_hpi_hpb
                 foreach (var node in _hpihpb)
                 {
                     var file = new ArchiveFileInfo();
-                    //file.Filesize = node.entry.fileSize;
-                    file.FileName = node.filename;
+                    file.Filesize = node.entry.fileSize;
+                    file.Filename = node.filename;
+                    file.FileData = node.fileData;
                     files.Add(file);
                 }
 
