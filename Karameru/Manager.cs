@@ -451,7 +451,7 @@ namespace Karameru
 				// Build directory tree
 				foreach (ArchiveFileInfo file in _files)
 				{
-					string[] parts = file.Filename.Split(new[] { '\\', '/' });
+					string[] parts = file.FileName.Split(new[] { '\\', '/' });
 
 					var current = treEntries.Nodes;
 
@@ -471,7 +471,7 @@ namespace Karameru
 
 								if (_imageExtensions.Contains(ext))
 									child.ImageKey = "tree-image-file";
-								else if(_archiveExtensions.Contains(ext))
+								else if (_archiveExtensions.Contains(ext))
 									child.ImageKey = "tree-directory-open";
 								else
 									child.ImageKey = "tree-binary-file";
@@ -533,10 +533,11 @@ namespace Karameru
 			if (_archiveManager != null)
 			{
 				bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
-				bool canAdd = _fileOpen && _archiveManager.CanAddFiles;
-				bool canRename = itemSelected && _archiveManager.CanRenameFiles;
-				bool canReplace = itemSelected && _archiveManager.CanReplaceFiles;
-				bool canDelete = itemSelected && _archiveManager.CanDeleteFiles;
+				bool itemIsFile = _fileOpen && itemSelected && treEntries.SelectedNode.Tag != null;
+				bool canAdd = _fileOpen && _archiveManager.CanAddFiles && treEntries.Focused;
+				bool canRename = itemSelected && _archiveManager.CanRenameFiles && treEntries.Focused;
+				bool canReplace = itemSelected && _archiveManager.CanReplaceFiles && treEntries.Focused;
+				bool canDelete = itemSelected && _archiveManager.CanDeleteFiles && treEntries.Focused;
 
 				splMain.Enabled = _fileOpen;
 
@@ -551,12 +552,15 @@ namespace Karameru
 				tsbProperties.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
 
 				// Toolbar
+				tsbFileExport.Enabled = itemSelected;
+				tsbFileAdd.Enabled = canAdd;
+				tsbFileRename.Enabled = canRename;
+				replaceToolStripMenuItem.Enabled = canReplace;
+				tsbFileReplace.Enabled = canReplace;
+				tsbFileDelete.Enabled = canDelete;
 				//addEntryToolStripMenuItem.Enabled = canAdd && treEntries.Focused;
-				tsbEntryAdd.Enabled = canAdd && treEntries.Focused;
 				//renameEntryToolStripMenuItem.Enabled = canRename && treEntries.Focused;
-				tsbEntryRename.Enabled = canRename && treEntries.Focused;
 				//deleteEntryToolStripMenuItem.Enabled = canDelete && treEntries.Focused;
-				tsbEntryDelete.Enabled = canDelete && treEntries.Focused;
 				//entryPropertiesToolStripMenuItem.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
 				//tsbEntryProperties.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
 
@@ -610,11 +614,32 @@ namespace Karameru
 		// Context strip
 		private void extractToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			ExportFile();
+		}
+
+		private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			ReplaceFile();
+		}
+
+		// Toolbar
+		private void tsbFileExport_Click(object sender, EventArgs e)
+		{
+			ExportFile();
+		}
+
+		private void tsbFileReplace_Click(object sender, EventArgs e)
+		{
+			ReplaceFile();
+		}
+
+		private void ExportFile()
+		{
 			TreeNode selectedNode = treEntries.SelectedNode;
 
 			if (selectedNode.Tag == null) // Directory
 			{
-				MessageBox.Show("Directory extraction is not yet implemented.", "Extract Directory", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show("Directory extraction is not yet implemented.", "Extract Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			else // File
 			{
@@ -622,26 +647,51 @@ namespace Karameru
 
 				if (afi != null)
 				{
-					string filename = Path.GetFileName(afi.Filename);
+					string filename = Path.GetFileName(afi.FileName);
+					string extension = Path.GetExtension(afi.FileName);
 
 					if (afi.FileData != null)
 					{
 						var sfd = new SaveFileDialog();
 						sfd.InitialDirectory = Settings.Default.LastDirectory;
-						sfd.FileName =  filename;
-						sfd.Filter = "File (*.*)|*.*";
+						sfd.FileName = filename;
+						sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension.ToLower()})|*{extension.ToLower()}";
 
 						if (sfd.ShowDialog() == DialogResult.OK)
-						{
 							using (var fs = File.Create(sfd.FileName))
-							{
 								afi.FileData.CopyTo(fs);
-							}
-						}
 					}
 					else
 					{
-						MessageBox.Show($"Uninitialized file stream. Unable to extract {filename}.", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						MessageBox.Show($"Uninitialized file stream. Unable to extract {filename}.", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					}
+				}
+			}
+		}
+
+		private void ReplaceFile()
+		{
+			TreeNode selectedNode = treEntries.SelectedNode;
+
+			if (selectedNode.Tag != null) // Directory
+			{
+				var afi = selectedNode.Tag as ArchiveFileInfo;
+
+				if (afi != null)
+				{
+					string fileName = Path.GetFileName(afi.FileName);
+
+					var ofd = new OpenFileDialog();
+					ofd.Title = $"Select a file to replace {fileName} with...";
+					ofd.InitialDirectory = Settings.Default.LastDirectory;
+					ofd.Filter = "All Files (*.*)|*.*";
+
+					if (ofd.ShowDialog() == DialogResult.OK)
+					{
+						string newFilename = Path.GetFileName(ofd.FileName);
+						afi.FileData = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.None);
+						afi.State = ArchiveFileState.Replaced;
+						MessageBox.Show($"{fileName} has been replaced with {newFilename}.", "File Replaced", MessageBoxButtons.OK, MessageBoxIcon.Information);
 					}
 				}
 			}

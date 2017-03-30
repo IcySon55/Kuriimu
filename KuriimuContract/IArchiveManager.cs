@@ -39,13 +39,13 @@ namespace KuriimuContract
 
 	public class ArchiveFileInfo // This might need to be an interface.
 	{
-		public string Filename { get; set; } // Complete filename including path and extension.
+		public string FileName { get; set; } // Complete filename including path and extension.
 		public virtual Stream FileData { get; set; } // Provides a stream to read the file data from.
 		public ArchiveFileState State { get; set; } // Dictates the state of the FileData stream.
 
 		public ArchiveFileInfo()
 		{
-			Filename = string.Empty;
+			FileName = string.Empty;
 			FileData = null;
 			State = ArchiveFileState.Empty;
 		}

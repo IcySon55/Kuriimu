@@ -61,11 +61,16 @@
 			this.pnlMain = new System.Windows.Forms.Panel();
 			this.splMain = new System.Windows.Forms.SplitContainer();
 			this.treEntries = new System.Windows.Forms.TreeView();
+			this.mnuEntries = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.replaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tlsEntries = new System.Windows.Forms.ToolStrip();
 			this.tslFiles = new System.Windows.Forms.ToolStripLabel();
-			this.tsbEntryAdd = new System.Windows.Forms.ToolStripButton();
-			this.tsbEntryRename = new System.Windows.Forms.ToolStripButton();
-			this.tsbEntryDelete = new System.Windows.Forms.ToolStripButton();
+			this.tsbFileExport = new System.Windows.Forms.ToolStripButton();
+			this.tsbFileAdd = new System.Windows.Forms.ToolStripButton();
+			this.tsbFileReplace = new System.Windows.Forms.ToolStripButton();
+			this.tsbFileRename = new System.Windows.Forms.ToolStripButton();
+			this.tsbFileDelete = new System.Windows.Forms.ToolStripButton();
 			this.tsbEntryProperties = new System.Windows.Forms.ToolStripButton();
 			this.pnlPreview = new System.Windows.Forms.Panel();
 			this.tlsPreview = new System.Windows.Forms.ToolStrip();
@@ -74,8 +79,6 @@
 			this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
 			this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
 			this.imlFiles = new System.Windows.Forms.ImageList(this.components);
-			this.mnuEntries = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.tlsMain.SuspendLayout();
 			this.pnlMain.SuspendLayout();
@@ -83,9 +86,9 @@
 			this.splMain.Panel1.SuspendLayout();
 			this.splMain.Panel2.SuspendLayout();
 			this.splMain.SuspendLayout();
+			this.mnuEntries.SuspendLayout();
 			this.tlsEntries.SuspendLayout();
 			this.tlsPreview.SuspendLayout();
-			this.mnuEntries.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mnuMain
@@ -408,7 +411,31 @@
 			this.treEntries.Name = "treEntries";
 			this.treEntries.Size = new System.Drawing.Size(320, 537);
 			this.treEntries.TabIndex = 4;
+			this.treEntries.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
 			this.treEntries.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseClick);
+			// 
+			// mnuEntries
+			// 
+			this.mnuEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractToolStripMenuItem,
+            this.replaceToolStripMenuItem});
+			this.mnuEntries.Name = "mnuEntries";
+			this.mnuEntries.Size = new System.Drawing.Size(125, 48);
+			// 
+			// extractToolStripMenuItem
+			// 
+			this.extractToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_export;
+			this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
+			this.extractToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+			this.extractToolStripMenuItem.Text = "&Extract...";
+			this.extractToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
+			// 
+			// replaceToolStripMenuItem
+			// 
+			this.replaceToolStripMenuItem.Name = "replaceToolStripMenuItem";
+			this.replaceToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+			this.replaceToolStripMenuItem.Text = "&Replace...";
+			this.replaceToolStripMenuItem.Click += new System.EventHandler(this.replaceToolStripMenuItem_Click);
 			// 
 			// tlsEntries
 			// 
@@ -417,9 +444,11 @@
 			this.tlsEntries.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.tlsEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslFiles,
-            this.tsbEntryAdd,
-            this.tsbEntryRename,
-            this.tsbEntryDelete,
+            this.tsbFileExport,
+            this.tsbFileAdd,
+            this.tsbFileRename,
+            this.tsbFileReplace,
+            this.tsbFileDelete,
             this.tsbEntryProperties});
 			this.tlsEntries.Location = new System.Drawing.Point(0, 0);
 			this.tlsEntries.Name = "tlsEntries";
@@ -433,36 +462,58 @@
 			this.tslFiles.Size = new System.Drawing.Size(33, 22);
 			this.tslFiles.Text = "Files:";
 			// 
-			// tsbEntryAdd
+			// tsbFileExport
 			// 
-			this.tsbEntryAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbEntryAdd.Enabled = false;
-			this.tsbEntryAdd.Image = global::Karameru.Properties.Resources.menu_add;
-			this.tsbEntryAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbEntryAdd.Name = "tsbEntryAdd";
-			this.tsbEntryAdd.Size = new System.Drawing.Size(23, 22);
-			this.tsbEntryAdd.Text = "Add Entry";
-			this.tsbEntryAdd.Click += new System.EventHandler(this.tsbEntryAdd_Click);
+			this.tsbFileExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFileExport.Enabled = false;
+			this.tsbFileExport.Image = global::Karameru.Properties.Resources.menu_export;
+			this.tsbFileExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFileExport.Name = "tsbFileExport";
+			this.tsbFileExport.Size = new System.Drawing.Size(23, 22);
+			this.tsbFileExport.Text = "Export File";
+			this.tsbFileExport.Click += new System.EventHandler(this.tsbFileExport_Click);
 			// 
-			// tsbEntryRename
+			// tsbFileAdd
 			// 
-			this.tsbEntryRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbEntryRename.Enabled = false;
-			this.tsbEntryRename.Image = global::Karameru.Properties.Resources.menu_field_properties;
-			this.tsbEntryRename.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbEntryRename.Name = "tsbEntryRename";
-			this.tsbEntryRename.Size = new System.Drawing.Size(23, 22);
-			this.tsbEntryRename.Text = "Rename Entry";
+			this.tsbFileAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFileAdd.Enabled = false;
+			this.tsbFileAdd.Image = global::Karameru.Properties.Resources.menu_add;
+			this.tsbFileAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFileAdd.Name = "tsbFileAdd";
+			this.tsbFileAdd.Size = new System.Drawing.Size(23, 22);
+			this.tsbFileAdd.Text = "Add Entry";
+			this.tsbFileAdd.Click += new System.EventHandler(this.tsbEntryAdd_Click);
 			// 
-			// tsbEntryDelete
+			// tsbFileReplace
 			// 
-			this.tsbEntryDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbEntryDelete.Enabled = false;
-			this.tsbEntryDelete.Image = global::Karameru.Properties.Resources.menu_delete;
-			this.tsbEntryDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbEntryDelete.Name = "tsbEntryDelete";
-			this.tsbEntryDelete.Size = new System.Drawing.Size(23, 22);
-			this.tsbEntryDelete.Text = "Delete Entry";
+			this.tsbFileReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFileReplace.Enabled = false;
+			this.tsbFileReplace.Image = global::Karameru.Properties.Resources.tree_binary_file;
+			this.tsbFileReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFileReplace.Name = "tsbFileReplace";
+			this.tsbFileReplace.Size = new System.Drawing.Size(23, 22);
+			this.tsbFileReplace.Text = "Replace File";
+			this.tsbFileReplace.Click += new System.EventHandler(this.tsbFileReplace_Click);
+			// 
+			// tsbFileRename
+			// 
+			this.tsbFileRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFileRename.Enabled = false;
+			this.tsbFileRename.Image = global::Karameru.Properties.Resources.menu_field_properties;
+			this.tsbFileRename.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFileRename.Name = "tsbFileRename";
+			this.tsbFileRename.Size = new System.Drawing.Size(23, 22);
+			this.tsbFileRename.Text = "Rename Entry";
+			// 
+			// tsbFileDelete
+			// 
+			this.tsbFileDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFileDelete.Enabled = false;
+			this.tsbFileDelete.Image = global::Karameru.Properties.Resources.menu_delete;
+			this.tsbFileDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFileDelete.Name = "tsbFileDelete";
+			this.tsbFileDelete.Size = new System.Drawing.Size(23, 22);
+			this.tsbFileDelete.Text = "Delete Entry";
 			// 
 			// tsbEntryProperties
 			// 
@@ -541,21 +592,6 @@
 			this.imlFiles.ImageSize = new System.Drawing.Size(16, 16);
 			this.imlFiles.TransparentColor = System.Drawing.Color.Transparent;
 			// 
-			// mnuEntries
-			// 
-			this.mnuEntries.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.extractToolStripMenuItem});
-			this.mnuEntries.Name = "mnuEntries";
-			this.mnuEntries.Size = new System.Drawing.Size(153, 48);
-			// 
-			// extractToolStripMenuItem
-			// 
-			this.extractToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_export;
-			this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-			this.extractToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.extractToolStripMenuItem.Text = "&Extract...";
-			this.extractToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
-			// 
 			// frmManager
 			// 
 			this.AllowDrop = true;
@@ -580,11 +616,11 @@
 			this.splMain.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
 			this.splMain.ResumeLayout(false);
+			this.mnuEntries.ResumeLayout(false);
 			this.tlsEntries.ResumeLayout(false);
 			this.tlsEntries.PerformLayout();
 			this.tlsPreview.ResumeLayout(false);
 			this.tlsPreview.PerformLayout();
-			this.mnuEntries.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -626,9 +662,9 @@
 		private System.Windows.Forms.TreeView treEntries;
 		private System.Windows.Forms.ToolStrip tlsEntries;
 		private System.Windows.Forms.ToolStripLabel tslFiles;
-		private System.Windows.Forms.ToolStripButton tsbEntryAdd;
-		private System.Windows.Forms.ToolStripButton tsbEntryRename;
-		private System.Windows.Forms.ToolStripButton tsbEntryDelete;
+		private System.Windows.Forms.ToolStripButton tsbFileAdd;
+		private System.Windows.Forms.ToolStripButton tsbFileRename;
+		private System.Windows.Forms.ToolStripButton tsbFileDelete;
 		private System.Windows.Forms.ToolStripButton tsbEntryProperties;
 		private System.Windows.Forms.ToolStrip tlsPreview;
 		private System.Windows.Forms.ToolStripLabel toolStripLabel2;
@@ -639,6 +675,9 @@
 		private System.Windows.Forms.ImageList imlFiles;
 		private System.Windows.Forms.ContextMenuStrip mnuEntries;
 		private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem replaceToolStripMenuItem;
+		private System.Windows.Forms.ToolStripButton tsbFileExport;
+		private System.Windows.Forms.ToolStripButton tsbFileReplace;
 	}
 }
 

@@ -105,7 +105,7 @@ namespace archive_pck
                 {
                     var file = new ArchiveFileInfo();
                     //file.Filesize = node.entry.length;
-                    file.Filename = node.filename;
+                    file.FileName = node.filename;
                     files.Add(file);
                 }
 

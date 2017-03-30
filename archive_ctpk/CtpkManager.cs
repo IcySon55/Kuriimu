@@ -104,7 +104,7 @@ namespace archive_ctpk
                 {
                     var file = new ArchiveFileInfo();
                     //file.Filesize = node.nodeEntry.entry.texDataSize;
-                    file.Filename = node.filename;
+                    file.FileName = node.filename;
                     files.Add(file);
                 }
 
