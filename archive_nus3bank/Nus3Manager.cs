@@ -123,6 +123,7 @@ namespace archive_nus3bank
                     var file = new ArchiveFileInfo();
                     file.Filesize = node.entry.size;
                     file.Filename = node.filename;
+                    file.FileData = node.FileData;
                     files.Add(file);
                 }
 
