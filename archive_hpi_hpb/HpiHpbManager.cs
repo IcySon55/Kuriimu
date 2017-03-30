@@ -110,7 +110,7 @@ namespace archive_hpi_hpb
                 foreach (var node in _hpihpb)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.entry.fileSize;
+                    //file.Filesize = node.entry.fileSize;
                     file.Filename = node.filename;
                     files.Add(file);
                 }

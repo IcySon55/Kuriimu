@@ -40,29 +40,23 @@ namespace KuriimuContract
 	public class ArchiveFileInfo // This might need to be an interface.
 	{
 		public string Filename { get; set; } // Complete filename including path and extension.
-		public long Filesize { get; set; } // Size of the file.
-		public long CompressedSize { get; set; } // Size of file when compressed.
-
 		public virtual Stream FileData { get; set; } // Provides a stream to read the file data from.
-
-		public FileInfo FileInfo { get; set; } // If this is not null, then the file is on storage media
+		public ArchiveFileState State { get; set; } // Dictates the state of the FileData stream.
 
 		public ArchiveFileInfo()
 		{
 			Filename = string.Empty;
-			Filesize = 0;
-			CompressedSize = 0;
-
-			FileInfo = null;
+			FileData = null;
+			State = ArchiveFileState.Empty;
 		}
+	}
 
-		public ArchiveFileInfo(FileInfo fi)
-		{
-			Filename = fi.Name;
-			Filesize = fi.Length;
-			CompressedSize = 0;
-
-			FileInfo = fi;
-		}
+	public enum ArchiveFileState
+	{
+		Empty,
+		Archived,
+		Added,
+		Replaced,
+		Deleted
 	}
 }

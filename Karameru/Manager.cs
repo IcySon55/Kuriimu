@@ -23,6 +23,7 @@ namespace Karameru
 
 		private List<IArchiveManager> _archiveManagers = null;
 		private List<IImageAdapter> _imageAdapters = null;
+		private HashSet<string> _archiveExtensions = null;
 		private HashSet<string> _imageExtensions = null;
 
 		private List<ArchiveFileInfo> _files = null;
@@ -41,6 +42,7 @@ namespace Karameru
 			_archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
 			_imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
 
+			_archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
 			_imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
 
 			// Load passed in file
@@ -349,13 +351,13 @@ namespace Karameru
 				if (filename == string.Empty)
 					filename = ofd.FileName;
 
-				IArchiveManager _tempAdapter = SelectArchiveManager(filename);
+				IArchiveManager _tempManager = SelectArchiveManager(filename);
 
 				try
 				{
-					if (_tempAdapter?.Load(filename) == LoadResult.Success)
+					if (_tempManager?.Load(filename) == LoadResult.Success)
 					{
-						_archiveManager = _tempAdapter;
+						_archiveManager = _tempManager;
 						_fileOpen = true;
 						_hasChanges = false;
 
@@ -369,8 +371,8 @@ namespace Karameru
 				}
 				catch (Exception ex)
 				{
-					if (_tempAdapter != null)
-						MessageBox.Show(this, ex.ToString(), _tempAdapter.Name + " - " + _tempAdapter.Description + " Adapter", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					if (_tempManager != null)
+						MessageBox.Show(this, ex.ToString(), _tempManager.Name + " - " + _tempManager.Description + " Manager", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					else
 						MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
@@ -413,14 +415,14 @@ namespace Karameru
 		{
 			IArchiveManager result = null;
 
-			// first look for adapters whose extension matches that of our filename
-			List<IArchiveManager> matchingAdapters = _archiveManagers.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+			// first look for managers whose extension matches that of our filename
+			List<IArchiveManager> matchingManagers = _archiveManagers.Where(manager => manager.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
 
-			result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
+			result = matchingManagers.FirstOrDefault(manager => manager.Identify(filename));
 
-			// if none of them match, then try all other adapters
+			// if none of them match, then try all other managers
 			if (result == null)
-				result = _archiveManagers.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
+				result = _archiveManagers.Except(matchingManagers).FirstOrDefault(manager => manager.Identify(filename));
 
 			if (result == null && !batchMode)
 				MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -465,8 +467,12 @@ namespace Karameru
 
 							if (parts.Last() == part)
 							{
-								if (_imageExtensions.Contains(Regex.Match(part, @"\.(.*?)$").Value))
+								string ext = Regex.Match(part, @"\.(.*?)$").Value;
+
+								if (_imageExtensions.Contains(ext))
 									child.ImageKey = "tree-image-file";
+								else if(_archiveExtensions.Contains(ext))
+									child.ImageKey = "tree-directory-open";
 								else
 									child.ImageKey = "tree-binary-file";
 								child.Tag = file;
@@ -514,7 +520,7 @@ namespace Karameru
 
 		private void UpdateForm()
 		{
-			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Name + " Adapter" : string.Empty);
+			Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Name + " Manager" : string.Empty);
 
 			openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
 			tsbOpen.Enabled = _archiveManagers.Count > 0;

@@ -103,7 +103,7 @@ namespace archive_ctpk
                 foreach (var node in _ctpk)
                 {
                     var file = new ArchiveFileInfo();
-                    file.Filesize = node.nodeEntry.entry.texDataSize;
+                    //file.Filesize = node.nodeEntry.entry.texDataSize;
                     file.Filename = node.filename;
                     files.Add(file);
                 }
