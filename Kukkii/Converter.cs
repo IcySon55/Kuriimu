@@ -296,6 +296,11 @@ namespace Kukkii
 		}
 
 		// Toolbar Features
+		private void batchExportPNGToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			tsbBatchExport_Click(sender, e);
+		}
+
 		private void tsbBatchExport_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -342,6 +347,11 @@ namespace Kukkii
 
 			Settings.Default.LastBatchDirectory = fbd.SelectedPath;
 			Settings.Default.Save();
+		}
+
+		private void batchImportPNGToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			tsbBatchImport_Click(sender, e);
 		}
 
 		private void tsbBatchImport_Click(object sender, EventArgs e)
