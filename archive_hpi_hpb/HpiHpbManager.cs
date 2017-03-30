@@ -38,6 +38,7 @@ namespace archive_hpi_hpb
         public bool CanRenameDirectories => false;
         public bool CanDeleteDirectories => false;
         public bool CanSave => false;
+        public bool CanReplaceFiles => false;
 
         public FileInfo FileInfo
         {
@@ -116,6 +117,16 @@ namespace archive_hpi_hpb
 
                 return files;
             }
+        }
+
+        public bool RenameFile(ArchiveFileInfo afi)
+        {
+            return false;
+        }
+
+        public bool ReplaceFile(ArchiveFileInfo afi)
+        {
+            return false;
         }
 
         public bool AddFile(ArchiveFileInfo afi)
