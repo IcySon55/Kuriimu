@@ -90,14 +90,7 @@ namespace archive_ctpk
                 {
                     //Entry
                     br.BaseStream.Position = 0x20 + i * 0x20;
-                    try
-                    {
-                        this[i].nodeEntry.entry = new Entry(br.BaseStream);
-                    }
-                    catch (Exception)
-                    {
-                        throw new Exception(i.ToString());
-                    }
+                    this[i].nodeEntry.entry = new Entry(br.BaseStream);
                 }
 
                 for (int i = 0; i < header.texCount; i++)
