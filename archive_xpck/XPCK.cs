@@ -90,7 +90,7 @@ namespace archive_xpck
                         entries.Add(br.ReadStruct<Entry>());
                     }
 
-                    SortEntries(entries);
+                    entries = Enumerable.Range(0, entries.Count).Select(_ => br.ReadStruct<Entry>()).OrderBy(e => e.fileOffset).ToList();
 
                     //nameList
                     br.BaseStream.Position = header.filenameTableOffset;
@@ -117,26 +117,6 @@ namespace archive_xpck
                     int t = 0;
                 }
             }
-        }
-        public static void SortEntries(List<Entry> entries)
-        {
-            //BubbleSort
-            bool sorted;
-            Entry help;
-            do
-            {
-                sorted = true;
-                for (int i = 0; i < entries.Count - 1; i++)
-                {
-                    if (entries[i].fileOffset > entries[i + 1].fileOffset)
-                    {
-                        sorted = false;
-                        help = entries[i];
-                        entries[i] = entries[i + 1];
-                        entries[i + 1] = help;
-                    }
-                }
-            } while (sorted == false);
         }
         public static String readASCII(Stream input)
         {
