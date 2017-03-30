@@ -16,6 +16,7 @@ namespace archive_hpi_hpb
         {
             public String filename;
             public Entry entry;
+            public MemoryStream fileData;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -28,32 +29,34 @@ namespace archive_hpi_hpb
             short tmp1;
             int tmp2;
 
-            public int info1Size => tmp1 << 2;
+            public int infoSize => tmp1 << 2;
             public int entryListSize => tmp2 << 4;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Entry
         {
+            uint unk1;
             public uint offset;
             public uint fileSize;
-            uint unk1;
             uint unk2;
         }
 
         public Header header;
         public List<Entry> entries;
 
-        public HPIHPB(String filename)
+        public HPIHPB(String filename, String hpbFilename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
                 //Header
                 header = br.ReadStruct<Header>();
 
+                //infoList??? - not mapped
+
                 //Entries
-                br.BaseStream.Position = header.info1Size + header.headerSize + 8 + 4;
-                int entryCount = header.entryListSize / 0x10 - 1;
+                br.BaseStream.Position = header.infoSize + header.headerSize + 8;
+                int entryCount = header.entryListSize / 0x10;
                 entries = new List<Entry>();
                 for (int i = 0; i < entryCount; i++)
                 {
@@ -62,17 +65,20 @@ namespace archive_hpi_hpb
                 SortEntries(entries);
 
                 //Names
-                br.BaseStream.Position = header.entryListSize + header.info1Size + header.headerSize + 8;
-                for (int i = 0; i < entryCount; i++)
+                using (BinaryReaderX br2 = new BinaryReaderX(File.Open(hpbFilename, FileMode.Open, FileAccess.Read, FileShare.Read)))
                 {
-                    Add(new Node()
+                    br.BaseStream.Position = header.entryListSize + header.infoSize + header.headerSize + 8;
+                    for (int i = 0; i < entryCount; i++)
                     {
-                        filename = readASCII(br.BaseStream),
-                        entry = entries[i]
-                    });
+                        br2.BaseStream.Position = entries[i].offset;
+                        Add(new Node()
+                        {
+                            filename = readASCII(br.BaseStream),
+                            entry = entries[i],
+                            fileData = new MemoryStream(br2.ReadBytes((int)entries[i].fileSize))
+                        });
+                    }
                 }
-
-                throw new Exception(br.BaseStream.Position.ToString());
             }
         }
 

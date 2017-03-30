@@ -213,13 +213,6 @@ namespace archive_nus3bank
                     offset += banktocEntries[i].secSize + 8;
                 }
 
-                /*String result = "";
-                for (int i = 0; i < banktocHeader.entryCount; i++)
-                {
-                    result += banktocEntries[i].offset.ToString() + " - ";
-                }
-                throw new Exception(result);*/
-
                 //PROP
                 br.BaseStream.Position = banktocEntries[0].offset;
                 br.BaseStream.Position += 8;
