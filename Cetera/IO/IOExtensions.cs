@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Cetera.IO
 {
-    static class IOExtensions
+    public static class IOExtensions
     {
         public static unsafe T ToStruct<T>(this byte[] buffer)
         {
