@@ -67,6 +67,7 @@
     <Compile Include="Compression\CriWare.cs" />
     <Compile Include="Font\XF.cs" />
     <Compile Include="Image\BXLIM.cs" />
+    <Compile Include="IO\SubStream.cs" />
     <Compile Include="Layout\BCLYT.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Archive\DARC.cs" />

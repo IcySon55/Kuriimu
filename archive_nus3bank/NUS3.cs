@@ -13,19 +13,19 @@ using Cetera.Compression;
 
 namespace archive_nus3bank
 {
-	public sealed class NUS3 : List<NUS3.Node>
+	public sealed class NUS3 : List<NUS3.Node>, IDisposable
 	{
 		public class Node
 		{
 			public String filename;
 			public TONE.ToneEntry entry;
-			public MemoryStream FileData;
+			public Stream FileData;
 		}
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct Header
 		{
-			String4 magic;
+			public String4 magic;
 			public int fileSize; //without magic
 		}
 
@@ -41,7 +41,7 @@ namespace archive_nus3bank
 		{
 			public BankTocEntry(Stream input)
 			{
-				using (var br = new Cetera.IO.BinaryReaderX(input, true))
+				using (var br = new BinaryReaderX(input, true))
 				{
 					magic = br.ReadStruct<String4>();
 					secSize = br.ReadInt32();
@@ -72,7 +72,8 @@ namespace archive_nus3bank
 
 					unk4 = br.ReadInt32();
 					dateSize = br.ReadByte();
-					date = readASCII(br.BaseStream);
+					//date = readASCII(br.BaseStream);
+					date = Encoding.ASCII.GetString(br.ReadBytes(0x17));
 				}
 			}
 			int unk1;
@@ -116,7 +117,7 @@ namespace archive_nus3bank
 		{
 			public TONE(Stream input)
 			{
-				using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+				using (var br = new BinaryReaderX(input, true))
 				{
 					toneCount = br.ReadInt32();
 
@@ -181,15 +182,16 @@ namespace archive_nus3bank
 
 		public TONE tone;
 
-		public NUS3(String filename)
-		{
-			var bytes = File.ReadAllBytes(filename);
-			if (bytes.ToStruct<String4>() != "NUS3")
-			{
-				bytes = ZLib.Decompress(bytes);
-			}
+		Stream stream;
 
-			using (var br = new BinaryReaderX(new MemoryStream(bytes)))
+		public NUS3(String filename, bool isZlibCompressed = false)
+		{
+			if (isZlibCompressed) throw new NotImplementedException();
+
+			//var bytes = File.ReadAllBytes(filename);
+			stream = File.OpenRead(filename);
+
+			using (var br = new BinaryReaderX(stream, true))
 			{
 				//Header
 				header = br.ReadStruct<Header>();
@@ -207,27 +209,35 @@ namespace archive_nus3bank
 				}
 
 				//PROP
-				br.BaseStream.Position = banktocEntries[0].offset;
-				br.BaseStream.Position += 8;
+				//br.BaseStream.Position = banktocEntries[0].offset;
+				if (br.ReadStruct<Header>().magic != "PROP") throw new Exception();
 				prop = new PROP(br.BaseStream);
 
 				//BINF
-				br.BaseStream.Position = banktocEntries[1].offset;
-				br.BaseStream.Position += 8;
+				//br.BaseStream.Position = banktocEntries[1].offset;
+				if (br.ReadStruct<Header>().magic != "BINF") throw new Exception();
 				binf = new BINF(br.BaseStream);
 
 				//GRP - not yet mapped
+				if (br.ReadStruct<Header>().magic != "GRP ") throw new Exception();
+				br.ReadBytes(banktocEntries[2].secSize);
 
 				//DTON - not yet mapped
+				if (br.ReadStruct<Header>().magic != "DTON") throw new Exception();
+				br.ReadBytes(banktocEntries[3].secSize);
 
 				//TONE
-				br.BaseStream.Position = banktocEntries[4].offset;
-				br.BaseStream.Position += 8;
+				if (br.ReadStruct<Header>().magic != "TONE") throw new Exception();
+				var tmp = br.BaseStream.Position;
 				tone = new TONE(br.BaseStream);
+				br.BaseStream.Position = tmp + banktocEntries[4].secSize;
 
 				//JUNK - not yet mapped
+				if (br.ReadStruct<Header>().magic != "JUNK") throw new Exception();
+				br.ReadBytes(banktocEntries[5].secSize);
 
 				//PACK and finishing
+				if (br.ReadStruct<Header>().magic != "PACK") throw new Exception();
 				for (int i = 0; i < tone.toneCount; i++)
 				{
 					br.BaseStream.Position = tone.toneEntries[i].packOffset;
@@ -236,7 +246,7 @@ namespace archive_nus3bank
 					{
 						filename = tone.toneEntries[i].name + ".idsp",
 						entry = tone.toneEntries[i],
-						FileData = new MemoryStream(br.ReadBytes(tone.toneEntries[i].size))
+						FileData = new SubStream(stream, tone.toneEntries[i].packOffset, tone.toneEntries[i].size)
 					});
 				}
 			}
@@ -259,5 +269,7 @@ namespace archive_nus3bank
 				return result;
 			}
 		}
+
+		public void Dispose() => stream?.Dispose();
 	}
 }
