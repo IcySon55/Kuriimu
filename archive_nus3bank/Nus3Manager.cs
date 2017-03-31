@@ -63,7 +63,7 @@ namespace archive_nus3bank
                 else
                 {
                     br.BaseStream.Position = 0;
-                    byte[] decomp = ZLIB.Decompress(br.ReadBytes((int)br.BaseStream.Length));
+                    byte[] decomp = ZLib.Decompress(br.ReadBytes((int)br.BaseStream.Length));
                     using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
                     {
                         if (br.BaseStream.Length < 4) return false;

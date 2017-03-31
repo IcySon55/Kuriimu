@@ -1,46 +1,33 @@
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 
 namespace Cetera.Compression
 {
-    public class ZLIB
+    public class ZLib
     {
         public static byte[] Compress(byte[] inData)
         {
-            using (MemoryStream outMemoryStream = new MemoryStream())
-            using (ZOutputStream outZStream = new ZOutputStream(outMemoryStream, zlibConst.Z_DEFAULT_COMPRESSION))
-            using (Stream inMemoryStream = new MemoryStream(inData))
+            var ms = new MemoryStream();
+            ms.Write(new byte[] { 0x78, 0xDA }, 0, 2);
+            using (var ds = new DeflateStream(ms, CompressionLevel.Optimal, true))
             {
-                CopyStream(inMemoryStream, outZStream);
-                outZStream.finish();
-                byte[] outData = outMemoryStream.ToArray();
-
-                return outData;
+                ds.Write(inData, 0, inData.Length);
             }
+            var adler = inData.Aggregate(Tuple.Create(1, 0), (x, n) => Tuple.Create((x.Item1 + n) % 65521, (x.Item1 + x.Item2 + n) % 65521));
+            ms.Write(new[] { (byte)(adler.Item2 >> 8), (byte)adler.Item2, (byte)(adler.Item1 >> 8), (byte)adler.Item1 }, 0, 4);
+            return ms.ToArray();
         }
 
         public static byte[] Decompress(byte[] inData)
         {
-            using (MemoryStream outMemoryStream = new MemoryStream())
-            using (ZOutputStream outZStream = new ZOutputStream(outMemoryStream))
-            using (Stream inMemoryStream = new MemoryStream(inData))
+            var ms = new MemoryStream();
+            using (var ds = new DeflateStream(new MemoryStream(inData, 2, inData.Length - 6), CompressionMode.Decompress))
             {
-                CopyStream(inMemoryStream, outZStream);
-                outZStream.finish();
-                byte[] outData = outMemoryStream.ToArray();
-
-                return outData;
+                ds.CopyTo(ms);
             }
-        }
-        private static void CopyStream(Stream input, Stream output)
-        {
-            byte[] buffer = new byte[2000];
-            int len;
-            while ((len = input.Read(buffer, 0, 2000)) > 0)
-            {
-                output.Write(buffer, 0, len);
-            }
-            output.Flush();
+            return ms.ToArray();
         }
     }
 }

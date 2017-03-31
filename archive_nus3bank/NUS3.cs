@@ -187,7 +187,7 @@ namespace archive_nus3bank
                 if (br.ReadString(4) != "NUS3")
                 {
                     br.BaseStream.Position = 0;
-                    decomp = new MemoryStream(ZLIB.Decompress(br.ReadBytes((int)br.BaseStream.Length)));
+                    decomp = new MemoryStream(ZLib.Decompress(br.ReadBytes((int)br.BaseStream.Length)));
                 }
                 else
                 {
