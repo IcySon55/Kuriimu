@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using KuriimuContract;
 using System.IO;
 using Cetera.Image;
+using Cetera.IO;
 
 namespace archive_hpi_hpb
 {
@@ -16,13 +16,13 @@ namespace archive_hpi_hpb
         {
             public String filename;
             public Entry entry;
-            public MemoryStream fileData;
+            public Stream fileData;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Header
         {
-            public Magic8 magic;
+            public KuriimuContract.Magic8 magic;
             public int headerSize;  //without magic
             int unk1;
             short unk2;
@@ -45,9 +45,13 @@ namespace archive_hpi_hpb
         public Header header;
         public List<Entry> entries;
 
+        Stream stream, stream2;
+
         public HPIHPB(String filename, String hpbFilename)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            stream = File.OpenRead(filename);
+
+            using (BinaryReaderX br = new BinaryReaderX(stream))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -65,17 +69,17 @@ namespace archive_hpi_hpb
                 SortEntries(entries);
 
                 //Names
-                using (BinaryReaderX br2 = new BinaryReaderX(File.Open(hpbFilename, FileMode.Open, FileAccess.Read, FileShare.Read)))
+                stream2 = File.OpenRead(hpbFilename);
+                using (BinaryReaderX br2 = new BinaryReaderX(stream2, true))
                 {
                     br.BaseStream.Position = header.entryListSize + header.infoSize + header.headerSize + 8;
                     for (int i = 0; i < entryCount; i++)
                     {
-                        br2.BaseStream.Position = entries[i].offset;
                         Add(new Node()
                         {
                             filename = readASCII(br.BaseStream),
                             entry = entries[i],
-                            fileData = new MemoryStream(br2.ReadBytes((int)entries[i].fileSize))
+                            fileData = new SubStream(stream2, entries[i].offset, entries[i].fileSize)
                         });
                     }
                 }
