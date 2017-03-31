@@ -82,7 +82,7 @@ namespace game_great_detective_pikachu
 							new float[] { 1, 0, 0, 0, 0 },
 							new float[] { 0, 1, 0, 0, 0 },
 							new float[] { 0, 0, 1, 0, 0 },
-							new float[] { 0, 0, 0, 0.45f, 0 },
+							new float[] { 0, 0, 0, 0.6f, 0 },
 							new float[] { 0, 0, 0, 0, 1 },
 						};
 
