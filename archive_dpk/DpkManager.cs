@@ -101,10 +101,12 @@ namespace archive_dpk
 
 				file = new ArchiveFileInfo();
 				file.FileName = "image_file.bclim";
+				file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
 				files.Add(file);
 
 				file = new ArchiveFileInfo();
 				file.FileName = "text_file.msbt";
+				file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
 				files.Add(file);
 
 				file = new ArchiveFileInfo();

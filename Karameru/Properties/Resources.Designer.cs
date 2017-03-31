@@ -323,6 +323,16 @@ namespace Karameru.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap tree_archive_file {
+            get {
+                object obj = ResourceManager.GetObject("tree_archive_file", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tree_binary_file {
             get {
                 object obj = ResourceManager.GetObject("tree_binary_file", resourceCulture);
@@ -356,6 +366,16 @@ namespace Karameru.Properties {
         internal static System.Drawing.Bitmap tree_image_file {
             get {
                 object obj = ResourceManager.GetObject("tree_image_file", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tree_text_file {
+            get {
+                object obj = ResourceManager.GetObject("tree_text_file", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
