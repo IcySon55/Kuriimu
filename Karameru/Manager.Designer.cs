@@ -68,8 +68,8 @@
 			this.tslFiles = new System.Windows.Forms.ToolStripLabel();
 			this.tsbFileExport = new System.Windows.Forms.ToolStripButton();
 			this.tsbFileAdd = new System.Windows.Forms.ToolStripButton();
-			this.tsbFileReplace = new System.Windows.Forms.ToolStripButton();
 			this.tsbFileRename = new System.Windows.Forms.ToolStripButton();
+			this.tsbFileReplace = new System.Windows.Forms.ToolStripButton();
 			this.tsbFileDelete = new System.Windows.Forms.ToolStripButton();
 			this.tsbEntryProperties = new System.Windows.Forms.ToolStripButton();
 			this.pnlPreview = new System.Windows.Forms.Panel();
@@ -411,6 +411,8 @@
 			this.treEntries.Name = "treEntries";
 			this.treEntries.Size = new System.Drawing.Size(320, 537);
 			this.treEntries.TabIndex = 4;
+			this.treEntries.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
+			this.treEntries.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterExpand);
 			this.treEntries.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
 			this.treEntries.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseClick);
 			// 
@@ -484,6 +486,16 @@
 			this.tsbFileAdd.Text = "Add Entry";
 			this.tsbFileAdd.Click += new System.EventHandler(this.tsbEntryAdd_Click);
 			// 
+			// tsbFileRename
+			// 
+			this.tsbFileRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.tsbFileRename.Enabled = false;
+			this.tsbFileRename.Image = global::Karameru.Properties.Resources.menu_field_properties;
+			this.tsbFileRename.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsbFileRename.Name = "tsbFileRename";
+			this.tsbFileRename.Size = new System.Drawing.Size(23, 22);
+			this.tsbFileRename.Text = "Rename Entry";
+			// 
 			// tsbFileReplace
 			// 
 			this.tsbFileReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -494,16 +506,6 @@
 			this.tsbFileReplace.Size = new System.Drawing.Size(23, 22);
 			this.tsbFileReplace.Text = "Replace File";
 			this.tsbFileReplace.Click += new System.EventHandler(this.tsbFileReplace_Click);
-			// 
-			// tsbFileRename
-			// 
-			this.tsbFileRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tsbFileRename.Enabled = false;
-			this.tsbFileRename.Image = global::Karameru.Properties.Resources.menu_field_properties;
-			this.tsbFileRename.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsbFileRename.Name = "tsbFileRename";
-			this.tsbFileRename.Size = new System.Drawing.Size(23, 22);
-			this.tsbFileRename.Text = "Rename Entry";
 			// 
 			// tsbFileDelete
 			// 

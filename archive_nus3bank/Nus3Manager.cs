@@ -11,150 +11,141 @@ using Cetera.Compression;
 
 namespace archive_nus3bank
 {
-    public sealed class Nus3Manager : IArchiveManager
-    {
-        public class CtpkAfi : ArchiveFileInfo
-        {
-            //public NUS3.NodeEntry nodeEntry;
-        }
+	public sealed class Nus3Manager : IArchiveManager
+	{
+		private FileInfo _fileInfo = null;
+		private NUS3 _nus3 = null;
 
-        private FileInfo _fileInfo = null;
-        private NUS3 _nus3 = null;
+		#region Properties
 
-        #region Properties
+		// Information
+		public string Name => Settings.Default.PluginName;
+		public string Description => "NUS3BANK Sound Archive";
+		public string Extension => "*.nus3bank";
+		public string About => "This is the NUS3BANK archive manager for Karameru.";
 
-        // Information
-        public string Name => Settings.Default.PluginName;
-        public string Description => "NUS3BANK Sound Archive";
-        public string Extension => "*.nus3bank";
-        public string About => "This is the NUS3BANK archive manager for Karameru.";
+		// Feature Support
+		public bool ArchiveHasExtendedProperties => false;
+		public bool CanAddFiles => false;
+		public bool CanRenameFiles => false;
+		public bool CanReplaceFiles => false;
+		public bool CanDeleteFiles => false;
+		public bool CanSave => false;
 
-        // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
-        public bool CanAddFiles => false;
-        public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
-        public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+		public FileInfo FileInfo
+		{
+			get
+			{
+				return _fileInfo;
+			}
+			set
+			{
+				_fileInfo = value;
+			}
+		}
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+		#endregion
 
-        #endregion
+		public bool Identify(string filename)
+		{
+			using (var br = new BinaryReaderX(File.OpenRead(filename)))
+			{
+				if (br.BaseStream.Length < 4) return false;
+				if (br.ReadString(4) == "NUS3")
+				{
+					return true;
+				}
+				else
+				{
+					br.BaseStream.Position = 0;
+					byte[] decomp = ZLib.Decompress(br.ReadBytes((int)br.BaseStream.Length));
+					using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
+					{
+						if (br.BaseStream.Length < 4) return false;
+						if (br.ReadString(4) == "NUS3")
+						{
+							return true;
+						}
+					}
+				};
 
-        public bool Identify(string filename)
-        {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                if (br.BaseStream.Length < 4) return false;
-                if (br.ReadString(4) == "NUS3")
-                {
-                    return true;
-                }
-                else
-                {
-                    br.BaseStream.Position = 0;
-                    byte[] decomp = ZLIB.Decompress(br.ReadBytes((int)br.BaseStream.Length));
-                    using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
-                    {
-                        if (br.BaseStream.Length < 4) return false;
-                        if (br.ReadString(4) == "NUS3")
-                        {
-                            return true;
-                        }
-                    }
-                };
+				return false;
+			}
+		}
 
-                return false;
-            }
-        }
+		public LoadResult Load(string filename)
+		{
+			LoadResult result = LoadResult.Success;
 
-        public LoadResult Load(string filename)
-        {
-            LoadResult result = LoadResult.Success;
+			_fileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
+			if (_fileInfo.Exists)
+				_nus3 = new NUS3(_fileInfo.FullName);
+			else
+				result = LoadResult.FileNotFound;
 
-            if (_fileInfo.Exists)
-                _nus3 = new NUS3(_fileInfo.FullName);
-            else
-                result = LoadResult.FileNotFound;
+			return result;
+		}
 
-            return result;
-        }
+		public SaveResult Save(string filename = "")
+		{
+			SaveResult result = SaveResult.Success;
 
-        public SaveResult Save(string filename = "")
-        {
-            SaveResult result = SaveResult.Success;
+			if (filename.Trim() != string.Empty)
+				_fileInfo = new FileInfo(filename);
 
-            if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+			try
+			{
+				//_nus3.Save(_fileInfo.FullName);
+			}
+			catch
+			{
+				result = SaveResult.Failure;
+			}
 
-            try
-            {
-                //_nus3.Save(_fileInfo.FullName);
-            }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
+			return result;
+		}
 
-            return result;
-        }
+		// Files
+		public IEnumerable<ArchiveFileInfo> Files
+		{
+			get
+			{
+				foreach (var node in _nus3)
+				{
+					yield return new ArchiveFileInfo
+					{
+						FileName = node.filename,
+						FileData = node.FileData
+					};
+				}
+			}
+		}
 
-        // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                var files = new List<ArchiveFileInfo>();
+		public bool AddFile(ArchiveFileInfo afi)
+		{
+			throw new NotSupportedException();
+		}
 
-                foreach (var node in _nus3)
-                {
-                    var file = new ArchiveFileInfo();
-                    //file.Filesize = node.entry.size;
-                    file.FileName = node.filename;
-                    file.FileData = node.FileData;
-                    files.Add(file);
-                }
+		public bool RenameFile(ArchiveFileInfo afi)
+		{
+			throw new NotSupportedException();
+		}
 
-                return files;
-            }
-        }
+		public bool ReplaceFile(ArchiveFileInfo afi)
+		{
+			throw new NotSupportedException();
+		}
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+		public bool DeleteFile(ArchiveFileInfo afi)
+		{
+			throw new NotSupportedException();
+		}
 
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
-    }
+		// Features
+		public bool ShowProperties(Icon icon)
+		{
+			return false;
+		}
+	}
 }

@@ -75,10 +75,12 @@
     <ProjectReference Include="..\Cetera\Cetera.csproj">
       <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

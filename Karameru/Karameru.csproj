@@ -84,6 +84,8 @@
     <Content Include="images\find.ico" />
     <Content Include="images\karameru.ico" />
     <Content Include="images\kukkii.png" />
+    <None Include="images\tree-text-file.png" />
+    <None Include="images\tree-archive-file.png" />
     <None Include="images\tree-image-file.png" />
     <None Include="images\tree-directory-open.png" />
     <None Include="images\tree-directory.png" />

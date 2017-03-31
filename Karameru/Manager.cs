@@ -21,10 +21,12 @@ namespace Karameru
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
 
-		private List<IArchiveManager> _archiveManagers = null;
+		private List<IFileAdapter> _fileAdapters = null;
 		private List<IImageAdapter> _imageAdapters = null;
-		private HashSet<string> _archiveExtensions = null;
+		private List<IArchiveManager> _archiveManagers = null;
+		private HashSet<string> _fileExtensions = null;
 		private HashSet<string> _imageExtensions = null;
+		private HashSet<string> _archiveExtensions = null;
 
 		private List<ArchiveFileInfo> _files = null;
 
@@ -35,15 +37,19 @@ namespace Karameru
 			// Populate image list
 			imlFiles.Images.Add("tree-directory", Resources.tree_directory);
 			imlFiles.Images.Add("tree-directory-open", Resources.tree_directory_open);
-			imlFiles.Images.Add("tree-binary-file", Resources.tree_binary_file);
+			imlFiles.Images.Add("tree-text-file", Resources.tree_text_file);
 			imlFiles.Images.Add("tree-image-file", Resources.tree_image_file);
+			imlFiles.Images.Add("tree-archive-file", Resources.tree_archive_file);
+			imlFiles.Images.Add("tree-binary-file", Resources.tree_binary_file);
 
 			// Load Plugins
-			_archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
+			_fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();
 			_imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
+			_archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
 
-			_archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
+			_fileExtensions = new HashSet<string>(_fileAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
 			_imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
+			_archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
 
 			// Load passed in file
 			if (args.Length > 0 && File.Exists(args[0]))
@@ -469,10 +475,12 @@ namespace Karameru
 							{
 								string ext = Regex.Match(part, @"\.(.*?)$").Value;
 
-								if (_imageExtensions.Contains(ext))
+								if (_fileExtensions.Contains(ext))
+									child.ImageKey = "tree-text-file";
+								else if (_imageExtensions.Contains(ext))
 									child.ImageKey = "tree-image-file";
 								else if (_archiveExtensions.Contains(ext))
-									child.ImageKey = "tree-directory-open";
+									child.ImageKey = "tree-archive-file";
 								else
 									child.ImageKey = "tree-binary-file";
 								child.Tag = file;
@@ -584,31 +592,34 @@ namespace Karameru
 			return _archiveManager?.FileInfo?.Name ?? string.Empty;
 		}
 
-		// List
+		// File Tree
 		private void treEntries_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			UpdatePreview();
 			UpdateForm();
 		}
-
-		private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
-		{
-			e.Node.Expand();
-		}
-
-		private void treEntries_Enter(object sender, EventArgs e)
-		{
-			UpdateForm();
-		}
-
-		private void treEntries_Leave(object sender, EventArgs e)
-		{
-			UpdateForm();
-		}
-
+		
 		private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			treEntries.SelectedNode = e.Node;
+		}
+
+		private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
+		{
+			if (e.Node.Tag == null)
+			{
+				e.Node.ImageKey = "tree-directory-open";
+				e.Node.SelectedImageKey = e.Node.ImageKey;
+			}
+		}
+
+		private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
+		{
+			if (e.Node.Tag == null)
+			{
+				e.Node.ImageKey = "tree-directory";
+				e.Node.SelectedImageKey = e.Node.ImageKey;
+			}
 		}
 
 		// Context strip
