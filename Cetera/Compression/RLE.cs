@@ -5,7 +5,7 @@ using Cetera.IO;
 
 namespace Cetera.Compression
 {
-    class RLE
+    public class RLE
     {
         public static byte[] Decompress(Stream instream, long decompressedLength)
         {

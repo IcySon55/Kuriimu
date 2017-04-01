@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Cetera.Image;
+using Cetera.Compression;
 using Cetera.IO;
 
 namespace archive_hpi_hpb
@@ -75,14 +75,36 @@ namespace archive_hpi_hpb
                     br.BaseStream.Position = header.entryListSize + header.infoSize + header.headerSize + 8;
                     for (int i = 0; i < entryCount; i++)
                     {
-                        Add(new Node()
+                        br2.BaseStream.Position = entries[i].offset;
+                        try
                         {
-                            filename = readASCII(br.BaseStream),
-                            entry = entries[i],
-                            fileData = new SubStream(stream2, entries[i].offset, entries[i].fileSize)
-                        });
+                            Add(new Node()
+                            {
+                                filename = readASCII(br.BaseStream),
+                                entry = entries[i],
+                                //fileData = new MemoryStream(DecompressACMP(br2.ReadBytes((int)entries[i].fileSize)))
+                                fileData = new SubStream(stream2, entries[i].offset, entries[i].fileSize)
+                            });
+                        }
+                        catch { throw new Exception(i.ToString()); }
                     }
                 }
+            }
+        }
+
+        public byte[] DecompressACMP(byte[] acmp)
+        {
+            using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(acmp)))
+            {
+                KuriimuContract.Magic magic = br.ReadStruct<KuriimuContract.Magic>();
+                if (magic != "ACMP") return acmp;
+
+                int compSize = br.ReadInt32();
+                int dataOffset = br.ReadInt32();
+                br.ReadInt32();
+                int decompSize = br.ReadInt32();
+                br.BaseStream.Position = dataOffset;
+                return Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8, decompSize);
             }
         }
 
@@ -109,7 +131,7 @@ namespace archive_hpi_hpb
 
         public String readASCII(Stream input)
         {
-            using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 String result = "";
                 Encoding ascii = Encoding.GetEncoding("ascii");

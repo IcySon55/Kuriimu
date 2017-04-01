@@ -56,6 +56,7 @@
     <Compile Include="Compression\LZ10.cs" />
     <Compile Include="Compression\LZ11.cs" />
     <Compile Include="Compression\LZSS.cs" />
+    <Compile Include="Compression\LZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Image\JTEX.cs" />
