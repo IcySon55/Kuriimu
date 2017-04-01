@@ -34,12 +34,6 @@ namespace Cetera.IO
         public override long Position { get; set; }
         public override void Flush() => baseStream.Flush();
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (disposing) baseStream?.Dispose();
-        }
-
         public override long Seek(long offset, SeekOrigin origin)
         {
             switch (origin)
