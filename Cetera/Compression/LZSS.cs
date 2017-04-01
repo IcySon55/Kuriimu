@@ -8,12 +8,13 @@ using Cetera.IO;
 
 namespace Cetera.Compression
 {
-    class LZSS
+    public class LZSS
     {
         public static byte[] Decompress(Stream instream, long decompressedLength)
         {
             using (BinaryReaderX br = new BinaryReaderX(instream, true))
             {
+                //throw new Exception(br.BaseStream.Position.ToString());
                 List<byte> result = new List<byte>();
 
                 for (int i = 0, flags = 0; ; i++)
@@ -25,8 +26,11 @@ namespace Cetera.Compression
                         int lengthDist = BitConverter.ToUInt16(br.ReadBytes(2).Reverse().ToArray(), 0);
                         int offs = lengthDist % 4096 + 1;
                         int length = lengthDist / 4096 + 3;
-                        while (length-- > 0)
+                        while (length > 0)
+                        {
                             result.Add(result[result.Count - offs]);
+                            length--;
+                        }
                     }
 
                     if (result.Count == decompressedLength)

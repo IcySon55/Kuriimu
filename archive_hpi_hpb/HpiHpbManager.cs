@@ -56,6 +56,15 @@ namespace archive_hpi_hpb
 
         public bool Identify(string filename)
         {
+            //throw new Exception("Test");
+            /*using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            {
+                byte[] decomp = LZ77.Decompress(br.ReadBytes((int)br.BaseStream.Length));
+                File.OpenWrite(Path.GetDirectoryName(filename) + "\\t.decomp").Write(decomp, 0, decomp.Length);
+            }
+
+            return false;*/
+
             //get HPB filename
             String hpbFilename = Path.GetDirectoryName(filename) + "\\" + Path.GetFileName(filename).Split('.')[0] + ".HPB";
             if (File.Exists(hpbFilename) == false)

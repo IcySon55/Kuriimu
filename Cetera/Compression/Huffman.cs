@@ -5,7 +5,7 @@ using Cetera.IO;
 
 namespace Cetera.Compression
 {
-    class Huffman
+    public class Huffman
     {
         //supports 4bit & 8bit
         public static byte[] Decompress(Stream instream, int num_bits, long decompressedLength)
