@@ -409,7 +409,7 @@ namespace Karameru
 
 			if (dr == DialogResult.OK)
 			{
-				_archiveManager.Save(_archiveManager.FileInfo.FullName);
+				_archiveManager.Save(saveAs ? _archiveManager.FileInfo.FullName : string.Empty);
 				_hasChanges = false;
 				UpdateForm();
 			}
@@ -598,7 +598,7 @@ namespace Karameru
 			UpdatePreview();
 			UpdateForm();
 		}
-		
+
 		private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			treEntries.SelectedNode = e.Node;
