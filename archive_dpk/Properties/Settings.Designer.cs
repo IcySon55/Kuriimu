@@ -23,15 +23,12 @@ namespace archive_dpk.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("DPK4")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));
-            }
-            set {
-                this["PluginName"] = value;
             }
         }
     }
