@@ -401,11 +401,11 @@
 			// 
 			// treEntries
 			// 
+			this.treEntries.AllowDrop = true;
 			this.treEntries.ContextMenuStrip = this.mnuEntries;
 			this.treEntries.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treEntries.FullRowSelect = true;
 			this.treEntries.HideSelection = false;
-			this.treEntries.Indent = 16;
 			this.treEntries.ItemHeight = 18;
 			this.treEntries.Location = new System.Drawing.Point(0, 27);
 			this.treEntries.Name = "treEntries";
@@ -415,6 +415,7 @@
 			this.treEntries.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterExpand);
 			this.treEntries.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
 			this.treEntries.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseClick);
+			this.treEntries.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseDoubleClick);
 			// 
 			// mnuEntries
 			// 

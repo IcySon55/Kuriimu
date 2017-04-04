@@ -409,7 +409,7 @@ namespace Karameru
 
 			if (dr == DialogResult.OK)
 			{
-				_archiveManager.Save(_archiveManager.FileInfo.FullName);
+				_archiveManager.Save(saveAs ? _archiveManager.FileInfo.FullName : string.Empty);
 				_hasChanges = false;
 				UpdateForm();
 			}
@@ -598,10 +598,15 @@ namespace Karameru
 			UpdatePreview();
 			UpdateForm();
 		}
-		
+
 		private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			treEntries.SelectedNode = e.Node;
+		}
+
+		private void treEntries_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			LaunchFile();
 		}
 
 		private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
@@ -706,6 +711,11 @@ namespace Karameru
 					}
 				}
 			}
+		}
+
+		private void LaunchFile()
+		{
+			// TODO: Extract the file to the temp directory and open it in the appropriate application
 		}
 	}
 }
