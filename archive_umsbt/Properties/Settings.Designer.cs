@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace archive_dpk.Properties {
+namespace archive_umsbt.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,7 +25,7 @@ namespace archive_dpk.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("DPK4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("UMSBT")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));

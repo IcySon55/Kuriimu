@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("archive_dpk")]
+[assembly: AssemblyTitle("archive_umsbt")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("archive_dpk")]
+[assembly: AssemblyProduct("archive_umsbt")]
 [assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1bff38f5-1848-45b1-b84d-1270a25b7675")]
+[assembly: Guid("7ecf9a77-fad8-4222-8ac7-a823d4e14da7")]
 
 // Version information for an assembly consists of the following four values:
 //
