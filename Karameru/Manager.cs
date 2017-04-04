@@ -604,6 +604,11 @@ namespace Karameru
 			treEntries.SelectedNode = e.Node;
 		}
 
+		private void treEntries_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			LaunchFile();
+		}
+
 		private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
 		{
 			if (e.Node.Tag == null)
@@ -706,6 +711,11 @@ namespace Karameru
 					}
 				}
 			}
+		}
+
+		private void LaunchFile()
+		{
+			// TODO: Extract the file to the temp directory and open it in the appropriate application
 		}
 	}
 }
