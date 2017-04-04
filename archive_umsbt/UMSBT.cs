@@ -16,7 +16,7 @@ namespace archive_umsbt
 
 	public class UMSBT
 	{
-		public List<ArchiveFileInfo> Files = new List<ArchiveFileInfo>();
+		public List<UMSBTFileInfo> Files = new List<UMSBTFileInfo>();
 		private FileStream _fileStream = null;
 
 		public UMSBT(FileStream fs)
@@ -24,15 +24,12 @@ namespace archive_umsbt
 			_fileStream = fs;
 			var br = new KuriimuContract.BinaryReaderX(fs);
 
-			// Entries
 			uint index = 0;
-
 			while (br.BaseStream.Position < br.BaseStream.Length)
 			{
 				var info = new UMSBTFileInfo();
 				info.Entry = br.ReadStruct<UMSBTFileEntry>();
-				info.Index = index++;
-				info.FileName = info.Index.ToString("00000000") + ".msbt";
+				info.FileName = index.ToString("00000000") + ".msbt";
 				info.FileData = new SubStream(fs, info.Entry.Offset, info.Entry.Size);
 				info.State = ArchiveFileState.Archived;
 
@@ -40,37 +37,53 @@ namespace archive_umsbt
 					break;
 				else
 					Files.Add(info);
+
+				index++;
 			}
 		}
 
 		public bool Save(FileStream fs)
 		{
-			using (var bw = new KuriimuContract.BinaryWriterX(fs))
+			bool result = true;
+
+			try
 			{
-				uint offsetsLength = ((uint)Files.Count + 1) * (sizeof(uint) * 2);
-				uint runningTotal = 0;
-
-				foreach (var info in Files)
+				using (var bw = new KuriimuContract.BinaryWriterX(fs))
 				{
-					info.FileData.Seek(0, SeekOrigin.Begin);
-					uint offset = offsetsLength + runningTotal;
-					uint size = (uint)info.FileData.Length;
-					runningTotal += (uint)info.FileData.Length;
+					uint padding = 24;
+					uint headerLength = ((uint)Files.Count) * (sizeof(uint) * 2) + padding;
+					uint runningTotal = 0;
 
-					bw.Write(offset);
-					bw.Write(size);
-				}
+					foreach (var info in Files)
+					{
+						info.Entry.Offset = headerLength + runningTotal;
+						info.Entry.Size = (uint)info.FileData.Length;
 
-				bw.Write(0x00000000);
-				bw.Write(0x00000000);
+						runningTotal += (uint)info.FileData.Length;
+						bw.WriteStruct(info.Entry);
+					}
 
-				foreach (var info in Files)
-				{
-					info.FileData.CopyTo(bw.BaseStream);
+					for (int i = 0; i < padding; i++)
+						bw.Write((byte)0x0);
+
+					foreach (var info in Files)
+					{
+						info.FileData.CopyTo(bw.BaseStream);
+					}
 				}
 			}
+			catch (Exception)
+			{
+				result = false;
+			}
 
-			return true;
+			return result;
+		}
+
+		public void Close()
+		{
+			_fileStream?.Dispose();
+			_fileStream = null;
 		}
 	}
 }

@@ -15,11 +15,8 @@ namespace archive_umsbt
 		public uint Size = 0;
 	}
 
-	public class UMSBTFileInfo : ArchiveFileInfo, IComparable<UMSBTFileInfo>
+	public class UMSBTFileInfo : ArchiveFileInfo
 	{
 		public UMSBTFileEntry Entry = null;
-		public uint Index = 0;
-
-		public int CompareTo(UMSBTFileInfo rhs) => Index.CompareTo(rhs.Index);
 	}
 }
