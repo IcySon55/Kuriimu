@@ -82,8 +82,8 @@ namespace archive_hpi_hpb
                             {
                                 filename = readASCII(br.BaseStream),
                                 entry = entries[i],
-                                //fileData = new MemoryStream(DecompressACMP(br2.ReadBytes((int)entries[i].fileSize)))
-                                fileData = new SubStream(stream2, entries[i].offset, entries[i].fileSize)
+                                fileData = new MemoryStream(DecompressACMP(br2.ReadBytes((int)entries[i].fileSize)))
+                                //fileData = new SubStream(stream2, entries[i].offset, entries[i].fileSize)
                             });
                         }
                         catch { throw new Exception(i.ToString()); }
@@ -104,7 +104,7 @@ namespace archive_hpi_hpb
                 br.ReadInt32();
                 int decompSize = br.ReadInt32();
                 br.BaseStream.Position = dataOffset;
-                return Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8, decompSize);
+                return RevLZ77.Decompress(br.ReadBytes(compSize), (uint)decompSize);
             }
         }
 
