@@ -76,19 +76,20 @@ namespace archive_umsbt
 			{
 				// Save As...
 				if (filename.Trim() != string.Empty)
-					_umsbt.Save(File.Create(filename));
+					_umsbt.Save(File.Create(_fileInfo.FullName));
 				else
 				{
 					// Create the temp file
-					_umsbt.Save(File.Create(filename + ".tmp"));
+					_umsbt.Save(File.Create(_fileInfo.FullName + ".tmp"));
 					// Delete the original
-					File.Delete(filename);
+					_umsbt.Close();
+					File.Delete(_fileInfo.FullName);
 					// Rename the temporary file
-					File.Move(filename + ".tmp", filename);
+					File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
 				}
 
 				// Reload the new file to make sure everything is in order
-				Load(filename);
+				Load(_fileInfo.FullName);
 			}
 			catch (Exception)
 			{

@@ -56,11 +56,12 @@ namespace archive_hpi_hpb
 
         public bool Identify(string filename)
         {
-            //throw new Exception("Test");
             /*using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                byte[] decomp = LZ77.Compress(br.ReadBytes((int)br.BaseStream.Length));
-                File.OpenWrite(Path.GetDirectoryName(filename) + "\\t.comp").Write(decomp, 0, decomp.Length);
+                byte[] decomp = RevLZ77.Compress(br.ReadBytes((int)br.BaseStream.Length));
+                var t = File.OpenWrite(Path.GetDirectoryName(filename) + "\\t.comp");
+                t.Write(decomp, 0, decomp.Length);
+                t.Close();
             }
 
             return false;*/
