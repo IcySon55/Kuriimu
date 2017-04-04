@@ -58,8 +58,7 @@ namespace archive_sarc
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                string magic = br.ReadString(4);
-                return magic == "SARC";
+                return br.ReadString(4) == "SARC";
             }
         }
 

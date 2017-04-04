@@ -33,9 +33,9 @@ namespace archive_ctpk
         public bool ArchiveHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
+        public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {

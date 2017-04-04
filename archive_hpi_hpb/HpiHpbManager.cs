@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using archive_hpi_hpb.Properties;
 using Cetera.Compression;
+using Cetera.IO;
 
 namespace archive_hpi_hpb
 {
@@ -16,6 +17,31 @@ namespace archive_hpi_hpb
         public class HpiHpbAfi : ArchiveFileInfo
         {
             public HPIHPB.Entry entry;
+            public SubStream compStream;
+            public override Stream FileData
+            {
+                get
+                {
+                    byte[] header = new byte[0x20];
+                    compStream.Read(header, 0, 0x20);
+                    byte[] comp = new byte[(int)entry.fileSize - 0x20];
+                    compStream.Read(comp, 0, (int)entry.fileSize - 0x20);
+
+                    using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(new MemoryStream(header)))
+                    {
+                        if (br.ReadStruct<KuriimuContract.Magic>() == "ACMP")
+                        {
+                            br.BaseStream.Position = 0x10;
+                            Stream t = new MemoryStream(RevLZ77.Decompress(comp, br.ReadUInt32()));
+                            return t;
+                        }
+                        else
+                        {
+                            return compStream;
+                        }
+                    }
+                }
+            }
         }
 
         private FileInfo _fileInfo = null;
@@ -73,7 +99,7 @@ namespace archive_hpi_hpb
                 return false;
             }
 
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new KuriimuContract.BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
                 return br.ReadString(4) == "HPIH";
@@ -117,21 +143,23 @@ namespace archive_hpi_hpb
 
         public string Compression => "none";
 
-        public bool FilesHaveVaryingCompressions => false;
+        public bool FilesHaveVaryingCompressions => true;
 
         // Files
         public IEnumerable<ArchiveFileInfo> Files
         {
             get
             {
-                var files = new List<ArchiveFileInfo>();
+                var files = new List<HpiHpbAfi>();
 
                 foreach (var node in _hpihpb)
                 {
-                    var file = new ArchiveFileInfo();
-                    //file.Filesize = node.entry.fileSize;
+                    var file = new HpiHpbAfi();
+
+                    file.entry = node.entry;
                     file.FileName = node.filename;
-                    file.FileData = node.fileData;
+                    file.compStream = node.fileData;
+
                     files.Add(file);
                 }
 

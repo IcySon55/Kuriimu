@@ -53,12 +53,7 @@ namespace archive_pck
 
         public bool Identify(string filename)
         {
-            if (filename.Contains(".pck"))
-            {
-                return true;
-            }
-
-            return false;
+            return filename.EndsWith(".pck");
         }
 
         public LoadResult Load(string filename)
