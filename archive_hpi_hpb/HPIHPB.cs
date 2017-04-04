@@ -16,7 +16,7 @@ namespace archive_hpi_hpb
         {
             public String filename;
             public Entry entry;
-            public Stream fileData;
+            public SubStream fileData;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -76,17 +76,13 @@ namespace archive_hpi_hpb
                     for (int i = 0; i < entryCount; i++)
                     {
                         br2.BaseStream.Position = entries[i].offset;
-                        try
+                        Add(new Node()
                         {
-                            Add(new Node()
-                            {
-                                filename = readASCII(br.BaseStream),
-                                entry = entries[i],
-                                fileData = new MemoryStream(DecompressACMP(br2.ReadBytes((int)entries[i].fileSize)))
-                                //fileData = new SubStream(stream2, entries[i].offset, entries[i].fileSize)
-                            });
-                        }
-                        catch { throw new Exception(i.ToString()); }
+                            filename = readASCII(br.BaseStream),
+                            entry = entries[i],
+                            fileData = new SubStream(br2.BaseStream, entries[i].offset, entries[i].fileSize)
+                            //fileData = new MemoryStream(DecompressACMP(br2.ReadBytes((int)entries[i].fileSize)))
+                        });
                     }
                 }
             }
