@@ -6,23 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Cetera.Compression;
-using Cetera.IO;
+using KuriimuContract;
 
 namespace archive_hpi_hpb
 {
-    public sealed class HPIHPB : List<HPIHPB.Node>
+    public sealed class HPIHPB
     {
         public class Node
         {
             public String filename;
             public Entry entry;
-            public SubStream fileData;
+            public Cetera.IO.SubStream fileData;
         }
+        public List<HPIHPB.Node> nodes = new List<HPIHPB.Node>();
+
+        private FileStream hpi = null;
+        private FileStream hpb = null;
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Header
         {
-            public KuriimuContract.Magic8 magic;
+            public Magic8 magic;
             public int headerSize;  //without magic
             int unk1;
             short unk2;
@@ -36,74 +40,70 @@ namespace archive_hpi_hpb
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Entry
         {
-            uint unk1;
+            public uint unk1;
             public uint offset;
             public uint fileSize;
-            uint unk2;
+            public uint unk2;
         }
 
         public Header header;
         public List<Entry> entries;
 
-        Stream stream, stream2;
-
-        public HPIHPB(String filename, String hpbFilename)
+        public HPIHPB(String filename, String otherFilename)
         {
-            stream = File.OpenRead(filename);
-
-            using (BinaryReaderX br = new BinaryReaderX(stream))
+            //which file is what?
+            String hpiFilename;
+            String hpbFilename;
+            if (filename.EndsWith(".HPI"))
             {
-                //Header
-                header = br.ReadStruct<Header>();
+                hpiFilename = filename;
+                hpbFilename = otherFilename;
+            }
+            else
+            {
+                hpiFilename = otherFilename;
+                hpbFilename = filename;
+            }
 
-                //infoList??? - not mapped
+            hpi = File.OpenRead(hpiFilename);
+            BinaryReaderX hpiBr = new BinaryReaderX(hpi);
+            //Header
+            header = hpiBr.ReadStruct<Header>();
 
-                //Entries
-                br.BaseStream.Position = header.infoSize + header.headerSize + 8;
-                int entryCount = header.entryListSize / 0x10;
-                entries = new List<Entry>();
-                for (int i = 0; i < entryCount; i++)
+            //infoList??? - not mapped
+
+            //Entries
+            hpiBr.BaseStream.Position = header.infoSize + header.headerSize + 8;
+            int entryCount = header.entryListSize / 0x10;
+            entries = new List<Entry>();
+            for (int i = 0; i < entryCount; i++)
+            {
+                entries.Add(hpiBr.ReadStruct<Entry>());
+            }
+            SortEntries(entries);
+
+            //Names
+            hpb = File.OpenRead(hpbFilename);
+            BinaryReaderX hpbBr = new BinaryReaderX(hpb);
+            hpiBr.BaseStream.Position = header.entryListSize + header.infoSize + header.headerSize + 8;
+            for (int i = 0; i < entryCount; i++)
+            {
+                hpbBr.BaseStream.Position = entries[i].offset;
+                nodes.Add(new Node()
                 {
-                    entries.Add(br.ReadStruct<Entry>());
-                }
-                SortEntries(entries);
-
-                //Names
-                stream2 = File.OpenRead(hpbFilename);
-                using (BinaryReaderX br2 = new BinaryReaderX(stream2, true))
-                {
-                    br.BaseStream.Position = header.entryListSize + header.infoSize + header.headerSize + 8;
-                    for (int i = 0; i < entryCount; i++)
-                    {
-                        br2.BaseStream.Position = entries[i].offset;
-                        Add(new Node()
-                        {
-                            filename = readASCII(br.BaseStream),
-                            entry = entries[i],
-                            fileData = new SubStream(br2.BaseStream, entries[i].offset, entries[i].fileSize)
-                            //fileData = new MemoryStream(DecompressACMP(br2.ReadBytes((int)entries[i].fileSize)))
-                        });
-                    }
-                }
+                    filename = readASCII(hpiBr.BaseStream),
+                    entry = entries[i],
+                    fileData = new Cetera.IO.SubStream(hpbBr.BaseStream, entries[i].offset, entries[i].fileSize)
+                });
             }
         }
 
-        public byte[] DecompressACMP(byte[] acmp)
+        public void Save()
         {
-            using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(acmp)))
-            {
-                KuriimuContract.Magic magic = br.ReadStruct<KuriimuContract.Magic>();
-                if (magic != "ACMP") return acmp;
 
-                int compSize = br.ReadInt32();
-                int dataOffset = br.ReadInt32();
-                br.ReadInt32();
-                int decompSize = br.ReadInt32();
-                br.BaseStream.Position = dataOffset;
-                return RevLZ77.Decompress(br.ReadBytes(compSize), (uint)decompSize);
-            }
         }
 
+        //--------------HAS TO BE REPLACED!!---------------------START
         public void SortEntries(List<Entry> entries)
         {
             //BubbleSort
@@ -124,23 +124,29 @@ namespace archive_hpi_hpb
                 }
             } while (sort == false);
         }
+        //--------------HAS TO BE REPLACED!!---------------------END
 
         public String readASCII(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
+            BinaryReaderX br = new BinaryReaderX(input);
+
+            String result = "";
+            Encoding ascii = Encoding.GetEncoding("ascii");
+
+            byte[] character = br.ReadBytes(1);
+            while (character[0] != 0x00)
             {
-                String result = "";
-                Encoding ascii = Encoding.GetEncoding("ascii");
-
-                byte[] character = br.ReadBytes(1);
-                while (character[0] != 0x00)
-                {
-                    result += ascii.GetString(character);
-                    character = br.ReadBytes(1);
-                }
-
-                return result;
+                result += ascii.GetString(character);
+                character = br.ReadBytes(1);
             }
+
+            return result;
+        }
+
+        public void Close()
+        {
+            hpi.Dispose(); hpb.Dispose();
+            hpi = null; hpb = null;
         }
     }
 }
