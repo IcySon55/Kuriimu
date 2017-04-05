@@ -166,15 +166,15 @@
     <None Include="images\btn-director.png" />
     <None Include="images\btn-extensions.png" />
     <None Include="images\kukkii.png" />
-    <Content Include="images\kuriimu.ico" />
+    <None Include="images\kuriimu.ico" />
     <None Include="images\menu-about.png" />
-    <Content Include="images\menu-add.png" />
+    <None Include="images\menu-add.png" />
     <None Include="images\menu-batch-export.png" />
     <None Include="images\menu-batch-import.png" />
-    <Content Include="images\menu-delete.png" />
+    <None Include="images\menu-delete.png" />
     <None Include="images\menu-exit.png" />
     <None Include="images\menu-export.png" />
-    <Content Include="images\menu-field-properties.png" />
+    <None Include="images\menu-field-properties.png" />
     <None Include="images\menu-find.png" />
     <None Include="images\menu-manage.png" />
     <None Include="images\menu-gbatemp.png" />
@@ -182,15 +182,15 @@
     <None Include="images\menu-font-family.png" />
     <None Include="images\menu-font-size.png" />
     <None Include="images\menu-import.png" />
-    <Content Include="images\menu-new.png" />
-    <Content Include="images\menu-open.png" />
+    <None Include="images\menu-new.png" />
+    <None Include="images\menu-open.png" />
     <None Include="images\menu-properties.png" />
     <None Include="images\menu-preview-copy.png" />
-    <Content Include="images\menu-preview-invisible.png" />
+    <None Include="images\menu-preview-invisible.png" />
     <None Include="images\menu-preview-save.png" />
-    <Content Include="images\menu-preview-visible.png" />
-    <Content Include="images\menu-save-as.png" />
-    <Content Include="images\menu-save.png" />
+    <None Include="images\menu-preview-visible.png" />
+    <None Include="images\menu-save-as.png" />
+    <None Include="images\menu-save.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
