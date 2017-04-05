@@ -84,8 +84,8 @@ namespace archive_umsbt
 				{
 					// Create the temp file
 					_umsbt.Save(File.Create(_fileInfo.FullName + ".tmp"));
-					// Delete the original
 					_umsbt.Close();
+					// Delete the original
 					File.Delete(_fileInfo.FullName);
 					// Rename the temporary file
 					File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
