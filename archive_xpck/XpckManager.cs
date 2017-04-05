@@ -97,6 +97,11 @@ namespace archive_xpck
             return result;
         }
 
+        public void Unload()
+        {
+            // TODO: Implement closing open handles here
+        }
+
         // Files
         public IEnumerable<ArchiveFileInfo> Files
         {

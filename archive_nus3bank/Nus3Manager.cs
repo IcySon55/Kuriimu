@@ -57,15 +57,22 @@ namespace archive_nus3bank
 				}
 				else
 				{
-					br.BaseStream.Position = 0;
-					byte[] decomp = ZLib.Decompress(br.ReadBytes((int)br.BaseStream.Length));
-					using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
+					try
 					{
-						if (br.BaseStream.Length < 4) return false;
-						if (br.ReadString(4) == "NUS3")
+						br.BaseStream.Position = 0;
+						byte[] decomp = ZLib.Decompress(br.ReadBytes((int)br.BaseStream.Length));
+						using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
 						{
-							return true;
+							if (br.BaseStream.Length < 4) return false;
+							if (br.ReadString(4) == "NUS3")
+							{
+								return true;
+							}
 						}
+					}
+					catch (Exception)
+					{
+						return false;
 					}
 				};
 
@@ -104,6 +111,11 @@ namespace archive_nus3bank
 			}
 
 			return result;
+		}
+
+		public void Unload()
+		{
+			// TODO: Implement closing open handles here
 		}
 
 		// Files

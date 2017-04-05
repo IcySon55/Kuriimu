@@ -22,6 +22,14 @@ namespace KuriimuContract
 		Failure
 	}
 
+	public enum Applications
+	{
+		None,
+		Kuriimu,
+		Kukkii,
+		Karameru
+	}
+
 	public enum ByteOrder : ushort
 	{
 		LittleEndian = 0xFEFF,

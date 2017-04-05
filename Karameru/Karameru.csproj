@@ -81,9 +81,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="images\find.ico" />
-    <Content Include="images\karameru.ico" />
-    <Content Include="images\kukkii.png" />
+    <None Include="images\find.ico" />
+    <None Include="images\karameru.ico" />
+    <None Include="images\kukkii.png" />
     <None Include="images\tree-text-file.png" />
     <None Include="images\tree-archive-file.png" />
     <None Include="images\tree-image-file.png" />
@@ -91,29 +91,30 @@
     <None Include="images\tree-directory.png" />
     <None Include="images\tree-binary-file.png" />
     <None Include="images\kuriimu.png" />
-    <Content Include="images\menu-about.png" />
-    <Content Include="images\menu-add.png" />
-    <Content Include="images\menu-batch-export.png" />
-    <Content Include="images\menu-batch-import.png" />
-    <Content Include="images\menu-delete.png" />
-    <Content Include="images\menu-exit.png" />
-    <Content Include="images\menu-export.png" />
-    <Content Include="images\menu-field-properties.png" />
-    <Content Include="images\menu-find.png" />
-    <Content Include="images\menu-gbatemp.png" />
-    <Content Include="images\menu-git.png" />
-    <Content Include="images\menu-import.png" />
-    <Content Include="images\menu-manage.png" />
-    <Content Include="images\menu-new.png" />
-    <Content Include="images\menu-open.png" />
-    <Content Include="images\menu-preview-copy.png" />
-    <Content Include="images\menu-preview-invisible.png" />
-    <Content Include="images\menu-preview-save.png" />
-    <Content Include="images\menu-preview-visible.png" />
-    <Content Include="images\menu-properties.png" />
-    <Content Include="images\menu-save-as.png" />
-    <Content Include="images\menu-save.png" />
-    <Content Include="images\preview-background.png" />
+    <None Include="images\menu-about.png" />
+    <None Include="images\menu-add.png" />
+    <None Include="images\menu-batch-export.png" />
+    <None Include="images\menu-batch-import.png" />
+    <None Include="images\menu-delete.png" />
+    <None Include="images\menu-edit.png" />
+    <None Include="images\menu-exit.png" />
+    <None Include="images\menu-export.png" />
+    <None Include="images\menu-field-properties.png" />
+    <None Include="images\menu-find.png" />
+    <None Include="images\menu-gbatemp.png" />
+    <None Include="images\menu-git.png" />
+    <None Include="images\menu-import.png" />
+    <None Include="images\menu-manage.png" />
+    <None Include="images\menu-new.png" />
+    <None Include="images\menu-open.png" />
+    <None Include="images\menu-preview-copy.png" />
+    <None Include="images\menu-preview-invisible.png" />
+    <None Include="images\menu-preview-save.png" />
+    <None Include="images\menu-preview-visible.png" />
+    <None Include="images\menu-properties.png" />
+    <None Include="images\menu-save-as.png" />
+    <None Include="images\menu-save.png" />
+    <None Include="images\preview-background.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">

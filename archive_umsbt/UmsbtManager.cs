@@ -76,13 +76,16 @@ namespace archive_umsbt
 			{
 				// Save As...
 				if (filename.Trim() != string.Empty)
+				{
 					_umsbt.Save(File.Create(_fileInfo.FullName));
+					_umsbt.Close();
+				}
 				else
 				{
 					// Create the temp file
 					_umsbt.Save(File.Create(_fileInfo.FullName + ".tmp"));
-					// Delete the original
 					_umsbt.Close();
+					// Delete the original
 					File.Delete(_fileInfo.FullName);
 					// Rename the temporary file
 					File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
@@ -97,6 +100,11 @@ namespace archive_umsbt
 			}
 
 			return result;
+		}
+
+		public void Unload()
+		{
+			_umsbt?.Close();
 		}
 
 		// Files
