@@ -141,9 +141,10 @@ namespace archive_hpi_hpb
             return result;
         }
 
-        public string Compression => "none";
-
-        public bool FilesHaveVaryingCompressions => true;
+        public void Unload()
+        {
+            // TODO: Implement closing open handles here
+        }
 
         // Files
         public IEnumerable<ArchiveFileInfo> Files
@@ -167,6 +168,11 @@ namespace archive_hpi_hpb
             }
         }
 
+        public bool AddFile(ArchiveFileInfo afi)
+        {
+            return false;
+        }
+
         public bool RenameFile(ArchiveFileInfo afi)
         {
             return false;
@@ -175,16 +181,6 @@ namespace archive_hpi_hpb
         public bool ReplaceFile(ArchiveFileInfo afi)
         {
             return false;
-        }
-
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public byte[] GetFile(ArchiveFileInfo afi)
-        {
-            return new byte[] { 64, 64, 64, 64 };
         }
 
         public bool DeleteFile(ArchiveFileInfo afi)

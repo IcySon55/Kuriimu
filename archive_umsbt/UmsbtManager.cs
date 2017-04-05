@@ -102,6 +102,11 @@ namespace archive_umsbt
 			return result;
 		}
 
+		public void Unload()
+		{
+			_umsbt?.Close();
+		}
+
 		// Files
 		public IEnumerable<ArchiveFileInfo> Files
 		{

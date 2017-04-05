@@ -25,7 +25,7 @@ namespace KuriimuContract
 		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 		LoadResult Load(string filename);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
-		//void Unload(); // Instructs the archive manager to close open file handles.
+		void Unload(); // Instructs the archive manager to close open file handles.
 
 		// Files
 		IEnumerable<ArchiveFileInfo> Files { get; } // File list.

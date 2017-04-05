@@ -9,11 +9,6 @@ using KuriimuContract;
 
 namespace archive_umsbt
 {
-	public class InvalidUMSBTException : Exception
-	{
-		public InvalidUMSBTException(string message) : base(message) { }
-	}
-
 	public class UMSBT
 	{
 		public List<UMSBTFileInfo> Files = new List<UMSBTFileInfo>();

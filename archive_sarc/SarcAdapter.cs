@@ -95,6 +95,11 @@ namespace archive_sarc
             return result;
         }
 
+        public void Unload()
+        {
+            // TODO: Implement closing open handles here
+        }
+
         // Files
         public IEnumerable<ArchiveFileInfo> Files
         {
