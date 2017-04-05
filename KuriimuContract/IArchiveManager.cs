@@ -25,6 +25,7 @@ namespace KuriimuContract
 		bool Identify(string filename); // Determines if the given file is opened by the plugin.
 		LoadResult Load(string filename);
 		SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
+		//void Unload(); // Instructs the archive manager to close open file handles.
 
 		// Files
 		IEnumerable<ArchiveFileInfo> Files { get; } // File list.
@@ -39,16 +40,9 @@ namespace KuriimuContract
 
 	public class ArchiveFileInfo // This might need to be an interface.
 	{
-		public string FileName { get; set; } // Complete filename including path and extension.
-		public virtual Stream FileData { get; set; } // Provides a stream to read the file data from.
-		public ArchiveFileState State { get; set; } // Dictates the state of the FileData stream.
-
-		public ArchiveFileInfo()
-		{
-			FileName = string.Empty;
-			FileData = null;
-			State = ArchiveFileState.Empty;
-		}
+		public string FileName { get; set; } = string.Empty; // Complete filename including path and extension.
+		public virtual Stream FileData { get; set; } = null; // Provides a stream to read the file data from.
+		public ArchiveFileState State { get; set; } = ArchiveFileState.Empty; // Dictates the state of the FileData stream.
 	}
 
 	public enum ArchiveFileState
