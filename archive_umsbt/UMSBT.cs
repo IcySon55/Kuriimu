@@ -58,18 +58,14 @@ namespace archive_umsbt
 					{
 						info.Entry.Offset = headerLength + runningTotal;
 						info.Entry.Size = (uint)info.FileData.Length;
-
-						runningTotal += (uint)info.FileData.Length;
+						runningTotal += info.Entry.Size;
 						bw.WriteStruct(info.Entry);
 					}
 
-					for (int i = 0; i < padding; i++)
-						bw.Write((byte)0x0);
+					bw.Write(new byte[padding]);
 
 					foreach (var info in Files)
-					{
 						info.FileData.CopyTo(bw.BaseStream);
-					}
 				}
 			}
 			catch (Exception)
