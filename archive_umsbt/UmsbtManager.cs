@@ -76,7 +76,10 @@ namespace archive_umsbt
 			{
 				// Save As...
 				if (filename.Trim() != string.Empty)
+				{
 					_umsbt.Save(File.Create(_fileInfo.FullName));
+					_umsbt.Close();
+				}
 				else
 				{
 					// Create the temp file
@@ -89,7 +92,6 @@ namespace archive_umsbt
 				}
 
 				// Reload the new file to make sure everything is in order
-				_umsbt.Close();
 				Load(_fileInfo.FullName);
 			}
 			catch (Exception)
