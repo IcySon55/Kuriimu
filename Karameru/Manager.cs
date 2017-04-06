@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -30,9 +31,22 @@ namespace Karameru
 
 		private List<ArchiveFileInfo> _files = null;
 
+		public class NodeSorter : IComparer
+		{
+			// compares directories vs files first, then by filename
+			public int Compare(object lhs, object rhs)
+			{
+				TreeNode lhsNode = (TreeNode)lhs, rhsNode = (TreeNode)rhs;
+				var cmp = (lhsNode.Tag != null).CompareTo(rhsNode.Tag != null);
+				return cmp != 0 ? cmp : lhsNode.Text.CompareTo(rhsNode.Text);
+			}
+		}
+
 		public frmManager(string[] args)
 		{
 			InitializeComponent();
+
+			treFiles.TreeViewNodeSorter = new NodeSorter();
 
 			// Populate image list
 			imlFiles.Images.Add("tree-directory", Resources.tree_directory);
@@ -500,6 +514,7 @@ namespace Karameru
 			//else
 			//	treEntries.SelectNodeByIEntry(selectedEntry);
 
+			treFiles.Sort();
 			treFiles.EndUpdate();
 
 			treFiles.Focus();
