@@ -75,12 +75,7 @@ namespace archive_hpi_hpb
             //Entries
             hpiBr.BaseStream.Position = header.infoSize + header.headerSize + 8;
             int entryCount = header.entryListSize / 0x10;
-            entries = new List<Entry>();
-            for (int i = 0; i < entryCount; i++)
-            {
-                entries.Add(hpiBr.ReadStruct<Entry>());
-            }
-            SortEntries(entries);
+			entries = Enumerable.Range(0, entryCount).Select(_ => hpiBr.ReadStruct<Entry>()).OrderBy(e => e.offset).ToList();
 
             //Names
             hpb = File.OpenRead(hpbFilename);
@@ -91,7 +86,7 @@ namespace archive_hpi_hpb
                 hpbBr.BaseStream.Position = entries[i].offset;
                 nodes.Add(new Node()
                 {
-                    filename = readASCII(hpiBr.BaseStream),
+                    filename = hpiBr.ReadCStringA(),
                     entry = entries[i],
                     fileData = new Cetera.IO.SubStream(hpbBr.BaseStream, entries[i].offset, entries[i].fileSize)
                 });
@@ -101,46 +96,6 @@ namespace archive_hpi_hpb
         public void Save()
         {
 
-        }
-
-        //--------------HAS TO BE REPLACED!!---------------------START
-        public void SortEntries(List<Entry> entries)
-        {
-            //BubbleSort
-            Entry help;
-            bool sort;
-            do
-            {
-                sort = true;
-                for (int i = 0; i < entries.Count - 1; i++)
-                {
-                    if (entries[i].offset > entries[i + 1].offset)
-                    {
-                        sort = false;
-                        help = entries[i];
-                        entries[i] = entries[i + 1];
-                        entries[i + 1] = help;
-                    }
-                }
-            } while (sort == false);
-        }
-        //--------------HAS TO BE REPLACED!!---------------------END
-
-        public String readASCII(Stream input)
-        {
-            BinaryReaderX br = new BinaryReaderX(input);
-
-            String result = "";
-            Encoding ascii = Encoding.GetEncoding("ascii");
-
-            byte[] character = br.ReadBytes(1);
-            while (character[0] != 0x00)
-            {
-                result += ascii.GetString(character);
-                character = br.ReadBytes(1);
-            }
-
-            return result;
         }
 
         public void Close()
