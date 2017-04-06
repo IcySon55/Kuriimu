@@ -13,9 +13,8 @@ namespace Kuriimu.IO
 
         public ByteOrder ByteOrder { get; set; }
 
-        public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input)
+        public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : this(input, true, byteOrder)
         {
-            ByteOrder = byteOrder;
         }
 
         public BinaryReaderX(Stream input, bool leaveOpen, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode, leaveOpen)
@@ -27,6 +26,7 @@ namespace Kuriimu.IO
         public string ReadCStringW() => string.Concat(Enumerable.Range(0, 999).Select(_ => (char)ReadInt16()).TakeWhile(c => c != 0));
         public T ReadStruct<T>() => ReadBytes(Marshal.SizeOf<T>()).ToStruct<T>();
         public List<T> ReadMultiple<T>(int count, Func<int, T> func) => Enumerable.Range(0, count).Select(func).ToList();
+        public List<T> ReadMultiple<T>(int count) => Enumerable.Range(0, count).Select(_ => ReadStruct<T>()).ToList();
 
         public override short ReadInt16()
         {

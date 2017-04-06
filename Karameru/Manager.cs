@@ -562,7 +562,7 @@ namespace Karameru
                     else if (_archiveExtensions.Contains(ext))
                         application = Applications.Karameru;
 
-                    fileDataIsNull = afi.FileData == null;
+                    //fileDataIsNull = afi.FileData == null; // this line doesn't work. what is the intent?
                 }
             }
 
@@ -753,28 +753,26 @@ namespace Karameru
             else // File
             {
                 var afi = selectedNode.Tag as ArchiveFileInfo;
+                if (afi == null) return;
 
-                if (afi != null && afi.FileData != null)
+                var stream = afi.FileData;
+                var filename = Path.GetFileName(afi.FileName);
+
+                if (stream == null)
                 {
-                    string filename = Path.GetFileName(afi.FileName);
-                    string extension = Path.GetExtension(afi.FileName);
-
-                    if (afi.FileData != null)
-                    {
-                        var sfd = new SaveFileDialog();
-                        sfd.InitialDirectory = Settings.Default.LastDirectory;
-                        sfd.FileName = filename;
-                        sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension.ToLower()})|*{extension.ToLower()}";
-
-                        if (sfd.ShowDialog() == DialogResult.OK)
-                            using (var fs = File.Create(sfd.FileName))
-                                afi.FileData.CopyTo(fs);
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Uninitialized file stream. Unable to extract {filename}.", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    MessageBox.Show($"Uninitialized file stream. Unable to extract {filename}.", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
+
+                var extension = Path.GetExtension(afi.FileName).ToLower();
+                var sfd = new SaveFileDialog();
+                sfd.InitialDirectory = Settings.Default.LastDirectory;
+                sfd.FileName = filename;
+                sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension.ToLower()})|*{extension.ToLower()}";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                    using (var fs = File.Create(sfd.FileName))
+                        stream.CopyTo(fs);
             }
         }
 
