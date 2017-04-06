@@ -5,101 +5,90 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Compression;
 
 namespace archive_hpi_hpb
 {
-    public sealed class HPIHPB
+    public sealed class HPIHPB : List<HPIHPB.Node>, IDisposable
     {
         public class Node
         {
+            [StructLayout(LayoutKind.Sequential, Pack = 1)]
+            struct AcmpHeader
+            {
+                public Magic magic;
+                public int compressedSize;
+                public int headerSize;
+                public int zero;
+                public uint uncompressedSize;
+                public int padding0, padding1, padding2; // equal to 0x01234567
+            }
+
             public String filename;
             public Entry entry;
-            public SubStream fileData;
-        }
-        public List<HPIHPB.Node> nodes = new List<HPIHPB.Node>();
+            public Stream fileData;
 
-        private FileStream hpi = null;
-        private FileStream hpb = null;
+            public Stream GetUncompressedStream()
+            {
+                fileData.Position = 0;
+                if (entry.uncompressedSize == 0) return fileData;
+                using (var br = new BinaryReaderX(fileData, true))
+                {
+                    var header = br.ReadStruct<AcmpHeader>();
+                    return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize), header.uncompressedSize));
+                }
+            }
+        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
+        public struct HpiHeader
         {
-            public Magic8 magic;
+            public Magic magic;
+            public int zero0;
             public int headerSize;  //without magic
-            int unk1;
-            short unk2;
-            short tmp1;
-            int tmp2;
-
-            public int infoSize => tmp1 << 2;
-            public int entryListSize => tmp2 << 4;
+            public int zero1;
+            public short zero3;
+            public short infoCount;
+            public int entryCount;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Entry
         {
-            public uint unk1;
-            public uint offset;
+            public uint stringOffset;
+            public uint fileOffset;
             public uint fileSize;
-            public uint unk2;
+            public uint uncompressedSize;
         }
 
-        public Header header;
-        public List<Entry> entries;
+        FileStream hpb;
 
-        public HPIHPB(String filename, String otherFilename)
+        public HPIHPB(string hpiFilename, string hpbFilename)
         {
-            //which file is what?
-            String hpiFilename;
-            String hpbFilename;
-            if (filename.EndsWith(".HPI"))
-            {
-                hpiFilename = filename;
-                hpbFilename = otherFilename;
-            }
-            else
-            {
-                hpiFilename = otherFilename;
-                hpbFilename = filename;
-            }
-
-            hpi = File.OpenRead(hpiFilename);
-            BinaryReaderX hpiBr = new BinaryReaderX(hpi);
-            //Header
-            header = hpiBr.ReadStruct<Header>();
-
-            //infoList??? - not mapped
-
-            //Entries
-            hpiBr.BaseStream.Position = header.infoSize + header.headerSize + 8;
-            int entryCount = header.entryListSize / 0x10;
-            entries = Enumerable.Range(0, entryCount).Select(_ => hpiBr.ReadStruct<Entry>()).OrderBy(e => e.offset).ToList();
-
-            //Names
             hpb = File.OpenRead(hpbFilename);
-            BinaryReaderX hpbBr = new BinaryReaderX(hpb);
-            hpiBr.BaseStream.Position = header.entryListSize + header.infoSize + header.headerSize + 8;
-            for (int i = 0; i < entryCount; i++)
+            using (var br = new BinaryReaderX(File.OpenRead(hpiFilename)))
             {
-                hpbBr.BaseStream.Position = entries[i].offset;
-                nodes.Add(new Node()
+                //Header
+                var header = br.ReadStruct<HpiHeader>();
+
+                //infoList??? - not mapped
+                br.ReadBytes(header.infoCount * 4);
+
+                //Entries
+                AddRange(br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new Node
                 {
-                    filename = hpiBr.ReadCStringA(),
-                    entry = entries[i],
-                    fileData = new SubStream(hpbBr.BaseStream, entries[i].offset, entries[i].fileSize)
-                });
+                    entry = entry,
+                    filename = br.ReadCStringA(),
+                    fileData = new SubStream(hpb, entry.fileOffset, entry.fileSize)
+                }));
             }
         }
 
         public void Save()
         {
-
+            throw new NotImplementedException();
         }
 
-        public void Close()
-        {
-            hpi.Dispose(); hpb.Dispose();
-            hpi = null; hpb = null;
-        }
+        public void Dispose() => hpb.Dispose();
     }
 }
