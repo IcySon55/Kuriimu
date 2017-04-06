@@ -62,20 +62,17 @@
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Image\JTEX.cs" />
     <Compile Include="Image\RawJTEX.cs" />
-    <Compile Include="IO\BinaryReaderX.cs" />
-    <Compile Include="IO\BinaryWriterX.cs" />
+    <Compile Include="IO\Extensions.cs" />
     <Compile Include="Compression\GZip.cs" />
     <Compile Include="Font\BCFNT.cs" />
     <Compile Include="Compression\CriWare.cs" />
     <Compile Include="Font\XF.cs" />
     <Compile Include="Image\BXLIM.cs" />
-    <Compile Include="IO\SubStream.cs" />
     <Compile Include="Layout\BCLYT.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Archive\DARC.cs" />
     <Compile Include="Image\Common.cs" />
     <Compile Include="Image\XI.cs" />
-    <Compile Include="IO\IOExtensions.cs" />
     <Compile Include="Hardware\OnionFS.cs" />
     <Compile Include="Image\Etc1.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -94,7 +91,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
+      <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
+      <Name>KuriimuContract</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

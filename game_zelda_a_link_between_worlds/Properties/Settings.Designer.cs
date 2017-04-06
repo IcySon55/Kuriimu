@@ -8,38 +8,47 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace game_zelda_a_link_between_worlds.Properties {
-    
-    
+namespace game_zelda_a_link_between_worlds.Properties
+{
+
+
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-        
-        public static Settings Default {
-            get {
+
+        public static Settings Default
+        {
+            get
+            {
                 return defaultInstance;
             }
         }
-        
+
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("A Link Between Worlds")]
-        public string PluginName {
-            get {
+        public string PluginName
+        {
+            get
+            {
                 return ((string)(this["PluginName"]));
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Player")]
-        public string PlayerName {
-            get {
+        public string PlayerName
+        {
+            get
+            {
                 return ((string)(this["PlayerName"]));
             }
-            set {
+            set
+            {
                 this["PlayerName"] = value;
             }
         }

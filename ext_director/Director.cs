@@ -1,30 +1,30 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using ext_director.Properties;
-using KuriimuContract;
+using Kuriimu.Contract;
 
 namespace ext_director
 {
-	public sealed class Director : IExtension
-	{
-		#region Properties
+    public sealed class Director : IExtension
+    {
+        #region Properties
 
-		public string Name => Settings.Default.PluginName;
+        public string Name => Settings.Default.PluginName;
 
-		public Image Icon => Resources.icon;
+        public Image Icon => Resources.icon;
 
-		#endregion
+        #endregion
 
-		public Form CreateInstance()
-		{
-			frmExtension configure = new frmExtension();
-			configure.StartPosition = FormStartPosition.CenterParent;
-			return configure;
-		}
+        public Form CreateInstance()
+        {
+            frmExtension configure = new frmExtension();
+            configure.StartPosition = FormStartPosition.CenterParent;
+            return configure;
+        }
 
-		public override string ToString()
-		{
-			return Name;
-		}
-	}
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
 }

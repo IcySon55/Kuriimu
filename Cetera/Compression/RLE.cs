@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cetera.IO;
+using Kuriimu.IO;
 
 namespace Cetera.Compression
 {

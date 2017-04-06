@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
 using System.Drawing;
 using System.IO;
 using archive_hpi_hpb.Properties;
 using Cetera.Compression;
-using Cetera.IO;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 //Notes:
 //Load in the class constructor
@@ -40,9 +37,9 @@ namespace archive_hpi_hpb
                     byte[] header = new byte[0x20]; compStream.Read(header, 0, 0x20);
                     byte[] comp = new byte[(int)entry.fileSize - 0x20]; compStream.Read(comp, 0, (int)entry.fileSize - 0x20);
 
-                    using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(new MemoryStream(header)))
+                    using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(header)))
                     {
-                        if (br.ReadStruct<KuriimuContract.Magic>() == "ACMP")
+                        if (br.ReadStruct<Magic>() == "ACMP")
                         {
                             br.BaseStream.Position = 0x10;
                             Stream t = new MemoryStream(RevLZ77.Decompress(comp, br.ReadUInt32()));
@@ -115,7 +112,7 @@ namespace archive_hpi_hpb
 
             if (!File.Exists(otherFilename)) return false;
 
-            using (var br = new KuriimuContract.BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
                 return br.ReadString(4) == "HPIH";

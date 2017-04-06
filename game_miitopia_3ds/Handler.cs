@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
-using System.Globalization;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using Cetera.Font;
 using Cetera.Compression;
+using Cetera.Font;
 using game_miitopia_3ds.Properties;
-using KuriimuContract;
+using Kuriimu.Contract;
 
 namespace game_miitopia_3ds
 {
@@ -33,7 +30,7 @@ namespace game_miitopia_3ds
             scale = 0.9f;
             marginX = 10.0f;
             marginY = 10.0f;
-            maxWidth = 400 - marginX*2;
+            maxWidth = 400 - marginX * 2;
             widthMultiplier = 1;
         }
     };
@@ -157,7 +154,7 @@ namespace game_miitopia_3ds
 
                     // get the hex string with the ID ("X.X") part stripped
                     string hexString = codeStringArray[1];
-                    
+
                     if (hexString.Length > 0)
                     {
                         Func<string, byte[], string> Merge = (id, data) => $"\xE{id}{(char)data.Length}{string.Concat(data.Select(b => (char)b))}";
@@ -171,13 +168,13 @@ namespace game_miitopia_3ds
                     else
                     {
                         Func<string, int, string> MergeEmpty = (id, length) => $"\xE{id}{(char)length}";
-                        
+
                         string idHex = "" + (char)int.Parse(idString[0]) +
                                             (char)int.Parse(idString[1]);
 
                         return MergeEmpty(idHex, 0);
                     }
-                    
+
                 }));
 
                 return result;
@@ -230,23 +227,23 @@ namespace game_miitopia_3ds
                     var c = labelString[i];
 
                     var charWidth = baseFont.GetWidthInfo(c).char_width * txtPreview.scale * txtPreview.widthMultiplier;
-                    if (c=='\n' || (x+charWidth >= txtPreview.maxWidth))
+                    if (c == '\n' || (x + charWidth >= txtPreview.maxWidth))
                     {
                         x = 0;
                         y += baseFont.LineFeed * txtPreview.scale;
-                        if (c=='\n')
+                        if (c == '\n')
                         {
                             continue;
                         }
                     }
 
                     // drawing the two fonts with a slightly different offset in order to simulate outline on the text
-                    outlineFont.Draw(c, g, x+txtPreview.offsetX+txtPreview.marginX+2.0f, y+txtPreview.offsetY+txtPreview.marginY+2.0f, 
-                                    txtPreview.scale*txtPreview.widthMultiplier, txtPreview.scale);
+                    outlineFont.Draw(c, g, x + txtPreview.offsetX + txtPreview.marginX + 2.0f, y + txtPreview.offsetY + txtPreview.marginY + 2.0f,
+                                    txtPreview.scale * txtPreview.widthMultiplier, txtPreview.scale);
 
-                    baseFont.Draw(c, g, x+txtPreview.offsetX+txtPreview.marginX, y+txtPreview.offsetY+txtPreview.marginY, 
-                                    txtPreview.scale*txtPreview.widthMultiplier, txtPreview.scale);
-                    
+                    baseFont.Draw(c, g, x + txtPreview.offsetX + txtPreview.marginX, y + txtPreview.offsetY + txtPreview.marginY,
+                                    txtPreview.scale * txtPreview.widthMultiplier, txtPreview.scale);
+
                     x += charWidth;
                 }
             }

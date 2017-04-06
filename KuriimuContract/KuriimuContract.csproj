@@ -8,7 +8,7 @@
     <ProjectGuid>{51E474F7-1497-4C30-BC18-C357C884B8B2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KuriimuContract</RootNamespace>
+    <RootNamespace>Kuriimu.Contract</RootNamespace>
     <AssemblyName>KuriimuContract</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -47,15 +47,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryTools.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="IArchiveManager.cs" />
-    <Compile Include="IImageAdapter.cs" />
-    <Compile Include="IGameHandler.cs" />
-    <Compile Include="IExtension.cs" />
-    <Compile Include="IFileAdapter.cs" />
-    <Compile Include="KUP.cs" />
-    <Compile Include="KupUser.cs" />
+    <Compile Include="Interface\IArchiveManager.cs" />
+    <Compile Include="Interface\IImageAdapter.cs" />
+    <Compile Include="Interface\IGameHandler.cs" />
+    <Compile Include="Interface\IExtension.cs" />
+    <Compile Include="Interface\IFileAdapter.cs" />
+    <Compile Include="IO\BinaryReaderX.cs" />
+    <Compile Include="IO\BinaryWriterX.cs" />
+    <Compile Include="IO\Shared.cs" />
+    <Compile Include="IO\Extensions.cs" />
+    <Compile Include="IO\SubStream.cs" />
+    <Compile Include="Kup\KUP.cs" />
+    <Compile Include="Kup\KupUser.cs" />
     <Compile Include="ListItem.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KuriimuContract.Properties {
+namespace Kuriimu.Contract.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
