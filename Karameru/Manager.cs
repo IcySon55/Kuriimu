@@ -363,6 +363,7 @@ namespace Karameru
 				{
 					if (_tempManager?.Load(filename) == LoadResult.Success)
 					{
+						_archiveManager?.Unload();
 						_archiveManager = _tempManager;
 						_fileOpen = true;
 						_hasChanges = false;
