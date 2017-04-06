@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using Cetera.Image;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_ctpk
 {
@@ -41,7 +40,7 @@ namespace archive_ctpk
         {
             public Entry(Stream input)
             {
-                using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+                using (BinaryReaderX br = new BinaryReaderX(input, true))
                 {
                     nameOffset = br.ReadUInt32();
                     texDataSize = br.ReadUInt32();
@@ -126,7 +125,7 @@ namespace archive_ctpk
 
         public String readASCII(Stream input)
         {
-            using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 String result = "";
                 Encoding ascii = Encoding.GetEncoding("ascii");

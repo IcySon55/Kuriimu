@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
 using System.IO;
+using System.Runtime.InteropServices;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace file_mdt
 {

@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
 using System.IO;
-using Cetera.Compression;
+using System.Runtime.InteropServices;
+using Kuriimu.IO;
 
 namespace archive_pck
 {

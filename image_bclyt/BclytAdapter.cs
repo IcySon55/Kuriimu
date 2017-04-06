@@ -1,11 +1,8 @@
 using System;
-using System.IO;
 using System.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
+using System.IO;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace image_bclyt
 {
@@ -53,7 +50,7 @@ namespace image_bclyt
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _bclyt = BCLYT.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read),filename);
+                _bclyt = BCLYT.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read), filename);
             else
                 result = LoadResult.FileNotFound;
 

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Cetera.Compression;
-using KuriimuContract;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_hpi_hpb
 {
@@ -16,7 +14,7 @@ namespace archive_hpi_hpb
         {
             public String filename;
             public Entry entry;
-            public Cetera.IO.SubStream fileData;
+            public SubStream fileData;
         }
         public List<HPIHPB.Node> nodes = new List<HPIHPB.Node>();
 
@@ -75,7 +73,7 @@ namespace archive_hpi_hpb
             //Entries
             hpiBr.BaseStream.Position = header.infoSize + header.headerSize + 8;
             int entryCount = header.entryListSize / 0x10;
-			entries = Enumerable.Range(0, entryCount).Select(_ => hpiBr.ReadStruct<Entry>()).OrderBy(e => e.offset).ToList();
+            entries = Enumerable.Range(0, entryCount).Select(_ => hpiBr.ReadStruct<Entry>()).OrderBy(e => e.offset).ToList();
 
             //Names
             hpb = File.OpenRead(hpbFilename);
@@ -88,7 +86,7 @@ namespace archive_hpi_hpb
                 {
                     filename = hpiBr.ReadCStringA(),
                     entry = entries[i],
-                    fileData = new Cetera.IO.SubStream(hpbBr.BaseStream, entries[i].offset, entries[i].fileSize)
+                    fileData = new SubStream(hpbBr.BaseStream, entries[i].offset, entries[i].fileSize)
                 });
             }
         }

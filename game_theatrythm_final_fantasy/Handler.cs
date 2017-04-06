@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using Cetera.Font;
 using game_theatrythm_final_fantasy.Properties;
-using KuriimuContract;
+using Kuriimu.Contract;
 
 namespace game_theatrythm_final_fantasy
 {

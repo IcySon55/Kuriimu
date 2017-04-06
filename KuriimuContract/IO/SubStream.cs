@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Cetera.IO
+namespace Kuriimu.IO
 {
     public class SubStream : Stream
     {

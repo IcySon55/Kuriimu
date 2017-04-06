@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
 using System.Drawing;
 using System.IO;
 using archive_ctpk.Properties;
-using Cetera.Compression;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_ctpk
 {

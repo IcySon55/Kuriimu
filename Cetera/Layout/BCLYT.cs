@@ -1,15 +1,10 @@
-﻿using Cetera.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using Cetera.IO;
+using Kuriimu.IO;
 
 namespace Cetera.Layout
 {
@@ -100,11 +95,11 @@ namespace Cetera.Layout
                                 // incomplete
                                 break;
                             case "pic1":
-                                // incomplete
+                            // incomplete
                             case "pan1":
-                                // incomplete
+                            // incomplete
                             case "wnd1":
-                                 // incomplete
+                            // incomplete
                             case "bnd1":
                                 // incomplete
                                 var pane = br.ReadStruct<Pane>();

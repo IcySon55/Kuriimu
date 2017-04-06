@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Cetera.IO
+namespace Kuriimu.IO
 {
-    public static class IOExtensions
+    public static class Extensions
     {
         public static unsafe T ToStruct<T>(this byte[] buffer)
         {

@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cetera.Image;
-using KuriimuContract;
-using Cetera.Compression;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace image_jtex
 {

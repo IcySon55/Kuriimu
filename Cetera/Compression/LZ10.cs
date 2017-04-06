@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Cetera.IO;
+using Kuriimu.IO;
 
 //Compression code from dsdecmp
 

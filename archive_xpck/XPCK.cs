@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using KuriimuContract;
-using Cetera.Compression;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using Cetera.Compression;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_xpck
 {
@@ -144,7 +143,7 @@ namespace archive_xpck
             Encoding encode = Encoding.GetEncoding("ascii");
             String result = "";
 
-            using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 var letters = br.ReadBytes(1);
                 bool nul;

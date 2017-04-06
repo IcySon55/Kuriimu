@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Runtime.InteropServices;
-using Cetera.Compression;
-using KuriimuContract;
+using System.Text;
+using Kuriimu.IO;
 
 namespace file_tdt
 {
@@ -25,7 +23,7 @@ namespace file_tdt
         {
             public TDTEntry(Stream input)
             {
-                using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+                using (BinaryReaderX br = new BinaryReaderX(input, true))
                 {
                     entrySize = br.ReadInt32();
                     dataOffset = br.ReadInt32();
@@ -47,7 +45,7 @@ namespace file_tdt
             Encoding encode = Encoding.GetEncoding("ascii");
             String result = "";
 
-            using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 var letters = br.ReadBytes(1);
                 bool nul;
@@ -67,7 +65,7 @@ namespace file_tdt
             Encoding encode = Encoding.GetEncoding("sjis");
             String result = "";
 
-            using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(input, true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 var letters = br.ReadBytes(2).Reverse().ToArray();
                 bool nul;
@@ -93,7 +91,7 @@ namespace file_tdt
 
         public TDT(String filename)
         {
-            using (Cetera.IO.BinaryReaderX br = new Cetera.IO.BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read), true))
+            using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read), true))
             {
                 header = br.ReadStruct<Header>();
                 entries = new TDTEntry[header.entryCount];

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Cetera.IO;
+using Kuriimu.IO;
 
 namespace Cetera.Archive
 {
@@ -49,7 +49,7 @@ namespace Cetera.Archive
                 // @todo: the header is currently unused
                 br.ReadStruct<Header>();
 
-                var lst = new List<TableEntry> {br.ReadStruct<TableEntry>()};
+                var lst = new List<TableEntry> { br.ReadStruct<TableEntry>() };
                 for (int i = 0; i < lst[0].size - 1; i++)
                     lst.Add(br.ReadStruct<TableEntry>());
 
