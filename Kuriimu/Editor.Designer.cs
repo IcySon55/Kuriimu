@@ -98,6 +98,7 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbFind = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.tsbKukki = new System.Windows.Forms.ToolStripButton();
             this.tsbProperties = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
@@ -111,7 +112,6 @@
             this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
-            this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -318,7 +318,7 @@
             this.sortEntriesToolStripMenuItem.Enabled = false;
             this.sortEntriesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_unsorted;
             this.sortEntriesToolStripMenuItem.Name = "sortEntriesToolStripMenuItem";
-            this.sortEntriesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+            this.sortEntriesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
             this.sortEntriesToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.sortEntriesToolStripMenuItem.Text = "&Sort Entries";
@@ -903,6 +903,15 @@
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
+            // tsbKarameru
+            // 
+            this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbKarameru.Name = "tsbKarameru";
+            this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
+            this.tsbKarameru.Text = "Karameru";
+            this.tsbKarameru.Click += new System.EventHandler(this.tsbKarameru_Click);
+            // 
             // tsbKukki
             // 
             this.tsbKukki.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -1022,14 +1031,6 @@
             this.imlEntries.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
             this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // tsbKarameru
-            // 
-            this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbKarameru.Name = "tsbKarameru";
-            this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
-            this.tsbKarameru.Text = "Karameru";
             // 
             // frmEditor
             // 
