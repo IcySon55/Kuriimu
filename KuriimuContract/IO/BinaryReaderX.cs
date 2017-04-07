@@ -13,7 +13,7 @@ namespace Kuriimu.IO
 
         public ByteOrder ByteOrder { get; set; }
 
-        public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : this(input, true, byteOrder)
+        public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : this(input, false, byteOrder)
         {
         }
 

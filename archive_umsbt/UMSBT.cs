@@ -14,7 +14,7 @@ namespace archive_umsbt
         public UMSBT(FileStream fs)
         {
             _fileStream = fs;
-            using (var br = new BinaryReaderX(fs))
+            using (var br = new BinaryReaderX(fs, true))
             {
                 uint index = 0;
                 while (br.BaseStream.Position < br.BaseStream.Length)
