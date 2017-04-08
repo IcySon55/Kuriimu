@@ -10,6 +10,7 @@ namespace file_msbt
     public sealed class MSBT
     {
         public const string LabelFilter = @"^[a-zA-Z0-9_]+$";
+        public const uint LabelHashMagic = 0x492;
         public const int LabelMaxLength = 64;
 
         public Header Header = new Header();
@@ -93,20 +94,6 @@ namespace file_msbt
         }
 
         // Tools
-        public uint LabelChecksum(string label)
-        {
-            uint group = 0;
-
-            for (int i = 0; i < label.Length; i++)
-            {
-                group *= 0x492;
-                group += label[i];
-                group &= 0xFFFFFFFF;
-            }
-
-            return group % LBL1.NumberOfGroups;
-        }
-
         public string GetString(byte[] bytes)
         {
             StringBuilder sb = new StringBuilder();
@@ -193,7 +180,7 @@ namespace file_msbt
             foreach (Label lbl in LBL1.Labels)
             {
                 uint previousChecksum = lbl.Checksum;
-                lbl.Checksum = SimpleHash.Create(lbl.Name, 0x492, LBL1.NumberOfGroups);
+                lbl.Checksum = SimpleHash.Create(lbl.Name, LabelHashMagic, LBL1.NumberOfGroups);
 
                 if (previousChecksum != lbl.Checksum)
                 {
@@ -315,7 +302,7 @@ namespace file_msbt
             nlbl.Length = (uint)name.Trim().Length;
             nlbl.Name = name.Trim();
             nlbl.Index = (uint)TXT2.Strings.IndexOf(nstr);
-            nlbl.Checksum = SimpleHash.Create(name.Trim(), 0x492, LBL1.NumberOfGroups);
+            nlbl.Checksum = SimpleHash.Create(name.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
             nlbl.String = nstr;
             LBL1.Labels.Add(nlbl);
 
@@ -331,7 +318,7 @@ namespace file_msbt
             label.Length = (uint)Encoding.ASCII.GetBytes(newName.Trim()).Length;
             label.Name = newName.Trim();
             LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
-            label.Checksum = SimpleHash.Create(newName.Trim(), 0x492, LBL1.NumberOfGroups);
+            label.Checksum = SimpleHash.Create(newName.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
             LBL1.Groups[(int)label.Checksum].NumberOfLabels += 1;
         }
 

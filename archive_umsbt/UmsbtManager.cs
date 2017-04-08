@@ -71,7 +71,7 @@ namespace archive_umsbt
             try
             {
                 // Save As...
-                if (filename.Trim() != string.Empty)
+                if (!string.IsNullOrWhiteSpace(filename))
                 {
                     _umsbt.Save(File.Create(_fileInfo.FullName));
                     _umsbt.Close();
