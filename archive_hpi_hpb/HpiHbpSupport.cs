@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.Compression;
@@ -48,8 +48,7 @@ namespace archive_hpi_hpb
 
     public class HashSort : IComparable<HashSort>
     {
-        public Entry Entry;
-        public string FileName;
+        public HpiHpbAfi Entry;
         public uint Hash;
 
         public int CompareTo(HashSort rhs) => Hash.CompareTo(rhs.Hash);
@@ -78,8 +77,7 @@ namespace archive_hpi_hpb
             if (Entry.uncompressedSize == 0) return fileData;
             using (var br = new BinaryReaderX(fileData))
             {
-                Stream compData = new MemoryStream(RevLZ77.Compress(br.ReadBytes((int)fileData.Length)));
-                return compData;
+                return new MemoryStream(RevLZ77.Compress(br.ReadBytes((int)fileData.Length)));
             }
         }
     }
