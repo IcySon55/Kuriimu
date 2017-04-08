@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HpiHbpSupport.cs" />
     <Compile Include="HPIHPB.cs" />
     <Compile Include="HpiHpbManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
