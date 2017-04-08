@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Kuriimu.IO;
+using Cetera.Hash;
 
 namespace file_msbt
 {
@@ -192,7 +193,7 @@ namespace file_msbt
             foreach (Label lbl in LBL1.Labels)
             {
                 uint previousChecksum = lbl.Checksum;
-                lbl.Checksum = LabelChecksum(lbl.Name);
+                lbl.Checksum = SimpleHash.Create(lbl.Name, 0x492, LBL1.NumberOfGroups);
 
                 if (previousChecksum != lbl.Checksum)
                 {
@@ -314,7 +315,7 @@ namespace file_msbt
             nlbl.Length = (uint)name.Trim().Length;
             nlbl.Name = name.Trim();
             nlbl.Index = (uint)TXT2.Strings.IndexOf(nstr);
-            nlbl.Checksum = LabelChecksum(name.Trim());
+            nlbl.Checksum = SimpleHash.Create(name.Trim(), 0x492, LBL1.NumberOfGroups);
             nlbl.String = nstr;
             LBL1.Labels.Add(nlbl);
 
@@ -330,7 +331,7 @@ namespace file_msbt
             label.Length = (uint)Encoding.ASCII.GetBytes(newName.Trim()).Length;
             label.Name = newName.Trim();
             LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
-            label.Checksum = LabelChecksum(newName.Trim());
+            label.Checksum = SimpleHash.Create(newName.Trim(), 0x492, LBL1.NumberOfGroups);
             LBL1.Groups[(int)label.Checksum].NumberOfLabels += 1;
         }
 

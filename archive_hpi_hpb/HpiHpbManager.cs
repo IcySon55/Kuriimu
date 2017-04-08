@@ -9,7 +9,6 @@ using Kuriimu.IO;
 
 //Notes:
 //Load in the class constructor
-//Don't use using directive if you want to leave a handle open!!
 //If compressed Files are given in the archive:
 // -> make a new ArchiveFileInfo derived from the original
 // -> set all needed parameters in there
@@ -40,7 +39,7 @@ namespace archive_hpi_hpb
         // Information
         public string Name => Settings.Default.PluginName;
         public string Description => "Atlus Archive (for EOV)";
-        public string Extension => "*.HPI;*.HPB";
+        public string Extension => "*.hpi;*.hpb";
         public string About => "This is the HPI/HPB archive manager for Karameru.";
 
         // Feature Support
@@ -67,8 +66,8 @@ namespace archive_hpi_hpb
 
         public bool Identify(string filename)
         {
-            var hpiFilename = filename.Remove(filename.Length - 1) + "i";
-            var hpbFilename = filename.Remove(filename.Length - 1) + "b";
+            String hpiFilename = filename.Remove(filename.Length - 1) + "i";
+            String hpbFilename = filename.Remove(filename.Length - 1) + "b";
             if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return false;
 
             using (var br = new BinaryReaderX(File.OpenRead(hpiFilename)))
@@ -81,6 +80,8 @@ namespace archive_hpi_hpb
         {
             var hpiFilename = filename.Remove(filename.Length - 1) + "i";
             var hpbFilename = filename.Remove(filename.Length - 1) + "b";
+
+            _fileInfo = new FileInfo(filename);
 
             if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename))
             {
@@ -103,13 +104,13 @@ namespace archive_hpi_hpb
                 // Save As...
                 if (!string.IsNullOrWhiteSpace(filename))
                 {
-                    //_hpihpb.Save(File.Create(_fileInfo.FullName + ".hpi"), File.Create(_fileInfo.FullName + ".hpb"));
+                    _hpihpb.Save(File.Create(_fileInfo.FullName + ".hpi"), File.Create(_fileInfo.FullName + ".hpb"), Files);
                     _hpihpb.Dispose();
                 }
                 else
                 {
                     // Create the temp file
-                    //_hpihpb.Save(File.Create(_fileInfo.FullName + ".hpi.tmp"), File.Create(_fileInfo.FullName + ".hpb.tmp"));
+                    _hpihpb.Save(File.Create(_fileInfo.FullName + ".hpi.tmp"), File.Create(_fileInfo.FullName + ".hpb.tmp"), Files);
                     _hpihpb.Dispose();
                     // Delete the original
                     _fileInfo.Delete();
