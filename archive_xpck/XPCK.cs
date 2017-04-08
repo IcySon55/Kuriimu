@@ -1,161 +1,124 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Linq;
 using System.Text;
 using Cetera.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Hash;
 
 namespace archive_xpck
 {
-    public sealed class XPCK : List<XPCK.Node>
+    public sealed class XPCK
     {
-        public class Node
-        {
-            public String filename;
-            public Entry entry;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
-        {
-            public Magic magic;
-            public byte fileCount;
-            public byte unk1;
-            ushort tmp1;
-            ushort tmp2;
-            ushort tmp3;
-            ushort tmp4;
-            ushort tmp5;
-            uint tmp6;
-
-            public ushort fileInfoOffset => (ushort)(tmp1 * 4);
-            public ushort filenameTableOffset => (ushort)(tmp2 * 4);
-            public ushort dataOffset => (ushort)(tmp3 * 4);
-            public ushort fileInfoSize => (ushort)(tmp4 * 4);
-            public ushort filenameTableSize => (ushort)(tmp5 * 4);
-            public uint dataSize => tmp6 * 4;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Entry
-        {
-            public uint crc32;
-            ushort unk1;
-            ushort tmp1;
-            public uint fileSize;
-
-            public ushort fileOffset => (ushort)(tmp1 * 4);
-            /*public uint crc32;
-            uint mer1;
-            uint mer2;
-
-            public uint offset => (mer1 >> 16) * 4;
-            public uint fileSize => (mer2 & 0xFFFF) | (((mer2 >> 16) % 8) << 8 | ((mer2 >> 16) / 8));*/
-        }
-
-        public Header header;
-        public List<Entry> entries;
-        public List<String> nameList;
+        public List<XPCKFileInfo> Files = new List<XPCKFileInfo>();
 
         public XPCK(String filename)
         {
-            using (BinaryReaderX tmpbr = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            Stream input;
+
+            using (BinaryReaderX xpckBr = new BinaryReaderX(File.OpenRead(filename)))
             {
-                Stream input;
-                if (tmpbr.ReadString(4) == "XPCK")
+                if (xpckBr.ReadString(4) == "XPCK")
                 {
-                    tmpbr.BaseStream.Position = 0;
-                    input = tmpbr.BaseStream;
+                    xpckBr.BaseStream.Position = 0;
+                    input = new MemoryStream(xpckBr.ReadBytes((int)xpckBr.BaseStream.Length));
                 }
                 else
                 {
-                    tmpbr.BaseStream.Position = 0;
-                    byte[] decomp = CriWare.GetDecompressedBytes(tmpbr.BaseStream);
+                    xpckBr.BaseStream.Position = 0;
+                    byte[] decomp = CriWare.GetDecompressedBytes(xpckBr.BaseStream);
                     input = new MemoryStream(decomp);
                 }
+            }
 
-                using (BinaryReaderX br = new BinaryReaderX(input))
+            using (BinaryReaderX xpckBr = new BinaryReaderX(input))
+            {
+                //Header
+                var header = xpckBr.ReadStruct<Header>();
+                int fileCount = header.fileInfoSize / 0xc;
+
+                //fileInfo
+                var entries = new List<Entry>();
+                entries.AddRange(xpckBr.ReadMultiple<Entry>(fileCount).OrderBy(e => e.fileOffset));
+
+                //nameList
+                var nameList = new List<String>();
+                byte[] uncompressedNameList = CriWare.GetDecompressedBytes(new MemoryStream(xpckBr.ReadBytes(header.filenameTableSize)));
+                using (BinaryReaderX nlBr = new BinaryReaderX(new MemoryStream(uncompressedNameList)))
+                    for (int i = 0; i < fileCount; i++)
+                        nameList.Add(nlBr.ReadCStringA());
+
+                for (int i = 0; i < fileCount; i++)
                 {
-                    //Header
-                    header = br.ReadStruct<Header>();
-
-                    //fileInfo
-                    br.BaseStream.Position = header.fileInfoOffset;
-                    entries = new List<Entry>();
-                    for (int i = 0; i < header.fileCount; i++)
+                    xpckBr.BaseStream.Position = header.dataOffset + entries[i].fileOffset;
+                    Files.Add(new XPCKFileInfo()
                     {
-                        entries.Add(br.ReadStruct<Entry>());
-                    }
-                    SortEntries(entries);
-
-                    //nameList
-                    br.BaseStream.Position = header.filenameTableOffset;
-                    byte[] nl = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes(header.filenameTableSize)));
-                    nameList = new List<String>();
-                    using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(nl)))
-                    {
-                        while (br2.BaseStream.Position < nl.Length)
-                        {
-                            nameList.Add(readASCII(br2.BaseStream));
-                        }
-                    }
-
-                    for (int i = 0; i < header.fileCount; i++)
-                    {
-                        br.BaseStream.Position = entries[i].fileOffset + header.dataOffset;
-                        Add(new Node()
-                        {
-                            filename = nameList[i],
-                            entry = entries[i],
-                        });
-                    }
-
-                    int t = 0;
+                        Entry = entries[i],
+                        FileName = nameList[i],
+                        FileData = new MemoryStream(xpckBr.ReadBytes(entries[i].fileSize)),
+                        State = ArchiveFileState.Archived
+                    });
                 }
             }
         }
 
-        public void SortEntries(List<Entry> entries)
+        public void Save(Stream xpck)
         {
-            //BubbleSort
-            Entry help;
-            bool sort;
-            do
+            using (BinaryWriterX xpckBw = new BinaryWriterX(xpck))
             {
-                sort = true;
-                for (int i = 0; i < entries.Count - 1; i++)
+                int fileOffset = 0;
+                int nameListLength = 0;
+
+                //Header
+                xpckBw.WriteASCII("XPCK");
+                xpckBw.Write((byte)Files.Count());
+                xpckBw.Write((byte)0); //unknown
+                xpckBw.Write((short)0x5);
+                xpckBw.Write((short)((Files.Count() * 0xc + 0x14) / 4));
+                xpckBw.Write((short)0);
+                xpckBw.Write((short)(Files.Count() * 0xc / 4));
+                xpckBw.Write((short)0);
+                xpckBw.Write(0);
+
+                //nameList
+                xpckBw.BaseStream.Position = 0x14 + Files.Count * 0xc + 4;
+                for (int i = 0; i < Files.Count(); i++)
                 {
-                    if (entries[i].fileOffset > entries[i + 1].fileOffset)
-                    {
-                        sort = false;
-                        help = entries[i];
-                        entries[i] = entries[i + 1];
-                        entries[i + 1] = help;
-                    }
+                    xpckBw.WriteASCII(Files[i].FileName); xpckBw.Write((byte)0);
+                    nameListLength += Files[i].FileName.Length + 1;
                 }
-            } while (sort == false);
-        }
+                while (nameListLength % 4 != 0) { xpckBw.Write((byte)0); nameListLength++; }
+                xpckBw.BaseStream.Position = 0x14 + Files.Count * 0xc;
+                xpckBw.Write(nameListLength << 3);
 
-        public static String readASCII(Stream input)
-        {
-            Encoding encode = Encoding.GetEncoding("ascii");
-            String result = "";
-
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
-            {
-                var letters = br.ReadBytes(1);
-                bool nul;
-                do
+                //entryList
+                xpckBw.BaseStream.Position = 0x14;
+                for (int i = 0; i < Files.Count(); i++)
                 {
-                    nul = true;
-                    result += encode.GetString(letters);
-                    letters = br.ReadBytes(1);
-                    for (int i = 0; i < 1; i++) if (letters[i] != 0) nul = false;
-                } while (nul == false);
+                    xpckBw.Write(Files[i].Entry.crc32);
+                    xpckBw.Write(Files[i].Entry.ID);
+                    xpckBw.Write((short)(fileOffset / 4));
 
-                return result;
+                    long bk = xpckBw.BaseStream.Position;
+                    xpckBw.BaseStream.Position = nameListLength + 0x14 + Files.Count * 0xc + 4 + fileOffset;
+                    xpckBw.Write(new BinaryReaderX(Files[i].FileData).ReadBytes(Files[i].Entry.fileSize));
+                    xpckBw.BaseStream.Position = bk;
+
+                    fileOffset += (int)Files[i].FileData.Length;
+                    while (fileOffset % 4 != 0) fileOffset++;
+                    xpckBw.Write(Files[i].Entry.fileSize);
+                }
+                int dataLength = fileOffset;
+
+                //Header - write missing information
+                xpckBw.BaseStream.Position = 0xa;
+                xpckBw.Write((short)((nameListLength + 0x14 + Files.Count * 0xc + 4) / 4));
+                xpckBw.BaseStream.Position = 0xe;
+                xpckBw.Write((short)((nameListLength + 4) / 4));
+                xpckBw.BaseStream.Position = 0x10;
+                xpckBw.Write(dataLength);
             }
         }
     }

@@ -2,20 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using archive_xpck.Properties;
 using Cetera.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Hash;
 
 namespace archive_xpck
 {
-    public class SarcAdapter : IArchiveManager
+    public class XpckAdapter : IArchiveManager
     {
-        public class XpckAfi : ArchiveFileInfo
-        {
-            XPCK.Entry pckEntry;
-        }
-
         private FileInfo _fileInfo = null;
         private XPCK _xpck = null;
 
@@ -31,9 +28,9 @@ namespace archive_xpck
         public bool ArchiveHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
+        public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {
@@ -51,13 +48,17 @@ namespace archive_xpck
 
         public bool Identify(string filename)
         {
+            //Console.WriteLine(Crc32.Create(new byte[] { 0x30, 0x30, 0x30, 0x2e, 0x61, 0x74, 0x72 }));
+            //return false;
+
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
                 if (br.ReadString(4) == "XPCK") return true;
 
                 br.BaseStream.Position = 0;
-                byte[] decomp = CriWare.GetDecompressedBytes(br.BaseStream);
+                byte[] decomp;
+                try { decomp = CriWare.GetDecompressedBytes(br.BaseStream); } catch { return false; }
                 return new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "XPCK";
             }
         }
@@ -85,7 +86,23 @@ namespace archive_xpck
 
             try
             {
-                //_xpck.Save(_fileInfo.FullName);
+                // Save As...
+                if (!string.IsNullOrWhiteSpace(filename))
+                {
+                    _xpck.Save(File.Create(_fileInfo.FullName));
+                }
+                else
+                {
+                    // Create the temp file
+                    _xpck.Save(File.Create(_fileInfo.FullName + ".tmp"));
+                    // Delete the original
+                    _fileInfo.Delete();
+                    // Rename the temporary file
+                    File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
+                }
+
+                // Reload the new file to make sure everything is in order
+                Load(_fileInfo.FullName);
             }
             catch (Exception)
             {
@@ -97,7 +114,7 @@ namespace archive_xpck
 
         public void Unload()
         {
-            // TODO: Implement closing open handles here
+
         }
 
         // Files
@@ -105,23 +122,33 @@ namespace archive_xpck
         {
             get
             {
-                var files = new List<ArchiveFileInfo>();
-
-                foreach (var node in _xpck)
-                {
-                    var file = new ArchiveFileInfo();
-                    //file.Filesize = node.entry.fileSize;
-                    file.FileName = node.filename;
-                    files.Add(file);
-                }
-
-                return files;
+                return _xpck.Files;
             }
         }
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            return false;
+            try
+            {
+                _xpck.Files.Add(new XPCKFileInfo()
+                {
+                    Entry = new Entry()
+                    {
+                        crc32 = Crc32.Create(Encoding.ASCII.GetBytes(afi.FileName)),
+                        ID = (ushort)(_xpck.Files.Count * 8),
+                        fileSize = (int)afi.FileData.Length
+                    },
+                    FileData = afi.FileData,
+                    FileName = afi.FileName,
+                    State = afi.State
+                });
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool RenameFile(ArchiveFileInfo afi)
