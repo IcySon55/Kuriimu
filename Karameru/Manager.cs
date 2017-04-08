@@ -483,7 +483,7 @@ namespace Karameru
 
                             if (parts.Last() == part)
                             {
-                                string ext = Path.GetExtension(part);
+                                string ext = Tools.GetExtension(part);
 
                                 if (_fileExtensions.Contains(ext))
                                     child.ImageKey = "tree-text-file";

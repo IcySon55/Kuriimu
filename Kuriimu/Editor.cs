@@ -173,6 +173,16 @@ namespace Kuriimu
             p.Start();
         }
 
+        private void tsbKarameru_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "karameru.exe"));
+            start.WorkingDirectory = Application.StartupPath;
+
+            Process p = new Process();
+            p.StartInfo = start;
+            p.Start();
+        }
+
         private void addEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (treEntries.Focused)

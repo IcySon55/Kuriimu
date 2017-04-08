@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Kuriimu.Contract
@@ -122,6 +123,11 @@ namespace Kuriimu.Contract
             }
 
             tre.SelectedNode = result;
+        }
+
+        public static string GetExtension(string path)
+        {
+            return Regex.Match(path, @"\..+$").Value;
         }
 
         public static void DoubleBuffer(Control ctrl, bool doubleBuffered)

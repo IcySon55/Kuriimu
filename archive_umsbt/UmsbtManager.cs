@@ -82,7 +82,7 @@ namespace archive_umsbt
                     _umsbt.Save(File.Create(_fileInfo.FullName + ".tmp"));
                     _umsbt.Close();
                     // Delete the original
-                    File.Delete(_fileInfo.FullName);
+                    _fileInfo.Delete();
                     // Rename the temporary file
                     File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
                 }
