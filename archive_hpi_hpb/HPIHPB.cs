@@ -108,7 +108,7 @@ namespace archive_hpi_hpb
 
                     if (entry.Entry.State == ArchiveFileState.Added)
                     {
-                        byte[] data = new BinaryReaderX(entry.Entry.FileData).ReadBytes((int)entry.Entry.FileData.Length);
+                        byte[] data = new BinaryReaderX(entry.Entry.fileDataOrig).ReadBytes((int)entry.Entry.fileDataOrig.Length);
                         hpbBw.Write(data, 0, data.Count());
 
                         // File Length
@@ -119,23 +119,19 @@ namespace archive_hpi_hpb
                     }
                     else
                     {
-                        Stream compData = entry.Entry.FileData;
+                        Stream compData = entry.Entry.fileDataOrig;
 
                         if (entry.Entry.State == ArchiveFileState.Replaced && entry.Entry.Entry.uncompressedSize != 0)
                         {
-                            compData = entry.Entry.GetCompressedStream(entry.Entry.FileData);
+                            compData = entry.Entry.GetCompressedStream(entry.Entry.fileDataOrig);
 
                             // ACMP Header
                             hpbBw.WriteASCII("ACMP");
                             hpbBw.Write((int)compData.Length + 0x20);
                             hpbBw.Write(0x20);
                             hpbBw.Write(0);
-                            hpbBw.Write((int)entry.Entry.FileData.Length);
+                            hpbBw.Write((int)entry.Entry.fileDataOrig.Length);
                             for (int j = 0; j < 3; j++) hpbBw.Write(0x01234567);
-                        }
-                        else
-                        {
-                            compData = entry.Entry.FileData;
                         }
 
                         byte[] data = new BinaryReaderX(compData).ReadBytes((int)compData.Length);
@@ -148,14 +144,14 @@ namespace archive_hpi_hpb
 
                         // Uncompressed Size
                         if (entry.Entry.State == ArchiveFileState.Replaced && entry.Entry.Entry.uncompressedSize != 0)
-                            hpiBw.Write((int)entry.Entry.FileData.Length);
+                            hpiBw.Write((int)entry.Entry.fileDataOrig.Length);
                         else hpiBw.Write((int)entry.Entry.Entry.uncompressedSize);
                     }
                     count++;
                 }
             }
 
-            hpbBw.Close();
+            hpbBw.Dispose();
         }
 
         public void Dispose()

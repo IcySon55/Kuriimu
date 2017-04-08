@@ -58,13 +58,15 @@ namespace archive_hpi_hpb
     {
         public Entry Entry;
 
-        public override Stream FileData => base.FileData ?? GetUncompressedStream();
+        public override Stream FileData => GetUncompressedStream(base.FileData);
 
-        public Stream GetUncompressedStream()
+        public Stream fileDataOrig => base.FileData;
+
+        public Stream GetUncompressedStream(Stream fileData)
         {
-            FileData.Position = 0;
-            if (Entry.uncompressedSize == 0) return FileData;
-            using (var br = new BinaryReaderX(FileData, true))
+            fileData.Position = 0;
+            if (Entry.uncompressedSize == 0) return fileData;
+            using (var br = new BinaryReaderX(fileData, true))
             {
                 var header = br.ReadStruct<AcmpHeader>();
                 return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize), header.uncompressedSize));

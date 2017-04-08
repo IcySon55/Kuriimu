@@ -93,7 +93,7 @@ namespace archive_hpi_hpb
                 _fileInfo = new FileInfo(filename);
 
             var hpiFilename = _fileInfo.FullName;
-            var hpbFilename = _fileInfo.FullName.Remove(filename.Length - 1) + "B";
+            var hpbFilename = _fileInfo.FullName.Remove(_fileInfo.FullName.Length - 1) + "B";
 
             try
             {
