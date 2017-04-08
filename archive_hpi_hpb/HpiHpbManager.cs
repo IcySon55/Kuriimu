@@ -59,9 +59,6 @@ namespace archive_hpi_hpb
 
         public bool Identify(string filename)
         {
-            Console.WriteLine(Cetera.Hash.SimpleHash.Create("BATTLE/EFFECT/AFTER/AE127.TBL", 0x25, 0x1000));
-            return false;
-
             String hpiFilename = filename;
             String hpbFilename = filename.Remove(filename.Length - 1) + "B";
             if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return false;
