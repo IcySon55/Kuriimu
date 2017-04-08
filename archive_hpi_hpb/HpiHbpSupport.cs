@@ -46,12 +46,10 @@ namespace archive_hpi_hpb
         public int padding0, padding1, padding2; // equal to 0x01234567
     }
 
-    public class HashSort : IComparable<HashSort>
+    public class HashSort
     {
         public HpiHpbAfi Entry;
         public uint Hash;
-
-        public int CompareTo(HashSort rhs) => Hash.CompareTo(rhs.Hash);
     }
 
     public class HpiHpbAfi : ArchiveFileInfo
