@@ -51,18 +51,22 @@ namespace archive_hpi_hpb
                 hpiBw.Write(0x10);
                 hpiBw.Write(0);
                 hpiBw.Write((short)0);
-                hpiBw.Write((short)0x1000);
+                hpiBw.Write((short)HashSlotCount);
                 hpiBw.Write(this.Count());
 
                 //hashList
                 List<HashSort> hashSort = new List<HashSort>();
-                for (int i = 0; i < this.Count(); i++) hashSort.Add(new HashSort() { Entry = this[i].Entry, FileName = this[i].FileName, Hash = SimpleHash.Create(this[i].FileName, PathHashMagic, HashSlotCount) });
-                hashSort.Sort(); // = hashSort.OrderBy(e => e.hash).ToList();
+                foreach (var entry in this)
+                    hashSort.Add(new HashSort()
+                    {
+                        Entry = entry,
+                        Hash = SimpleHash.Create(entry.FileName, PathHashMagic, HashSlotCount)
+                    });
+                hashSort = hashSort.OrderBy(e => e.Hash).ToList();
 
                 int hash = 0;
                 int hashes = 0;
                 int count = 0;
-                Console.WriteLine(hashSort.Count());
                 for (int i = 0; i < hashSort.Count(); i++)
                 {
                     if (hashSort[i].Hash == hash)
@@ -90,21 +94,21 @@ namespace archive_hpi_hpb
                 // Entry List
                 int nameListOffset = 0x18 + 0x4000 + this.Count() * 0x10;
                 count = 0;
-                foreach (var entry in this)
+                foreach (var entry in hashSort)
                 {
                     // Name Offset + Name List Entry
-                    int nameOffset = (hpiBw.BaseStream.Length >= nameListOffset) ? nameOffset = (int)hpiBw.BaseStream.Length - nameListOffset : nameOffset = 0;
+                    int nameOffset = (hpiBw.BaseStream.Length >= nameListOffset) ? (int)hpiBw.BaseStream.Length - nameListOffset : 0;
                     hpiBw.Write(nameOffset);
                     hpiBw.BaseStream.Position = nameListOffset + nameOffset;
-                    hpiBw.WriteASCII(entry.FileName); hpiBw.Write((byte)0);
+                    hpiBw.WriteASCII(entry.Entry.FileName); hpiBw.Write((byte)0);
 
                     // File Offset
-                    hpiBw.BaseStream.Position = 0x4018 + count * 0x10;
+                    hpiBw.BaseStream.Position = 0x4018 + count * 0x10 + 0x4;
                     hpiBw.Write((uint)hpbBw.BaseStream.Length);
 
-                    if (entry.State == ArchiveFileState.Added)
+                    if (entry.Entry.State == ArchiveFileState.Added)
                     {
-                        byte[] data = new BinaryReaderX(entry.FileData).ReadBytes((int)entry.FileData.Length);
+                        byte[] data = new BinaryReaderX(entry.Entry.FileData).ReadBytes((int)entry.Entry.FileData.Length);
                         hpbBw.Write(data, 0, data.Count());
 
                         // File Length
@@ -115,29 +119,37 @@ namespace archive_hpi_hpb
                     }
                     else
                     {
-                        Stream compData = entry.FileData;
+                        Stream compData = entry.Entry.FileData;
 
-                        if (entry.State == ArchiveFileState.Replaced)
+                        if (entry.Entry.State == ArchiveFileState.Replaced && entry.Entry.Entry.uncompressedSize != 0)
                         {
-                            compData = entry.GetCompressedStream(entry.FileData);
+                            compData = entry.Entry.GetCompressedStream(entry.Entry.FileData);
 
                             // ACMP Header
                             hpbBw.WriteASCII("ACMP");
                             hpbBw.Write((int)compData.Length + 0x20);
                             hpbBw.Write(0x20);
                             hpbBw.Write(0);
-                            hpbBw.Write((int)entry.FileData.Length);
+                            hpbBw.Write((int)entry.Entry.FileData.Length);
                             for (int j = 0; j < 3; j++) hpbBw.Write(0x01234567);
+                        }
+                        else
+                        {
+                            compData = entry.Entry.FileData;
                         }
 
                         byte[] data = new BinaryReaderX(compData).ReadBytes((int)compData.Length);
                         hpbBw.Write(data, 0, data.Count());
 
                         // File Length
-                        if (entry.State == ArchiveFileState.Replaced) hpiBw.Write(data.Count() + 0x20); else hpiBw.Write(data.Count());
+                        if (entry.Entry.State == ArchiveFileState.Replaced && entry.Entry.Entry.uncompressedSize != 0)
+                            hpiBw.Write(data.Count() + 0x20);
+                        else hpiBw.Write(data.Count());
 
                         // Uncompressed Size
-                        if (entry.State == ArchiveFileState.Replaced) hpiBw.Write((int)entry.FileData.Length); else hpiBw.Write((int)entry.FileData.Length);
+                        if (entry.Entry.State == ArchiveFileState.Replaced && entry.Entry.Entry.uncompressedSize != 0)
+                            hpiBw.Write((int)entry.Entry.FileData.Length);
+                        else hpiBw.Write((int)entry.Entry.Entry.uncompressedSize);
                     }
                     count++;
                 }
