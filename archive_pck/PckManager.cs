@@ -4,16 +4,13 @@ using System.Drawing;
 using System.IO;
 using archive_pck.Properties;
 using Kuriimu.Contract;
+using Kuriimu.IO;
+using Cetera.Hash;
 
 namespace archive_pck
 {
-    public class SarcAdapter : IArchiveManager
+    public class PckAdapter : IArchiveManager
     {
-        public class PckAfi : ArchiveFileInfo
-        {
-            public PCK.Entry pckEntry;
-        }
-
         private FileInfo _fileInfo = null;
         private PCK _pck = null;
 
@@ -29,9 +26,9 @@ namespace archive_pck
         public bool ArchiveHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
+        public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {
@@ -90,22 +87,12 @@ namespace archive_pck
             // TODO: Implement closing open handles here
         }
 
-        // Files
+        //Files
         public IEnumerable<ArchiveFileInfo> Files
         {
             get
             {
-                var files = new List<ArchiveFileInfo>();
-
-                foreach (var node in _pck)
-                {
-                    var file = new ArchiveFileInfo();
-                    //file.Filesize = node.entry.length;
-                    file.FileName = node.filename;
-                    files.Add(file);
-                }
-
-                return files;
+                return _pck.Files;
             }
         }
 

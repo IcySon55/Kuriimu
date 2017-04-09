@@ -49,6 +49,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="PckSupport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera.csproj">
