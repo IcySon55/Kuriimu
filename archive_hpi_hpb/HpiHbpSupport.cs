@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.Compression;
@@ -8,14 +7,14 @@ using Kuriimu.IO;
 namespace archive_hpi_hpb
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct HpiHeader
+    public class HpiHeader
     {
-        public Magic magic;
+        public Magic magic = "HPIH";
         public int zero0;
-        public int headerSize;  //without magic
+        public int headerSize = 0x10;  //without magic
         public int zero1;
         public short zero2;
-        public short infoCount;
+        public short hashCount;
         public int entryCount;
     }
 
@@ -23,62 +22,80 @@ namespace archive_hpi_hpb
     public struct HashEntry
     {
         public short entryOffset;
-        public ushort entryCount;
+        public short entryCount;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Entry
     {
-        public uint stringOffset;
-        public uint fileOffset;
-        public uint fileSize;
-        public uint uncompressedSize;
+        public int stringOffset;
+        public int fileOffset;
+        public int fileSize;
+        public int uncompressedSize;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct AcmpHeader
+    public class AcmpHeader
     {
-        public Magic magic;
+        public Magic magic = "ACMP";
         public int compressedSize;
-        public int headerSize;
+        public int headerSize = 0x20;
         public int zero;
-        public uint uncompressedSize;
-        public int padding0, padding1, padding2; // equal to 0x01234567
-    }
-
-    public class HashSort
-    {
-        public HpiHpbAfi Entry;
-        public uint Hash;
+        public int uncompressedSize;
+        public int padding0 = 0x01234567;
+        public int padding1 = 0x01234567;
+        public int padding2 = 0x01234567;
     }
 
     public class HpiHpbAfi : ArchiveFileInfo
     {
         public Entry Entry;
 
-        public override Stream FileData => GetUncompressedStream(base.FileData);
-
-        public Stream fileDataOrig => base.FileData;
-
-        public Stream GetUncompressedStream(Stream fileData)
+        public override Stream FileData
         {
-            fileData.Position = 0;
-            if (Entry.uncompressedSize == 0) return fileData;
-            using (var br = new BinaryReaderX(fileData, true))
+            get
             {
-                var header = br.ReadStruct<AcmpHeader>();
-                return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize), header.uncompressedSize));
+                base.FileData.Position = 0;
+                if (State != ArchiveFileState.Archived || Entry.uncompressedSize == 0) return base.FileData;
+                using (var br = new BinaryReaderX(base.FileData, true))
+                {
+                    var header = br.ReadStruct<AcmpHeader>();
+                    return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize), (uint)header.uncompressedSize));
+                }
             }
         }
 
-        public Stream GetCompressedStream(Stream fileData)
+        public void WriteToHpb(Stream stream)
         {
-            fileData.Position = 0;
-            if (Entry.uncompressedSize == 0) return fileData;
-            using (var br = new BinaryReaderX(fileData))
+            Entry.fileOffset = (int)stream.Position;
+            if (State == ArchiveFileState.Replaced && Entry.uncompressedSize != 0)
             {
-                return new MemoryStream(RevLZ77.Compress(br.ReadBytes((int)fileData.Length)));
+                // Only here if we need to compress from a FileStream in the base.FileData
+                var uncompData = new byte[base.FileData.Length];
+                base.FileData.Read(uncompData, 0, uncompData.Length);
+                var compData = RevLZ77.Compress(uncompData);
+
+                Entry.fileSize = compData.Length + 0x20;
+                Entry.uncompressedSize = uncompData.Length;
+                using (var bw = new BinaryWriterX(stream, true))
+                {
+                    bw.WriteStruct(new AcmpHeader
+                    {
+                        compressedSize = Entry.fileSize,
+                        uncompressedSize = Entry.uncompressedSize
+                    });
+                    bw.Write(compData);
+                }
             }
+            else
+            {
+                Entry.fileSize = (int)base.FileData.Length;
+                base.FileData.CopyTo(stream);
+            }
+
+            // padding
+            while (stream.Position % 4 != 0)
+                stream.WriteByte(0);
         }
     }
 }
