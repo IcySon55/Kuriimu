@@ -1,6 +1,6 @@
 ﻿namespace game_zelda_a_link_between_worlds
 {
-    partial class ettings
+    partial class Settings
     {
         /// <summary>
         /// Required designer variable.

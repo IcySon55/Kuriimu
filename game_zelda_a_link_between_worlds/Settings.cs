@@ -5,7 +5,7 @@ using game_zelda_a_link_between_worlds.Properties;
 
 namespace game_zelda_a_link_between_worlds
 {
-    public partial class ettings : Form
+    public partial class Settings : Form
     {
         #region Properties
 
@@ -13,7 +13,7 @@ namespace game_zelda_a_link_between_worlds
 
         #endregion
 
-        public ettings(Icon icon)
+        public Settings(Icon icon)
         {
             InitializeComponent();
 
@@ -22,18 +22,18 @@ namespace game_zelda_a_link_between_worlds
 
         private void Settings_Load(object sender, EventArgs e)
         {
-            txtPlayerName.Text = Settings.Default.PlayerName;
+            txtPlayerName.Text = Properties.Settings.Default.PlayerName;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (Settings.Default.PlayerName != txtPlayerName.Text)
+            if (Properties.Settings.Default.PlayerName != txtPlayerName.Text)
                 HasChanges = true;
 
             if (HasChanges)
             {
-                Settings.Default.PlayerName = txtPlayerName.Text;
-                Settings.Default.Save();
+                Properties.Settings.Default.PlayerName = txtPlayerName.Text;
+                Properties.Settings.Default.Save();
             }
 
             DialogResult = DialogResult.OK;
