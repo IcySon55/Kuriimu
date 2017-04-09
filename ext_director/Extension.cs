@@ -8,14 +8,14 @@ using Kuriimu.IO;
 
 namespace ext_director
 {
-    public partial class frmExtension : Form
+    public partial class Extension : Form
     {
-        public frmExtension()
+        public Extension()
         {
             InitializeComponent();
         }
 
-        private void Director_Load(object sender, EventArgs e)
+        private void Extension_Load(object sender, EventArgs e)
         {
             Text = Settings.Default.PluginName + " " + Settings.Default.PluginVersion;
             Icon = Resources.director;

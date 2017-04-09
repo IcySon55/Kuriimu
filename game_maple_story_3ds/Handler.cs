@@ -106,7 +106,7 @@ namespace game_maple_story_3ds
 
                     float scale = 0.625f;
                     float x = 10, y = 22;
-                    string str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value)).Replace("‹PlayerName›", "‹" + Settings.Default.PlayerName + "›");
+                    string str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value)).Replace("‹PlayerName›", "‹" + Properties.Settings.Default.PlayerName + "›");
                     font.SetColor(Color.White);
 
                     foreach (char c in str)
@@ -152,7 +152,7 @@ namespace game_maple_story_3ds
 
         public bool ShowSettings(Icon icon)
         {
-            var settings = new frmSettings(icon);
+            var settings = new Settings(icon);
             settings.ShowDialog();
             return settings.HasChanges;
         }

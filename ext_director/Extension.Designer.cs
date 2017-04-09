@@ -1,6 +1,6 @@
 ﻿namespace ext_director
 {
-    partial class frmExtension
+    partial class Extension
     {
         /// <summary>
         /// Required designer variable.
@@ -114,7 +114,7 @@
             this.MaximizeBox = false;
             this.Name = "frmExtension";
             this.Text = "Director";
-            this.Load += new System.EventHandler(this.Director_Load);
+            this.Load += new System.EventHandler(this.Extension_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

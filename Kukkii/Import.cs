@@ -6,11 +6,11 @@ using Kukkii.Properties;
 
 namespace Kukkii
 {
-    public partial class frmImport : Form
+    public partial class Import : Form
     {
         private string _filename = string.Empty;
 
-        public frmImport(string filename)
+        public Import(string filename)
         {
             InitializeComponent();
 

@@ -1,6 +1,6 @@
 ﻿namespace ext_fenceposts
 {
-    partial class frmOptions
+    partial class Options
     {
         /// <summary>
         /// Required designer variable.
@@ -124,7 +124,7 @@
             this.Name = "frmOptions";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";
-            this.Load += new System.EventHandler(this.frmOptions_Load);
+            this.Load += new System.EventHandler(this.Options_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -26,7 +26,7 @@ namespace runext
             }
             else
             {
-                frmExtensionSelect extensionSelect = new frmExtensionSelect();
+                ExtensionSelect extensionSelect = new ExtensionSelect();
 
                 if (extensionSelect.ShowDialog() == DialogResult.OK)
                     Application.Run(extensionSelect.Extension.CreateInstance());

@@ -5,7 +5,7 @@ using Kuriimu.Contract;
 
 namespace ext_fenceposts
 {
-    public partial class frmBound : Form
+    public partial class BoundForm : Form
     {
         private Bound _bound = null;
         private bool _hasChanges = false;
@@ -26,14 +26,14 @@ namespace ext_fenceposts
 
         #endregion
 
-        public frmBound(Bound bound)
+        public BoundForm(Bound bound)
         {
             InitializeComponent();
 
             _bound = bound;
         }
 
-        private void frmBound_Load(object sender, EventArgs e)
+        private void BoundForm_Load(object sender, EventArgs e)
         {
             Text = Settings.Default.PluginName + " - Bound Properties";
             Icon = Resources.fenceposts;

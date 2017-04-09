@@ -119,7 +119,7 @@ namespace game_zelda_a_link_between_worlds
 
             foreach (string page in pagestr)
             {
-                string p = GetRawString(page).Replace("\xE\x1\x0\x0", Settings.Default.PlayerName == string.Empty ? "Player" : Settings.Default.PlayerName);
+                string p = GetRawString(page).Replace("\xE\x1\x0\x0", Properties.Settings.Default.PlayerName == string.Empty ? "Player" : Properties.Settings.Default.PlayerName);
 
                 if (p.Trim() != string.Empty)
                 {
@@ -256,7 +256,7 @@ namespace game_zelda_a_link_between_worlds
 
         public bool ShowSettings(Icon icon)
         {
-            var settings = new frmSettings(icon);
+            var settings = new Settings(icon);
             settings.ShowDialog();
             return settings.HasChanges;
         }

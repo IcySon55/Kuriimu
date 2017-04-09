@@ -17,7 +17,7 @@ namespace ext_director
 
         public Form CreateInstance()
         {
-            frmExtension configure = new frmExtension();
+            Extension configure = new Extension();
             configure.StartPosition = FormStartPosition.CenterParent;
             return configure;
         }

@@ -12,7 +12,7 @@ using Kuriimu.Contract;
 
 namespace Kukkii
 {
-    public partial class frmConverter : Form
+    public partial class Converter : Form
     {
         private IImageAdapter _imageAdapter = null;
         private bool _fileOpen = false;
@@ -20,7 +20,7 @@ namespace Kukkii
 
         private List<IImageAdapter> _imageAdapters = null;
 
-        public frmConverter(string[] args)
+        public Converter(string[] args)
         {
             InitializeComponent();
 

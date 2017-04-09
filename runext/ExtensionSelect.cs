@@ -7,7 +7,7 @@ using runext.Properties;
 
 namespace runext
 {
-    public partial class frmExtensionSelect : Form
+    public partial class ExtensionSelect : Form
     {
         #region Properties
 
@@ -15,7 +15,7 @@ namespace runext
 
         #endregion
 
-        public frmExtensionSelect()
+        public ExtensionSelect()
         {
             InitializeComponent();
             Extension = null;

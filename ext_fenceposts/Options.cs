@@ -6,7 +6,7 @@ using Kuriimu.Contract;
 
 namespace ext_fenceposts
 {
-    public partial class frmOptions : Form
+    public partial class Options : Form
     {
         private KUP _kup = null;
         private bool _hasChanges = false;
@@ -27,14 +27,14 @@ namespace ext_fenceposts
 
         #endregion
 
-        public frmOptions(KUP kup)
+        public Options(KUP kup)
         {
             InitializeComponent();
 
             _kup = kup;
         }
 
-        private void frmOptions_Load(object sender, EventArgs e)
+        private void Options_Load(object sender, EventArgs e)
         {
             Text = Settings.Default.PluginName + " - Options";
             Icon = Resources.fenceposts;

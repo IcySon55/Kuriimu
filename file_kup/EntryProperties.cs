@@ -5,7 +5,7 @@ using Kuriimu.Contract;
 
 namespace file_kup
 {
-    public partial class frmEntryProperties : Form
+    public partial class EntryProperties : Form
     {
         private Entry _entry = null;
         private bool _hasChanges = false;
@@ -26,7 +26,7 @@ namespace file_kup
 
         #endregion
 
-        public frmEntryProperties(Entry entry, Icon icon)
+        public EntryProperties(Entry entry, Icon icon)
         {
             InitializeComponent();
 
