@@ -7,7 +7,7 @@ using Kuriimu.Contract;
 
 namespace file_kup
 {
-    public partial class frmProperties : Form
+    public partial class FileProperties : Form
     {
         private KUP _kup = null;
         private bool _hasChanges = false;
@@ -28,7 +28,7 @@ namespace file_kup
 
         #endregion
 
-        public frmProperties(KUP kup, Icon icon)
+        public FileProperties(KUP kup, Icon icon)
         {
             InitializeComponent();
 
@@ -36,7 +36,7 @@ namespace file_kup
             _kup = kup;
         }
 
-        private void frmOptions_Load(object sender, EventArgs e)
+        private void FileProperties_Load(object sender, EventArgs e)
         {
             Text = Settings.Default.PluginName + " - Properties";
 

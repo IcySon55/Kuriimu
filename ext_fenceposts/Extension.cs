@@ -301,7 +301,7 @@ namespace ext_fenceposts
 
         private void btnOptions_Click(object sender, EventArgs e)
         {
-            frmOptions options = new frmOptions(_kup);
+            Options options = new Options(_kup);
             options.ShowDialog();
 
             if (options.HasChanges)
@@ -712,7 +712,7 @@ namespace ext_fenceposts
         private void tsbPointerTableAdd_Click(object sender, EventArgs e)
         {
             Bound bound = new Bound();
-            frmBound frm = new frmBound(bound);
+            BoundForm frm = new BoundForm(bound);
 
             if (frm.ShowDialog() == DialogResult.OK)
             {
@@ -724,7 +724,7 @@ namespace ext_fenceposts
 
         private void tsbPointerTableProperties_Click(object sender, EventArgs e)
         {
-            frmBound frm = new frmBound((Bound)lstPointerTables.SelectedItem);
+            BoundForm frm = new BoundForm((Bound)lstPointerTables.SelectedItem);
 
             if (frm.ShowDialog() == DialogResult.OK)
             {
@@ -748,7 +748,7 @@ namespace ext_fenceposts
         {
             Bound bound = new Bound();
             bound.Dumpable = true;
-            frmBound frm = new frmBound(bound);
+            BoundForm frm = new BoundForm(bound);
 
             if (frm.ShowDialog() == DialogResult.OK)
             {
@@ -760,7 +760,7 @@ namespace ext_fenceposts
 
         private void tsbStringBoundProperties_Click(object sender, EventArgs e)
         {
-            frmBound frm = new frmBound((Bound)lstStringBounds.SelectedItem);
+            BoundForm frm = new BoundForm((Bound)lstStringBounds.SelectedItem);
 
             if (frm.ShowDialog() == DialogResult.OK)
             {

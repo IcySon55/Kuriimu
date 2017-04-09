@@ -11,7 +11,7 @@ using Kuriimu.Contract;
 
 namespace Karameru
 {
-    public partial class frmManager : Form
+    public partial class Manager : Form
     {
         private IArchiveManager _archiveManager = null;
         private bool _fileOpen = false;
@@ -37,7 +37,7 @@ namespace Karameru
             }
         }
 
-        public frmManager(string[] args)
+        public Manager(string[] args)
         {
             InitializeComponent();
 

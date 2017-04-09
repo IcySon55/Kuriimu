@@ -1,6 +1,6 @@
 ﻿namespace Kukkii
 {
-    partial class frmConverter
+    partial class Converter
     {
         /// <summary>
         /// Required designer variable.

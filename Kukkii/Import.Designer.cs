@@ -1,6 +1,6 @@
 ﻿namespace Kukkii
 {
-    partial class frmImport
+    partial class Import
     {
         /// <summary>
         /// Required designer variable.

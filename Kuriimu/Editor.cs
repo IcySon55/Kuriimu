@@ -12,7 +12,7 @@ using Kuriimu.Properties;
 
 namespace Kuriimu
 {
-    public partial class frmEditor : Form
+    public partial class Editor : Form
     {
         private IFileAdapter _fileAdapter = null;
         private IGameHandler _gameHandler = null;
@@ -28,7 +28,7 @@ namespace Kuriimu
 
         private int _page = 0;
 
-        public frmEditor(string[] args)
+        public Editor(string[] args)
         {
             InitializeComponent();
 
@@ -101,7 +101,7 @@ namespace Kuriimu
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmSearch search = new frmSearch();
+            Search search = new Search();
             search.Entries = _entries;
             search.ShowDialog();
 
@@ -189,7 +189,7 @@ namespace Kuriimu
             {
                 IEntry entry = _fileAdapter.NewEntry();
 
-                frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
+                Name name = new Name(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
 
                 if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
                 {
@@ -215,7 +215,7 @@ namespace Kuriimu
             {
                 IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
 
-                frmName name = new frmName(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
+                Name name = new Name(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
 
                 if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
                 {
@@ -301,7 +301,7 @@ namespace Kuriimu
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            frmAbout about = new frmAbout();
+            About about = new About();
             about.ShowDialog();
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-    partial class frmSearch
+    partial class Search
     {
         /// <summary>
         /// Required designer variable.

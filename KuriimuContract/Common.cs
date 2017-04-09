@@ -33,6 +33,7 @@ namespace Kuriimu.Contract
     {
         int value;
         public static implicit operator string(Magic magic) => Encoding.ASCII.GetString(BitConverter.GetBytes(magic.value));
+        public static implicit operator Magic(string s) => new Magic { value = BitConverter.ToInt32(Encoding.ASCII.GetBytes(s), 0) };
     }
 
     [DebuggerDisplay("{(string)this}")]

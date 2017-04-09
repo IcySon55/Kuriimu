@@ -1,6 +1,6 @@
 ﻿namespace file_kup
 {
-    partial class frmProperties
+    partial class FileProperties
     {
         /// <summary>
         /// Required designer variable.
@@ -113,7 +113,7 @@
             this.Name = "frmProperties";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "s";
-            this.Load += new System.EventHandler(this.frmOptions_Load);
+            this.Load += new System.EventHandler(this.FileProperties_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

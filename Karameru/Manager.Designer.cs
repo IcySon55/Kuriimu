@@ -1,6 +1,6 @@
 ﻿namespace Karameru
 {
-    partial class frmManager
+    partial class Manager
     {
         /// <summary>
         /// Required designer variable.
@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Test");
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,6 +82,9 @@
             this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
             this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
             this.imlFiles = new System.Windows.Forms.ImageList(this.components);
+            this.lstFiles = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -389,6 +393,7 @@
             // 
             // splMain.Panel1
             // 
+            this.splMain.Panel1.Controls.Add(this.lstFiles);
             this.splMain.Panel1.Controls.Add(this.treFiles);
             this.splMain.Panel1.Controls.Add(this.tlsFiles);
             // 
@@ -405,13 +410,12 @@
             // 
             this.treFiles.AllowDrop = true;
             this.treFiles.ContextMenuStrip = this.mnuFiles;
-            this.treFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treFiles.FullRowSelect = true;
             this.treFiles.HideSelection = false;
             this.treFiles.ItemHeight = 18;
             this.treFiles.Location = new System.Drawing.Point(0, 27);
             this.treFiles.Name = "treFiles";
-            this.treFiles.Size = new System.Drawing.Size(320, 537);
+            this.treFiles.Size = new System.Drawing.Size(320, 214);
             this.treFiles.TabIndex = 4;
             this.treFiles.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
             this.treFiles.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterExpand);
@@ -618,6 +622,28 @@
             this.imlFiles.ImageSize = new System.Drawing.Size(16, 16);
             this.imlFiles.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // lstFiles
+            // 
+            this.lstFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.lstFiles.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1});
+            this.lstFiles.Location = new System.Drawing.Point(0, 247);
+            this.lstFiles.Name = "lstFiles";
+            this.lstFiles.Size = new System.Drawing.Size(320, 317);
+            this.lstFiles.TabIndex = 5;
+            this.lstFiles.UseCompatibleStateImageBehavior = false;
+            this.lstFiles.View = System.Windows.Forms.View.Tile;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "";
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Size";
+            // 
             // frmManager
             // 
             this.AllowDrop = true;
@@ -706,6 +732,9 @@
         private System.Windows.Forms.ToolStripButton tsbFileReplace;
         private System.Windows.Forms.ToolStripMenuItem editFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tsbFileEdit;
+        private System.Windows.Forms.ListView lstFiles;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }
 

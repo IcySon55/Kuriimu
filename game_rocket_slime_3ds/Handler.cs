@@ -127,7 +127,7 @@ namespace game_rocket_slime_3ds
                         float y = rectText.Y, pY = y;
                         float lineSpacing = 4;
 
-                        string str = page.Replace("\x1F\x05", Settings.Default.PlayerName == string.Empty ? "Player" : Settings.Default.PlayerName);
+                        string str = page.Replace("\x1F\x05", Properties.Settings.Default.PlayerName == string.Empty ? "Player" : Properties.Settings.Default.PlayerName);
                         font.SetColor(colorDefault);
 
                         for (int i = 0; i < str.Length; i++)
@@ -222,7 +222,7 @@ namespace game_rocket_slime_3ds
 
         public bool ShowSettings(Icon icon)
         {
-            var settings = new frmSettings(icon);
+            var settings = new Settings(icon);
             settings.ShowDialog();
             return settings.HasChanges;
         }

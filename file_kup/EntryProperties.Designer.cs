@@ -1,6 +1,6 @@
 ﻿namespace file_kup
 {
-    partial class frmEntryProperties
+    partial class EntryProperties
     {
         /// <summary>
         /// Required designer variable.

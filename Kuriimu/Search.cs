@@ -6,12 +6,12 @@ using Kuriimu.Properties;
 
 namespace Kuriimu
 {
-    public partial class frmSearch : Form
+    public partial class Search : Form
     {
         public IEnumerable<IEntry> Entries { get; set; }
         public IEntry Selected { get; set; }
 
-        public frmSearch()
+        public Search()
         {
             InitializeComponent();
             Icon = Resources.find;

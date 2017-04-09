@@ -13,7 +13,7 @@ namespace Karameru
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmManager(args));
+            Application.Run(new Manager(args));
         }
     }
 }

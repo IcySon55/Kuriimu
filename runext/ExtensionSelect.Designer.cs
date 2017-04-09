@@ -1,6 +1,6 @@
 ﻿namespace runext
 {
-    partial class frmExtensionSelect
+    partial class ExtensionSelect
     {
         /// <summary>
         /// Required designer variable.
