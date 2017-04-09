@@ -5,7 +5,7 @@ using game_zelda_a_link_between_worlds.Properties;
 
 namespace game_zelda_a_link_between_worlds
 {
-    public partial class frmSettings : Form
+    public partial class ettings : Form
     {
         #region Properties
 
@@ -13,14 +13,14 @@ namespace game_zelda_a_link_between_worlds
 
         #endregion
 
-        public frmSettings(Icon icon)
+        public ettings(Icon icon)
         {
             InitializeComponent();
 
             Icon = icon;
         }
 
-        private void EntryProperties_Load(object sender, EventArgs e)
+        private void Settings_Load(object sender, EventArgs e)
         {
             txtPlayerName.Text = Settings.Default.PlayerName;
         }

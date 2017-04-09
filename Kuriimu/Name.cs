@@ -8,7 +8,7 @@ using Kuriimu.Properties;
 
 namespace Kuriimu
 {
-    public partial class frmName : Form
+    public partial class Name : Form
     {
         private IEntry _entry = null;
         private bool _namesMustBeUnique = false;
@@ -54,7 +54,7 @@ namespace Kuriimu
 
         #endregion
 
-        public frmName(IEntry entry, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
+        public Name(IEntry entry, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
         {
             InitializeComponent();
 

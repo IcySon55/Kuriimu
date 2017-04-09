@@ -130,7 +130,7 @@ namespace file_kup
         // Features
         public bool ShowProperties(Icon icon)
         {
-            frmProperties properties = new frmProperties(_kup, icon);
+            FileProperties properties = new FileProperties(_kup, icon);
             properties.ShowDialog();
             return properties.HasChanges;
         }
@@ -187,7 +187,7 @@ namespace file_kup
 
         public bool ShowEntryProperties(IEntry entry, Icon icon)
         {
-            frmEntryProperties entryProperties = new frmEntryProperties((Entry)entry, icon);
+            EntryProperties entryProperties = new EntryProperties((Entry)entry, icon);
             entryProperties.ShowDialog();
             return entryProperties.HasChanges;
         }

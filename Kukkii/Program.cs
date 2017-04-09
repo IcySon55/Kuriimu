@@ -10,7 +10,7 @@ namespace Kukkii
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmConverter(args));
+            Application.Run(new Converter(args));
         }
     }
 }

@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace Kuriimu
 {
-    partial class frmAbout : Form
+    partial class About : Form
     {
-        public frmAbout()
+        public About()
         {
             InitializeComponent();
             this.Text = String.Format("About {0}", AssemblyTitle);

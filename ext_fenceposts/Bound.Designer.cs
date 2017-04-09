@@ -1,6 +1,6 @@
 ﻿namespace ext_fenceposts
 {
-    partial class frmBound
+    partial class BoundForm
     {
         /// <summary>
         /// Required designer variable.
@@ -159,7 +159,7 @@
             this.Name = "frmBound";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Bound";
-            this.Load += new System.EventHandler(this.frmBound_Load);
+            this.Load += new System.EventHandler(this.BoundForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

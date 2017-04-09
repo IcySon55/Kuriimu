@@ -256,7 +256,7 @@ namespace game_zelda_a_link_between_worlds
 
         public bool ShowSettings(Icon icon)
         {
-            var settings = new frmSettings(icon);
+            var settings = new ettings(icon);
             settings.ShowDialog();
             return settings.HasChanges;
         }

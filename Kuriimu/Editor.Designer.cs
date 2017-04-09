@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-    partial class frmEditor
+    partial class Editor
     {
         /// <summary>
         /// Required designer variable.

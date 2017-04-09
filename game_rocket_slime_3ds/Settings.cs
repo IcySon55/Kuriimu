@@ -5,7 +5,7 @@ using game_rocket_slime_3ds.Properties;
 
 namespace game_rocket_slime_3ds
 {
-    public partial class frmSettings : Form
+    public partial class Settings : Form
     {
         #region Properties
 
@@ -13,27 +13,27 @@ namespace game_rocket_slime_3ds
 
         #endregion
 
-        public frmSettings(Icon icon)
+        public Settings(Icon icon)
         {
             InitializeComponent();
 
             Icon = icon;
         }
 
-        private void EntryProperties_Load(object sender, EventArgs e)
+        private void Settings_Load(object sender, EventArgs e)
         {
-            txtPlayerName.Text = Settings.Default.PlayerName;
+            txtPlayerName.Text = Properties.Settings.Default.PlayerName;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (Settings.Default.PlayerName != txtPlayerName.Text)
+            if (Properties.Settings.Default.PlayerName != txtPlayerName.Text)
                 HasChanges = true;
 
             if (HasChanges)
             {
-                Settings.Default.PlayerName = txtPlayerName.Text;
-                Settings.Default.Save();
+                Properties.Settings.Default.PlayerName = txtPlayerName.Text;
+                Properties.Settings.Default.Save();
             }
 
             DialogResult = DialogResult.OK;

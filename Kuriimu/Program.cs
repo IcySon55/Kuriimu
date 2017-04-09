@@ -10,7 +10,7 @@ namespace Kuriimu
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmEditor(args));
+            Application.Run(new Editor(args));
         }
     }
 }

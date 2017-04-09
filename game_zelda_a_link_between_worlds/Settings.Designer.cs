@@ -1,6 +1,6 @@
 ﻿namespace game_zelda_a_link_between_worlds
 {
-    partial class frmSettings
+    partial class ettings
     {
         /// <summary>
         /// Required designer variable.
@@ -105,7 +105,7 @@
             this.Name = "frmSettings";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Handler Settings";
-            this.Load += new System.EventHandler(this.EntryProperties_Load);
+            this.Load += new System.EventHandler(this.Settings_Load);
             this.grpProperties.ResumeLayout(false);
             this.grpProperties.PerformLayout();
             this.ResumeLayout(false);
