@@ -12,12 +12,11 @@ namespace Kuriimu.IO
 
         public ByteOrder ByteOrder { get; set; }
 
-        public BinaryWriterX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input)
+        public BinaryWriterX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : this(input, false, byteOrder)
         {
-            ByteOrder = byteOrder;
         }
 
-        public BinaryWriterX(Stream input, Encoding encoding, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, encoding)
+        public BinaryWriterX(Stream input, bool leaveOpen, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode, leaveOpen)
         {
             ByteOrder = byteOrder;
         }
