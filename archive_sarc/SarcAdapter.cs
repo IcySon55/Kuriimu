@@ -11,15 +11,10 @@ namespace archive_sarc
 {
     public class SarcAdapter : IArchiveManager
     {
-        public class SarcAfi : ArchiveFileInfo
-        {
-            public SARC.State state;
-            public SARC.SimplerSFATNode sFatNode;
-            public SARC.SFATNode fatNode;
-        }
-
         private FileInfo _fileInfo = null;
         private SARC _sarc = null;
+        private SimpleSARC _ssarc = null;
+        private byte Identifier = 0;
 
         #region Properties
 
@@ -31,11 +26,11 @@ namespace archive_sarc
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
-        public bool CanAddFiles => false;
+        public bool CanAddFiles => true;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
+        public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {
@@ -56,7 +51,16 @@ namespace archive_sarc
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "SARC";
+                if (br.ReadString(4) == "SARC")
+                {
+                    br.BaseStream.Position = 6;
+                    ushort ind = br.ReadUInt16();
+                    if (ind != 0xfeff && ind != 0xfffe)
+                        Identifier = 1;
+                    return true;
+                }
+
+                return false;
             }
         }
 
@@ -67,7 +71,12 @@ namespace archive_sarc
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _sarc = new SARC(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+            {
+                if (Identifier == 0)
+                    _sarc = new SARC(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                else if (Identifier == 1)
+                    _ssarc = new SimpleSARC(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+            }
             else
                 result = LoadResult.FileNotFound;
 
@@ -83,7 +92,10 @@ namespace archive_sarc
 
             try
             {
-                _sarc.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                if (Identifier == 0)
+                    _sarc.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                else if (Identifier == 1)
+                    _ssarc.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
             }
             catch (Exception)
             {
@@ -103,23 +115,33 @@ namespace archive_sarc
         {
             get
             {
-                var files = new List<ArchiveFileInfo>();
-
-                foreach (var node in _sarc)
-                {
-                    var file = new ArchiveFileInfo();
-                    //file.Filesize = (node.nodeEntry != null) ? node.nodeEntry.dataEnd - node.nodeEntry.dataStart : node.sNodeEntry.dataLength;
-                    file.FileName = node.fileName;
-                    files.Add(file);
-                }
-
-                return files;
+                if (Identifier == 0)
+                    return _sarc.Files;
+                else
+                    return _ssarc.Files;
             }
         }
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            return false;
+            try
+            {
+                if (Identifier == 0)
+                    _sarc.Files.Add(new SARC.SARCFileInfo()
+                    {
+                        FileName = afi.FileName,
+                        State = afi.State,
+                        FileData = afi.FileData
+                    });
+                else if (Identifier == 1)
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool RenameFile(ArchiveFileInfo afi)

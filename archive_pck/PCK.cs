@@ -1,47 +1,41 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
+using Kuriimu.Contract;
 
 namespace archive_pck
 {
-    public sealed class PCK : List<PCK.Node>
+    public sealed class PCK
     {
-        public class Node
-        {
-            public String filename;
-            public Entry entry;
-        }
+        public List<PckFileInfo> Files = new List<PckFileInfo>();
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Entry
-        {
-            public uint crc32;
-            public uint offset;
-            public uint length;
-        }
+        List<PCKEntry> entries = new List<PCKEntry>();
 
         public PCK(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(input))
+            using (BinaryReaderX pckBr = new BinaryReaderX(input, true))
             {
-                int pckEntryCount = br.ReadInt32();
+                int pckEntryCount = pckBr.ReadInt32();
 
-                for (int i = 0; i < pckEntryCount; i++)
+                entries.AddRange(pckBr.ReadMultiple<PCKEntry>(pckEntryCount).OrderBy(e => e.fileOffset));
+
+                for (int i = 0; i < entries.Count; i++)
                 {
-                    br.BaseStream.Position = 4 + i * 3 * 4;
-                    Entry entry = br.ReadStruct<Entry>();
+                    pckBr.BaseStream.Position = entries[i].fileOffset;
+                    int blockOffset = (pckBr.ReadInt16() == 0x64) ? pckBr.ReadInt16() + 1 : 0;
 
-                    br.BaseStream.Position = entry.offset;
-                    short blocks = (short)(br.ReadUInt32() >> 16);
-                    br.BaseStream.Position = entry.offset;
-                    byte[] crcBlocks = br.ReadBytes((blocks + 1) * 4);
-
-                    Add(new Node()
+                    Files.Add(new PckFileInfo()
                     {
-                        entry = entry,
-                        filename = "File" + i.ToString(),
+                        FileData = new SubStream(
+                            input,
+                            entries[i].fileOffset + blockOffset * 4,
+                            entries[i].fileLength - blockOffset * 4),
+                        FileName = "File " + i,
+                        State = ArchiveFileState.Archived,
+                        Entry = entries[i]
                     });
                 }
             }
@@ -49,7 +43,26 @@ namespace archive_pck
 
         public void Save(Stream input)
         {
-            int t = 0;
+            using (BinaryWriterX pckBw = new BinaryWriterX(input))
+            {
+                pckBw.Write(Files.Count);
+
+                //entryList + Data
+                int dataPos = 4 + Files.Count * 0xc;
+                for (int i = 0; i < Files.Count; i++)
+                {
+                    pckBw.Write(Files[i].Entry.crc32);
+                    pckBw.Write(dataPos);
+
+                    pckBw.BaseStream.Position = dataPos;
+                    pckBw.Write(new byte[] { 0x64, 0, 0, 0 });
+                    pckBw.Write(new BinaryReaderX(Files[i].FileData, true).ReadBytes((int)Files[i].FileData.Length));
+                    pckBw.BaseStream.Position = 4 + i * 0xc + 8;
+
+                    pckBw.Write((int)Files[i].FileData.Length + 4);
+                    dataPos += (int)Files[i].FileData.Length + 4;
+                }
+            }
         }
     }
 }

@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archive\SARC.cs" />
+    <Compile Include="Archive\SimpleSARC.cs" />
     <Compile Include="Compression\Huffman.cs" />
     <Compile Include="Compression\LZ10.cs" />
     <Compile Include="Compression\LZ11.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Compression\RLE.cs" />
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Hash\Crc32.cs" />
+    <Compile Include="Hash\SarcHash.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Image\JTEX.cs" />
     <Compile Include="Image\RawJTEX.cs" />
