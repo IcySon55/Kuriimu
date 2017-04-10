@@ -305,11 +305,13 @@ namespace Cetera.Compression
                         for (int i = uPadOffset; i < uPadOffset + (uCompFooterOffset - uPadOffset); i++) result[i] = 0xFF;
 
                         int i1 = uTop | (uBottom << 24);
-                        result[uCompFooterOffset] = (byte)(i1 & 0xFF); result[uCompFooterOffset + 1] = (byte)(i1 & 0xFF00);
-                        result[uCompFooterOffset + 2] = (byte)(i1 & 0xFF0000); result[uCompFooterOffset + 3] = (byte)(i1 & 0xFF000000);
+                        result[uCompFooterOffset] = (byte)(i1 & 0xFF); result[uCompFooterOffset + 1] = (byte)((i1 & 0xFF00) >> 8);
+                        result[uCompFooterOffset + 2] = (byte)((i1 & 0xFF0000) >> 16); result[uCompFooterOffset + 3] = (byte)((i1 & 0xFF000000) >> 24);
                         int i2 = a_uUncompressedSize - a_uCompressedSize;
-                        result[uCompFooterOffset + 4] = (byte)(i2 & 0xFF); result[uCompFooterOffset + 5] = (byte)(i2 & 0xFF00);
-                        result[uCompFooterOffset + 6] = (byte)(i2 & 0xFF0000); result[uCompFooterOffset + 7] = (byte)(i2 & 0xFF000000);
+                        result[uCompFooterOffset + 4] = (byte)(i2 & 0xFF); result[uCompFooterOffset + 5] = (byte)((i2 & 0xFF00) >> 8);
+                        result[uCompFooterOffset + 6] = (byte)((i2 & 0xFF0000) >> 16); result[uCompFooterOffset + 7] = (byte)((i2 & 0xFF000000) >> 24);
+
+                        Console.WriteLine(i1 + "   " + i2);
                     }
                 }
 
