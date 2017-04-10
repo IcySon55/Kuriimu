@@ -9,135 +9,49 @@ using Kuriimu.IO;
 
 namespace archive_ctpk
 {
-    public sealed class CTPK : List<CTPK.Node>
+    public sealed class CTPK
     {
-        public class Node
-        {
-            public String filename;
-            public NodeEntry nodeEntry;
-        }
-        public class NodeEntry
-        {
-            public Entry entry;
-            public uint info;
-            public uint hash;
-            public uint info2;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
-        {
-            public Magic magic;
-            public ushort version;
-            public ushort texCount;
-            public uint texSecOffset;
-            public uint texSecSize;
-            public uint hashSecOffset;
-            public uint texInfoOffset;
-        }
-
-        public class Entry
-        {
-            public Entry(Stream input)
-            {
-                using (BinaryReaderX br = new BinaryReaderX(input, true))
-                {
-                    nameOffset = br.ReadUInt32();
-                    texDataSize = br.ReadUInt32();
-                    texOffset = br.ReadUInt32();
-                    format = (Format)br.ReadUInt32();
-                    width = br.ReadUInt16();
-                    height = br.ReadUInt16();
-                    mipLvl = br.ReadByte();
-                    type = br.ReadByte();
-                    unk1 = br.ReadUInt16();
-                    bitmapSizeOffset = br.ReadUInt32();
-                    timeStamp = br.ReadUInt32();
-                }
-            }
-            public uint nameOffset;
-            public uint texDataSize;
-            public uint texOffset;
-            public Format format;
-            public ushort width;
-            public ushort height;
-            public byte mipLvl;
-            public byte type;
-            public ushort unk1;
-            public uint bitmapSizeOffset;
-            public uint timeStamp;
-        }
-
-        public Header header;
+        public List<CTPKFileInfo> Files = new List<CTPKFileInfo>();
 
         public CTPK(String filename)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read)))
+            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
             {
-                header = br.ReadStruct<Header>();
+                //Header
+                Header header = br.ReadStruct<Header>();
 
-                for (int i = 0; i < header.texCount; i++)
-                {
-                    Add(new Node()
-                    {
-                        filename = "",
-                        nodeEntry = new NodeEntry()
-                    });
-                }
+                //TexEntries
+                List<Entry> entries = new List<Entry>();
+                entries.AddRange(br.ReadMultiple<Entry>(header.texCount));
 
-                for (int i = 0; i < header.texCount; i++)
-                {
-                    //Entry
-                    br.BaseStream.Position = 0x20 + i * 0x20;
-                    this[i].nodeEntry.entry = new Entry(br.BaseStream);
-                }
+                //TexInfo List
+                List<int> texInfoList1 = new List<int>();
+                texInfoList1.AddRange(br.ReadMultiple<int>(header.texCount));
 
-                for (int i = 0; i < header.texCount; i++)
-                {
-                    //Info
-                    this[i].nodeEntry.info = br.ReadUInt32();
-                }
+                //Name List
+                List<String> nameList = new List<String>();
+                for (int i = 0; i < entries.Count; i++)
+                    nameList.Add(br.ReadCStringA());
 
-                for (int i = 0; i < header.texCount; i++)
-                {
-                    //NameList
-                    br.BaseStream.Position = this[i].nodeEntry.entry.nameOffset;
-                    this[i].filename = readASCII(br.BaseStream);
-                }
-
+                //Hash List
                 br.BaseStream.Position = header.hashSecOffset;
-                for (int i = 0; i < header.texCount; i++)
-                {
-                    //HashList
-                    uint hash = br.ReadUInt32();
-                    int idx = br.ReadInt32();
-                    this[idx].nodeEntry.hash = hash;
-                }
+                List<int> hashList = new List<int>();
+                hashList.AddRange(br.ReadMultiple<int>(header.texCount));
 
+                //TexInfo List 2
                 br.BaseStream.Position = header.texInfoOffset;
+                List<int> texInfoList2 = new List<int>();
+                texInfoList2.AddRange(br.ReadMultiple<int>(header.texCount));
+
+                //Get FileData
                 for (int i = 0; i < header.texCount; i++)
-                {
-                    //TexInfo
-                    this[i].nodeEntry.info2 = br.ReadUInt32();
-                }
-            }
-        }
-
-        public String readASCII(Stream input)
-        {
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
-            {
-                String result = "";
-                Encoding ascii = Encoding.GetEncoding("ascii");
-
-                byte[] character = br.ReadBytes(1);
-                while (character[0] != 0x00)
-                {
-                    result += ascii.GetString(character);
-                    character = br.ReadBytes(1);
-                }
-
-                return result;
+                    Files.Add(new CTPKFileInfo()
+                    {
+                        State = ArchiveFileState.Archived,
+                        FileName = nameList[i],
+                        FileData = new SubStream(br.BaseStream, entries[i].texOffset, entries[i].texDataSize),
+                        Entry = entries[i]
+                    });
             }
         }
     }

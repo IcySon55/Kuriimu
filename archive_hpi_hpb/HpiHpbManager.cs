@@ -5,6 +5,7 @@ using System.IO;
 using archive_hpi_hpb.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Compression;
 
 //Notes:
 //Load in the class constructor
