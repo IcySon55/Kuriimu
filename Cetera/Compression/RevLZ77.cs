@@ -314,7 +314,7 @@ namespace Cetera.Compression
                 }
 
                 if (!bResult)
-                    return input;
+                    return null;
                 return GetByteArray(result, a_uCompressedSize);
             }
         }

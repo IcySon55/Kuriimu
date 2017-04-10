@@ -74,17 +74,25 @@ namespace archive_hpi_hpb
                 var uncompData = new byte[base.FileData.Length];
                 base.FileData.Read(uncompData, 0, uncompData.Length);
                 var compData = RevLZ77.Compress(uncompData);
-
-                Entry.fileSize = compData.Length + 0x20;
-                Entry.uncompressedSize = uncompData.Length;
-                using (var bw = new BinaryWriterX(stream, true))
-                {
-                    bw.WriteStruct(new AcmpHeader
+                if (compData == null)
+                    using (var bw = new BinaryWriterX(stream, true))
                     {
-                        compressedSize = Entry.fileSize,
-                        uncompressedSize = Entry.uncompressedSize
-                    });
-                    bw.Write(compData);
+                        bw.Write(uncompData);
+                    }
+                else
+                {
+
+                    Entry.fileSize = compData.Length + 0x20;
+                    Entry.uncompressedSize = uncompData.Length;
+                    using (var bw = new BinaryWriterX(stream, true))
+                    {
+                        bw.WriteStruct(new AcmpHeader
+                        {
+                            compressedSize = Entry.fileSize,
+                            uncompressedSize = Entry.uncompressedSize
+                        });
+                        bw.Write(compData);
+                    }
                 }
             }
             else

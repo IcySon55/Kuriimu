@@ -8,8 +8,10 @@ using Kuriimu.IO;
 
 namespace archive_hpi_hpb
 {
-    public sealed class HPIHPB : List<HpiHpbAfi>, IDisposable
+    public sealed class HPIHPB
     {
+        public List<HpiHpbAfi> Files = new List<HpiHpbAfi>();
+
         const uint HashSlotCount = 0x1000;
         const uint PathHashMagic = 0x25;
 
@@ -27,7 +29,7 @@ namespace archive_hpi_hpb
                 br.ReadMultiple<HashEntry>(header.hashCount);
 
                 // Entry List
-                AddRange(br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
+                Files.AddRange(br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
                 {
                     Entry = entry,
                     FileName = br.ReadCStringA(), // String Table
@@ -43,10 +45,10 @@ namespace archive_hpi_hpb
             using (var bw = new BinaryWriterX(hpi))
             {
                 // HPI Header
-                bw.WriteStruct(new HpiHeader { hashCount = (short)HashSlotCount, entryCount = Count });
+                bw.WriteStruct(new HpiHeader { hashCount = (short)HashSlotCount, entryCount = Files.Count });
 
                 int stringOffset = 0;
-                foreach (var afi in this)
+                foreach (var afi in Files)
                 {
                     afi.Entry.stringOffset = stringOffset;
                     afi.WriteToHpb(hpb);
@@ -54,7 +56,7 @@ namespace archive_hpi_hpb
                 }
 
                 // Hash List
-                var lookup = this.ToLookup(e => SimpleHash.Create(e.FileName, PathHashMagic, HashSlotCount));
+                var lookup = Files.ToLookup(e => SimpleHash.Create(e.FileName, PathHashMagic, HashSlotCount));
                 for (int i = 0, offset = 0; i < HashSlotCount; i++)
                 {
                     var count = lookup[(uint)i].Count();
@@ -67,7 +69,7 @@ namespace archive_hpi_hpb
                     bw.WriteStruct(afi.Entry);
 
                 // String Table
-                foreach (var afi in this)
+                foreach (var afi in Files)
                     bw.WriteASCII(afi.FileName + '\0');
             }
         }
