@@ -60,7 +60,7 @@ namespace archive_hpi_hpb
                 using (var br = new BinaryReaderX(base.FileData, true))
                 {
                     var header = br.ReadStruct<AcmpHeader>();
-                    return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize), (uint)header.uncompressedSize));
+                    return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize)));
                 }
             }
         }

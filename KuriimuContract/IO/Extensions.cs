@@ -5,10 +5,10 @@ namespace Kuriimu.IO
 {
     public static class Extensions
     {
-        public static unsafe T ToStruct<T>(this byte[] buffer)
+        public static unsafe T ToStruct<T>(this byte[] buffer, int offset = 0)
         {
             fixed (byte* pBuffer = buffer)
-                return Marshal.PtrToStructure<T>((IntPtr)pBuffer);
+                return Marshal.PtrToStructure<T>((IntPtr)pBuffer + offset);
         }
 
         public static unsafe byte[] StructToArray<T>(this T item)

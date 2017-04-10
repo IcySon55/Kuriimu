@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
 
@@ -16,29 +15,123 @@ namespace Cetera.Compression
         }
         public class SCompressInfo
         {
-            public SCompressInfo(byte[] work)
-            {
-                WindowLen = 0;
-                WindowPos = 0;
-                offsetTablePos = 0;
-                reversedOffsetTablePos = 4098;
-                byteTablePos = 4098 + 4098;
-                endTablePos = 4098 + 4098 + 256;
+            int windowPos;
+            int windowLen;
+            int[] offsetTable = new int[4098];
+            int[] reversedOffsetTable = new int[4098];
+            int[] byteTable = Enumerable.Repeat(-1, 256).ToArray();
+            int[] endTable = Enumerable.Repeat(-1, 256).ToArray();
+            byte[] input;
 
-                for (int i = 0; i < 256 * 2; i += 2)
+            public SCompressInfo(byte[] input)
+            {
+                this.input = input;
+            }
+
+            public int Search(int src, out int offset, int maxSize)
+            {
+                offset = 0;
+
+                if (maxSize < 3)
                 {
-                    work[byteTablePos * 2 + i] = 0xFF;
-                    work[byteTablePos * 2 + i + 1] = 0xFF;
-                    work[endTablePos * 2 + i] = 0xFF;
-                    work[endTablePos * 2 + i + 1] = 0xFF;
+                    return 0;
+                }
+
+                int size = 2;
+
+                for (int nOffset = endTable[input[src - 1]]; nOffset != -1; nOffset = reversedOffsetTable[nOffset])
+                {
+                    int search = src + windowPos - nOffset;
+                    if (nOffset >= windowPos)
+                    {
+                        search += windowLen;
+                    }
+
+                    if (search - src < 3)
+                    {
+                        continue;
+                    }
+
+                    if (input[search - 2] != input[src - 2] || input[search - 3] != input[src - 3])
+                    {
+                        continue;
+                    }
+
+                    int nMaxSize = Math.Min(maxSize, search - src);
+                    int nCurrentSize = 3;
+                    while (nCurrentSize < nMaxSize && input[search - nCurrentSize - 1] == input[src - nCurrentSize - 1])
+                    {
+                        nCurrentSize++;
+                    }
+
+                    if (nCurrentSize > size)
+                    {
+                        size = nCurrentSize;
+                        offset = search - src;
+                        if (size == maxSize)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if (size < 3)
+                {
+                    return 0;
+                }
+
+                return size;
+            }
+
+            public void SlideByte(int src)
+            {
+                byte uInData = input[src];
+                int uInsertOffset = 0;
+
+                if (windowLen == 4098)
+                {
+                    byte uOutData = input[src + 4098];
+
+                    if ((byteTable[uOutData] = offsetTable[byteTable[uOutData]]) == -1)
+                    {
+                        endTable[uOutData] = -1;
+                    }
+                    else
+                    {
+                        reversedOffsetTable[byteTable[uOutData]] = -1;
+                    }
+
+                    uInsertOffset = windowPos;
+                }
+                else
+                {
+                    uInsertOffset = windowLen;
+                }
+
+                int nOffset = endTable[uInData];
+                if (nOffset == -1)
+                {
+                    byteTable[uInData] = uInsertOffset;
+                }
+                else
+                {
+                    offsetTable[nOffset] = uInsertOffset;
+                }
+
+                endTable[uInData] = uInsertOffset;
+                offsetTable[uInsertOffset] = -1;
+                reversedOffsetTable[uInsertOffset] = nOffset;
+
+                if (windowLen == 4098)
+                {
+                    windowPos++;
+                    windowPos %= 4098;
+                }
+                else
+                {
+                    windowLen++;
                 }
             }
-            public ushort WindowPos;
-            public ushort WindowLen;
-            public short offsetTablePos;
-            public short reversedOffsetTablePos;
-            public short byteTablePos;
-            public short endTablePos;
         }
 
         public static byte[] Decompress(byte[] input)
@@ -82,349 +175,110 @@ namespace Cetera.Compression
 
         public static byte[] Compress(byte[] input)
         {
-            int a_uUncompressedSize = input.Length;
-            int a_uCompressedSize = input.Length;
-            byte[] result = new byte[input.Length];
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input.Length <= 8) return null;
 
-            bool bResult = true;
+            var result = new byte[input.Length];
 
-            using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(input)))
+            var info = new SCompressInfo(input);
+            const int maxSize = 0xF + 3;
+            int src = input.Length;
+            int dest = input.Length;
+
+            while (src > 0 && dest > 0)
             {
-                if (a_uUncompressedSize > 8 && a_uCompressedSize >= a_uUncompressedSize)
+                int flagPos = --dest, mask = 0x80;
+                result[flagPos] = 0;
+
+                do
                 {
+                    int nOffset;
+                    int size = info.Search(src, out nOffset, Math.Min(Math.Min(maxSize, src), input.Length - src));
 
-                    byte[] pWork = new byte[(4098 + 4098 + 256 + 256) * 2];
-
-                    do
+                    if (size < 3)
                     {
-                        SCompressInfo info = new SCompressInfo(pWork);
-                        int nMaxSize = 0xF + 3;
-                        int pSrc = a_uUncompressedSize;
-                        int pDest = a_uUncompressedSize;
-                        while (pSrc > 0 && pDest > 0)
+                        if (dest < 1)
                         {
-                            int pFlag = --pDest;
-                            result[pFlag] = 0;
-
-                            for (int i = 0; i < 8; i++)
-                            {
-                                int nOffset;
-                                int nSize = Search(pWork, br, pSrc, info, out nOffset, Math.Min(Math.Min(nMaxSize, pSrc), (int)br.BaseStream.Length - pSrc));
-
-                                if (nSize < 3)
-                                {
-                                    if (pDest < 1)
-                                    {
-                                        bResult = false;
-                                        break;
-                                    }
-                                    Slide(pWork, br, pSrc, info, 1);
-                                    br.BaseStream.Position = --pSrc;
-                                    result[--pDest] = br.ReadByte();
-                                }
-                                else
-                                {
-                                    if (pDest < 2)
-                                    {
-                                        bResult = false;
-                                        break;
-                                    }
-
-                                    result[pFlag] |= (byte)(0x80 >> i);
-                                    Slide(pWork, br, pSrc, info, nSize);
-                                    pSrc -= nSize;
-                                    nSize -= 3;
-                                    result[--pDest] = (byte)((nSize << 4 & 0xF0) | ((nOffset - 3) >> 8 & 0x0F));
-                                    result[--pDest] = (byte)((nOffset - 3) & 0xFF);
-                                }
-
-                                if (pSrc <= 0)
-                                {
-                                    break;
-                                }
-                            }
-
-                            if (!bResult)
-                            {
-                                break;
-                            }
+                            return null;
                         }
-
-                        if (!bResult)
-                        {
-                            break;
-                        }
-
-                        a_uCompressedSize = a_uUncompressedSize - pDest;
-                    } while (false);
-                }
-                else
-                {
-                    bResult = false;
-                }
-
-                if (bResult)
-                {
-                    int uOrigSize = a_uUncompressedSize;
-                    int pCompressBuffer = a_uUncompressedSize - a_uCompressedSize;
-                    int uCompressBufferSize = a_uCompressedSize;
-                    int uOrigSafe = 0;
-                    int uCompressSafe = 0;
-                    bool bOver = false;
-
-                    while (uOrigSize > 0)
-                    {
-                        byte uFlag = result[pCompressBuffer + (--uCompressBufferSize)];
-
-                        for (int i = 0; i < 8; i++)
-                        {
-                            if ((uFlag << i & 0x80) == 0)
-                            {
-                                uCompressBufferSize--;
-                                uOrigSize--;
-                            }
-                            else
-                            {
-                                int nSize = (result[pCompressBuffer + (--uCompressBufferSize)] >> 4 & 0x0F) + 3;
-                                uCompressBufferSize--;
-                                uOrigSize -= nSize;
-
-                                if (uOrigSize < uCompressBufferSize)
-                                {
-                                    uOrigSafe = uOrigSize;
-                                    uCompressSafe = uCompressBufferSize;
-                                    bOver = true;
-                                    break;
-                                }
-                            }
-
-                            if (uOrigSize <= 0)
-                            {
-                                break;
-                            }
-                        }
-
-                        if (bOver)
-                        {
-                            break;
-                        }
-                    }
-
-                    int uCompressedSize = a_uCompressedSize - uCompressSafe;
-                    int uPadOffset = uOrigSafe + uCompressedSize;
-                    int uCompFooterOffset = (uPadOffset + 4 - 1) / 4 * 4;
-                    a_uCompressedSize = uCompFooterOffset + 8;
-                    int uTop = a_uCompressedSize - uOrigSafe;
-                    int uBottom = a_uCompressedSize - uPadOffset;
-
-                    if (a_uCompressedSize >= a_uUncompressedSize || uTop > 0xFFFFFF)
-                    {
-                        bResult = false;
+                        info.SlideByte(--src);
+                        result[--dest] = input[src];
                     }
                     else
                     {
-                        //memcpy
-                        br.BaseStream.Position = 0;
-                        for (int i = 0; i < uOrigSafe; i++) result[i] = br.ReadByte();
+                        if (dest < 2)
+                        {
+                            return null;
+                        }
 
-                        //memmove
-                        byte[] tmp = new byte[uCompressedSize];
-                        for (int i = pCompressBuffer + uCompressSafe; i < pCompressBuffer + uCompressSafe + uCompressedSize; i++) tmp[i - (pCompressBuffer + uCompressSafe)] = result[i];
-                        for (int i = uOrigSafe; i < uOrigSafe + tmp.Length; i++) result[i] = tmp[i - uOrigSafe];
-
-                        //memset
-                        for (int i = uPadOffset; i < uPadOffset + (uCompFooterOffset - uPadOffset); i++) result[i] = 0xFF;
-
-                        int i1 = uTop | (uBottom << 24);
-                        result[uCompFooterOffset] = (byte)(i1 & 0xFF); result[uCompFooterOffset + 1] = (byte)(i1 >> 8);
-                        result[uCompFooterOffset + 2] = (byte)(i1 >> 16); result[uCompFooterOffset + 3] = (byte)(i1 >> 24);
-                        int i2 = a_uUncompressedSize - a_uCompressedSize;
-                        result[uCompFooterOffset + 4] = (byte)(i2 & 0xFF); result[uCompFooterOffset + 5] = (byte)(i2 >> 8);
-                        result[uCompFooterOffset + 6] = (byte)(i2 >> 16); result[uCompFooterOffset + 7] = (byte)(i2 >> 24);
+                        for (int i = 0; i < size; i++)
+                            info.SlideByte(--src);
+                        result[flagPos] |= (byte)mask;
+                        result[--dest] = (byte)(((size - 3) << 4) | ((nOffset - 3) >> 8 & 0x0F));
+                        result[--dest] = (byte)(nOffset - 3);
                     }
-                }
 
-                if (!bResult)
-                    return null;
-                return GetByteArray(result, a_uCompressedSize);
-            }
-        }
-
-        public static byte[] GetByteArray(byte[] input, int size)
-        {
-            byte[] result = new byte[size];
-            for (int i = 0; i < size; i++)
-            {
-                result[i] = input[i];
-            }
-            return result;
-        }
-
-        public static int Search(byte[] work, BinaryReaderX br, int a_pSrc, SCompressInfo a_pInfo, out int a_nOffset, int a_nMaxSize)
-        {
-            a_nOffset = 0;
-
-            if (a_nMaxSize < 3)
-            {
-                return 0;
-            }
-
-            int pSearch;
-            int nSize = 2;
-            ushort uWindowPos = a_pInfo.WindowPos;
-            ushort uWindowLen = a_pInfo.WindowLen;
-            int pReversedOffsetTable = a_pInfo.reversedOffsetTablePos;
-
-            br.BaseStream.Position = a_pSrc - 1;
-            short pos = br.ReadByte();
-
-            for (short nOffset = GetShort(work, a_pInfo.endTablePos + pos); nOffset != -1; nOffset = GetShort(work, a_pInfo.reversedOffsetTablePos + nOffset))
-            {
-                if (nOffset < uWindowPos)
-                {
-                    pSearch = a_pSrc + uWindowPos - nOffset;
-                }
-                else
-                {
-                    pSearch = a_pSrc + uWindowPos + uWindowLen - nOffset;
-                }
-
-                if (pSearch - a_pSrc < 3)
-                {
-                    continue;
-                }
-
-                br.BaseStream.Position = pSearch - 3;
-                byte i1 = br.ReadByte();
-                byte i2 = br.ReadByte();
-                br.BaseStream.Position = a_pSrc - 3;
-                byte i3 = br.ReadByte();
-                byte i4 = br.ReadByte();
-                if (i2 != i4 || i1 != i3)
-                {
-                    continue;
-                }
-
-                int nMaxSize = Math.Min(a_nMaxSize, pSearch - a_pSrc);
-                int nCurrentSize = 3;
-
-                byte i5 = 0;
-                byte i6 = 0;
-                if (nCurrentSize < nMaxSize)
-                {
-                    br.BaseStream.Position = pSearch - nCurrentSize - 1;
-                    i5 = br.ReadByte();
-                    br.BaseStream.Position = a_pSrc - nCurrentSize - 1;
-                    i6 = br.ReadByte();
-                }
-                while (nCurrentSize < nMaxSize && i5 == i6)
-                {
-                    nCurrentSize++;
-                    if (nCurrentSize < nMaxSize)
-                    {
-                        br.BaseStream.Position = pSearch - nCurrentSize - 1;
-                        i5 = br.ReadByte();
-                        br.BaseStream.Position = a_pSrc - nCurrentSize - 1;
-                        i6 = br.ReadByte();
-                    }
-                }
-
-                if (nCurrentSize > nSize)
-                {
-                    nSize = nCurrentSize;
-                    a_nOffset = pSearch - a_pSrc;
-                    if (nSize == a_nMaxSize)
+                    if (src <= 0)
                     {
                         break;
                     }
-                }
+                } while ((mask >>= 1) != 0);
             }
 
-            if (nSize < 3)
+            Func<int, int, byte[]> func = (origSize, unusedSize) =>
             {
-                return 0;
-            }
+                int compressedRegion = input.Length - unusedSize;
+                int padOffset = origSize + compressedRegion;
+                int compressedSize = padOffset + 11 & ~3;
 
-            return nSize;
-        }
-
-        public static void Slide(byte[] work, BinaryReaderX br, int a_pSrc, SCompressInfo info, int a_nSize)
-        {
-            for (int i = 0; i < a_nSize; i++)
-            {
-                SlideByte(work, br, info, a_pSrc--);
-            }
-            //Console.WriteLine(info.WindowLen + "   " + info.WindowPos);
-        }
-
-        public static void SlideByte(byte[] work, BinaryReaderX br, SCompressInfo info, int a_pSrc)
-        {
-            br.BaseStream.Position = a_pSrc - 1;
-            byte uInData = br.ReadByte();
-            ushort uInsertOffset = 0;
-            ushort uWindowPos = info.WindowPos;
-            ushort uWindowLen = info.WindowLen;
-
-            int pOffsetTable = info.offsetTablePos;
-            int pReversedOffsetTable = info.reversedOffsetTablePos;
-            int pByteTable = info.byteTablePos;
-            int pEndTable = info.endTablePos;
-
-            if (uWindowLen == 4098)
-            {
-                br.BaseStream.Position = a_pSrc + 4097;
-                byte uOutData = br.ReadByte();
-
-                WriteShort(work, pByteTable + uOutData, GetShort(work, pOffsetTable + GetShort(work, pByteTable + uOutData)));
-                if (GetShort(work, pByteTable + uOutData) == -1)
+                if (compressedSize >= Math.Min(input.Length, origSize + 0x1000000))
                 {
-                    WriteShort(work, pEndTable + uOutData, -1);
+                    return null;
                 }
-                else
+
+                var compFooter = new CompFooter
                 {
-                    WriteShort(work, pReversedOffsetTable + GetShort(work, pByteTable + uOutData), -1);
-                }
+                    bufferTopAndBottom = (compressedSize - origSize) | ((compressedSize - padOffset) << 24),
+                    originalBottom = input.Length - compressedSize
+                };
+                return input.Take(origSize)
+                    .Concat(new ArraySegment<byte>(result, input.Length - compressedRegion, compressedRegion))
+                    .Concat(Enumerable.Repeat((byte)0xFF, -padOffset & 3))
+                    .Concat(compFooter.StructToArray())
+                    .ToArray();
+            };
 
-                uInsertOffset = uWindowPos;
-            }
-            else
+            int orig = input.Length;
+            int unused = input.Length;
+
+            while (true)
             {
-                uInsertOffset = uWindowLen;
+                int flag = result[--unused], mask = 0x80;
+                do
+                {
+                    if ((flag & mask) == 0)
+                    {
+                        orig--;
+                        unused--;
+                    }
+                    else
+                    {
+                        orig -= (result[--unused] >> 4 & 0x0F) + 3;
+                        unused--;
+
+                        if (orig + dest < unused)
+                        {
+                            return func(orig, unused);
+                        }
+                    }
+
+                    if (orig <= 0)
+                    {
+                        return func(0, dest);
+                    }
+                } while ((mask >>= 1) != 0);
             }
 
-            short nOffset = GetShort(work, pEndTable + uInData);
-            if (nOffset == -1)
-            {
-                WriteShort(work, pByteTable + uInData, (short)uInsertOffset);
-            }
-            else
-            {
-                WriteShort(work, pOffsetTable + nOffset, (short)uInsertOffset);
-            }
-
-            WriteShort(work, pEndTable + uInData, (short)uInsertOffset);
-            WriteShort(work, pOffsetTable + uInsertOffset, -1);
-            WriteShort(work, pReversedOffsetTable + uInsertOffset, nOffset);
-
-            if (uWindowLen == 4098)
-            {
-                info.WindowPos = (ushort)((uWindowPos + 1) % 4098);
-            }
-            else
-            {
-                info.WindowLen++;
-            }
-        }
-
-        public static short GetShort(byte[] input, int offset)
-        {
-            return (short)(input[offset * 2] | (input[offset * 2 + 1] << 8));
-        }
-
-        public static void WriteShort(byte[] input, int offset, short value)
-        {
-            input[offset * 2] = (byte)(value & 0xFF);
-            input[offset * 2 + 1] = (byte)(value >> 8);
-        }
+        }     
     }
 }
