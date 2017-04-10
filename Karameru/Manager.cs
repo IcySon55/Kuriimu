@@ -367,12 +367,12 @@ namespace Karameru
                     filename = ofd.FileName;
 
                 IArchiveManager _tempManager = SelectArchiveManager(filename);
+                _archiveManager?.Unload();
 
                 try
                 {
                     if (_tempManager?.Load(filename) == LoadResult.Success)
                     {
-                        _archiveManager?.Unload();
                         _archiveManager = _tempManager;
                         _fileOpen = true;
                         _hasChanges = false;
