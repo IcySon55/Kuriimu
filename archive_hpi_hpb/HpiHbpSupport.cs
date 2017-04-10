@@ -75,10 +75,14 @@ namespace archive_hpi_hpb
                 base.FileData.Read(uncompData, 0, uncompData.Length);
                 var compData = RevLZ77.Compress(uncompData);
                 if (compData == null)
+                {
+                    Entry.fileSize = uncompData.Length;
+                    Entry.uncompressedSize = 0;
                     using (var bw = new BinaryWriterX(stream, true))
                     {
                         bw.Write(uncompData);
                     }
+                }
                 else
                 {
 

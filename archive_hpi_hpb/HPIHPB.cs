@@ -8,9 +8,9 @@ using Kuriimu.IO;
 
 namespace archive_hpi_hpb
 {
-    public sealed class HPIHPB
+    public sealed class HPIHPB : IDisposable
     {
-        public List<HpiHpbAfi> Files = new List<HpiHpbAfi>();
+        public List<HpiHpbAfi> Files;
 
         const uint HashSlotCount = 0x1000;
         const uint PathHashMagic = 0x25;
@@ -29,13 +29,13 @@ namespace archive_hpi_hpb
                 br.ReadMultiple<HashEntry>(header.hashCount);
 
                 // Entry List
-                Files.AddRange(br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
+                Files = br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
                 {
                     Entry = entry,
                     FileName = br.ReadCStringA(), // String Table
                     FileData = new SubStream(hpb, entry.fileOffset, entry.fileSize),
                     State = ArchiveFileState.Archived
-                }));
+                }).ToList();
             }
         }
 
