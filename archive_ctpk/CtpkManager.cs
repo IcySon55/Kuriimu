@@ -2,19 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using archive_ctpk.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Hash;
 
 namespace archive_ctpk
 {
     public class CTPKAdapter : IArchiveManager
     {
-        public class CtpkAfi : ArchiveFileInfo
-        {
-            public CTPK.NodeEntry nodeEntry;
-        }
-
         private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
 
@@ -32,7 +29,7 @@ namespace archive_ctpk
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo
         {
@@ -100,17 +97,7 @@ namespace archive_ctpk
         {
             get
             {
-                var files = new List<ArchiveFileInfo>();
-
-                foreach (var node in _ctpk)
-                {
-                    var file = new ArchiveFileInfo();
-                    //file.Filesize = node.nodeEntry.entry.texDataSize;
-                    file.FileName = node.filename;
-                    files.Add(file);
-                }
-
-                return files;
+                return _ctpk.Files;
             }
         }
 

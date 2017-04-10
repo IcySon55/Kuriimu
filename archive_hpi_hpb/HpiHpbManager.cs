@@ -5,6 +5,7 @@ using System.IO;
 using archive_hpi_hpb.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Compression;
 
 //Notes:
 //Load in the class constructor
@@ -133,13 +134,13 @@ namespace archive_hpi_hpb
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _hpihpb;
+        public IEnumerable<ArchiveFileInfo> Files => _hpihpb.Files;
 
         public bool AddFile(ArchiveFileInfo afi)
         {
             try
             {
-                _hpihpb.Add(new HpiHpbAfi
+                _hpihpb.Files.Add(new HpiHpbAfi
                 {
                     FileName = afi.FileName,
                     FileData = afi.FileData,

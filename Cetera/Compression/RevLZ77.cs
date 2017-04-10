@@ -21,20 +21,20 @@ namespace Cetera.Compression
                 WindowLen = 0;
                 WindowPos = 0;
                 offsetTablePos = 0;
-                reversedOffsetTablePos = 4098 * 2;
-                byteTablePos = (4098 + 4098) * 2;
-                endTablePos = (4098 + 4098 + 256) * 2;
+                reversedOffsetTablePos = 4098;
+                byteTablePos = 4098 + 4098;
+                endTablePos = 4098 + 4098 + 256;
 
                 for (int i = 0; i < 256 * 2; i += 2)
                 {
-                    work[byteTablePos + i] = 0xFF;
-                    work[byteTablePos + i + 1] = 0xFF;
-                    work[endTablePos + i] = 0xFF;
-                    work[endTablePos + i + 1] = 0xFF;
+                    work[byteTablePos * 2 + i] = 0xFF;
+                    work[byteTablePos * 2 + i + 1] = 0xFF;
+                    work[endTablePos * 2 + i] = 0xFF;
+                    work[endTablePos * 2 + i + 1] = 0xFF;
                 }
             }
-            public short WindowPos;
-            public short WindowLen;
+            public ushort WindowPos;
+            public ushort WindowLen;
             public short offsetTablePos;
             public short reversedOffsetTablePos;
             public short byteTablePos;
@@ -162,11 +162,11 @@ namespace Cetera.Compression
                 if (a_uUncompressedSize > 8 && a_uCompressedSize >= a_uUncompressedSize)
                 {
 
-                    byte[] work = new byte[(4098 + 4098 + 256 + 256) * 2];
+                    byte[] pWork = new byte[(4098 + 4098 + 256 + 256) * 2];
 
                     do
                     {
-                        SCompressInfo info = new SCompressInfo(work);
+                        SCompressInfo info = new SCompressInfo(pWork);
                         int nMaxSize = 0xF + 3;
                         int pSrc = a_uUncompressedSize;
                         int pDest = a_uUncompressedSize;
@@ -178,7 +178,7 @@ namespace Cetera.Compression
                             for (int i = 0; i < 8; i++)
                             {
                                 int nOffset;
-                                int nSize = Search(work, br, pSrc, info, out nOffset, Math.Min(Math.Min(nMaxSize, pSrc), (int)br.BaseStream.Length - pSrc));
+                                int nSize = Search(pWork, br, pSrc, info, out nOffset, Math.Min(Math.Min(nMaxSize, pSrc), (int)br.BaseStream.Length - pSrc));
 
                                 if (nSize < 3)
                                 {
@@ -187,7 +187,7 @@ namespace Cetera.Compression
                                         bResult = false;
                                         break;
                                     }
-                                    Slide(work, br, pSrc, info, 1);
+                                    Slide(pWork, br, pSrc, info, 1);
                                     br.BaseStream.Position = --pSrc;
                                     result[--pDest] = br.ReadByte();
                                 }
@@ -200,7 +200,7 @@ namespace Cetera.Compression
                                     }
 
                                     result[pFlag] |= (byte)(0x80 >> i);
-                                    Slide(work, br, pSrc, info, nSize);
+                                    Slide(pWork, br, pSrc, info, nSize);
                                     pSrc -= nSize;
                                     nSize -= 3;
                                     result[--pDest] = (byte)((nSize << 4 & 0xF0) | ((nOffset - 3) >> 8 & 0x0F));
@@ -313,6 +313,8 @@ namespace Cetera.Compression
                     }
                 }
 
+                if (!bResult)
+                    return null;
                 return GetByteArray(result, a_uCompressedSize);
             }
         }
@@ -338,15 +340,14 @@ namespace Cetera.Compression
 
             int pSearch;
             int nSize = 2;
-            short uWindowPos = a_pInfo.WindowPos;
-            short uWindowLen = a_pInfo.WindowLen;
-            int pReverseOffsetTable = a_pInfo.reversedOffsetTablePos;
+            ushort uWindowPos = a_pInfo.WindowPos;
+            ushort uWindowLen = a_pInfo.WindowLen;
+            int pReversedOffsetTable = a_pInfo.reversedOffsetTablePos;
 
             br.BaseStream.Position = a_pSrc - 1;
-            short tmpPos = (short)(br.ReadByte() * 2);
-            short tmp = (short)(work[a_pInfo.endTablePos + tmpPos] | work[a_pInfo.endTablePos + tmpPos + 1] << 8);
+            short pos = br.ReadByte();
 
-            for (short nOffset = tmp; nOffset != -1; nOffset = (short)(work[pReverseOffsetTable + nOffset * 2] | (work[pReverseOffsetTable + nOffset * 2 + 1] << 8)))
+            for (short nOffset = GetShort(work, a_pInfo.endTablePos + pos); nOffset != -1; nOffset = GetShort(work, a_pInfo.reversedOffsetTablePos + nOffset))
             {
                 if (nOffset < uWindowPos)
                 {
@@ -376,10 +377,15 @@ namespace Cetera.Compression
                 int nMaxSize = Math.Min(a_nMaxSize, pSearch - a_pSrc);
                 int nCurrentSize = 3;
 
-                br.BaseStream.Position = pSearch - nCurrentSize - 1;
-                byte i5 = br.ReadByte();
-                br.BaseStream.Position = a_pSrc - nCurrentSize - 1;
-                byte i6 = br.ReadByte();
+                byte i5 = 0;
+                byte i6 = 0;
+                if (nCurrentSize < nMaxSize)
+                {
+                    br.BaseStream.Position = pSearch - nCurrentSize - 1;
+                    i5 = br.ReadByte();
+                    br.BaseStream.Position = a_pSrc - nCurrentSize - 1;
+                    i6 = br.ReadByte();
+                }
                 while (nCurrentSize < nMaxSize && i5 == i6)
                 {
                     nCurrentSize++;
@@ -411,21 +417,22 @@ namespace Cetera.Compression
             return nSize;
         }
 
-        public static void Slide(byte[] worko, BinaryReaderX br, int a_pSrc, SCompressInfo info, int a_nSize)
+        public static void Slide(byte[] work, BinaryReaderX br, int a_pSrc, SCompressInfo info, int a_nSize)
         {
             for (int i = 0; i < a_nSize; i++)
             {
-                SlideByte(worko, br, info, a_pSrc--);
+                SlideByte(work, br, info, a_pSrc--);
             }
+            //Console.WriteLine(info.WindowLen + "   " + info.WindowPos);
         }
 
-        public static void SlideByte(byte[] worko, BinaryReaderX br, SCompressInfo info, int a_pSrc)
+        public static void SlideByte(byte[] work, BinaryReaderX br, SCompressInfo info, int a_pSrc)
         {
             br.BaseStream.Position = a_pSrc - 1;
             byte uInData = br.ReadByte();
-            short uInsertOffset = 0;
-            short uWindowPos = info.WindowPos;
-            short uWindowLen = info.WindowLen;
+            ushort uInsertOffset = 0;
+            ushort uWindowPos = info.WindowPos;
+            ushort uWindowLen = info.WindowLen;
 
             int pOffsetTable = info.offsetTablePos;
             int pReversedOffsetTable = info.reversedOffsetTablePos;
@@ -437,20 +444,16 @@ namespace Cetera.Compression
                 br.BaseStream.Position = a_pSrc + 4097;
                 byte uOutData = br.ReadByte();
 
-
-
-                short tmp1 = (short)(worko[pByteTable + uOutData * 2] | worko[pByteTable + uOutData * 2 + 1] << 8);
-                if ((worko[pByteTable + uOutData * 2] = worko[pOffsetTable + tmp1 * 2]) == 0xFF && (worko[pByteTable + uOutData * 2 + 1] = worko[pOffsetTable + tmp1 * 2 + 1]) == 0xFF)
+                WriteShort(work, pByteTable + uOutData, GetShort(work, pOffsetTable + GetShort(work, pByteTable + uOutData)));
+                if (GetShort(work, pByteTable + uOutData) == -1)
                 {
-                    worko[pEndTable + uOutData * 2] = 0xFF;
-                    worko[pEndTable + uOutData * 2 + 1] = 0xFF;
+                    WriteShort(work, pEndTable + uOutData, -1);
                 }
                 else
                 {
-                    short tmp2 = (short)(worko[pByteTable + uOutData * 2] | worko[pByteTable + uOutData * 2 + 1] << 8);
-                    worko[pReversedOffsetTable + tmp2 * 2] = 0xFF;
-                    worko[pReversedOffsetTable + tmp2 * 2 + 1] = 0xFF;
+                    WriteShort(work, pReversedOffsetTable + GetShort(work, pByteTable + uOutData), -1);
                 }
+
                 uInsertOffset = uWindowPos;
             }
             else
@@ -458,35 +461,39 @@ namespace Cetera.Compression
                 uInsertOffset = uWindowLen;
             }
 
-            short nOffset = (short)(worko[pEndTable + uInData * 2] | worko[pEndTable + uInData * 2 + 1] << 8);
+            short nOffset = GetShort(work, pEndTable + uInData);
             if (nOffset == -1)
             {
-                worko[pByteTable + uInData * 2] = (byte)(uInsertOffset & 0xFF);
-                worko[pByteTable + uInData * 2 + 1] = (byte)(uInsertOffset >> 8);
+                WriteShort(work, pByteTable + uInData, (short)uInsertOffset);
             }
             else
             {
-                worko[pOffsetTable + nOffset * 2] = (byte)(uInsertOffset & 0xFF);
-                worko[pOffsetTable + nOffset * 2 + 1] = (byte)(uInsertOffset >> 8);
+                WriteShort(work, pOffsetTable + nOffset, (short)uInsertOffset);
             }
 
-            worko[pEndTable + uInData * 2] = (byte)(uInsertOffset & 0xFF);
-            worko[pEndTable + uInData * 2 + 1] = (byte)(uInsertOffset >> 8);
-
-            worko[pOffsetTable + uInsertOffset * 2] = 0xFF;
-            worko[pOffsetTable + uInsertOffset * 2 + 1] = 0xFF;
-
-            worko[pReversedOffsetTable + uInsertOffset * 2] = (byte)(nOffset & 0xFF);
-            worko[pReversedOffsetTable + uInsertOffset * 2 + 1] = (byte)(nOffset >> 8);
+            WriteShort(work, pEndTable + uInData, (short)uInsertOffset);
+            WriteShort(work, pOffsetTable + uInsertOffset, -1);
+            WriteShort(work, pReversedOffsetTable + uInsertOffset, nOffset);
 
             if (uWindowLen == 4098)
             {
-                info.WindowPos = (short)((uWindowPos + 1) % 4098);
+                info.WindowPos = (ushort)((uWindowPos + 1) % 4098);
             }
             else
             {
                 info.WindowLen++;
             }
+        }
+
+        public static short GetShort(byte[] input, int offset)
+        {
+            return (short)(input[offset * 2] | (input[offset * 2 + 1] << 8));
+        }
+
+        public static void WriteShort(byte[] input, int offset, short value)
+        {
+            input[offset * 2] = (byte)(value & 0xFF);
+            input[offset * 2 + 1] = (byte)(value >> 8);
         }
     }
 }
