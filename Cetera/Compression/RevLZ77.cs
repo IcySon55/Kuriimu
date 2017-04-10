@@ -11,8 +11,8 @@ namespace Cetera.Compression
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct CompFooter
         {
-            public uint bufferTopAndBottom;
-            public uint originalBottom;
+            public int bufferTopAndBottom;
+            public int originalBottom;
         }
         public class SCompressInfo
         {
@@ -41,111 +41,42 @@ namespace Cetera.Compression
             public short endTablePos;
         }
 
-        public static byte[] Decompress(byte[] input, uint decompSize)
+        public static byte[] Decompress(byte[] input)
         {
-            bool res = true;
-            List<byte> result = new List<byte>();
+            if (input == null) throw new ArgumentNullException(nameof(input));
 
-            if (input.Length >= 8)
+            var compFooter = input.ToStruct<CompFooter>(input.Length - 8);
+            int dest = input.Length + compFooter.originalBottom;
+            int src = input.Length - (compFooter.bufferTopAndBottom >> 24 & 0xFF);
+            int end = input.Length - (compFooter.bufferTopAndBottom & 0xFFFFFF);
+            Array.Resize(ref input, dest);
+
+            while (true)
             {
-                for (int i = 0; i < decompSize; i++) result.Add(0x00);
-
-                using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(input)))
+                int flag = input[--src], mask = 0x80;
+                do
                 {
-                    br.BaseStream.Position = br.BaseStream.Length - 8; CompFooter pCompFooter = br.ReadStruct<CompFooter>();
-                    uint uTop = pCompFooter.bufferTopAndBottom & 0xFFFFFF;
-                    uint uBottom = pCompFooter.bufferTopAndBottom >> 24 & 0xFF;
-                    if (uBottom >= 8 && uBottom <= 8 + 3 && uTop >= uBottom && uTop <= br.BaseStream.Length && decompSize >= br.BaseStream.Length + pCompFooter.originalBottom)
+                    if ((flag & mask) == 0)
                     {
-                        decompSize = (uint)br.BaseStream.Length + pCompFooter.originalBottom;
-                        br.BaseStream.Position = 0; for (int i = 0; i < br.BaseStream.Length; i++) result[i] = br.ReadByte();
-                        uint destPos = decompSize;
-                        uint srcPos = (uint)br.BaseStream.Length - uBottom;
-                        uint end = (uint)br.BaseStream.Length - uTop;
-
-                        while (srcPos - end > 0)
-                        {
-                            br.BaseStream.Position = --srcPos;
-                            byte uFlag = br.ReadByte();
-
-                            for (int i = 0; i < 8; i++)
-                            {
-                                if ((uFlag << i & 0x80) == 0)
-                                {
-                                    if (destPos - end < 1 || srcPos - end < 1)
-                                    {
-                                        res = false;
-                                        break;
-                                    }
-                                    br.BaseStream.Position = --srcPos;
-                                    byte get = br.ReadByte();
-                                    result[(int)--destPos] = get;
-                                }
-                                else
-                                {
-                                    if (srcPos - end < 2)
-                                    {
-                                        res = false;
-                                        break;
-                                    }
-                                    br.BaseStream.Position = --srcPos;
-                                    int nSize = br.ReadByte();
-
-                                    br.BaseStream.Position = --srcPos;
-                                    int nOffset = (((nSize & 0x0F) << 8) | br.ReadByte()) + 3;
-
-                                    nSize = (nSize >> 4 & 0x0F) + 3;
-
-                                    if (nSize > destPos - end)
-                                    {
-                                        res = false;
-                                        break;
-                                    }
-
-                                    uint dataPos = destPos + (uint)nOffset;
-                                    if (dataPos > decompSize)
-                                    {
-                                        res = false;
-                                        break;
-                                    }
-
-                                    for (int j = 0; j < nSize; j++)
-                                    {
-                                        byte get = result[(int)--dataPos];
-                                        result[(int)--destPos] = get;
-                                    }
-                                }
-
-                                if (srcPos - end <= 0)
-                                {
-                                    break;
-                                }
-                            }
-
-                            if (res == false)
-                            {
-                                break;
-                            }
-                        }
+                        input[--dest] = input[--src];
                     }
                     else
                     {
-                        res = false;
-                    }
-                }
-            }
-            else
-            {
-                res = false;
-            }
+                        int size = input[--src];
+                        int offset = (((size & 0x0F) << 8) | input[--src]) + 3;
+                        size = (size >> 4 & 0x0F) + 3;
 
-            if (res)
-            {
-                return result.ToArray();
-            }
-            else
-            {
-                throw new Exception("Decompression failed!");
+                        for (int j = 0; j < size; j++)
+                        {
+                            input[--dest] = input[dest + offset];
+                        }
+                    }
+
+                    if (src - end <= 0)
+                    {
+                        return input;
+                    }
+                } while ((mask >>= 1) != 0);
             }
         }
 
@@ -305,13 +236,11 @@ namespace Cetera.Compression
                         for (int i = uPadOffset; i < uPadOffset + (uCompFooterOffset - uPadOffset); i++) result[i] = 0xFF;
 
                         int i1 = uTop | (uBottom << 24);
-                        result[uCompFooterOffset] = (byte)(i1 & 0xFF); result[uCompFooterOffset + 1] = (byte)((i1 & 0xFF00) >> 8);
-                        result[uCompFooterOffset + 2] = (byte)((i1 & 0xFF0000) >> 16); result[uCompFooterOffset + 3] = (byte)((i1 & 0xFF000000) >> 24);
+                        result[uCompFooterOffset] = (byte)(i1 & 0xFF); result[uCompFooterOffset + 1] = (byte)(i1 >> 8);
+                        result[uCompFooterOffset + 2] = (byte)(i1 >> 16); result[uCompFooterOffset + 3] = (byte)(i1 >> 24);
                         int i2 = a_uUncompressedSize - a_uCompressedSize;
-                        result[uCompFooterOffset + 4] = (byte)(i2 & 0xFF); result[uCompFooterOffset + 5] = (byte)((i2 & 0xFF00) >> 8);
-                        result[uCompFooterOffset + 6] = (byte)((i2 & 0xFF0000) >> 16); result[uCompFooterOffset + 7] = (byte)((i2 & 0xFF000000) >> 24);
-
-                        Console.WriteLine(i1 + "   " + i2);
+                        result[uCompFooterOffset + 4] = (byte)(i2 & 0xFF); result[uCompFooterOffset + 5] = (byte)(i2 >> 8);
+                        result[uCompFooterOffset + 6] = (byte)(i2 >> 16); result[uCompFooterOffset + 7] = (byte)(i2 >> 24);
                     }
                 }
 
