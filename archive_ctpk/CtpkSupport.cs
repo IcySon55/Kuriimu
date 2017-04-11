@@ -12,20 +12,22 @@ namespace archive_ctpk
     public class CTPKFileInfo : ArchiveFileInfo
     {
         public Entry Entry;
+        public int Crc32;
+        public uint texInfo;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header
+    public class Header
     {
-        Magic magic;
-        ushort version;
-        public short texCount;
-        public int texSecOffset;
-        public int texSecSize;
-        public int hashSecOffset;
-        public int texInfoOffset;
-        int zero0;
-        int zero1;
+        Magic magic="CTPK";
+        short version=0x1;
+        public short texCount=0;
+        public int texSecOffset=0;
+        public int texSecSize=0;
+        public int crc32SecOffset=0;
+        public int texInfoOffset=0;
+        int zero0=0;
+        int zero1=0;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -39,7 +41,7 @@ namespace archive_ctpk
         public short height;
         public byte mipLvl;
         public byte type;
-        public short unk1;
+        public short zero0;
         public int bitmapSizeOffset;
         public uint timeStamp;
     }
