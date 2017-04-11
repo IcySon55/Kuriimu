@@ -29,7 +29,7 @@ namespace archive_ctpk
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {
@@ -47,6 +47,10 @@ namespace archive_ctpk
 
         public bool Identify(string filename)
         {
+
+            /*Console.WriteLine(Crc32.Create(Encoding.ASCII.GetBytes("tex/bt_recipe.tga")));
+            return false;*/
+
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
@@ -77,7 +81,7 @@ namespace archive_ctpk
 
             try
             {
-                //_ctpk.Save(_fileInfo.FullName);
+                _ctpk.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {

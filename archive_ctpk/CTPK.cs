@@ -34,14 +34,14 @@ namespace archive_ctpk
                     nameList.Add(br.ReadCStringA());
 
                 //Hash List
-                br.BaseStream.Position = header.hashSecOffset;
-                List<int> hashList = new List<int>();
-                hashList.AddRange(br.ReadMultiple<int>(header.texCount));
+                br.BaseStream.Position = header.crc32SecOffset;
+                List<int> crc32List = new List<int>();
+                crc32List.AddRange(br.ReadMultiple<int>(header.texCount));
 
                 //TexInfo List 2
                 br.BaseStream.Position = header.texInfoOffset;
-                List<int> texInfoList2 = new List<int>();
-                texInfoList2.AddRange(br.ReadMultiple<int>(header.texCount));
+                List<uint> texInfoList2 = new List<uint>();
+                texInfoList2.AddRange(br.ReadMultiple<uint>(header.texCount));
 
                 //Get FileData
                 for (int i = 0; i < header.texCount; i++)
@@ -49,9 +49,77 @@ namespace archive_ctpk
                     {
                         State = ArchiveFileState.Archived,
                         FileName = nameList[i],
-                        FileData = new SubStream(br.BaseStream, entries[i].texOffset, entries[i].texDataSize),
-                        Entry = entries[i]
+                        FileData = new SubStream(br.BaseStream, entries[i].texOffset+header.texSecOffset, entries[i].texDataSize),
+                        Entry = entries[i],
+                        Crc32 = crc32List[i],
+                        texInfo = texInfoList2[i]
                     });
+            }
+        }
+
+        public void Save(String filename)
+        {
+            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            {
+                //get nameList Length
+                int nameListLength=0;
+                for (int i = 0; i < Files.Count; i++) nameListLength += Files[i].FileName.Length + 1;
+                while (nameListLength % 4 != 0) nameListLength += 1;
+
+                //Offsets
+                int nameOffset = (Files.Count + 1) * 0x20 + Files.Count * 0x4;
+                int dataOffset = nameOffset + nameListLength + Files.Count * 0x4 * 2;
+
+                //Header
+                bw.WriteStruct(new Header
+                {
+                    texCount = (short)Files.Count,
+                    texSecOffset= dataOffset,
+                    crc32SecOffset = nameOffset+nameListLength,
+                    texInfoOffset = nameOffset + nameListLength+Files.Count*0x4
+                });
+
+                //entryList
+                for (int i = 0; i < Files.Count; i++)
+                {
+                    bw.WriteStruct(new Entry
+                    {
+                        nameOffset = nameOffset,
+                        texDataSize = (int) Files[i].FileData.Length,
+                        texOffset = dataOffset,
+                        format = Files[i].Entry.format,
+                        width = Files[i].Entry.width,
+                        height = Files[i].Entry.height,
+                        mipLvl = Files[i].Entry.mipLvl,
+                        type = Files[i].Entry.type,
+                        bitmapSizeOffset = Files[i].Entry.bitmapSizeOffset,
+                        timeStamp = Files[i].Entry.timeStamp,
+                    });
+                    nameOffset += Files[i].FileName.Length + 1;
+                    dataOffset += (int) Files[i].FileData.Length;
+                }
+
+                //texInfo 1 List
+                for (int i = 0; i < Files.Count; i++) bw.Write((int)Files[i].FileData.Length);
+
+                //nameList
+                for (int i = 0; i < Files.Count; i++) { bw.WriteASCII(Files[i].FileName); bw.Write((byte)0); }
+
+                //crc32List
+                for (int i = 0; i < Files.Count; i++) bw.Write(Files[i].Crc32);
+
+                //texInfo 2 List
+                for (int i = 0; i < Files.Count; i++) bw.Write(Files[i].texInfo);
+
+                //Write data
+                int texSecSize = 0;
+                for (int i = 0; i < Files.Count; i++)
+                {
+                    bw.Write(new BinaryReaderX(Files[i].FileData,true).ReadBytes((int)Files[i].FileData.Length));
+                    texSecSize += (int) Files[i].FileData.Length;
+                }
+                bw.BaseStream.Position = 0xc;
+                bw.Write(texSecSize);
             }
         }
     }

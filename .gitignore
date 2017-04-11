@@ -7,3 +7,6 @@ Publish.bat
 /sample_images
 /Kuriimu/TempPublish.bat
 /.vs
+/Kuriimu/.vs/Kuriimu.sqlite
+/Kuriimu/.vs/Kuriimu.sqlite
+*.sqlite

@@ -3,184 +3,31 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 using Cetera;
 using Cetera.Compression;
 using Kuriimu.IO;
 
 namespace archive_nus3bank
 {
-    public sealed class NUS3 : List<NUS3.Node>, IDisposable
+    public sealed class NUS3
     {
-        public class Node
-        {
-            public String filename;
-            public TONE.ToneEntry entry;
-            public Stream FileData;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
-        {
-            public String4 magic;
-            public int fileSize; //without magic
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct BankToc
-        {
-            String8 magic;
-            public int size;
-            public int entryCount;
-        }
-
-        public class BankTocEntry
-        {
-            public BankTocEntry(Stream input)
-            {
-                using (var br = new BinaryReaderX(input, true))
-                {
-                    magic = br.ReadStruct<String4>();
-                    secSize = br.ReadInt32();
-                }
-            }
-            public String4 magic;
-            public int secSize;
-            public int offset;
-        }
-
-        public class PROP
-        {
-            public PROP(Stream input)
-            {
-                using (var br = new BinaryReaderX(input, true))
-                {
-                    unk1 = br.ReadInt32();
-                    unk2 = br.ReadInt32();
-                    unk3 = br.ReadInt32();
-                    projectNameSize = br.ReadByte();
-                    projectName = readASCII(br.BaseStream);
-
-                    br.BaseStream.Position += 1;
-                    while (br.BaseStream.Position % 4 > 0)
-                    {
-                        br.BaseStream.Position += 1;
-                    }
-
-                    unk4 = br.ReadInt32();
-                    dateSize = br.ReadByte();
-                    date = Encoding.ASCII.GetString(br.ReadBytes(dateSize));
-                }
-            }
-            int unk1;
-            int unk2;
-            int unk3;
-            public byte projectNameSize;
-            public String projectName;
-            int unk4;
-            public byte dateSize;
-            public String date;
-        }
-
-        public class BINF
-        {
-            public BINF(Stream input)
-            {
-                using (var br = new BinaryReaderX(input, true))
-                {
-                    unk1 = br.ReadInt32();
-                    unk2 = br.ReadInt32();
-                    nameSize = br.ReadByte();
-                    name = readASCII(br.BaseStream);
-
-                    br.BaseStream.Position += 1;
-                    while (br.BaseStream.Position % 4 > 0)
-                    {
-                        br.BaseStream.Position += 1;
-                    }
-
-                    ID = br.ReadInt32();
-                }
-            }
-            int unk1;
-            int unk2;
-            public byte nameSize;
-            public String name;
-            public int ID;
-        }
-
-        public class TONE
-        {
-            public TONE(Stream input)
-            {
-                using (var br = new BinaryReaderX(input, true))
-                {
-                    toneCount = br.ReadInt32();
-
-                    toneEntries = new ToneEntry[toneCount];
-                    for (int i = 0; i < toneCount; i++)
-                    {
-                        toneEntries[i] = new ToneEntry();
-                        toneEntries[i].offset = br.ReadInt32() + banktocEntries[4].offset + 8;
-                        toneEntries[i].metaSize = br.ReadInt32();
-
-                        long bk = br.BaseStream.Position;
-                        if (toneEntries[i].metaSize > 0xc)
-                        {
-                            br.BaseStream.Position = toneEntries[i].offset + 6;
-                            byte tmp;
-                            tmp = br.ReadByte();
-                            if (tmp == 0 || tmp > 9)
-                            {
-                                br.BaseStream.Position += 5;
-                            }
-                            else
-                            {
-                                br.BaseStream.Position += 1;
-                            }
-                            toneEntries[i].nameSize = br.ReadByte();
-                            toneEntries[i].name = readASCII(br.BaseStream);
-
-                            br.BaseStream.Position += 1;
-                            while (br.BaseStream.Position % 4 > 0)
-                            {
-                                br.BaseStream.Position += 1;
-                            }
-
-                            if (br.ReadInt32() != 0) br.BaseStream.Position -= 4;
-                            br.BaseStream.Position += 4;
-                            toneEntries[i].packOffset = banktocEntries[6].offset + 8 + br.ReadInt32();
-                            toneEntries[i].size = br.ReadInt32();
-                        }
-                        br.BaseStream.Position = bk;
-                    }
-                }
-            }
-            public int toneCount;
-            public ToneEntry[] toneEntries;
-
-            public class ToneEntry
-            {
-                public int offset;
-                public int metaSize;
-                public byte nameSize;
-                public String name;
-                public int packOffset;
-                public int size;
-            }
-        }
+        public List<NUS3FileInfo> Files = new List<NUS3FileInfo>();
 
         public Header header;
         public BankToc banktocHeader;
-        public static List<BankTocEntry> banktocEntries;
+        public List<BankTocEntry> banktocEntries;
         public PROP prop;
         public BINF binf;
-
+        public byte[] grp;
+        public byte[] dton;
         public TONE tone;
-
-        Stream stream;
+        public byte[] junk;
 
         public NUS3(String filename, bool isZlibCompressed = false)
         {
+            Stream stream;
+
             if (isZlibCompressed)
             {
                 using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
@@ -204,19 +51,25 @@ namespace archive_nus3bank
                 //Banktoc
                 banktocHeader = br.ReadStruct<BankToc>();
 
+                int t = 3;
+
                 int offset = 0x18 + banktocHeader.entryCount * 0x8;
                 banktocEntries = new List<BankTocEntry>();
                 for (int i = 0; i < banktocHeader.entryCount; i++)
                 {
                     banktocEntries.Add(new BankTocEntry(br.BaseStream));
+                    t = 4;
                     banktocEntries[i].offset = offset;
                     offset += banktocEntries[i].secSize + 8;
                 }
 
+                t = 2;
+
                 //PROP
-                //br.BaseStream.Position = banktocEntries[0].offset;
                 if (br.ReadStruct<Header>().magic != "PROP") throw new Exception();
                 prop = new PROP(br.BaseStream);
+
+                t = -1;
 
                 //BINF
                 br.BaseStream.Position = banktocEntries[1].offset;
@@ -224,57 +77,181 @@ namespace archive_nus3bank
                 binf = new BINF(br.BaseStream);
 
                 //GRP - not yet mapped
+                br.BaseStream.Position = banktocEntries[2].offset;
                 if (br.ReadStruct<Header>().magic != "GRP ") throw new Exception();
-                br.ReadBytes(banktocEntries[2].secSize);
+                grp=br.ReadBytes(banktocEntries[2].secSize);
+
+                t = 0;
 
                 //DTON - not yet mapped
+                br.BaseStream.Position = banktocEntries[3].offset;
                 if (br.ReadStruct<Header>().magic != "DTON") throw new Exception();
-                br.ReadBytes(banktocEntries[3].secSize);
+                dton=br.ReadBytes(banktocEntries[3].secSize);
 
                 //TONE
+                br.BaseStream.Position = banktocEntries[4].offset;
                 if (br.ReadStruct<Header>().magic != "TONE") throw new Exception();
-                var tmp = br.BaseStream.Position;
-                tone = new TONE(br.BaseStream);
-                br.BaseStream.Position = tmp + banktocEntries[4].secSize;
+                tone = new TONE(br.BaseStream, banktocEntries[4].offset, banktocEntries[6].offset);
+
+                t = 1;
 
                 //JUNK - not yet mapped
+                br.BaseStream.Position = banktocEntries[5].offset;
                 if (br.ReadStruct<Header>().magic != "JUNK") throw new Exception();
-                br.ReadBytes(banktocEntries[5].secSize);
+                junk=br.ReadBytes(banktocEntries[5].secSize);
 
                 //PACK and finishing
+                br.BaseStream.Position = banktocEntries[6].offset;
                 if (br.ReadStruct<Header>().magic != "PACK") throw new Exception();
                 for (int i = 0; i < tone.toneCount; i++)
                 {
                     br.BaseStream.Position = tone.toneEntries[i].packOffset;
 
-                    Add(new Node
+                    Files.Add(new NUS3FileInfo
                     {
-                        filename = tone.toneEntries[i].name + ".idsp",
-                        entry = tone.toneEntries[i],
+                        FileName = tone.toneEntries[i].name + ".idsp",
+                        Entry = tone.toneEntries[i],
                         FileData = new SubStream(stream, tone.toneEntries[i].packOffset, tone.toneEntries[i].size)
                     });
                 }
             }
         }
 
-        public static String readASCII(Stream input)
+        public void Save(string filename, bool isZLibCompressed = false)
         {
-            using (var br = new BinaryReaderX(input, true))
+            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
             {
-                String result = "";
-                Encoding ascii = Encoding.GetEncoding("ascii");
+                //Header
+                bw.WriteASCII("NUS3");
+                bw.BaseStream.Position += 4;
 
-                byte[] character = br.ReadBytes(1);
-                while (character[0] != 0x00)
+                //BankToc
+                bw.WriteASCII("BANKTOC ");
+                bw.Write(0x3c);
+                bw.Write(0x7);
+
+                //BankTocEntries
+                int propSize = 13 + prop.projectNameSize + prop.padding.Length + 5 + prop.dateSize +
+                               prop.padding2.Length;
+                int binfSize = 9 + binf.nameSize + binf.padding.Length + 4;
+                int tmp = 0; for (int i = 0; i < tone.toneCount; i++) tmp += Files[i].Entry.metaSize;
+                int toneSize = 4 + tone.toneCount * 0x8 + tmp;
+                int packSize = 0;
+                for (int i = 0; i < tone.toneCount; i++) packSize += (int) Files[i].FileData.Length;
+
+                string[] banktocList=new string[7]{"PROP","BINF","GRP ","DTON","TONE","JUNK","PACK"};
+                for (int i = 0; i < 7; i++)
                 {
-                    result += ascii.GetString(character);
-                    character = br.ReadBytes(1);
+                    bw.WriteASCII(banktocList[i]);
+                    switch (banktocList[i])
+                    {
+                        case "PROP":
+                            bw.Write(propSize);
+                            break;
+                        case "BINF":
+                            bw.Write(binfSize);
+                            break;
+                        case "GRP ":
+                            bw.Write(grp.Length);
+                            break;
+                        case "DTON":
+                            bw.Write(dton.Length);
+                            break;
+                        case "TONE":
+                            bw.Write(toneSize);
+                            break;
+                        case "JUNK":
+                            bw.Write(junk.Length);
+                            break;
+                        case "PACK":
+                            bw.Write(packSize);
+                            break;
+                    }
                 }
 
-                return result;
+                //PROP
+                bw.WriteASCII("PROP");
+                bw.Write(propSize);
+                bw.Write(prop.unk1);
+                bw.Write(prop.unk2);
+                bw.Write(prop.unk3);
+                bw.Write(prop.projectNameSize);
+                bw.WriteASCII(prop.projectName);
+                bw.Write(prop.padding);
+                bw.Write(prop.unk4);
+                bw.Write(prop.dateSize);
+                bw.WriteASCII(prop.date);
+                bw.Write(prop.padding2);
+
+                //BINF
+                bw.WriteASCII("BINF");
+                bw.Write(binfSize);
+                bw.Write(binf.unk1);
+                bw.Write(binf.unk2);
+                bw.Write(binf.nameSize);
+                bw.WriteASCII(binf.name);
+                bw.Write(binf.padding);
+                bw.Write(binf.ID);
+
+                //GRP
+                bw.WriteASCII("GRP ");
+                bw.Write(grp.Length);
+                bw.Write(grp);
+
+                //DTON
+                bw.WriteASCII("DTON");
+                bw.Write(dton.Length);
+                bw.Write(dton);
+
+                //TONE
+                bw.WriteASCII("TONE");
+                bw.Write(toneSize);
+                bw.Write(tone.toneCount);
+                for (int i = 0; i < tone.toneCount; i++)
+                {
+                    bw.Write(Files[i].Entry.offset - banktocEntries[4].offset - 8);
+                    bw.Write(Files[i].Entry.metaSize);
+                }
+                int packOffset = 0;
+                for (int i = 0; i < tone.toneCount; i++)
+                {
+                    if (Files[i].Entry.metaSize > 0xc)
+                    {
+                        bw.Write(0);
+                        bw.Write((short) -1);
+                        bw.Write(Files[i].Entry.unk1);
+                        bw.Write(Files[i].Entry.nameSize);
+                        bw.WriteASCII(Files[i].Entry.name);
+                        bw.Write((byte) 0);
+                        bw.Write(Files[i].Entry.padding);
+                        if (Files[i].Entry.zero0 == 0) bw.Write(0);
+                        bw.Write(8);
+                        bw.Write(packOffset);
+                        bw.Write((int) Files[i].FileData.Length);
+                        packOffset += (int) Files[i].FileData.Length;
+                        bw.Write(Files[i].Entry.rest);
+                    }
+                    else
+                    {
+                        bw.Write(0);
+                        bw.Write(0xff);
+                        bw.Write(1);
+                    }
+                }
+
+                //JUNK
+                bw.WriteASCII("JUNK");
+                bw.Write(junk.Length);
+                bw.Write(junk);
+
+                //PACK
+                for (int i = 0; i < tone.toneCount; i++)
+                    bw.Write(new BinaryReaderX(Files[i].FileData).ReadBytes((int)Files[i].FileData.Length));
+
+                //update fileSize in NUS3 Header
+                bw.BaseStream.Position = 4;
+                bw.Write((int) bw.BaseStream.Length);
             }
         }
-
-        public void Dispose() => stream?.Dispose();
     }
 }

@@ -8,12 +8,12 @@ namespace Cetera.Compression
     public sealed class RevLZ77
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct CompFooter
+        private struct CompFooter
         {
             public int bufferTopAndBottom;
             public int originalBottom;
         }
-        public class SCompressInfo
+        private class SCompressInfo
         {
             int windowPos;
             int windowLen;
