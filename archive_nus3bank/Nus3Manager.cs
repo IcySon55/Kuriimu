@@ -14,6 +14,8 @@ namespace archive_nus3bank
         private FileInfo _fileInfo = null;
         private NUS3 _nus3 = null;
 
+        private bool isZlibCompressed = false;
+
         #region Properties
 
         // Information
@@ -26,9 +28,9 @@ namespace archive_nus3bank
         public bool ArchiveHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => false;
+        public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {
@@ -64,6 +66,7 @@ namespace archive_nus3bank
                             if (br.BaseStream.Length < 4) return false;
                             if (br.ReadString(4) == "NUS3")
                             {
+                                isZlibCompressed = true;
                                 return true;
                             }
                         }
@@ -85,7 +88,7 @@ namespace archive_nus3bank
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _nus3 = new NUS3(_fileInfo.FullName);
+                _nus3 = new NUS3(_fileInfo.FullName, isZlibCompressed);
             else
                 result = LoadResult.FileNotFound;
 
@@ -101,7 +104,7 @@ namespace archive_nus3bank
 
             try
             {
-                //_nus3.Save(_fileInfo.FullName);
+                _nus3.Save(_fileInfo.FullName, isZlibCompressed);
             }
             catch
             {
@@ -119,17 +122,7 @@ namespace archive_nus3bank
         // Files
         public IEnumerable<ArchiveFileInfo> Files
         {
-            get
-            {
-                foreach (var node in _nus3)
-                {
-                    yield return new ArchiveFileInfo
-                    {
-                        FileName = node.filename,
-                        FileData = node.FileData
-                    };
-                }
-            }
+            get { return _nus3.Files; }
         }
 
         public bool AddFile(ArchiveFileInfo afi)
