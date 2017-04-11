@@ -45,11 +45,10 @@ namespace Cetera.Hash
 
         public static uint Create(byte[] buffer)
         {
-            uint length = (uint)buffer.Length;
             uint crc = 0xffffffff;
-            for (int i = 0; i < length; i++)
+            foreach (var b in buffer)
             {
-                crc = (crc >> 8) ^ crc32Table[(crc & 0xff) ^ buffer[i]];
+                crc = (crc >> 8) ^ crc32Table[(crc & 0xff) ^ b];
             }
 
             return ~crc;

@@ -6,15 +6,12 @@ namespace Cetera.Hash
     {
         public static uint Create(string input, uint magic, uint hashCount)
         {
-            uint hash = 0;
+            return Create(input, magic) % hashCount;
+        }
 
-            for (int i = 0; i < input.Count(); i++)
-            {
-                hash *= magic;
-                hash += input[i];
-            }
-
-            return hash % hashCount;
+        public static uint Create(string input, uint magic)
+        {
+            return input.Aggregate(0u, (hash, c) => hash * magic + c);
         }
     }
 }
