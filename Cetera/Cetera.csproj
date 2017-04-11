@@ -62,7 +62,6 @@
     <Compile Include="Compression\RLE.cs" />
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Hash\Crc32.cs" />
-    <Compile Include="Hash\SarcHash.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Image\JTEX.cs" />
     <Compile Include="Image\RawJTEX.cs" />

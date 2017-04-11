@@ -123,7 +123,7 @@ namespace Cetera.Archive
                 for (int i = 0; i < Files.Count; i++)
                 {
                     if (Files[i].State == ArchiveFileState.Added)
-                        bw.Write(SarcHash.Create(Files[i].FileName, 0x65));
+                        bw.Write(SimpleHash.Create(Files[i].FileName, 0x65));
                     else
                         bw.Write(Files[i].Entry.nameHash);
 
