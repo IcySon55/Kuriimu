@@ -367,12 +367,12 @@ namespace Karameru
                     filename = ofd.FileName;
 
                 IArchiveManager _tempManager = SelectArchiveManager(filename);
-                _archiveManager?.Unload();
 
                 try
                 {
                     if (_tempManager?.Load(filename) == LoadResult.Success)
                     {
+                        _archiveManager?.Unload();
                         _archiveManager = _tempManager;
                         _fileOpen = true;
                         _hasChanges = false;
@@ -443,7 +443,7 @@ namespace Karameru
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            return result;
+            return (IArchiveManager)Activator.CreateInstance(result.GetType());
         }
 
         // Loading
