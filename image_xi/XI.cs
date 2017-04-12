@@ -82,6 +82,12 @@ namespace image_xi
             }
         }
 
+        public static byte[] Decomp(BinaryReaderX br)
+        {
+            // above to be restored eventually with some changes to Cetera
+            return CriWare.GetDecompressedBytes(br.BaseStream);
+        }
+
         private static Header header;
 
         public static Bitmap Load(Stream input)
@@ -105,17 +111,13 @@ namespace image_xi
                 byte[] tex = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes(header.imgDataSize)));
 
                 //order pic blocks by table
-                int width = header.width;
-                int height = header.height;
-                while (width % 8 != 0) width++;
-                while (height % 8 != 0) height++;
-                byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), width, height, header.bitDepth);
+                byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.bitDepth);
 
                 //return decompressed picture data
                 var settings = new ImageSettings
                 {
-                    Width = width,
-                    Height = height,
+                    Width = header.width,
+                    Height = header.height,
                     Orientation = Orientation.TransposeTile,
                     Format = ImageSettings.ConvertFormat(header.imageFormat),
                     PadToPowerOf2 = false
@@ -132,15 +134,15 @@ namespace image_xi
                 int entry = table.ReadUInt16();
                 if (entry == 0xFFFF)
                 {
-                    for (int j = 0; j < 64 * (bitDepth / 8); j++)
+                    for (int j = 0; j < 64 * bitDepth / 8; j++)
                     {
                         ms.WriteByte(0);
                     }
                 }
                 else
                 {
-                    tex.BaseStream.Position = entry * (64 * (bitDepth / 8));
-                    for (int j = 0; j < 64 * (bitDepth / 8); j++)
+                    tex.BaseStream.Position = entry * (64 * bitDepth / 8);
+                    for (int j = 0; j < 64 * bitDepth / 8; j++)
                     {
                         ms.WriteByte(tex.ReadByte());
                     }
@@ -151,23 +153,27 @@ namespace image_xi
 
         public static void Save(String filename, Bitmap bitmap)
         {
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+            while (width % 8 != 0) width++;
+            while (height % 8 != 0) height++;
+
             byte[] pic = Common.Save(bitmap, new ImageSettings
             {
-                Width = bitmap.Width,
-                Height = bitmap.Height,
+                Width = width,
+                Height = height,
                 Orientation = Orientation.TransposeTile,
-                Format = ImageSettings.ConvertFormat(Format.RGBA8888),
+                Format = ImageSettings.ConvertFormat(header.imageFormat),
                 PadToPowerOf2 =false
             });
 
-            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
                 List<short> table;
-                byte[] importPic = Deflate(pic, out table, 32, bitmap.Width, bitmap.Height);
+                byte[] importPic = Deflate(pic, out table, 32, width, height);
 
-                header.imageFormat = Format.RGBA8888;
-                header.bitDepth = 32;
-                header.bytesPerTile = 32 * 8;
+                header.width = (short)bitmap.Width;
+                header.height = (short)bitmap.Height;
                 header.tableSize1 = table.Count * 2 + 4;
                 header.tableSize2 = (header.tableSize1 + 3) & ~3;
                 header.imgDataSize = importPic.Length + 4;
@@ -186,13 +192,13 @@ namespace image_xi
         {
             table = new List<short>();
             List<byte[]> parts = new List<byte[]>();
-            byte[] result = new byte[width * height * (bitDepth / 8)];
+            byte[] result = new byte[width * height * bitDepth / 8];
 
             using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(pic)))
             {
                 for (int i = 0; i < width * height / 64; i++)
                 {
-                    byte[] tmp = br.ReadBytes(64 * (bitDepth / 8));
+                    byte[] tmp = br.ReadBytes(64 * bitDepth / 8);
                     bool found = false;
                     int count = 0;
                     while (found == false && count < parts.Count)
