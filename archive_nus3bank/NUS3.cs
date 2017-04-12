@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -251,6 +252,18 @@ namespace archive_nus3bank
                 //update fileSize in NUS3 Header
                 bw.BaseStream.Position = 4;
                 bw.Write((int) bw.BaseStream.Length);
+            }
+
+            if (isZLibCompressed)
+            {
+                FileStream origFile = File.OpenRead(filename);
+                byte[] decomp=new byte[(int)origFile.Length];
+                origFile.Read(decomp,0,(int)origFile.Length);
+                byte[] comp=ZLib.Compress(decomp);
+
+                origFile.Close();
+                File.Delete(filename);
+                File.OpenWrite(filename).Write(comp,0,comp.Length);
             }
         }
     }
