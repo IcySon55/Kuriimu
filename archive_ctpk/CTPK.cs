@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Cetera.Image;
+using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -25,8 +26,8 @@ namespace archive_ctpk
                 entries.AddRange(br.ReadMultiple<Entry>(header.texCount));
 
                 //TexInfo List
-                List<int> texInfoList1 = new List<int>();
-                texInfoList1.AddRange(br.ReadMultiple<int>(header.texCount));
+                List<int> texSizeList = new List<int>();
+                texSizeList.AddRange(br.ReadMultiple<int>(header.texCount));
 
                 //Name List
                 List<String> nameList = new List<String>();
@@ -35,8 +36,8 @@ namespace archive_ctpk
 
                 //Hash List
                 br.BaseStream.Position = header.crc32SecOffset;
-                List<int> crc32List = new List<int>();
-                crc32List.AddRange(br.ReadMultiple<int>(header.texCount));
+                List<HashEntry> crc32List = new List<HashEntry>();
+                crc32List.AddRange(br.ReadMultiple<HashEntry>(header.texCount).OrderBy(e=>e.entryNr));
 
                 //TexInfo List 2
                 br.BaseStream.Position = header.texInfoOffset;
@@ -51,7 +52,7 @@ namespace archive_ctpk
                         FileName = nameList[i],
                         FileData = new SubStream(br.BaseStream, entries[i].texOffset+header.texSecOffset, entries[i].texDataSize),
                         Entry = entries[i],
-                        Crc32 = crc32List[i],
+                        hashEntry = crc32List[i],
                         texInfo = texInfoList2[i]
                     });
             }
@@ -104,9 +105,10 @@ namespace archive_ctpk
 
                 //nameList
                 for (int i = 0; i < Files.Count; i++) { bw.WriteASCII(Files[i].FileName); bw.Write((byte)0); }
+                while (bw.BaseStream.Position % 4 != 0) bw.BaseStream.Position++;
 
                 //crc32List
-                for (int i = 0; i < Files.Count; i++) bw.Write(Files[i].Crc32);
+                for (int i = 0; i < Files.Count; i++) {bw.Write(Files[i].hashEntry.crc32); bw.Write(Files[i].hashEntry.entryNr); }
 
                 //texInfo 2 List
                 for (int i = 0; i < Files.Count; i++) bw.Write(Files[i].texInfo);
