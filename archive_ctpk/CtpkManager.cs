@@ -47,10 +47,6 @@ namespace archive_ctpk
 
         public bool Identify(string filename)
         {
-
-            /*Console.WriteLine(Crc32.Create(Encoding.ASCII.GetBytes("tex/bt_recipe.tga")));
-            return false;*/
-
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;

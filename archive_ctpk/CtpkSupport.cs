@@ -12,7 +12,7 @@ namespace archive_ctpk
     public class CTPKFileInfo : ArchiveFileInfo
     {
         public Entry Entry;
-        public int Crc32;
+        public HashEntry hashEntry;
         public uint texInfo;
     }
 
@@ -44,5 +44,12 @@ namespace archive_ctpk
         public short zero0;
         public int bitmapSizeOffset;
         public uint timeStamp;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class HashEntry
+    {
+        public int crc32;
+        public int entryNr;
     }
 }
