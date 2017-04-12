@@ -18,7 +18,7 @@ namespace image_xi
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
         public FileInfo FileInfo
         {
             get
@@ -63,7 +63,7 @@ namespace image_xi
 
             try
             {
-                //_msbt.Save(_fileInfo.FullName);
+                XI.Save(_fileInfo.FullName,_xi);
             }
             catch (Exception)
             {
