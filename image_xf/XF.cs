@@ -9,7 +9,7 @@ using image_xi;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace game_time_travelers
+namespace image_xf
 {
     public class XF
     {

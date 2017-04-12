@@ -82,6 +82,12 @@ namespace image_xi
             }
         }
 
+        public static byte[] Decomp(BinaryReaderX br)
+        {
+            // above to be restored eventually with some changes to Cetera
+            return CriWare.GetDecompressedBytes(br.BaseStream);
+        }
+
         private static Header header;
 
         public static Bitmap Load(Stream input)

@@ -69,7 +69,6 @@
     <Compile Include="Compression\GZip.cs" />
     <Compile Include="Font\BCFNT.cs" />
     <Compile Include="Compression\CriWare.cs" />
-    <Compile Include="Font\XF.cs" />
     <Compile Include="Image\BXLIM.cs" />
     <Compile Include="Layout\BCLYT.cs" />
     <Compile Include="Common.cs" />
