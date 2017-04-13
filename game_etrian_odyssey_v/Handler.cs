@@ -90,24 +90,20 @@ namespace game_etrian_odyssey_v
 
                 for (int i = 0; i < kuriimuString.Length; i++)
                 {
-                    /*if (kuriimuString[i] == ' ')
-                    {
-                        x += 5;
-                    }
-                    else if (kuriimuString[i] == '\xa')
+                    if (kuriimuString[i] == '・')
                     {
                         x = rectText.X;
-                        y += 15;
+                        y += 17;
                     }
                     else
-                    {*/
+                    {
                         var info = font.GetWidthInfo(kuriimuString[i]);
                         x += info.left;
-                    byte[] tmp = sjis.GetBytes(new char[] {kuriimuString[i]});
-                    if (tmp.Length<2) tmp=new byte[] {0, tmp[0]};
+                        byte[] tmp = sjis.GetBytes(new char[] {kuriimuString[i]});
+                        if (tmp.Length < 2) tmp = new byte[] {0, tmp[0]};
                         font.Draw(unicode.GetString(tmp.Reverse().ToArray())[0], gfx, x, y, scaleDefault, scaleDefault);
                         x += info.glyph_width - info.left;
-                    //}
+                    }
                 }
             }
 
