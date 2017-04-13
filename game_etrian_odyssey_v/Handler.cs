@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Text;
 using System.IO;
 using System.Linq;
 using Cetera.Font;
@@ -61,6 +62,9 @@ namespace game_etrian_odyssey_v
 
             Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);
 
+            Encoding unicode = Encoding.GetEncoding("unicode");
+            Encoding sjis=Encoding.GetEncoding("SJIS");
+
             using (Graphics gfx = Graphics.FromImage(img))
             {
                 gfx.SmoothingMode = SmoothingMode.HighQuality;
@@ -99,7 +103,7 @@ namespace game_etrian_odyssey_v
                     {*/
                         var info = font.GetWidthInfo(kuriimuString[i]);
                         x += info.left;
-                        font.Draw(kuriimuString[i], gfx, x, y, scaleDefault, scaleDefault);
+                        font.Draw(unicode.GetString(sjis.GetBytes(new char[] {kuriimuString[i]}))[0], gfx, x, y, scaleDefault, scaleDefault);
                         x += info.glyph_width - info.left;
                     //}
                 }
