@@ -75,23 +75,32 @@ namespace file_mbm
                 int offset = 0x20 + header.entryCount * 0x10;
                 for (int i = 0; i < header.entryCount; i++)
                 {
-                    if (Labels[count].TextID == i)
-                    {
-                        count++;
-                        bw.Write(i);
-                        int stringSize = sjis.GetBytes(Labels[count].Text).Length;
-                        bw.Write(stringSize);
-                        bw.Write(offset);
+                    if (count < Labels.Count)
+                        if (Labels[count].TextID == i)
+                        {
+                            bw.Write(i);
+                            int stringSize = sjis.GetBytes(Labels[count].Text).Length + 2;
+                            bw.Write(stringSize);
+                            bw.Write(offset);
 
-                        long bk = bw.BaseStream.Position;
-                        bw.BaseStream.Position = offset;
-                        bw.Write(sjis.GetBytes(Labels[i].Text));
-                        bw.Write((ushort)0xffff);
-                        bw.BaseStream.Position = bk;
+                            long bk = bw.BaseStream.Position;
+                            bw.BaseStream.Position = offset;
+                            bw.Write(sjis.GetBytes(Labels[count].Text));
+                            bw.Write((ushort) 0xffff);
+                            bw.BaseStream.Position = bk;
 
-                        offset += stringSize;
-                        bw.Write(0);
-                    }
+                            offset += stringSize;
+                            bw.Write(0);
+
+                            count++;
+                        }
+                        else
+                        {
+                            bw.Write(0);
+                            bw.Write(0);
+                            bw.Write(0);
+                            bw.Write(0);
+                        }
                     else
                     {
                         bw.Write(0);
