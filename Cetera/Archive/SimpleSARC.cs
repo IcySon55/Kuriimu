@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -12,7 +9,7 @@ namespace Cetera.Archive
 {
     public class SimpleSARC
     {
-        public List<SimpleSARCFileInfo> Files = new List<SimpleSARCFileInfo>();
+        public List<SimpleSARCFileInfo> Files;
 
         public class SimpleSARCFileInfo : ArchiveFileInfo
         {
@@ -20,16 +17,16 @@ namespace Cetera.Archive
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct SimpleSARCHeader
+        class SimpleSARCHeader
         {
-            Magic magic;
+            Magic magic = "SARC";
             public int nodeCount;
             public int unk1;
             int unk2;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct SimpleSFATEntry
+        public class SimpleSFATEntry
         {
             public uint hash;
             public int dataStart;
@@ -37,78 +34,43 @@ namespace Cetera.Archive
             public int zero0;
         }
 
-        SimpleSARCHeader ssarcHeader;
+        SimpleSARCHeader header;
 
         public SimpleSARC(Stream input)
         {
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
-                ssarcHeader = br.ReadStruct<SimpleSARCHeader>();
-
-                List<SimpleSFATEntry> entries = new List<SimpleSFATEntry>();
-                entries.AddRange(br.ReadMultiple<SimpleSFATEntry>(ssarcHeader.nodeCount));
-
-                for (int i = 0; i < ssarcHeader.nodeCount; i++)
-                    Files.Add(new SimpleSARCFileInfo()
+                header = br.ReadStruct<SimpleSARCHeader>();
+                Files = br.ReadMultiple<SimpleSFATEntry>(header.nodeCount).Select(entry => new SimpleSARCFileInfo
                     {
-                        FileName = "File " + i,
-                        FileData = new SubStream(input, entries[i].dataStart, entries[i].dataSize),
+                        FileName = $"0x{entry.hash:X8}.bin",
+                        FileData = new SubStream(input, entry.dataStart, entry.dataSize),
                         State = ArchiveFileState.Archived,
-                        Entry = entries[i]
-                    });
+                        Entry = entry
+                    }).ToList();
             }
         }
 
         public void Save(Stream input)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(input))
             {
-                bw.WriteASCII("SARC");
-                bw.Write(Files.Count);
-                bw.Write(ssarcHeader.unk1);
-                bw.Write(0x100);
+                header.nodeCount = Files.Count;
+                bw.WriteStruct(header);
 
-                uint dataOffset = 0x10 + (uint)Files.Count * 0x10;
-                for (int i = 0; i < Files.Count; i++)
+                int offset = (Files.Count + 1) * 0x10;
+                foreach (var afi in Files)
                 {
-                    bw.Write(Files[i].Entry.hash);
-                    bw.Write(dataOffset);
-                    bw.Write((uint)Files[i].FileData.Length);
-                    bw.Write(0);
-
-                    bw.BaseStream.Position = dataOffset;
-                    bw.Write(new BinaryReaderX(Files[i].FileData).ReadBytes((int)Files[i].FileData.Length));
-                    bw.BaseStream.Position = 0x10 + (i + 1) * 0x10;
-                    dataOffset += (uint)Files[i].FileData.Length;
+                    afi.Entry.dataStart = offset;
+                    afi.Entry.dataSize = (int)afi.FileData.Length;
+                    bw.WriteStruct(afi.Entry);
+                    offset += afi.Entry.dataSize;
+                }
+                foreach (var afi in Files)
+                {
+                    afi.FileData.CopyTo(bw.BaseStream);
                 }
             }
         }
-
-        /*
-        public void SimplerSARC(Stream input)
-        {
-            using (BinaryReaderX br = new BinaryReaderX(input))
-            {
-                ssarcHeader = br.ReadStruct<SimplerSARCHeader>();
-
-                for (int i = 0; i < ssarcHeader.nodeCount; i++)
-                {
-                    Add(new Node());
-                    this[i].state = State.Simpler;
-                    this[i].sNodeEntry = new SimplerSFATNode(br.BaseStream);
-                }
-
-                for (int i = 0; i < ssarcHeader.nodeCount; i++)
-                {
-                    br.BaseStream.Position = this[i].sNodeEntry.dataStart;
-                    this[i].fileName = "File" + i.ToString();
-                }
-            }
-        }
-
-        public void Save(Stream input)
-        {
-            int t = 0;
-        }*/
     }
 }

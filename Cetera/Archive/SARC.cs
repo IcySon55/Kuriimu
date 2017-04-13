@@ -7,155 +7,133 @@ using System.Text;
 using Kuriimu.IO;
 using Kuriimu.Contract;
 using Cetera.Hash;
+using System.Linq;
 
 namespace Cetera.Archive
 {
     public sealed class SARC
     {
-        public List<SARCFileInfo> Files = new List<SARCFileInfo>();
+        public List<ArchiveFileInfo> Files;
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct SARCHeader
+        public class SARCHeader
         {
-            Magic magic;
-            public short headerSize;
-            ByteOrder byteOrder;
+            Magic magic = "SARC";
+            public short headerSize = 20;
+            ByteOrder byteOrder = ByteOrder.LittleEndian;
             public int fileSize;
             public int dataOffset;
-            int unk1;
+            int unk1 = 0x100;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct SFATHeader
+        public class SFATHeader
         {
-            Magic magic;
-            public short headerSize;
+            Magic magic = "SFAT";
+            public short headerSize = 12;
             public short nodeCount;
-            public int hashMultiplier;
+            public int hashMultiplier = 0x65;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct SFATEntry
+        public class SFATEntry
         {
             public uint nameHash;
             public short SFNTOffset;
-            public short unk1;
+            public short filenameFlags; // 0x100 means it uses the SFNT table
             public int dataStart;
             public int dataEnd;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct SFNTHeader
+        public class SFNTHeader
         {
-            Magic magic;
-            public short headerSize;
-            public short unk1;
+            Magic magic = "SFNT";
+            public int headerSize = 8;
         }
 
-        public class SARCFileInfo : ArchiveFileInfo
-        {
-            public SFATEntry Entry;
-        }
+        bool usesSFNT;
+
+        int padding = 1;
+        int Pad(int pos) => (pos + padding - 1) & -padding;
 
         public SARC(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
+            using (var br = new BinaryReaderX(input, true))
             {
-                SARCHeader sarcHeader = br.ReadStruct<SARCHeader>();
-                SFATHeader sfatHeader = br.ReadStruct<SFATHeader>();
+                var sarcHeader = br.ReadStruct<SARCHeader>();
+                var sfatHeader = br.ReadStruct<SFATHeader>();
+                var sfatEntries = br.ReadMultiple<SFATEntry>(sfatHeader.nodeCount).ToList();
+                var sfntHeader = br.ReadStruct<SFNTHeader>();
 
-                List<SFATEntry> SFATEntries = new List<SFATEntry>();
-                SFATEntries.AddRange(br.ReadMultiple<SFATEntry>(sfatHeader.nodeCount));
+                usesSFNT = sfatEntries.Any(entry => entry.filenameFlags == 0x100);
 
-                SFNTHeader sfntHeader = br.ReadStruct<SFNTHeader>();
-
-                List<String> nameList = new List<String>();
-                for (int i = 0; i < sfatHeader.nodeCount; i++)
+                Files = sfatEntries.Select(entry =>
                 {
-                    nameList.Add(br.ReadCStringA());
-
-                    while (br.ReadByte() == 0) ;
-                    br.BaseStream.Position -= 1;
-                }
-
-                for (int i = 0; i < sfatHeader.nodeCount; i++)
-                    Files.Add(new SARCFileInfo()
+                    var filename = usesSFNT ? br.ReadCStringA() : $"0x{entry.nameHash:X8}.bin";
+                    br.BaseStream.Position = (br.BaseStream.Position + 3) & ~3;
+                    return new ArchiveFileInfo
                     {
-                        Entry = new SFATEntry()
-                        {
-                            nameHash = SFATEntries[i].nameHash,
-                            SFNTOffset = SFATEntries[i].SFNTOffset,
-                            unk1 = SFATEntries[i].unk1,
-                            dataStart = SFATEntries[i].dataStart,
-                            dataEnd = SFATEntries[i].dataEnd
-                        },
-                        FileName = nameList[i],
-                        FileData = new SubStream(
-                            input,
-                            sarcHeader.dataOffset + SFATEntries[i].dataStart,
-                            SFATEntries[i].dataEnd - SFATEntries[i].dataStart),
+                        FileName = filename,
+                        FileData = new SubStream(input, sarcHeader.dataOffset + entry.dataStart, entry.dataEnd - entry.dataStart),
                         State = ArchiveFileState.Archived
-                    });
+                    };
+                }).ToList();
+
+                // heuristically determine the padding
+                var tmp = sfatEntries.Aggregate(sarcHeader.dataOffset, (i, e) => i | e.dataStart);
+                while ((tmp & padding) == 0) padding <<= 1;
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output, bool leaveOpen = false)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output, leaveOpen))
             {
                 //SARCHeader
-                bw.WriteASCII("SARC");
-                bw.Write((short)0x14);
-                bw.Write((ushort)0xfeff);
-                bw.Write(0); //Filesize will be added later
-                bw.Write(0);
-                bw.Write(0x100);
+                var header = new SARCHeader { dataOffset = Pad(40 + Files.Sum(afi => usesSFNT ? afi.FileName.Length / 4 * 4 + 20 : 16)) };
+                bw.WriteStruct(header); // filesize is added later
 
                 //SFATHeader
-                bw.WriteASCII("SFAT");
-                bw.Write((short)0xc);
-                bw.Write((short)Files.Count);
-                bw.Write(0x65);
+                bw.WriteStruct(new SFATHeader { nodeCount = (short)Files.Count });
 
                 //SFAT List + nameList
-                int nameOffset = 0x14 + 0xc + Files.Count * 0x10 + 8;
+                int nameOffset = 0;
                 int dataOffset = 0;
-                for (int i = 0; i < Files.Count; i++)
+                foreach (var afi in Files)
                 {
-                    if (Files[i].State == ArchiveFileState.Added)
-                        bw.Write(SimpleHash.Create(Files[i].FileName, 0x65));
-                    else
-                        bw.Write(Files[i].Entry.nameHash);
-
-                    bw.Write((short)((nameOffset - 0x14 - 0xc - 8 - Files.Count * 0x10) / 4));
-                    long bk = bw.BaseStream.Position; bw.BaseStream.Position = nameOffset;
-                    bw.WriteASCII(Files[i].FileName); bw.Write((byte)0);
-                    bw.BaseStream.Position = bk;
-                    int nameOffsetTmp = Files[i].FileName.Length + 1;
-                    while (nameOffsetTmp % 4 != 0) nameOffsetTmp++;
-                    nameOffset += nameOffsetTmp;
-
-                    bw.Write((short)0x100);
-
-                    bw.Write(dataOffset);
-                    bw.Write(dataOffset + (int)Files[i].FileData.Length);
-                    dataOffset += (int)Files[i].FileData.Length;
+                    var fileLen = (int)afi.FileData.Length;
+                    var sfatEntry = new SFATEntry
+                    {
+                        nameHash = usesSFNT ? SimpleHash.Create(afi.FileName, 0x65) : Convert.ToUInt32(afi.FileName.Substring(2, 8), 16),
+                        SFNTOffset = (short)(usesSFNT ? nameOffset : 0),
+                        filenameFlags = (short)(usesSFNT ? 0x100 : 0),
+                        dataStart = dataOffset,
+                        dataEnd = dataOffset + fileLen
+                    };
+                    bw.WriteStruct(sfatEntry);
+                    nameOffset += afi.FileName.Length / 4 + 1;
+                    dataOffset = Pad(sfatEntry.dataEnd);
                 }
-                bw.WriteASCII("SFNT");
-                bw.Write(8);
 
-                //Add dataOffset to SARCHeader
-                bw.BaseStream.Position = 0xc;
-                int pos = (bw.BaseStream.Length % 0x100 > 0) ? (int)((bw.BaseStream.Length / 0x100) + 1) * 0x100 : (int)bw.BaseStream.Length;
-                bw.Write(pos);
-                bw.BaseStream.Position = pos;
+                bw.WriteStruct(new SFNTHeader());
+                if (usesSFNT)
+                {
+                    foreach (var afi in Files)
+                    {
+                        bw.WriteASCII(afi.FileName.PadRight(afi.FileName.Length / 4 * 4 + 4, '\0'));
+                    }
+                }
 
-                //Add Files
-                for (int i = 0; i < Files.Count; i++) bw.Write(new BinaryReaderX(Files[i].FileData).ReadBytes((int)Files[i].FileData.Length));
+                foreach (var afi in Files)
+                {
+                    bw.Write(new byte[Pad((int)bw.BaseStream.Length) - (int)bw.BaseStream.Length]); // padding
+                    afi.FileData.CopyTo(bw.BaseStream);
+                }
 
-                //Add FileSize to SARC Header
-                bw.BaseStream.Position = 0x8;
-                bw.Write((int)bw.BaseStream.Length);
+                bw.BaseStream.Position = 0;
+                header.fileSize = (int)bw.BaseStream.Length;
+                bw.WriteStruct(header);
             }
         }
     }
