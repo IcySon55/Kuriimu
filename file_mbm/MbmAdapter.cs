@@ -114,7 +114,7 @@ namespace file_mbm
 
             try
             {
-                //_mbm.Save(_fileInfo.FullName);
+                _mbm.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {

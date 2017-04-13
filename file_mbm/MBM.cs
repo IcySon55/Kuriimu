@@ -56,38 +56,60 @@ namespace file_mbm
                         Labels.Add(new Label
                         {
                             Name = "Text " + (entry.ID + 1),
-                            Text = sjis.GetString(br.ReadBytes(entry.stringSize)),
+                            Text = sjis.GetString(br.ReadBytes(entry.stringSize)).Split('')[0],
                             TextID = entry.ID
                         });
                 }
             }
         }
 
-        /*public void Save(String filename)
+        public void Save(String filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
+                Encoding sjis = Encoding.GetEncoding("SJIS");
+
                 bw.WriteStruct(header);
 
+                int count = 0;
+                int offset = 0x20 + header.entryCount * 0x10;
                 for (int i = 0; i < header.entryCount; i++)
                 {
-                    long bk = bw.BaseStream.Length;
-                    bw.BaseStream.Position += 0xc;
+                    if (count < Labels.Count)
+                        if (Labels[count].TextID == i)
+                        {
+                            bw.Write(i);
+                            int stringSize = sjis.GetBytes(Labels[count].Text).Length + 2;
+                            bw.Write(stringSize);
+                            bw.Write(offset);
 
-                    byte[] name = writeText(Labels[i].Name, "ascii");
-                    bw.Write(name);
-                    byte[] text = writeText(Labels[i].Text, "sjis");
-                    bw.Write(text);
+                            long bk = bw.BaseStream.Position;
+                            bw.BaseStream.Position = offset;
+                            bw.Write(sjis.GetBytes(Labels[count].Text));
+                            bw.Write((ushort) 0xffff);
+                            bw.BaseStream.Position = bk;
 
-                    long bk2 = bw.BaseStream.Length;
-                    bw.BaseStream.Position = bk;
-                    bw.Write((int)(bw.BaseStream.Length - bk));
-                    bw.Write(0xc);
-                    bw.Write(0xc + name.Length);
+                            offset += stringSize;
+                            bw.Write(0);
 
-                    bw.BaseStream.Position = bk2;
+                            count++;
+                        }
+                        else
+                        {
+                            bw.Write(0);
+                            bw.Write(0);
+                            bw.Write(0);
+                            bw.Write(0);
+                        }
+                    else
+                    {
+                        bw.Write(0);
+                        bw.Write(0);
+                        bw.Write(0);
+                        bw.Write(0);
+                    }
                 }
             }
-        }*/
+        }
     }
 }
