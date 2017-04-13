@@ -443,7 +443,7 @@ namespace Karameru
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            return (IArchiveManager)Activator.CreateInstance(result.GetType());
+            return result == null ? null : (IArchiveManager)Activator.CreateInstance(result.GetType());
         }
 
         // Loading
