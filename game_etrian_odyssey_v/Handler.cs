@@ -105,8 +105,7 @@ namespace game_etrian_odyssey_v
                         x += info.left;
                     byte[] tmp = sjis.GetBytes(new char[] {kuriimuString[i]});
                     if (tmp.Length<2) tmp=new byte[] {0, tmp[0]};
-                    tmp.Reverse();
-                        font.Draw(unicode.GetString(tmp)[0], gfx, x, y, scaleDefault, scaleDefault);
+                        font.Draw(unicode.GetString(tmp.Reverse().ToArray())[0], gfx, x, y, scaleDefault, scaleDefault);
                         x += info.glyph_width - info.left;
                     //}
                 }
