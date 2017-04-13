@@ -11,7 +11,7 @@ using Cetera.Hash;
 
 namespace archive_xpck
 {
-    public class XpckAdapter : IArchiveManager
+    public class XpckManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private XPCK _xpck = null;
@@ -149,16 +149,6 @@ namespace archive_xpck
             }
 
             return true;
-        }
-
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            return false;
         }
 
         public bool DeleteFile(ArchiveFileInfo afi)

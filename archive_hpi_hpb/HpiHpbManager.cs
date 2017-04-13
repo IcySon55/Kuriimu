@@ -23,7 +23,7 @@ using Cetera.Compression;
 
 namespace archive_hpi_hpb
 {
-    public class HpiHpbAdapter : IArchiveManager
+    public class HpiHpbManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private HPIHPB _hpihpb = null;
@@ -153,16 +153,6 @@ namespace archive_hpi_hpb
             }
 
             return true;
-        }
-
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            throw new NotSupportedException();
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            return false;
         }
 
         public bool DeleteFile(ArchiveFileInfo afi)

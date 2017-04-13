@@ -141,16 +141,6 @@ namespace archive_dpk
             return false;
         }
 
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
         public bool DeleteFile(ArchiveFileInfo afi)
         {
             return false;

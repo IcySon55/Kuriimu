@@ -10,7 +10,7 @@ using Cetera.Hash;
 
 namespace archive_ctpk
 {
-    public class CTPKAdapter : IArchiveManager
+    public class CTPKManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
@@ -102,16 +102,6 @@ namespace archive_ctpk
         }
 
         public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
         {
             return false;
         }

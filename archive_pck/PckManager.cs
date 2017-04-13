@@ -9,7 +9,7 @@ using Cetera.Hash;
 
 namespace archive_pck
 {
-    public class PckAdapter : IArchiveManager
+    public class PckManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private PCK _pck = null;
@@ -97,16 +97,6 @@ namespace archive_pck
         }
 
         public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
         {
             return false;
         }

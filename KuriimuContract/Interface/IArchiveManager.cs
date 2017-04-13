@@ -30,8 +30,6 @@ namespace Kuriimu.Contract
         // Files
         IEnumerable<ArchiveFileInfo> Files { get; } // File list.
         bool AddFile(ArchiveFileInfo afi);
-        bool RenameFile(ArchiveFileInfo afi);
-        bool ReplaceFile(ArchiveFileInfo afi);
         bool DeleteFile(ArchiveFileInfo afi);
 
         // Features
