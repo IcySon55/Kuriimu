@@ -23,7 +23,7 @@ using Cetera.Compression;
 
 namespace archive_hpi_hpb
 {
-    public class HpiHpbAdapter : IArchiveManager
+    public class HpiHpbManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private HPIHPB _hpihpb = null;

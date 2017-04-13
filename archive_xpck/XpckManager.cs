@@ -11,7 +11,7 @@ using Cetera.Hash;
 
 namespace archive_xpck
 {
-    public class XpckAdapter : IArchiveManager
+    public class XpckManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private XPCK _xpck = null;
