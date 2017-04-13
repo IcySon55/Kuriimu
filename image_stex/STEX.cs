@@ -10,6 +10,9 @@ using Kuriimu.IO;
 using Kuriimu.Contract;
 using Cetera.Image;
 
+/*Original image and data types by xdaniel and his tool Tharsis
+ * https://github.com/xdanieldzd/Tharsis */
+
 namespace image_stex
 {
     public class STEX
