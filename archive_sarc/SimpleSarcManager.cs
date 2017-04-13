@@ -79,8 +79,6 @@ namespace archive_sarc
         // Files
         public IEnumerable<ArchiveFileInfo> Files => _sarc.Files;
         public bool AddFile(ArchiveFileInfo afi) => throw new NotSupportedException();
-        public bool RenameFile(ArchiveFileInfo afi) => throw new Exception("deprecated");
-        public bool ReplaceFile(ArchiveFileInfo afi) => throw new Exception("deprecated");
         public bool DeleteFile(ArchiveFileInfo afi) => throw new NotSupportedException();
 
         // Features

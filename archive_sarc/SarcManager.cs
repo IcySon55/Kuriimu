@@ -85,8 +85,6 @@ namespace archive_sarc
             return true;
         }
 
-        public bool RenameFile(ArchiveFileInfo afi) => throw new Exception("deprecated");
-        public bool ReplaceFile(ArchiveFileInfo afi) => throw new Exception("deprecated");
         public bool DeleteFile(ArchiveFileInfo afi) => throw new NotSupportedException();
 
         // Features

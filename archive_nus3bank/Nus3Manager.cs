@@ -130,16 +130,6 @@ namespace archive_nus3bank
             throw new NotSupportedException();
         }
 
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            throw new NotSupportedException();
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            throw new NotSupportedException();
-        }
-
         public bool DeleteFile(ArchiveFileInfo afi)
         {
             throw new NotSupportedException();

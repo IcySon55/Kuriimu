@@ -151,16 +151,6 @@ namespace archive_xpck
             return true;
         }
 
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
         public bool DeleteFile(ArchiveFileInfo afi)
         {
             return false;

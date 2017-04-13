@@ -155,16 +155,6 @@ namespace archive_hpi_hpb
             return true;
         }
 
-        public bool RenameFile(ArchiveFileInfo afi)
-        {
-            throw new NotSupportedException();
-        }
-
-        public bool ReplaceFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
         public bool DeleteFile(ArchiveFileInfo afi)
         {
             throw new NotSupportedException();
