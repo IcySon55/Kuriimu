@@ -27,6 +27,9 @@ namespace Karameru
 
         private List<ArchiveFileInfo> _files = null;
 
+        private static Win32.SHFILEINFO _shfi = new Win32.SHFILEINFO();
+        private static IntPtr _hSysImgList = Win32.SHGetFileInfo("", 0, ref _shfi, (uint)Marshal.SizeOf(_shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+
         public class NodeSorter : IComparer
         {
             // compares directories vs files first, then by filename
@@ -42,7 +45,7 @@ namespace Karameru
         {
             InitializeComponent();
 
-            treFiles.TreeViewNodeSorter = new NodeSorter();
+            treDirectories.TreeViewNodeSorter = new NodeSorter();
 
             // Populate image list
             imlFiles.Images.Add("tree-directory", Resources.tree_directory);
@@ -69,7 +72,7 @@ namespace Karameru
         private void frmManager_Load(object sender, EventArgs e)
         {
             //Icon = Resources.kuriimu;
-            Tools.DoubleBuffer(treFiles, true);
+            Tools.DoubleBuffer(treDirectories, true);
             LoadForm();
             UpdateForm();
         }
@@ -193,7 +196,7 @@ namespace Karameru
             //		if (_archiveManager.AddEntry(entry))
             //		{
             //			_hasChanges = true;
-            //			LoadFiles();
+            //			LoadDirectories();
             //			treEntries.SelectNodeByIEntry(entry);
             //			UpdateForm();
             //		}
@@ -278,7 +281,7 @@ namespace Karameru
             Process.Start("https://github.com/Icyson55/Kuriimu");
         }
 
-        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //frmAbout about = new frmAbout();
             //about.ShowDialog();
@@ -335,7 +338,7 @@ namespace Karameru
             DialogResult dr = DialogResult.No;
 
             if (_fileOpen && _hasChanges)
-                dr = MessageBox.Show("You have unsaved changes in " + FileName() + ". Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                dr = MessageBox.Show($"You have unsaved changes in {FileName()}. Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
             switch (dr)
             {
@@ -378,7 +381,7 @@ namespace Karameru
                         _fileOpen = true;
                         _hasChanges = false;
 
-                        LoadFiles();
+                        LoadDirectories();
                         UpdatePreview();
                         UpdateForm();
                     }
@@ -450,56 +453,28 @@ namespace Karameru
         // Loading
         private void LoadForm()
         {
-            // Obtain a handle to the system image list.
-            Win32.SHFILEINFO shfi = new Win32.SHFILEINFO();
-            IntPtr hSysImgList = Win32.SHGetFileInfo("", 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-            Debug.Assert(hSysImgList != IntPtr.Zero);  // cross our fingers and hope to succeed!
 
-            // Set the ListView control to use that image list.
-            IntPtr hOldImgList = Win32.SendMessage(lstFiles.Handle, Win32.LVM_SETIMAGELIST, Win32.LVSIL_SMALL, hSysImgList);
-
-            // If the ListView control already had an image list, delete the old one.
-            if (hOldImgList != IntPtr.Zero)
-            {
-                Win32.ImageList_Destroy(hOldImgList);
-            }
-
-            // Set up the ListView control's basic properties.
-            // Put it in "Details" mode, create a column so that "Details" mode will work,
-            // and set its theme so it will look like the one used by Explorer.
-            lstFiles.View = View.Details;
-            if(lstFiles.Columns.Count == 0)
-                lstFiles.Columns.Add("Name", 500);
-            Win32.SetWindowTheme(lstFiles.Handle, "explorer", null);
-
-            // Get the items from the file system, and add each of them to the ListView,
-            // complete with their corresponding name and icon indices.
-            UpdateFiles();
-
-            var tempDir = Path.Combine(Application.StartupPath, "temp");
-
-            lstFiles.Items.Clear();
-            foreach (ArchiveFileInfo file in _files)
-            {
-                Win32.SHGetFileInfo(Path.Combine(tempDir, Path.GetFileName(file.FileName)), 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-                lstFiles.Items.Add(shfi.szDisplayName, shfi.iIcon);
-            }
         }
 
-        private void LoadFiles()
+        private void UpdateFiles()
+        {
+            _files = _archiveManager.Files.ToList();
+        }
+
+        private void LoadDirectories()
         {
             UpdateFiles();
 
-            treFiles.BeginUpdate();
+            treDirectories.BeginUpdate();
 
-            Win32.SHFILEINFO shfi = new Win32.SHFILEINFO();
-            IntPtr hSysImgList = Win32.SHGetFileInfo("", 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-            Win32.SendMessage(treFiles.Handle, Win32.TVM_SETIMAGELIST, Win32.LVSIL_NORMAL, hSysImgList);
-            //treFiles.ImageList = imlFiles;
+            //Win32.SHFILEINFO shfi = new Win32.SHFILEINFO();
+            //IntPtr hSysImgList = Win32.SHGetFileInfo("", 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+            Win32.SendMessage(treDirectories.Handle, Win32.TVM_SETIMAGELIST, Win32.LVSIL_NORMAL, _hSysImgList);
+            //treDirectories.ImageList = imlFiles;
 
-            var selectedFile = treFiles.SelectedNode?.Tag as ArchiveFileInfo;
+            var selectedFile = treDirectories.SelectedNode?.Tag as ArchiveFileInfo;
 
-            treFiles.Nodes.Clear();
+            treDirectories.Nodes.Clear();
             if (_files != null)
             {
                 var tempDir = Path.Combine(Application.StartupPath, "temp");
@@ -508,52 +483,57 @@ namespace Karameru
                 // Build directory tree
                 foreach (ArchiveFileInfo file in _files)
                 {
-                    string[] parts = file.FileName.Split(new[] { '\\', '/' });
+                    string[] parts = file.FileName.Split('\\', '/');
 
-                    var current = treFiles.Nodes;
+                    var current = treDirectories.Nodes;
 
                     foreach (string part in parts)
                     {
-                        var child = current[part];
+                        var child = current?[part];
                         if (child == null)
                         {
-                            child = current.Add(part, part);
-
-                            // Node settings
-                            child.ImageIndex = 1;
-                            child.SelectedImageIndex = 1;
-
-                            if (parts.Last() == part)
+                            if (parts.Last() != part)
                             {
-                                var fileName = Path.Combine(tempDir, Path.GetFileName(part));
+                                child = current.Add(part, part);
 
-                                if (!File.Exists(fileName))
-                                {
-                                    var fs = File.Create(fileName);
-                                    fs.Close();
-                                }
-
-                                Win32.SHGetFileInfo(fileName, 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-                                child.ImageIndex = shfi.iIcon;
-                                child.SelectedImageIndex = shfi.iIcon;
-
-                                //string ext = Tools.GetExtension(part);
-
-                                //if (_fileExtensions.Contains(ext))
-                                //    child.ImageKey = "tree-text-file";
-                                //else if (_imageExtensions.Contains(ext))
-                                //    child.ImageKey = "tree-image-file";
-                                //else if (_archiveExtensions.Contains(ext))
-                                //    child.ImageKey = "tree-archive-file";
-                                //else
-                                //    child.ImageKey = "tree-binary-file";
-                                child.Tag = file;
+                                // Default to folder icon
+                                child.ImageIndex = 1;
+                                child.SelectedImageIndex = 1;
                             }
+
+                            //if (parts.Last() == part)
+                            //{
+                            //    var fileName = Path.Combine(tempDir, Path.GetFileName(part));
+
+                            //    if (!File.Exists(fileName))
+                            //    {
+                            //        var fs = File.Create(fileName);
+                            //        fs.Close();
+                            //    }
+
+                            //    // Set actual icon
+                            //    Win32.SHGetFileInfo(fileName, 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+                            //    child.ImageIndex = shfi.iIcon;
+                            //    child.SelectedImageIndex = shfi.iIcon;
+
+                            //    //string ext = Tools.GetExtension(part);
+
+                            //    //if (_fileExtensions.Contains(ext))
+                            //    //    child.ImageKey = "tree-text-file";
+                            //    //else if (_imageExtensions.Contains(ext))
+                            //    //    child.ImageKey = "tree-image-file";
+                            //    //else if (_archiveExtensions.Contains(ext))
+                            //    //    child.ImageKey = "tree-archive-file";
+                            //    //else
+                            //    //    child.ImageKey = "tree-binary-file";
+
+                            //    child.Tag = file;
+                            //}
 
                             //child.SelectedImageKey = child.ImageKey;
                         }
 
-                        current = child.Nodes;
+                        current = child?.Nodes;
                     }
                 }
             }
@@ -563,17 +543,39 @@ namespace Karameru
             //else
             //	treEntries.SelectNodeByIEntry(selectedEntry);
 
-            treFiles.Sort();
-            treFiles.EndUpdate();
+            treDirectories.Sort();
+            treDirectories.EndUpdate();
 
-            treFiles.Focus();
+            treDirectories.Focus();
 
             LoadForm();
         }
 
-        private void UpdateFiles()
+        private void LoadFiles()
         {
-            _files = _archiveManager.Files.ToList();
+            lstFiles.BeginUpdate();
+
+            Win32.SendMessage(lstFiles.Handle, Win32.LVM_SETIMAGELIST, Win32.LVSIL_SMALL, _hSysImgList);
+
+            lstFiles.View = View.Details;
+            if (lstFiles.Columns.Count == 0)
+                lstFiles.Columns.Add("Name", 500);
+            Win32.SetWindowTheme(lstFiles.Handle, "explorer", null);
+
+            // Get the items from the file system, and add each of them to the ListView,
+            // complete with their corresponding name and icon indices.
+
+            var tempDir = Path.Combine(Application.StartupPath, "temp");
+
+            lstFiles.Items.Clear();
+            foreach (ArchiveFileInfo file in _files)
+            {
+                Win32.SHGetFileInfo(Path.Combine(tempDir, Path.GetFileName(file.FileName)), 0, ref _shfi, (uint)Marshal.SizeOf(_shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+                lstFiles.Items.Add(new ListViewItem(new[] { _shfi.szDisplayName, file.FileData?.Length.ToString() }, _shfi.iIcon));
+            }
+
+            lstFiles.EndUpdate();
+
         }
 
         // Utilities
@@ -594,11 +596,11 @@ namespace Karameru
             Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Name + " Manager" : string.Empty);
 
             if (_fileOpen)
-                tslFiles.Text = (_archiveManager.Files?.Count() + " Files").Trim();
+                tslDirectories.Text = (_archiveManager.Files?.Count() + " Files").Trim();
             else
-                tslFiles.Text = "Files";
+                tslDirectories.Text = "Files";
 
-            TreeNode selectedNode = treFiles.SelectedNode;
+            TreeNode selectedNode = treDirectories.SelectedNode;
             var application = Applications.None;
             var fileDataIsNull = false;
 
@@ -624,14 +626,14 @@ namespace Karameru
 
             if (_archiveManager != null)
             {
-                bool itemSelected = _fileOpen && treFiles.SelectedNode != null;
-                bool itemIsFile = _fileOpen && itemSelected && treFiles.SelectedNode.Tag != null;
+                bool itemSelected = _fileOpen && treDirectories.SelectedNode != null;
+                bool itemIsFile = _fileOpen && itemSelected && treDirectories.SelectedNode.Tag != null;
                 bool canEdit = _fileOpen && application != Applications.None && !fileDataIsNull;
-                bool canAdd = _fileOpen && _archiveManager.CanAddFiles && treFiles.Focused;
+                bool canAdd = _fileOpen && _archiveManager.CanAddFiles && treDirectories.Focused;
                 bool canExtract = _fileOpen && itemSelected && !fileDataIsNull;
-                bool canRename = itemSelected && _archiveManager.CanRenameFiles && treFiles.Focused;
-                bool canReplace = itemSelected && _archiveManager.CanReplaceFiles && treFiles.Focused;
-                bool canDelete = itemSelected && _archiveManager.CanDeleteFiles && treFiles.Focused;
+                bool canRename = itemSelected && _archiveManager.CanRenameFiles && treDirectories.Focused;
+                bool canReplace = itemSelected && _archiveManager.CanReplaceFiles && treDirectories.Focused;
+                bool canDelete = itemSelected && _archiveManager.CanDeleteFiles && treDirectories.Focused;
 
                 splMain.Enabled = _fileOpen;
 
@@ -672,7 +674,7 @@ namespace Karameru
                 //tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled && _gameHandler.HandlerCanGeneratePreviews && _gameHandlerPages.Count > 0;
                 //tsbPreviewCopy.Enabled = tsbPreviewSave.Enabled;
 
-                treFiles.Enabled = _fileOpen;
+                treDirectories.Enabled = _fileOpen;
             }
 
             // Shortcuts
@@ -688,13 +690,13 @@ namespace Karameru
         // File Tree
         private void treEntries_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            UpdatePreview();
+            LoadFiles();
             UpdateForm();
         }
 
         private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            treFiles.SelectedNode = e.Node;
+            treDirectories.SelectedNode = e.Node;
         }
 
         private void treEntries_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -755,7 +757,7 @@ namespace Karameru
         // Functions
         private void LaunchFile()
         {
-            TreeNode selectedNode = treFiles.SelectedNode;
+            TreeNode selectedNode = treDirectories.SelectedNode;
 
             if (selectedNode.Tag != null)
             {
@@ -795,7 +797,7 @@ namespace Karameru
 
         private void ExtractFile()
         {
-            TreeNode selectedNode = treFiles.SelectedNode;
+            TreeNode selectedNode = treDirectories.SelectedNode;
 
             if (selectedNode.Tag == null) // Directory
             {
@@ -829,7 +831,7 @@ namespace Karameru
 
         private void ReplaceFile()
         {
-            TreeNode selectedNode = treFiles.SelectedNode;
+            TreeNode selectedNode = treDirectories.SelectedNode;
 
             if (selectedNode.Tag != null)
             {
