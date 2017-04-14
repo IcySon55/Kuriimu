@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("Test");
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,7 +60,8 @@
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
-            this.treFiles = new System.Windows.Forms.TreeView();
+            this.lstFiles = new System.Windows.Forms.ListView();
+            this.treFiles = new Kuriimu.Contract.UI.NativeTreeView();
             this.mnuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,9 +82,6 @@
             this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
             this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
             this.imlFiles = new System.Windows.Forms.ImageList(this.components);
-            this.lstFiles = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -406,6 +403,15 @@
             this.splMain.SplitterWidth = 6;
             this.splMain.TabIndex = 1;
             // 
+            // lstFiles
+            // 
+            this.lstFiles.Location = new System.Drawing.Point(0, 247);
+            this.lstFiles.Name = "lstFiles";
+            this.lstFiles.Size = new System.Drawing.Size(320, 317);
+            this.lstFiles.TabIndex = 5;
+            this.lstFiles.UseCompatibleStateImageBehavior = false;
+            this.lstFiles.View = System.Windows.Forms.View.Details;
+            // 
             // treFiles
             // 
             this.treFiles.AllowDrop = true;
@@ -415,6 +421,7 @@
             this.treFiles.ItemHeight = 18;
             this.treFiles.Location = new System.Drawing.Point(0, 27);
             this.treFiles.Name = "treFiles";
+            this.treFiles.ShowLines = false;
             this.treFiles.Size = new System.Drawing.Size(320, 214);
             this.treFiles.TabIndex = 4;
             this.treFiles.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
@@ -622,29 +629,7 @@
             this.imlFiles.ImageSize = new System.Drawing.Size(16, 16);
             this.imlFiles.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // lstFiles
-            // 
-            this.lstFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2});
-            this.lstFiles.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
-            this.lstFiles.Location = new System.Drawing.Point(0, 247);
-            this.lstFiles.Name = "lstFiles";
-            this.lstFiles.Size = new System.Drawing.Size(320, 317);
-            this.lstFiles.TabIndex = 5;
-            this.lstFiles.UseCompatibleStateImageBehavior = false;
-            this.lstFiles.View = System.Windows.Forms.View.Tile;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "";
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Size";
-            // 
-            // frmManager
+            // Manager
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -653,7 +638,7 @@
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.tlsMain);
             this.Controls.Add(this.mnuMain);
-            this.Name = "frmManager";
+            this.Name = "Manager";
             this.Text = "Karameru";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmManager_FormClosing);
             this.Load += new System.EventHandler(this.frmManager_Load);
@@ -711,7 +696,7 @@
         private System.Windows.Forms.ToolStripButton tsbKuriimu;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.SplitContainer splMain;
-        private System.Windows.Forms.TreeView treFiles;
+        private Kuriimu.Contract.UI.NativeTreeView treFiles;
         private System.Windows.Forms.ToolStrip tlsFiles;
         private System.Windows.Forms.ToolStripLabel tslFiles;
         private System.Windows.Forms.ToolStripButton tsbFileAdd;
@@ -733,8 +718,6 @@
         private System.Windows.Forms.ToolStripMenuItem editFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tsbFileEdit;
         private System.Windows.Forms.ListView lstFiles;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }
 

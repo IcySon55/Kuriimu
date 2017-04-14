@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Karameru.Properties;
 using Kuriimu.Contract;
@@ -449,7 +450,40 @@ namespace Karameru
         // Loading
         private void LoadForm()
         {
+            // Obtain a handle to the system image list.
+            Win32.SHFILEINFO shfi = new Win32.SHFILEINFO();
+            IntPtr hSysImgList = Win32.SHGetFileInfo("", 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+            Debug.Assert(hSysImgList != IntPtr.Zero);  // cross our fingers and hope to succeed!
 
+            // Set the ListView control to use that image list.
+            IntPtr hOldImgList = Win32.SendMessage(lstFiles.Handle, Win32.LVM_SETIMAGELIST, Win32.LVSIL_SMALL, hSysImgList);
+
+            // If the ListView control already had an image list, delete the old one.
+            if (hOldImgList != IntPtr.Zero)
+            {
+                Win32.ImageList_Destroy(hOldImgList);
+            }
+
+            // Set up the ListView control's basic properties.
+            // Put it in "Details" mode, create a column so that "Details" mode will work,
+            // and set its theme so it will look like the one used by Explorer.
+            lstFiles.View = View.Details;
+            if(lstFiles.Columns.Count == 0)
+                lstFiles.Columns.Add("Name", 500);
+            Win32.SetWindowTheme(lstFiles.Handle, "explorer", null);
+
+            // Get the items from the file system, and add each of them to the ListView,
+            // complete with their corresponding name and icon indices.
+            UpdateFiles();
+
+            var tempDir = Path.Combine(Application.StartupPath, "temp");
+
+            lstFiles.Items.Clear();
+            foreach (ArchiveFileInfo file in _files)
+            {
+                Win32.SHGetFileInfo(Path.Combine(tempDir, Path.GetFileName(file.FileName)), 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+                lstFiles.Items.Add(shfi.szDisplayName, shfi.iIcon);
+            }
         }
 
         private void LoadFiles()
@@ -457,13 +491,20 @@ namespace Karameru
             UpdateFiles();
 
             treFiles.BeginUpdate();
-            treFiles.ImageList = imlFiles;
+
+            Win32.SHFILEINFO shfi = new Win32.SHFILEINFO();
+            IntPtr hSysImgList = Win32.SHGetFileInfo("", 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+            Win32.SendMessage(treFiles.Handle, Win32.TVM_SETIMAGELIST, Win32.LVSIL_NORMAL, hSysImgList);
+            //treFiles.ImageList = imlFiles;
 
             var selectedFile = treFiles.SelectedNode?.Tag as ArchiveFileInfo;
 
             treFiles.Nodes.Clear();
             if (_files != null)
             {
+                var tempDir = Path.Combine(Application.StartupPath, "temp");
+                if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
+
                 // Build directory tree
                 foreach (ArchiveFileInfo file in _files)
                 {
@@ -479,30 +520,42 @@ namespace Karameru
                             child = current.Add(part, part);
 
                             // Node settings
-                            child.ImageKey = "tree-directory";
+                            child.ImageIndex = 1;
+                            child.SelectedImageIndex = 1;
 
                             if (parts.Last() == part)
                             {
-                                string ext = Tools.GetExtension(part);
+                                var fileName = Path.Combine(tempDir, Path.GetFileName(part));
 
-                                if (_fileExtensions.Contains(ext))
-                                    child.ImageKey = "tree-text-file";
-                                else if (_imageExtensions.Contains(ext))
-                                    child.ImageKey = "tree-image-file";
-                                else if (_archiveExtensions.Contains(ext))
-                                    child.ImageKey = "tree-archive-file";
-                                else
-                                    child.ImageKey = "tree-binary-file";
+                                if (!File.Exists(fileName))
+                                {
+                                    var fs = File.Create(fileName);
+                                    fs.Close();
+                                }
+
+                                Win32.SHGetFileInfo(fileName, 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
+                                child.ImageIndex = shfi.iIcon;
+                                child.SelectedImageIndex = shfi.iIcon;
+
+                                //string ext = Tools.GetExtension(part);
+
+                                //if (_fileExtensions.Contains(ext))
+                                //    child.ImageKey = "tree-text-file";
+                                //else if (_imageExtensions.Contains(ext))
+                                //    child.ImageKey = "tree-image-file";
+                                //else if (_archiveExtensions.Contains(ext))
+                                //    child.ImageKey = "tree-archive-file";
+                                //else
+                                //    child.ImageKey = "tree-binary-file";
                                 child.Tag = file;
                             }
 
-                            child.SelectedImageKey = child.ImageKey;
+                            //child.SelectedImageKey = child.ImageKey;
                         }
 
                         current = child.Nodes;
                     }
                 }
-
             }
 
             //if ((selectedEntry == null || !_files.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
@@ -514,6 +567,8 @@ namespace Karameru
             treFiles.EndUpdate();
 
             treFiles.Focus();
+
+            LoadForm();
         }
 
         private void UpdateFiles()
@@ -549,9 +604,7 @@ namespace Karameru
 
             if (selectedNode?.Tag != null)
             {
-                var afi = selectedNode.Tag as ArchiveFileInfo;
-
-                if (afi != null)
+                if (selectedNode.Tag is ArchiveFileInfo afi)
                 {
                     var ext = Path.GetExtension(afi.FileName);
 
@@ -651,20 +704,20 @@ namespace Karameru
 
         private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            if (e.Node.Tag == null)
-            {
-                e.Node.ImageKey = "tree-directory-open";
-                e.Node.SelectedImageKey = e.Node.ImageKey;
-            }
+            //if (e.Node.Tag == null)
+            //{
+            //    e.Node.ImageKey = "tree-directory-open";
+            //    e.Node.SelectedImageKey = e.Node.ImageKey;
+            //}
         }
 
         private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
         {
-            if (e.Node.Tag == null)
-            {
-                e.Node.ImageKey = "tree-directory";
-                e.Node.SelectedImageKey = e.Node.ImageKey;
-            }
+            //if (e.Node.Tag == null)
+            //{
+            //    e.Node.ImageKey = "tree-directory";
+            //    e.Node.SelectedImageKey = e.Node.ImageKey;
+            //}
         }
 
         // Toolbar
@@ -706,9 +759,7 @@ namespace Karameru
 
             if (selectedNode.Tag != null)
             {
-                var afi = selectedNode.Tag as ArchiveFileInfo;
-
-                if (afi != null && afi.FileData != null)
+                if (selectedNode.Tag is ArchiveFileInfo afi && afi.FileData != null)
                 {
                     var application = Applications.None;
                     var ext = Path.GetExtension(afi.FileName);
