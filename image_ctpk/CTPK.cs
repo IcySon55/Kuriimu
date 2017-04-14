@@ -45,7 +45,7 @@ namespace image_ctpk
                 List<uint> texInfoList2 = new List<uint>();
                 texInfoList2.AddRange(br.ReadMultiple<uint>(header.texCount));
 
-                br.BaseStream.Position = entries[0].texOffset;
+                br.BaseStream.Position = entries[0].texOffset+header.texSecOffset;
                 var settings = new ImageSettings
                 {
                     Width = entries[0].width,
