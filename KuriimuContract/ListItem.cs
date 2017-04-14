@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kuriimu.Contract.UI
+namespace Kuriimu.Contract
 {
     public class ListItem : IComparable<ListItem>
     {

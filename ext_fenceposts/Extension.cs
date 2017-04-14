@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
 using Kuriimu.Contract;
-using Kuriimu.Contract.UI;
 using Kuriimu.IO;
 
 namespace ext_fenceposts

@@ -60,7 +60,7 @@
     <Compile Include="IO\SubStream.cs" />
     <Compile Include="Kup\KUP.cs" />
     <Compile Include="Kup\KupUser.cs" />
-    <Compile Include="UI\ListItem.cs" />
+    <Compile Include="ListItem.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -69,10 +69,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Tools.cs" />
-    <Compile Include="UI\NativeTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Win32.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Settings.settings">
