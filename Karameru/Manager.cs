@@ -568,7 +568,7 @@ namespace Karameru
             var tempDir = Path.Combine(Application.StartupPath, "temp");
 
             lstFiles.Items.Clear();
-            foreach (ArchiveFileInfo file in _files)
+            foreach (ArchiveFileInfo file in _files.FindAll(f => f.FileName.StartsWith(treDirectories.SelectedNode.FullPath)))
             {
                 Win32.SHGetFileInfo(Path.Combine(tempDir, Path.GetFileName(file.FileName)), 0, ref _shfi, (uint)Marshal.SizeOf(_shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
                 lstFiles.Items.Add(new ListViewItem(new[] { _shfi.szDisplayName, file.FileData?.Length.ToString() }, _shfi.iIcon));
