@@ -278,39 +278,6 @@ namespace Karameru
             //about.ShowDialog();
         }
 
-        // UI Toolbars
-        private void tsbPreviewEnabled_Click(object sender, EventArgs e)
-        {
-            //Settings.Default.PreviewEnabled = !Settings.Default.PreviewEnabled;
-            Settings.Default.Save();
-            UpdatePreview();
-            UpdateForm();
-        }
-
-        private void tsbPreviewSave_Click(object sender, EventArgs e)
-        {
-            //SaveFileDialog sfd = new SaveFileDialog();
-            //sfd.Title = "Save Preview as PNG...";
-            //sfd.InitialDirectory = Settings.Default.LastDirectory;
-            //sfd.FileName = "preview.png";
-            //sfd.Filter = "Portable Network Graphics (*.png)|*.png";
-            //sfd.AddExtension = true;
-
-            //if (sfd.ShowDialog() == DialogResult.OK)
-            //{
-            //	Bitmap bmp = (Bitmap)pbxPreview.Image;
-            //	bmp.Save(sfd.FileName, ImageFormat.Png);
-
-            //	Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
-            //	Settings.Default.Save();
-            //}
-        }
-
-        private void tsbPreviewCopy_Click(object sender, EventArgs e)
-        {
-            //Clipboard.SetImage(pbxPreview.Image);
-        }
-
         // File Handling
         private void frmManager_DragEnter(object sender, DragEventArgs e)
         {
@@ -373,7 +340,6 @@ namespace Karameru
                         _hasChanges = false;
 
                         LoadDirectories();
-                        UpdatePreview();
                         UpdateForm();
                     }
 
@@ -515,26 +481,11 @@ namespace Karameru
         }
 
         // Utilities
-        private void UpdatePreview()
-        {
-            //IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
-            //_gameHandlerPages = _gameHandler.GeneratePreviews(entry);
-            //SetPage(0);
-
-            //if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled && _gameHandlerPages.Count > 0)
-            //	pbxPreview.Image = _gameHandlerPages[_page];
-            //else
-            //	pbxPreview.Image = null;
-        }
-
         private void UpdateForm()
         {
             Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Name + " Manager" : string.Empty);
 
-            if (_fileOpen)
-                tslDirectories.Text = (_archiveManager.Files?.Count() + " Files").Trim();
-            else
-                tslDirectories.Text = "Files";
+            tslFileCount.Text = _fileOpen ? $"Files: {_archiveManager.Files?.Count()}" : "";
 
             TreeNode selectedNode = treDirectories.SelectedNode;
             var application = Applications.None;
@@ -637,10 +588,10 @@ namespace Karameru
             treDirectories.SelectedNode = e.Node;
         }
 
-        private void treEntries_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            LaunchFile();
-        }
+        //private void treEntries_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        //{
+        //    LaunchFile();
+        //}
 
         private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
         {
@@ -674,7 +625,7 @@ namespace Karameru
 
         private void tsbFileExtract_Click(object sender, EventArgs e)
         {
-            ExtractFiles();
+            ExtractFile();
         }
 
         private void tsbFileReplace_Click(object sender, EventArgs e)
@@ -690,7 +641,7 @@ namespace Karameru
 
         private void extractFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractFiles();
+            ExtractFile();
         }
 
         private void replaceFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -733,7 +684,7 @@ namespace Karameru
             }
         }
 
-        private void ExtractFiles()
+        private void ExtractFile()
         {
             var selectedItem = lstFiles.SelectedItems[0];
             var afi = selectedItem.Tag as ArchiveFileInfo;
