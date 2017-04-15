@@ -16,7 +16,7 @@ namespace archive_fa
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Header
-    {
+    { 
         public Magic magic;
         public int offset0;
         public int offset1;
@@ -24,7 +24,7 @@ namespace archive_fa
         public uint nameOffset;
         public uint dataOffset;
         public short unk0;
-		public short folderCount;
+        public short folderCount;
         public int entryCount;
         public uint infoSecSize; //without header 0x48
         public int zero0;
