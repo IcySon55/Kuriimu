@@ -602,7 +602,7 @@ namespace Karameru
 
             TreeNode selectedNode = treDirectories.SelectedNode;
             var application = Applications.None;
-            var fileDataIsNull = false;
+            var canReadFileData = false;
 
             if (selectedNode?.Tag != null)
             {
@@ -617,7 +617,7 @@ namespace Karameru
                     else if (_archiveExtensions.Contains(ext))
                         application = Applications.Karameru;
 
-                    //fileDataIsNull = afi.FileData == null; // this line doesn't work. what is the intent?
+                    canReadFileData = afi.FileData.CanRead;
                 }
             }
 
@@ -626,14 +626,16 @@ namespace Karameru
 
             if (_archiveManager != null)
             {
-                bool itemSelected = _fileOpen && treDirectories.SelectedNode != null;
-                bool itemIsFile = _fileOpen && itemSelected && treDirectories.SelectedNode.Tag != null;
-                bool canEdit = _fileOpen && application != Applications.None && !fileDataIsNull;
+                bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
+                bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
+                //bool itemIsFile = _fileOpen && itemSelected && treDirectories.SelectedNode.Tag != null;
+                bool canEdit = _fileOpen && application != Applications.None && !canReadFileData;
                 bool canAdd = _fileOpen && _archiveManager.CanAddFiles && treDirectories.Focused;
-                bool canExtract = _fileOpen && itemSelected && !fileDataIsNull;
-                bool canRename = itemSelected && _archiveManager.CanRenameFiles && treDirectories.Focused;
-                bool canReplace = itemSelected && _archiveManager.CanReplaceFiles && treDirectories.Focused;
-                bool canDelete = itemSelected && _archiveManager.CanDeleteFiles && treDirectories.Focused;
+
+                bool canExtractFile = _fileOpen && itemSelected && !canReadFileData;
+                bool canRenameFile = itemSelected && _archiveManager.CanRenameFiles && treDirectories.Focused;
+                bool canReplaceFile = itemSelected && _archiveManager.CanReplaceFiles && treDirectories.Focused;
+                bool canDeleteFile = itemSelected && _archiveManager.CanDeleteFiles && treDirectories.Focused;
 
                 splMain.Enabled = _fileOpen;
 
@@ -649,23 +651,23 @@ namespace Karameru
 
                 // Toolbar
                 tsbFileEdit.Enabled = canEdit;
-                tsbFileExtract.Enabled = canExtract;
+                tsbFileExtract.Enabled = canExtractFile;
                 tsbFileAdd.Enabled = canAdd;
-                tsbFileRename.Enabled = canRename;
-                tsbFileReplace.Enabled = canReplace;
-                tsbFileDelete.Enabled = canDelete;
+                tsbFileRename.Enabled = canRenameFile;
+                tsbFileReplace.Enabled = canReplaceFile;
+                tsbFileDelete.Enabled = canDeleteFile;
                 //addFileToolStripMenuItem.Enabled = canAdd && treEntries.Focused;
                 //renameFileToolStripMenuItem.Enabled = canRename && treEntries.Focused;
                 //deleteFileToolStripMenuItem.Enabled = canDelete && treEntries.Focused;
                 //filePropertiesToolStripMenuItem.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
                 //tsbFileProperties.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
 
-                // Context Menu
+                // File Context Menu
                 editFileToolStripMenuItem.Enabled = canEdit;
-                editFileToolStripMenuItem.Text = canEdit ? "&Edit in " + application.ToString() : "&Edit";
-                extractToolStripMenuItem.Enabled = canExtract;
-                extractToolStripMenuItem.Text = canExtract ? "E&xtract" : "E&xtract is not supported";
-                replaceToolStripMenuItem.Enabled = canReplace;
+                editFileToolStripMenuItem.Text = canEdit ? "&Edit in " + application : "&Edit";
+                extractFileToolStripMenuItem.Enabled = canExtractFile;
+                extractFileToolStripMenuItem.Text = canExtractFile ? "E&xtract" : "E&xtract is not supported";
+                replaceFileToolStripMenuItem.Enabled = canReplaceFile;
 
                 // Preview
                 //tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
@@ -687,7 +689,7 @@ namespace Karameru
             return _archiveManager?.FileInfo?.Name ?? string.Empty;
         }
 
-        // File Tree
+        // Directory Tree
         private void treEntries_AfterSelect(object sender, TreeViewEventArgs e)
         {
             LoadFiles();
@@ -722,15 +724,21 @@ namespace Karameru
             //}
         }
 
+        // File List
+        private void lstFiles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateForm();
+        }
+
         // Toolbar
         private void tsbFileEdit_Click(object sender, EventArgs e)
         {
             LaunchFile();
         }
 
-        private void tsbFileExport_Click(object sender, EventArgs e)
+        private void tsbFileExtract_Click(object sender, EventArgs e)
         {
-            ExtractFile();
+            ExtractFiles();
         }
 
         private void tsbFileReplace_Click(object sender, EventArgs e)
@@ -744,12 +752,12 @@ namespace Karameru
             LaunchFile();
         }
 
-        private void extractToolStripMenuItem_Click(object sender, EventArgs e)
+        private void extractFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ExtractFile();
+            ExtractFiles();
         }
 
-        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void replaceFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ReplaceFile();
         }
@@ -757,76 +765,63 @@ namespace Karameru
         // Functions
         private void LaunchFile()
         {
-            TreeNode selectedNode = treDirectories.SelectedNode;
+            var selectedItem = lstFiles.SelectedItems[0];
 
-            if (selectedNode.Tag != null)
+            var afi = selectedItem.Tag as ArchiveFileInfo;
+            var application = Applications.None;
+            var ext = Path.GetExtension(afi.FileName);
+
+            if (_fileExtensions.Contains(ext))
+                application = Applications.Kuriimu;
+            else if (_imageExtensions.Contains(ext))
+                application = Applications.Kukkii;
+            else if (_archiveExtensions.Contains(ext))
+                application = Applications.Karameru;
+
+            if (application != Applications.None)
             {
-                if (selectedNode.Tag is ArchiveFileInfo afi && afi.FileData != null)
-                {
-                    var application = Applications.None;
-                    var ext = Path.GetExtension(afi.FileName);
+                var tempDir = Path.Combine(Application.StartupPath, "temp");
+                var fileName = Path.Combine(tempDir, Path.GetFileName(afi.FileName));
 
-                    if (_fileExtensions.Contains(ext))
-                        application = Applications.Kuriimu;
-                    else if (_imageExtensions.Contains(ext))
-                        application = Applications.Kukkii;
-                    else if (_archiveExtensions.Contains(ext))
-                        application = Applications.Karameru;
+                if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
+                using (var fs = File.Create(fileName))
+                    afi.FileData.CopyTo(fs);
 
-                    if (application != Applications.None)
-                    {
-                        var tempDir = Path.Combine(Application.StartupPath, "temp");
-                        var fileName = Path.Combine(tempDir, Path.GetFileName(afi.FileName));
+                ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, application + ".exe"));
+                start.WorkingDirectory = Application.StartupPath;
+                start.Arguments = fileName;
 
-                        if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
-                        var fs = File.Create(fileName);
-                        afi.FileData.CopyTo(fs);
-                        fs.Close();
-
-                        ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, application.ToString().ToLower() + ".exe"));
-                        start.WorkingDirectory = Application.StartupPath;
-                        start.Arguments = fileName;
-
-                        Process p = new Process();
-                        p.StartInfo = start;
-                        p.Start();
-                    }
-                }
+                Process p = new Process();
+                p.StartInfo = start;
+                p.Start();
             }
         }
 
-        private void ExtractFile()
+        private void ExtractFiles()
         {
-            TreeNode selectedNode = treDirectories.SelectedNode;
+            var selectedItem = lstFiles.SelectedItems[0];
+            var afi = selectedItem.Tag as ArchiveFileInfo;
+            var stream = afi?.FileData;
+            var filename = Path.GetFileName(afi?.FileName);
 
-            if (selectedNode.Tag == null) // Directory
+            if (stream == null)
             {
-                MessageBox.Show("Directory extraction is not yet implemented.", "Extract Directory", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Uninitialized file stream. Unable to extract \"{filename}\".", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            else // File
-            {
-                var afi = selectedNode.Tag as ArchiveFileInfo;
-                if (afi == null) return;
 
-                var stream = afi.FileData;
-                var filename = Path.GetFileName(afi.FileName);
+            var extension = Path.GetExtension(afi.FileName).ToLower();
+            var sfd = new SaveFileDialog();
+            sfd.InitialDirectory = Settings.Default.LastDirectory;
+            sfd.FileName = filename;
+            sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension.ToLower()})|*{extension.ToLower()}";
 
-                if (stream == null)
+            if (sfd.ShowDialog() == DialogResult.OK)
+                using (var fs = File.Create(sfd.FileName))
                 {
-                    MessageBox.Show($"Uninitialized file stream. Unable to extract {filename}.", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
+                    stream.CopyTo(fs);
+                    MessageBox.Show($"\"{filename}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
-                var extension = Path.GetExtension(afi.FileName).ToLower();
-                var sfd = new SaveFileDialog();
-                sfd.InitialDirectory = Settings.Default.LastDirectory;
-                sfd.FileName = filename;
-                sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension.ToLower()})|*{extension.ToLower()}";
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                    using (var fs = File.Create(sfd.FileName))
-                        stream.CopyTo(fs);
-            }
         }
 
         private void ReplaceFile()
