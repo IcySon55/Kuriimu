@@ -487,13 +487,17 @@ namespace Karameru
 
             tslFileCount.Text = _fileOpen ? $"Files: {_archiveManager.Files?.Count()}" : "";
 
-            TreeNode selectedNode = treDirectories.SelectedNode;
-            var application = Applications.None;
-            var canReadFileData = false;
+            openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
+            tsbOpen.Enabled = _archiveManagers.Count > 0;
 
-            if (selectedNode?.Tag != null)
+            if (_archiveManager != null)
             {
-                if (selectedNode.Tag is ArchiveFileInfo afi)
+                var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
+                var afi = selectedItem?.Tag as ArchiveFileInfo;
+                var application = Applications.None;
+                var canReadFileData = false;
+
+                if (selectedItem?.Tag is ArchiveFileInfo)
                 {
                     var ext = Path.GetExtension(afi.FileName);
 
@@ -504,15 +508,9 @@ namespace Karameru
                     else if (_archiveExtensions.Contains(ext))
                         application = Applications.Karameru;
 
-                    canReadFileData = afi.FileData.CanRead;
+                    canReadFileData = afi.State != ArchiveFileState.Empty && afi.State != ArchiveFileState.Deleted;
                 }
-            }
 
-            openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
-            tsbOpen.Enabled = _archiveManagers.Count > 0;
-
-            if (_archiveManager != null)
-            {
                 bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
                 bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
                 //bool itemIsFile = _fileOpen && itemSelected && treDirectories.SelectedNode.Tag != null;
@@ -583,11 +581,6 @@ namespace Karameru
             UpdateForm();
         }
 
-        private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            treDirectories.SelectedNode = e.Node;
-        }
-
         //private void treEntries_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         //{
         //    LaunchFile();
@@ -595,26 +588,31 @@ namespace Karameru
 
         private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            //if (e.Node.Tag == null)
-            //{
-            //    e.Node.ImageKey = "tree-directory-open";
-            //    e.Node.SelectedImageKey = e.Node.ImageKey;
-            //}
+            if (e.Node.Parent != null)
+            {
+                e.Node.ImageKey = "tree-directory-open";
+                e.Node.SelectedImageKey = e.Node.ImageKey;
+            }
         }
 
         private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
         {
-            //if (e.Node.Tag == null)
-            //{
-            //    e.Node.ImageKey = "tree-directory";
-            //    e.Node.SelectedImageKey = e.Node.ImageKey;
-            //}
+            if (e.Node.Parent != null)
+            {
+                e.Node.ImageKey = "tree-directory";
+                e.Node.SelectedImageKey = e.Node.ImageKey;
+            }
         }
 
         // File List
         private void lstFiles_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateForm();
+        }
+
+        private void lstFiles_DoubleClick(object sender, EventArgs e)
+        {
+            LaunchFile();
         }
 
         // Toolbar

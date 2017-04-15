@@ -73,6 +73,8 @@
             this.editFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.tslFileCount = new System.Windows.Forms.ToolStripLabel();
             this.tlsPreview = new System.Windows.Forms.ToolStrip();
             this.tsbFileEdit = new System.Windows.Forms.ToolStripButton();
             this.tsbFileExtract = new System.Windows.Forms.ToolStripButton();
@@ -82,8 +84,6 @@
             this.tsbFileDelete = new System.Windows.Forms.ToolStripButton();
             this.tsbFileProperties = new System.Windows.Forms.ToolStripButton();
             this.imlFiles = new System.Windows.Forms.ImageList(this.components);
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.tslFileCount = new System.Windows.Forms.ToolStripLabel();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -94,8 +94,8 @@
             this.mnuDirectories.SuspendLayout();
             this.tlsFiles.SuspendLayout();
             this.mnuFiles.SuspendLayout();
-            this.tlsPreview.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.tlsPreview.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnuMain
@@ -424,7 +424,6 @@
             this.treDirectories.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
             this.treDirectories.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterExpand);
             this.treDirectories.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
-            this.treDirectories.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseClick);
             // 
             // mnuDirectories
             // 
@@ -486,6 +485,7 @@
             this.lstFiles.UseCompatibleStateImageBehavior = false;
             this.lstFiles.View = System.Windows.Forms.View.Details;
             this.lstFiles.SelectedIndexChanged += new System.EventHandler(this.lstFiles_SelectedIndexChanged);
+            this.lstFiles.DoubleClick += new System.EventHandler(this.lstFiles_DoubleClick);
             // 
             // clmName
             // 
@@ -528,6 +528,26 @@
             this.replaceFileToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.replaceFileToolStripMenuItem.Text = "&Replace...";
             this.replaceFileToolStripMenuItem.Click += new System.EventHandler(this.replaceFileToolStripMenuItem_Click);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.AutoSize = false;
+            this.toolStrip1.BackColor = System.Drawing.Color.Transparent;
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tslFileCount});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 537);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.toolStrip1.Size = new System.Drawing.Size(611, 27);
+            this.toolStrip1.TabIndex = 6;
+            // 
+            // tslFileCount
+            // 
+            this.tslFileCount.Name = "tslFileCount";
+            this.tslFileCount.Size = new System.Drawing.Size(58, 22);
+            this.tslFileCount.Text = "FileCount";
             // 
             // tlsPreview
             // 
@@ -628,26 +648,6 @@
             this.imlFiles.ImageSize = new System.Drawing.Size(16, 16);
             this.imlFiles.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.AutoSize = false;
-            this.toolStrip1.BackColor = System.Drawing.Color.Transparent;
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tslFileCount});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 537);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.toolStrip1.Size = new System.Drawing.Size(611, 27);
-            this.toolStrip1.TabIndex = 6;
-            // 
-            // tslFileCount
-            // 
-            this.tslFileCount.Name = "tslFileCount";
-            this.tslFileCount.Size = new System.Drawing.Size(58, 22);
-            this.tslFileCount.Text = "FileCount";
-            // 
             // Manager
             // 
             this.AllowDrop = true;
@@ -676,10 +676,10 @@
             this.tlsFiles.ResumeLayout(false);
             this.tlsFiles.PerformLayout();
             this.mnuFiles.ResumeLayout(false);
-            this.tlsPreview.ResumeLayout(false);
-            this.tlsPreview.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.tlsPreview.ResumeLayout(false);
+            this.tlsPreview.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
