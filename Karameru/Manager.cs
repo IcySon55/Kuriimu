@@ -472,7 +472,7 @@ namespace Karameru
                         }
                     }
 
-                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileData?.Length.ToString() }, ext) { Tag = file });
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileSize.ToString() }, ext) { Tag = file });
                 }
             }
 
@@ -504,7 +504,7 @@ namespace Karameru
                     else if (_archiveExtensions.Contains(ext))
                         application = Applications.Karameru;
 
-                    canReadFileData = afi.FileData.CanRead;
+                    canReadFileData = afi.FileSize.HasValue;
                 }
             }
 

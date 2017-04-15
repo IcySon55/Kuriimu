@@ -65,6 +65,8 @@ namespace archive_hpi_hpb
             }
         }
 
+        public override long? FileSize => Entry.uncompressedSize == 0 ? base.FileSize : Entry.uncompressedSize;
+
         public void WriteToHpb(Stream stream)
         {
             Entry.fileOffset = (int)stream.Position;
