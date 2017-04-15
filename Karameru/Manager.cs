@@ -510,7 +510,6 @@ namespace Karameru
 
                     canReadFileData = afi.FileSize.HasValue;
                 }
-            }
 
                 bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
                 bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
