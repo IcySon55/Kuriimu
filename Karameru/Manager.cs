@@ -484,7 +484,7 @@ namespace Karameru
                 var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
                 var afi = selectedItem?.Tag as ArchiveFileInfo;
                 var application = Applications.None;
-                var canReadFileData = false;
+                var canReadFileData = true;
 
                 if (selectedItem?.Tag is ArchiveFileInfo)
                 {
@@ -503,10 +503,10 @@ namespace Karameru
                 bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
                 bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
                 //bool itemIsFile = _fileOpen && itemSelected && treDirectories.SelectedNode.Tag != null;
-                bool canEdit = _fileOpen && application != Applications.None && !canReadFileData;
+                bool canEdit = _fileOpen && application != Applications.None && canReadFileData;
                 bool canAdd = _fileOpen && _archiveManager.CanAddFiles && treDirectories.Focused;
 
-                bool canExtractFile = _fileOpen && itemSelected && !canReadFileData;
+                bool canExtractFile = _fileOpen && itemSelected && canReadFileData;
                 bool canRenameFile = itemSelected && _archiveManager.CanRenameFiles && treDirectories.Focused;
                 bool canReplaceFile = itemSelected && _archiveManager.CanReplaceFiles && treDirectories.Focused;
                 bool canDeleteFile = itemSelected && _archiveManager.CanDeleteFiles && treDirectories.Focused;
