@@ -13,13 +13,13 @@ namespace archive_fa
     public class FaManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
-        private FA _fa = null;
-
+        private FA _fa = null;  
+        
         #region Properties
 
         // Information
         public string Name => Settings.Default.PluginName;
-        public string Description => "Level 5 F Archive";
+        public string Description => "Level 5 Format Archive";
         public string Extension => "*.fa";
         public string About => "This is the FA archive manager for Karameru.";
 
@@ -29,7 +29,7 @@ namespace archive_fa
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo
         {
@@ -77,7 +77,7 @@ namespace archive_fa
 
             try
             {
-                //_fa.Save(_fileInfo.FullName);
+                _fa.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {
