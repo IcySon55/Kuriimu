@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Karameru.Properties;
 using Kuriimu.Contract;
+using System.Drawing;
 
 namespace Karameru
 {
@@ -27,25 +28,13 @@ namespace Karameru
 
         private List<ArchiveFileInfo> _files = null;
 
-        private static Win32.SHFILEINFO _shfi = new Win32.SHFILEINFO();
-        private static IntPtr _hSysImgList = Win32.SHGetFileInfo("", 0, ref _shfi, (uint)Marshal.SizeOf(_shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-
-        public class NodeSorter : IComparer
-        {
-            // compares directories vs files first, then by filename
-            public int Compare(object lhs, object rhs)
-            {
-                TreeNode lhsNode = (TreeNode)lhs, rhsNode = (TreeNode)rhs;
-                var cmp = (lhsNode.Tag != null).CompareTo(rhsNode.Tag != null);
-                return cmp != 0 ? cmp : lhsNode.Text.CompareTo(rhsNode.Text);
-            }
-        }
-
         public Manager(string[] args)
         {
             InitializeComponent();
 
-            treDirectories.TreeViewNodeSorter = new NodeSorter();
+            // Overwrite window themes
+            Win32.SetWindowTheme(treDirectories.Handle, "explorer", null);
+            Win32.SetWindowTheme(lstFiles.Handle, "explorer", null);
 
             // Populate image list
             imlFiles.Images.Add("tree-directory", Resources.tree_directory);
@@ -54,6 +43,8 @@ namespace Karameru
             imlFiles.Images.Add("tree-image-file", Resources.tree_image_file);
             imlFiles.Images.Add("tree-archive-file", Resources.tree_archive_file);
             imlFiles.Images.Add("tree-binary-file", Resources.tree_binary_file);
+            treDirectories.ImageList = imlFiles;
+            lstFiles.SmallImageList = imlFiles;
 
             // Load Plugins
             _fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();
@@ -466,84 +457,21 @@ namespace Karameru
             UpdateFiles();
 
             treDirectories.BeginUpdate();
-
-            //Win32.SHFILEINFO shfi = new Win32.SHFILEINFO();
-            //IntPtr hSysImgList = Win32.SHGetFileInfo("", 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-            Win32.SendMessage(treDirectories.Handle, Win32.TVM_SETIMAGELIST, Win32.LVSIL_NORMAL, _hSysImgList);
-            //treDirectories.ImageList = imlFiles;
-
-            var selectedFile = treDirectories.SelectedNode?.Tag as ArchiveFileInfo;
-
             treDirectories.Nodes.Clear();
-            if (_files != null)
+
+            var lookup = _files.OrderBy(f => f.FileName).ToLookup(f => Path.GetDirectoryName(f.FileName));
+
+            // Build directory tree
+            var root = treDirectories.Nodes.Add("root", FileName(), "tree-archive-file", "tree-archive-file");
+            foreach (var dir in lookup.Select(g => g.Key))
             {
-                var tempDir = Path.Combine(Application.StartupPath, "temp");
-                if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
-
-                // Build directory tree
-                foreach (ArchiveFileInfo file in _files)
-                {
-                    string[] parts = file.FileName.Split('\\', '/');
-
-                    var current = treDirectories.Nodes;
-
-                    foreach (string part in parts)
-                    {
-                        var child = current?[part];
-                        if (child == null)
-                        {
-                            if (parts.Last() != part)
-                            {
-                                child = current.Add(part, part);
-
-                                // Default to folder icon
-                                child.ImageIndex = 1;
-                                child.SelectedImageIndex = 1;
-                            }
-
-                            //if (parts.Last() == part)
-                            //{
-                            //    var fileName = Path.Combine(tempDir, Path.GetFileName(part));
-
-                            //    if (!File.Exists(fileName))
-                            //    {
-                            //        var fs = File.Create(fileName);
-                            //        fs.Close();
-                            //    }
-
-                            //    // Set actual icon
-                            //    Win32.SHGetFileInfo(fileName, 0, ref shfi, (uint)Marshal.SizeOf(shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-                            //    child.ImageIndex = shfi.iIcon;
-                            //    child.SelectedImageIndex = shfi.iIcon;
-
-                            //    //string ext = Tools.GetExtension(part);
-
-                            //    //if (_fileExtensions.Contains(ext))
-                            //    //    child.ImageKey = "tree-text-file";
-                            //    //else if (_imageExtensions.Contains(ext))
-                            //    //    child.ImageKey = "tree-image-file";
-                            //    //else if (_archiveExtensions.Contains(ext))
-                            //    //    child.ImageKey = "tree-archive-file";
-                            //    //else
-                            //    //    child.ImageKey = "tree-binary-file";
-
-                            //    child.Tag = file;
-                            //}
-
-                            //child.SelectedImageKey = child.ImageKey;
-                        }
-
-                        current = child?.Nodes;
-                    }
-                }
+                dir.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, part))
+                    .Tag = lookup[dir];
             }
 
-            //if ((selectedEntry == null || !_files.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
-            //	treEntries.SelectedNode = treEntries.Nodes[0];
-            //else
-            //	treEntries.SelectNodeByIEntry(selectedEntry);
-
-            treDirectories.Sort();
+            root.Expand();
+            treDirectories.SelectedNode = root;
             treDirectories.EndUpdate();
 
             treDirectories.Focus();
@@ -554,28 +482,36 @@ namespace Karameru
         private void LoadFiles()
         {
             lstFiles.BeginUpdate();
-
-            Win32.SendMessage(lstFiles.Handle, Win32.LVM_SETIMAGELIST, Win32.LVSIL_SMALL, _hSysImgList);
-
-            lstFiles.View = View.Details;
-            if (lstFiles.Columns.Count == 0)
-                lstFiles.Columns.Add("Name", 500);
-            Win32.SetWindowTheme(lstFiles.Handle, "explorer", null);
-
-            // Get the items from the file system, and add each of them to the ListView,
-            // complete with their corresponding name and icon indices.
-
-            var tempDir = Path.Combine(Application.StartupPath, "temp");
-
             lstFiles.Items.Clear();
-            foreach (ArchiveFileInfo file in _files.FindAll(f => f.FileName.StartsWith(treDirectories.SelectedNode.FullPath)))
+
+            if (treDirectories.SelectedNode.Tag is IEnumerable<ArchiveFileInfo> files)
             {
-                Win32.SHGetFileInfo(Path.Combine(tempDir, Path.GetFileName(file.FileName)), 0, ref _shfi, (uint)Marshal.SizeOf(_shfi), Win32.SHGFI_DISPLAYNAME | Win32.SHGFI_SYSICONINDEX | Win32.SHGFI_SMALLICON);
-                lstFiles.Items.Add(new ListViewItem(new[] { _shfi.szDisplayName, file.FileData?.Length.ToString() }, _shfi.iIcon));
+                foreach (var file in files)
+                {
+                    // Get the items from the file system, and add each of them to the ListView,
+                    // complete with their corresponding name and icon indices.
+                    var ext = Path.GetExtension(file.FileName).ToLower();
+                    if (!imlFiles.Images.ContainsKey(ext))
+                    {
+                        var shfi = new Win32.SHFILEINFO();
+                        try
+                        {
+                            Win32.SHGetFileInfo(ext, 0, out shfi, Marshal.SizeOf(shfi), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_USEFILEATTRIBUTES);
+                            imlFiles.Images.Add(ext, Icon.FromHandle(shfi.hIcon));
+                        }
+                        finally
+                        {
+                            if (shfi.hIcon != IntPtr.Zero)
+                                Win32.DestroyIcon(shfi.hIcon);
+                        }
+                    }
+
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileData?.Length.ToString() }, ext) { Tag = file });
+                }
             }
 
             lstFiles.EndUpdate();
-
+            
         }
 
         // Utilities

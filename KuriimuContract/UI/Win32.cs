@@ -28,6 +28,7 @@ namespace Kuriimu.Contract
         public const uint SHGFI_LARGEICON = 0x0;
         public const uint SHGFI_SMALLICON = 0x1;
         public const uint SHGFI_SYSICONINDEX = 0x4000;
+        public const uint SHGFI_USEFILEATTRIBUTES = 0x10;
 
         // Structs
         [StructLayout(LayoutKind.Sequential)]
@@ -44,10 +45,10 @@ namespace Kuriimu.Contract
 
         // Methods
         [DllImport("shell32")]
-        public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
+        public static extern IntPtr SHGetFileInfo(string pszPath, uint dwFileAttributes, out SHFILEINFO psfi, int cbSizeFileInfo, uint uFlags);
 
-        [DllImport("comctl32")]
-        public static extern bool ImageList_Destroy(IntPtr hImageList);
+        [DllImport("User32.dll")]
+        public static extern int DestroyIcon(IntPtr hIcon);
 
         [DllImport("user32")]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, uint wParam, IntPtr lParam);
