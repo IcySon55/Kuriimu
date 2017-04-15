@@ -472,7 +472,7 @@ namespace Karameru
                         }
                     }
 
-                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileData?.Length.ToString() }, ext) { Tag = file });
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileSize.ToString() }, ext) { Tag = file });
                 }
             }
 
@@ -508,8 +508,9 @@ namespace Karameru
                     else if (_archiveExtensions.Contains(ext))
                         application = Applications.Karameru;
 
-                    canReadFileData = afi.State != ArchiveFileState.Empty && afi.State != ArchiveFileState.Deleted;
+                    canReadFileData = afi.FileSize.HasValue;
                 }
+            }
 
                 bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
                 bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
