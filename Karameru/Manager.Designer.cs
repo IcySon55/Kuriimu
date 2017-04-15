@@ -60,7 +60,7 @@
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
-            this.treDirectories = new Kuriimu.Contract.UI.NativeTreeView();
+            this.treDirectories = new System.Windows.Forms.TreeView();
             this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -697,7 +697,7 @@
         private System.Windows.Forms.ToolStripButton tsbKuriimu;
         private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.SplitContainer splMain;
-        private Kuriimu.Contract.UI.NativeTreeView treDirectories;
+        private System.Windows.Forms.TreeView treDirectories;
         private System.Windows.Forms.ToolStrip tlsFiles;
         private System.Windows.Forms.ToolStripLabel tslDirectories;
         private System.Windows.Forms.ToolStrip tlsPreview;

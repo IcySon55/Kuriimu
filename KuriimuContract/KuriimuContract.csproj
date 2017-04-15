@@ -69,9 +69,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Tools.cs" />
-    <Compile Include="UI\NativeTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="UI\Win32.cs" />
   </ItemGroup>
   <ItemGroup>
