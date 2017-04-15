@@ -321,36 +321,35 @@ namespace Karameru
             if (filename == string.Empty)
                 dr = ofd.ShowDialog();
 
-            if (dr == DialogResult.OK)
+            if (dr != DialogResult.OK) return;
+
+            if (filename == string.Empty)
+                filename = ofd.FileName;
+
+            IArchiveManager tempManager = SelectArchiveManager(filename);
+
+            try
             {
-                if (filename == string.Empty)
-                    filename = ofd.FileName;
-
-                IArchiveManager _tempManager = SelectArchiveManager(filename);
-
-                try
+                if (tempManager?.Load(filename) == LoadResult.Success)
                 {
-                    if (_tempManager?.Load(filename) == LoadResult.Success)
-                    {
-                        _archiveManager?.Unload();
-                        _archiveManager = _tempManager;
-                        _fileOpen = true;
-                        _hasChanges = false;
+                    _archiveManager?.Unload();
+                    _archiveManager = tempManager;
+                    _fileOpen = true;
+                    _hasChanges = false;
 
-                        LoadDirectories();
-                        UpdateForm();
-                    }
+                    LoadDirectories();
+                    UpdateForm();
+                }
 
-                    Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
-                    Settings.Default.Save();
-                }
-                catch (Exception ex)
-                {
-                    if (_tempManager != null)
-                        MessageBox.Show(this, ex.ToString(), _tempManager.Name + " - " + _tempManager.Description + " Manager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    else
-                        MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                if (tempManager != null)
+                    MessageBox.Show(this, ex.ToString(), tempManager.Name + " - " + tempManager.Description + " Manager", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                    MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -421,11 +420,11 @@ namespace Karameru
             var lookup = _files.OrderBy(f => f.FileName).ToLookup(f => Path.GetDirectoryName(f.FileName));
 
             // Build directory tree
-            var root = treDirectories.Nodes.Add("root", FileName(), "tree-archive-file", "tree-archive-file");
+            var root = treDirectories.Nodes.Add("root", $"{FileName()}  [{lookup[""].Count()} file(s)]", "tree-archive-file", "tree-archive-file");
             foreach (var dir in lookup.Select(g => g.Key))
             {
                 dir.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, part))
+                    .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, $"{part}  [{lookup[dir].Count()} file(s)]"))
                     .Tag = lookup[dir];
             }
 
