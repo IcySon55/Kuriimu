@@ -72,7 +72,7 @@ namespace Karameru
 
         private void frmManager_Load(object sender, EventArgs e)
         {
-            //Icon = Resources.karameru;
+            Icon = Resources.karameru;
 
             largeToolStripMenuItem.Tag = View.LargeIcon;
             smallToolStripMenuItem.Tag = View.SmallIcon;

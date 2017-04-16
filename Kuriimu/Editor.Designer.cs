@@ -906,9 +906,10 @@
             // tsbKarameru
             // 
             this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbKarameru.Image = global::Kuriimu.Properties.Resources.karameru;
             this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbKarameru.Name = "tsbKarameru";
-            this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
+            this.tsbKarameru.Size = new System.Drawing.Size(78, 22);
             this.tsbKarameru.Text = "Karameru";
             this.tsbKarameru.Click += new System.EventHandler(this.tsbKarameru_Click);
             // 
@@ -1032,7 +1033,7 @@
             this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
             this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // frmEditor
+            // Editor
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1043,7 +1044,7 @@
             this.Controls.Add(this.mnuMain);
             this.DoubleBuffered = true;
             this.MainMenuStrip = this.mnuMain;
-            this.Name = "frmEditor";
+            this.Name = "Editor";
             this.Text = "Kuriimu";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmEditor_FormClosing);
             this.Load += new System.EventHandler(this.frmEditor_Load);

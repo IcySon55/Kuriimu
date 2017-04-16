@@ -186,7 +186,7 @@
             // 
             this.batchExportPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_batch_export;
             this.batchExportPNGToolStripMenuItem.Name = "batchExportPNGToolStripMenuItem";
-            this.batchExportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+            this.batchExportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.E)));
             this.batchExportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchExportPNGToolStripMenuItem.Text = "Batch &Export PNG";
@@ -196,7 +196,7 @@
             // 
             this.batchImportPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_batch_import;
             this.batchImportPNGToolStripMenuItem.Name = "batchImportPNGToolStripMenuItem";
-            this.batchImportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+            this.batchImportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.I)));
             this.batchImportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchImportPNGToolStripMenuItem.Text = "Batch &Import PNG";
@@ -350,9 +350,10 @@
             // tsbKarameru
             // 
             this.tsbKarameru.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbKarameru.Image = global::Kukkii.Properties.Resources.karameru;
             this.tsbKarameru.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbKarameru.Name = "tsbKarameru";
-            this.tsbKarameru.Size = new System.Drawing.Size(62, 22);
+            this.tsbKarameru.Size = new System.Drawing.Size(78, 22);
             this.tsbKarameru.Text = "Karameru";
             this.tsbKarameru.Click += new System.EventHandler(this.tsbKarameru_Click);
             // 
@@ -461,7 +462,7 @@
             this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
             this.propertyGrid1.TabIndex = 0;
             // 
-            // frmConverter
+            // Converter
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -470,7 +471,7 @@
             this.Controls.Add(this.pnlMain);
             this.Controls.Add(this.tlsMain);
             this.Controls.Add(this.mnuMain);
-            this.Name = "frmConverter";
+            this.Name = "Converter";
             this.Text = "Kukki";
             this.Load += new System.EventHandler(this.frmConverter_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragDrop);
