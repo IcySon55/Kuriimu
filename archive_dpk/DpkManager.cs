@@ -100,19 +100,16 @@ namespace archive_dpk
                 var file = new ArchiveFileInfo();
                 file.FileName = "archive_file.ctpk";
                 file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
-                file.FileSize = 4;
                 files.Add(file);
 
                 file = new ArchiveFileInfo();
                 file.FileName = "image_file.bclim";
                 file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
-                file.FileSize = 4;
                 files.Add(file);
 
                 file = new ArchiveFileInfo();
                 file.FileName = "text_file.msbt";
                 file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
-                file.FileSize = 4;
                 files.Add(file);
 
                 file = new ArchiveFileInfo();

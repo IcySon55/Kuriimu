@@ -89,8 +89,7 @@ namespace Cetera.Archive
                         {
                             FileName = paths[i],
                             FileData = new SubStream(br.BaseStream, entry.fileOffset, entry.size),
-                            State = ArchiveFileState.Archived,
-                            FileSize = entry.size
+                            State = ArchiveFileState.Archived
                         });
                     }
                 }

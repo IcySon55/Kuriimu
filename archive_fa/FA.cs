@@ -72,7 +72,6 @@ namespace archive_fa
                                 State = ArchiveFileState.Archived,
                                 FileName = name,
                                 FileData = new SubStream(br.BaseStream, entries[count].fileOffset + header.dataOffset, entries[count].fileSize),
-                                FileSize=entries[count].fileSize,
                                 Entry = entries[count]
                             });
                             found = true;

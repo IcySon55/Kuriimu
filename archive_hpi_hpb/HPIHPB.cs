@@ -41,7 +41,6 @@ namespace archive_hpi_hpb
                             Entry = entry,
                             FileName = br.ReadCStringA(), // String Table
                             FileData = new SubStream(hpb, entry.fileOffset, entry.fileSize),
-                            FileSize = entry.fileSize,
                             State = ArchiveFileState.Archived
                         });
                 }

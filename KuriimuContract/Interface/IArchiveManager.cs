@@ -40,7 +40,7 @@ namespace Kuriimu.Contract
     {
         public string FileName { get; set; } = string.Empty; // Complete filename including path and extension.
         public virtual Stream FileData { get; set; } = null; // Provides a stream to read the file data from.
-        public virtual long? FileSize { get; set; } = null; // The length of the (uncompressed) stream
+        public virtual long? FileSize => FileData?.Length; // The length of the (uncompressed) stream
         public ArchiveFileState State { get; set; } = ArchiveFileState.Empty; // Dictates the state of the FileData stream.
     }
 
