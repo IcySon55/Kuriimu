@@ -479,6 +479,14 @@ namespace Karameru
                             Win32.SHGetFileInfo(ext, 0, out shfi, Marshal.SizeOf(shfi), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_USEFILEATTRIBUTES);
                             imlFiles.Images.Add(ext, Icon.FromHandle(shfi.hIcon));
                         }
+                    }
+                    finally
+                    {
+                        if (shfi.hIcon != IntPtr.Zero)
+                            Win32.DestroyIcon(shfi.hIcon);
+                    }
+                    try
+                    {
                         if (!imlFilesLarge.Images.ContainsKey(ext))
                         {
                             Win32.SHGetFileInfo(ext, 0, out shfi, Marshal.SizeOf(shfi), Win32.SHGFI_ICON | Win32.SHGFI_LARGEICON | Win32.SHGFI_USEFILEATTRIBUTES);
