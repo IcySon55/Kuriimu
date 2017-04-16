@@ -49,7 +49,7 @@ namespace image_stex
         {
             public Magic magic;
             public uint zero0;
-            public uint const0;
+            public uint const0; //0xde1
             public int width;
             public int height;
             public DataTypes type;
@@ -77,6 +77,7 @@ namespace image_stex
         public Header header;
         public TexInfo texInfo;
         public Bitmap bmp;
+        public ImageSettings settings;
 
         public STEX(Stream input)
         {
@@ -85,11 +86,17 @@ namespace image_stex
                 header = br.ReadStruct<Header>();
                 texInfo = new TexInfo(br.BaseStream);
 
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = header.width,
                     Height = header.height,
-                    Format = ImageSettings.ConvertFormat(header.imageFormat),
+                    Format = (header.type == DataTypes.UnsignedShort565)
+                        ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
+                        : (header.type == DataTypes.UnsignedShort5551)
+                            ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)
+                            : (header.type == DataTypes.UnsignedShort4444)
+                                ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA4444)
+                                : ImageSettings.ConvertFormat(header.imageFormat),
                 };
                 br.BaseStream.Position = texInfo.offset;
                 bmp = Common.Load(br.ReadBytes(header.dataSize), settings);
@@ -100,12 +107,6 @@ namespace image_stex
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var settings = new ImageSettings
-                {
-                    Width = bitmap.Width,
-                    Height = bitmap.Height,
-                    Format = ImageSettings.ConvertFormat(header.imageFormat),
-                };
                 byte[] pic = Common.Save(bitmap, settings);
 
                 header.width = bitmap.Width;
