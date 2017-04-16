@@ -5,17 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
+using Kuriimu.Contract;
 
 namespace Cetera.Archive
 {
-    public class DARC : List<DARC.Item>
+    public sealed class DARC
     {
-        [DebuggerDisplay("{Path}")]
-        public class Item
+        public List<DarcFileInfo> Files;
+
+        public class DarcFileInfo : ArchiveFileInfo
         {
-            public string Path { get; set; }
-            public byte[] Data { get; set; }
-            public TableEntry Entry { get; set; }
+            public Entry Entry;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -32,62 +32,173 @@ namespace Cetera.Archive
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public class TableEntry
+        public class Entry
         {
-            private int filenameOffset;
+            private int tmp1;
             public int fileOffset;
             public int size;
 
-            public bool IsFolder => (filenameOffset >> 24) == 1;
-            public int FilenameOffset => filenameOffset & 0xFFFFFF;
+            public bool isFolder => (tmp1 >> 24) == 1;
+            public int filenameOffset => tmp1 & 0xFFFFFF;
         }
 
-        public DARC(Stream input)
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public class DirEntry
         {
-            using (var br = new BinaryReaderX(input))
+            public String dir;
+            public int dirCount;
+            public int lvl;
+        }
+
+        private Header header;
+
+        public DARC(String filename)
+        {
+            using (var br = new BinaryReaderX(File.OpenRead(filename),true))
             {
-                // @todo: the header is currently unused
-                br.ReadStruct<Header>();
+                //Header
+                header = br.ReadStruct<Header>();
 
-                var lst = new List<TableEntry> { br.ReadStruct<TableEntry>() };
-                for (int i = 0; i < lst[0].size - 1; i++)
-                    lst.Add(br.ReadStruct<TableEntry>());
+                //EntryList
+                List<Entry> entries = new List<Entry>();
+                entries.Add(br.ReadStruct<Entry>());
+                entries.AddRange(br.ReadMultiple<Entry>(entries[0].size-1));
 
-                foreach (var entry in lst)
-                {
-                    Add(new Item { Path = "", Entry = entry });
-                }
-
+                //FileData + names
+                Files = new List<DarcFileInfo>();
+                String[] paths=new String[entries[0].size];
                 var basePos = br.BaseStream.Position;
-
-                for (int i = 0; i < Count; i++)
+                for (int i = 0; i < entries[0].size; i++)
                 {
-                    var entry = lst[i];
-                    br.BaseStream.Position = basePos + entry.FilenameOffset;
+                    var entry = entries[i];
+                    br.BaseStream.Position = basePos + entry.filenameOffset;
+
                     var arcPath = br.ReadCStringW();
-                    if (entry.IsFolder)
+                    if (entry.isFolder)
                     {
                         arcPath += '/';
                         for (int j = i; j < entry.size; j++)
                         {
-                            this[j].Path += arcPath;
+                            paths[j] += arcPath;
                         }
                     }
                     else
                     {
-                        this[i].Path += arcPath;
-                        br.BaseStream.Position = entry.fileOffset;
-                        this[i].Data = br.ReadBytes(entry.size);
+                        paths[i] += arcPath;
+                        Files.Add(new DarcFileInfo
+                        {
+                            FileName = paths[i],
+                            FileData = new SubStream(br.BaseStream, entry.fileOffset, entry.size),
+                            State = ArchiveFileState.Archived,
+                            FileSize = entry.size
+                        });
                     }
                 }
-
-                RemoveAll(item => item.Path.Last() == '/');
             }
         }
 
-        public byte[] Rebuild()
+        public List<DirEntry> dirEntries;
+
+        public void Save(String filename)
         {
-            throw new NotImplementedException();
+            using (var bw = new BinaryWriterX(File.Create(filename)))
+            {
+                bw.BaseStream.Position = 0x1c;
+
+                GetDirInfo();
+
+                int nameListLength = 0;
+                foreach (var name in dirEntries)
+                    nameListLength += (name.dir.Length + 1)*2;
+
+                //Write Entry table
+                int filesOffset = 0;
+                int offset=0;
+                int dataOffset = 0x1c+dirEntries.Count*0xc+nameListLength;
+                for (int i=0;i< dirEntries.Count;i++)
+                {
+                    if (dirEntries[i].dir != "." && dirEntries[i].dir.Contains('.'))
+                    {
+                        bw.Write(offset);
+                        bw.Write(dataOffset);
+                        bw.Write((uint) Files[filesOffset].FileSize.GetValueOrDefault());
+
+                        dataOffset += (int) Files[filesOffset++].FileSize.GetValueOrDefault();
+                        offset += (dirEntries[i].dir.Length + 1)*2;
+                    }
+                    else
+                    {
+                        bw.Write(offset | 0x01000000);
+                        bw.Write(dirEntries[i].lvl);
+                        bw.Write(dirEntries[i].dirCount);
+
+                        offset += (dirEntries[i].dir.Length + 1)*2;
+                    }
+                }
+
+                //Write names
+                foreach (var dir in dirEntries)
+                {
+                    for (int i = 0; i < dir.dir.Length; i++)
+                        bw.Write((short) dir.dir[i]);
+                    bw.Write((short)0);
+                }
+
+                //Write FileData
+                foreach (var data in Files)
+                    bw.Write(new BinaryReaderX(data.FileData).ReadBytes((int) data.FileSize.GetValueOrDefault()));
+
+                //Header
+                bw.BaseStream.Position = 0;
+                header.fileSize = (int)bw.BaseStream.Length;
+                header.tableLength = dirEntries.Count * 0xc + nameListLength;
+                header.dataOffset = 0x1c + dirEntries.Count * 0xc + nameListLength;
+                bw.WriteStruct(header);
+            }
+        }
+
+        public void GetDirInfo()
+        {
+            List<String> dirsNames=new List<string>();
+            foreach (var file in Files)
+            {
+                String[] splitStr=file.FileName.Split('/');
+                String tmp = "";
+                foreach (var partStr in splitStr)
+                {
+                    tmp += partStr;
+                    if (dirsNames.Find(e => e.Contains(tmp))==null)
+                        dirsNames.Add(tmp);
+                    tmp += "/";
+                }
+            }
+
+            List<string[]> result = new List<string[]>();
+            foreach (var parts in dirsNames)
+                result.Add(parts.Split('/'));
+
+            int count = 1;
+            dirEntries=new List<DirEntry>();
+            foreach (var part in result)
+            {
+                foreach (var subpart in part)
+                    if (dirEntries.Find(e => e.dir.Contains(subpart)) == null)
+                    {
+                        dirEntries.Add(new DirEntry
+                        {
+                            dir = subpart,
+                            dirCount = count,
+                            lvl = (subpart=="." || subpart=="") ? 0 : part.Length-2
+                        });
+                    }
+                    else
+                    {
+                        for (int i = 0; i < dirEntries.Count; i++)
+                            if (dirEntries[i].dir == subpart)
+                                dirEntries[i].dirCount++;
+                    }
+                count++;
+            }
         }
     }
 }
