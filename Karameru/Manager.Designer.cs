@@ -519,7 +519,7 @@
             this.editInKukkiiToolStripMenuItem,
             this.editInKarameruToolStripMenuItem});
             this.mnuFiles.Name = "mnuEntries";
-            this.mnuFiles.Size = new System.Drawing.Size(162, 142);
+            this.mnuFiles.Size = new System.Drawing.Size(162, 164);
             this.mnuFiles.Opening += new System.ComponentModel.CancelEventHandler(this.mnuFiles_Opening);
             // 
             // extractFileToolStripMenuItem
@@ -569,6 +569,7 @@
             // 
             // editInKarameruToolStripMenuItem
             // 
+            this.editInKarameruToolStripMenuItem.Image = global::Karameru.Properties.Resources.karameru1;
             this.editInKarameruToolStripMenuItem.Name = "editInKarameruToolStripMenuItem";
             this.editInKarameruToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.editInKarameruToolStripMenuItem.Text = "Edit in Karameru";
@@ -696,7 +697,7 @@
             // 
             this.largeToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_large;
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -704,7 +705,7 @@
             // 
             this.smallToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_small;
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.smallToolStripMenuItem.Text = "Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -712,7 +713,7 @@
             // 
             this.listToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_list;
             this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.listToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.listToolStripMenuItem.Text = "List";
             this.listToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -720,7 +721,7 @@
             // 
             this.detailsToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_details;
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.detailsToolStripMenuItem.Text = "Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -728,7 +729,7 @@
             // 
             this.tileToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_tiles;
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.tileToolStripMenuItem.Text = "Tiles";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 

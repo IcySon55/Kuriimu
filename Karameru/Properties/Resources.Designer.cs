@@ -83,6 +83,16 @@ namespace Karameru.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap karameru1 {
+            get {
+                object obj = ResourceManager.GetObject("karameru1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap kukkii {
             get {
                 object obj = ResourceManager.GetObject("kukkii", resourceCulture);
