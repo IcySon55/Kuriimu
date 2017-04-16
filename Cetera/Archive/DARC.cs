@@ -38,8 +38,8 @@ namespace Cetera.Archive
             public int fileOffset;
             public int size;
 
-            public bool isFolder => (tmp1 >> 24) == 1;
-            public int filenameOffset => tmp1 & 0xFFFFFF;
+            public bool IsFolder => (tmp1 >> 24) == 1;
+            public int FilenameOffset => tmp1 & 0xFFFFFF;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -54,7 +54,7 @@ namespace Cetera.Archive
 
         public DARC(String filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename),true))
+            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -62,19 +62,19 @@ namespace Cetera.Archive
                 //EntryList
                 List<Entry> entries = new List<Entry>();
                 entries.Add(br.ReadStruct<Entry>());
-                entries.AddRange(br.ReadMultiple<Entry>(entries[0].size-1));
+                entries.AddRange(br.ReadMultiple<Entry>(entries[0].size - 1));
 
                 //FileData + names
                 Files = new List<DarcFileInfo>();
-                String[] paths=new String[entries[0].size];
+                String[] paths = new String[entries[0].size];
                 var basePos = br.BaseStream.Position;
                 for (int i = 0; i < entries[0].size; i++)
                 {
                     var entry = entries[i];
-                    br.BaseStream.Position = basePos + entry.filenameOffset;
+                    br.BaseStream.Position = basePos + entry.FilenameOffset;
 
                     var arcPath = br.ReadCStringW();
-                    if (entry.isFolder)
+                    if (entry.IsFolder)
                     {
                         arcPath += '/';
                         for (int j = i; j < entry.size; j++)
@@ -89,8 +89,7 @@ namespace Cetera.Archive
                         {
                             FileName = paths[i],
                             FileData = new SubStream(br.BaseStream, entry.fileOffset, entry.size),
-                            State = ArchiveFileState.Archived,
-                            FileSize = entry.size
+                            State = ArchiveFileState.Archived
                         });
                     }
                 }
@@ -109,22 +108,22 @@ namespace Cetera.Archive
 
                 int nameListLength = 0;
                 foreach (var name in dirEntries)
-                    nameListLength += (name.dir.Length + 1)*2;
+                    nameListLength += (name.dir.Length + 1) * 2;
 
                 //Write Entry table
                 int filesOffset = 0;
-                int offset=0;
-                int dataOffset = 0x1c+dirEntries.Count*0xc+nameListLength;
-                for (int i=0;i< dirEntries.Count;i++)
+                int offset = 0;
+                int dataOffset = 0x1c + dirEntries.Count * 0xc + nameListLength;
+                for (int i = 0; i < dirEntries.Count; i++)
                 {
                     if (dirEntries[i].dir != "." && dirEntries[i].dir.Contains('.'))
                     {
                         bw.Write(offset);
                         bw.Write(dataOffset);
-                        bw.Write((uint) Files[filesOffset].FileSize.GetValueOrDefault());
+                        bw.Write((uint)Files[filesOffset].FileSize.GetValueOrDefault());
 
-                        dataOffset += (int) Files[filesOffset++].FileSize.GetValueOrDefault();
-                        offset += (dirEntries[i].dir.Length + 1)*2;
+                        dataOffset += (int)Files[filesOffset++].FileSize.GetValueOrDefault();
+                        offset += (dirEntries[i].dir.Length + 1) * 2;
                     }
                     else
                     {
@@ -132,7 +131,7 @@ namespace Cetera.Archive
                         bw.Write(dirEntries[i].lvl);
                         bw.Write(dirEntries[i].dirCount);
 
-                        offset += (dirEntries[i].dir.Length + 1)*2;
+                        offset += (dirEntries[i].dir.Length + 1) * 2;
                     }
                 }
 
@@ -140,13 +139,13 @@ namespace Cetera.Archive
                 foreach (var dir in dirEntries)
                 {
                     for (int i = 0; i < dir.dir.Length; i++)
-                        bw.Write((short) dir.dir[i]);
+                        bw.Write((short)dir.dir[i]);
                     bw.Write((short)0);
                 }
 
                 //Write FileData
                 foreach (var data in Files)
-                    bw.Write(new BinaryReaderX(data.FileData).ReadBytes((int) data.FileSize.GetValueOrDefault()));
+                    bw.Write(new BinaryReaderX(data.FileData).ReadBytes((int)data.FileSize.GetValueOrDefault()));
 
                 //Header
                 bw.BaseStream.Position = 0;
@@ -159,15 +158,15 @@ namespace Cetera.Archive
 
         public void GetDirInfo()
         {
-            List<String> dirsNames=new List<string>();
+            List<String> dirsNames = new List<string>();
             foreach (var file in Files)
             {
-                String[] splitStr=file.FileName.Split('/');
+                String[] splitStr = file.FileName.Split('/');
                 String tmp = "";
                 foreach (var partStr in splitStr)
                 {
                     tmp += partStr;
-                    if (dirsNames.Find(e => e.Contains(tmp))==null)
+                    if (dirsNames.Find(e => e.Contains(tmp)) == null)
                         dirsNames.Add(tmp);
                     tmp += "/";
                 }
@@ -178,7 +177,7 @@ namespace Cetera.Archive
                 result.Add(parts.Split('/'));
 
             int count = 1;
-            dirEntries=new List<DirEntry>();
+            dirEntries = new List<DirEntry>();
             foreach (var part in result)
             {
                 foreach (var subpart in part)
@@ -188,7 +187,7 @@ namespace Cetera.Archive
                         {
                             dir = subpart,
                             dirCount = count,
-                            lvl = (subpart=="." || subpart=="") ? 0 : part.Length-2
+                            lvl = (subpart == "." || subpart == "") ? 0 : part.Length - 2
                         });
                     }
                     else

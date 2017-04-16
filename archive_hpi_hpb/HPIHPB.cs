@@ -29,22 +29,13 @@ namespace archive_hpi_hpb
                 br.ReadMultiple<HashEntry>(header.hashCount);
 
                 // Entry List
-                List<Entry> entries = new List<Entry>();
-                entries = br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).ToList();
-
-                Files = new List<HpiHpbAfi>();
-                foreach (var entry in entries)
+                Files = br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
                 {
-                    if (entry.fileOffset < hpb.Length && entry.fileSize != 0)
-                        Files.Add(new HpiHpbAfi
-                        {
-                            Entry = entry,
-                            FileName = br.ReadCStringA(), // String Table
-                            FileData = new SubStream(hpb, entry.fileOffset, entry.fileSize),
-                            FileSize = entry.fileSize,
-                            State = ArchiveFileState.Archived
-                        });
-                }
+                    Entry = entry,
+                    FileName = br.ReadCStringA(), // String Table
+                    FileData = new SubStream(hpb, Math.Max(0, entry.fileOffset), entry.fileSize),
+                    State = ArchiveFileState.Archived
+                }).ToList();
             }
         }
 
