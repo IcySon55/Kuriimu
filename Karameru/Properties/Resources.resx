@@ -121,6 +121,12 @@
   <data name="find" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\find.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="karameru" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\karameru.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="karameru1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\karameru.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="kukkii" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\kukkii.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -202,11 +208,14 @@
   <data name="tree_archive_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\tree-archive-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tree_binary_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\images\tree-binary-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="tree_archive_file_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-archive-file-32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tree_directory" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\tree-directory.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_directory_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-directory-32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="tree_directory_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\tree-directory-open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -214,7 +223,28 @@
   <data name="tree_image_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\tree-image-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="tree_image_file_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-image-file-32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="tree_text_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\tree-text-file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_text_file_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tree-text-file-32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="view_details" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\view-details.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="view_large" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\view-large.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="view_list" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\view-list.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="view_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\view-small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="view_tiles" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\view-tiles.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

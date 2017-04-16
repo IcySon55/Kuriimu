@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>images\karameru.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -89,7 +92,6 @@
     <None Include="images\tree-image-file.png" />
     <None Include="images\tree-directory-open.png" />
     <None Include="images\tree-directory.png" />
-    <None Include="images\tree-binary-file.png" />
     <None Include="images\kuriimu.png" />
     <None Include="images\menu-about.png" />
     <None Include="images\menu-add.png" />
@@ -121,6 +123,36 @@
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-archive-file-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-directory-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-image-file-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-text-file-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-details.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-tiles.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\karameru.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
