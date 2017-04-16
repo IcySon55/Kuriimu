@@ -9,7 +9,7 @@ namespace image_ctpk
     public sealed class CtpkAdapter : IImageAdapter
     {
         private FileInfo _fileInfo = null;
-        private CTPK _stex = null;
+        private CTPK _ctpk = null;
 
         public string Name => "CTPK";
         public string Description => "CTR Texture PaCkage";
@@ -36,7 +36,7 @@ namespace image_ctpk
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "CTPK";
+                return br.ReadString(4) == "CTPK" || Path.GetExtension(filename)==".ctpk";
             }
         }
 
@@ -47,7 +47,11 @@ namespace image_ctpk
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _stex = new CTPK(_fileInfo.FullName);
+                using(var br=new BinaryReaderX(File.OpenRead(_fileInfo.FullName)))
+                    if (br.ReadString(4) == "CTPK")
+                        _ctpk = new CTPK(_fileInfo.FullName);
+                    else
+                        _ctpk = new CTPK(_fileInfo.FullName, true);
             else
                 result = LoadResult.FileNotFound;
 
@@ -63,7 +67,7 @@ namespace image_ctpk
 
             try
             {
-                //_stex.Save(_fileInfo.FullName, _stex.bmp);
+                //_ctpk.Save(_fileInfo.FullName, _ctpk.bmp);
             }
             catch (Exception)
             {
@@ -78,11 +82,11 @@ namespace image_ctpk
         {
             get
             {
-                return _stex.bmp;
+                return _ctpk.bmp;
             }
             set
             {
-                _stex.bmp = value;
+                _ctpk.bmp = value;
             }
         }
     }
