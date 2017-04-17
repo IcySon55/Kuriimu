@@ -50,6 +50,7 @@ namespace Kuriimu.Contract
         Archived,
         Added,
         Replaced,
+        Renamed,
         Deleted
     }
 }
