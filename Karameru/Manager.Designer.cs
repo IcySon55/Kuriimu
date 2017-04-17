@@ -95,6 +95,7 @@
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imlFiles = new System.Windows.Forms.ImageList(this.components);
             this.imlFilesLarge = new System.Windows.Forms.ImageList(this.components);
+            this.renameFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -485,7 +486,6 @@
             this.lstFiles.ContextMenuStrip = this.mnuFiles;
             this.lstFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstFiles.FullRowSelect = true;
-            this.lstFiles.HideSelection = false;
             this.lstFiles.Location = new System.Drawing.Point(0, 27);
             this.lstFiles.MultiSelect = false;
             this.lstFiles.Name = "lstFiles";
@@ -513,13 +513,14 @@
             this.mnuFiles.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractFileToolStripMenuItem,
             this.replaceFileToolStripMenuItem,
+            this.renameFileToolStripMenuItem,
             this.deleteFileToolStripMenuItem,
             this.editListToolStripSeparator,
             this.editInKuriimuToolStripMenuItem,
             this.editInKukkiiToolStripMenuItem,
             this.editInKarameruToolStripMenuItem});
             this.mnuFiles.Name = "mnuEntries";
-            this.mnuFiles.Size = new System.Drawing.Size(162, 164);
+            this.mnuFiles.Size = new System.Drawing.Size(162, 186);
             this.mnuFiles.Opening += new System.ComponentModel.CancelEventHandler(this.mnuFiles_Opening);
             // 
             // extractFileToolStripMenuItem
@@ -604,8 +605,8 @@
             this.tsbFileAdd,
             this.tsbFileExtract,
             this.tsbFileReplace,
-            this.tsbFileDelete,
             this.tsbFileRename,
+            this.tsbFileDelete,
             this.tsbFileProperties,
             this.viewToolStripDropDownButton});
             this.tlsPreview.Location = new System.Drawing.Point(0, 0);
@@ -622,7 +623,7 @@
             this.tsbFileAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbFileAdd.Name = "tsbFileAdd";
             this.tsbFileAdd.Size = new System.Drawing.Size(23, 22);
-            this.tsbFileAdd.Text = "Add Entry";
+            this.tsbFileAdd.Text = "Add File";
             this.tsbFileAdd.Click += new System.EventHandler(this.tsbAddFile_Click);
             // 
             // tsbFileExtract
@@ -655,7 +656,7 @@
             this.tsbFileDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbFileDelete.Name = "tsbFileDelete";
             this.tsbFileDelete.Size = new System.Drawing.Size(23, 22);
-            this.tsbFileDelete.Text = "Delete Entry";
+            this.tsbFileDelete.Text = "Delete File";
             // 
             // tsbFileRename
             // 
@@ -665,7 +666,7 @@
             this.tsbFileRename.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbFileRename.Name = "tsbFileRename";
             this.tsbFileRename.Size = new System.Drawing.Size(23, 22);
-            this.tsbFileRename.Text = "Rename Entry";
+            this.tsbFileRename.Text = "Rename File";
             // 
             // tsbFileProperties
             // 
@@ -744,6 +745,13 @@
             this.imlFilesLarge.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imlFilesLarge.ImageSize = new System.Drawing.Size(32, 32);
             this.imlFilesLarge.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // renameFileToolStripMenuItem
+            // 
+            this.renameFileToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_field_properties;
+            this.renameFileToolStripMenuItem.Name = "renameFileToolStripMenuItem";
+            this.renameFileToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.renameFileToolStripMenuItem.Text = "Re&name...";
             // 
             // Manager
             // 
@@ -849,6 +857,7 @@
         private System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem detailsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renameFileToolStripMenuItem;
     }
 }
 
