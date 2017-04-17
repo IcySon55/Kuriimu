@@ -505,6 +505,8 @@ namespace Karameru
 
                     lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileSize.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
                 }
+
+                tslFileCount.Text = $"Files: {files.Count()}";
             }
 
             lstFiles.EndUpdate();
@@ -540,8 +542,6 @@ namespace Karameru
         private void UpdateForm()
         {
             Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Name + " Manager" : string.Empty);
-
-            tslFileCount.Text = _fileOpen ? $"Files: {_archiveManager.Files?.Count()}" : "";
 
             openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
             tsbOpen.Enabled = _archiveManagers.Count > 0;
