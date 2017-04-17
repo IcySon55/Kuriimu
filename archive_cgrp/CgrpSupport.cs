@@ -15,7 +15,7 @@ namespace archive_cgrp
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header
+    public class Header
     {
         public Magic magic;
         public ByteOrder byteOrder;
@@ -51,7 +51,7 @@ namespace archive_cgrp
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InfoEntry
+    public class InfoEntry
     {
         public int unk0;
         public int const0;

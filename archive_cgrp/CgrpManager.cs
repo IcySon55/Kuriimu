@@ -6,6 +6,7 @@ using System.Text;
 using archive_cgrp.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Compression;
 
 namespace archive_cgrp
 {
@@ -60,7 +61,10 @@ namespace archive_cgrp
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _cgrp = new CGRP(_fileInfo.FullName);
+            {
+                var file = File.OpenRead(_fileInfo.FullName);
+                _cgrp = new CGRP(file);
+            }
             else
                 result = LoadResult.FileNotFound;
 
@@ -76,7 +80,8 @@ namespace archive_cgrp
 
             try
             {
-                //_cgrp.Save(_fileInfo.FullName);
+                var file = File.Create(filename);
+                _cgrp.Save(file);
             }
             catch (Exception)
             {
