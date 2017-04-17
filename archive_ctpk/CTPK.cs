@@ -14,9 +14,9 @@ namespace archive_ctpk
     {
         public List<CTPKFileInfo> Files = new List<CTPKFileInfo>();
 
-        public CTPK(String filename)
+        public CTPK(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 //Header
                 Header header = br.ReadStruct<Header>();
@@ -58,9 +58,9 @@ namespace archive_ctpk
             }
         }
 
-        public void Save(String filename)
+        public void Save(Stream input)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(input))
             {
                 //get nameList Length
                 int nameListLength=0;

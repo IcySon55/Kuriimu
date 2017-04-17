@@ -61,7 +61,10 @@ namespace archive_ctpk
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _ctpk = new CTPK(_fileInfo.FullName);
+            {
+                var file = File.OpenRead(_fileInfo.FullName);
+                _ctpk = new CTPK(file);
+            }
             else
                 result = LoadResult.FileNotFound;
 
@@ -77,7 +80,8 @@ namespace archive_ctpk
 
             try
             {
-                _ctpk.Save(_fileInfo.FullName);
+                var file = File.Create(filename);
+                _ctpk.Save(file);
             }
             catch (Exception)
             {
