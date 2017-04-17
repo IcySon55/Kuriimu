@@ -222,7 +222,7 @@ namespace Kukkii
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            return result;
+            return result == null ? null : (IImageAdapter)Activator.CreateInstance(result.GetType());
         }
 
         private void ExportPNG()

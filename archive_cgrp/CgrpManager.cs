@@ -1,24 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
+using archive_cgrp.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_ctpk
+namespace archive_cgrp
 {
-    public sealed class CtpkAdapter : IImageAdapter
+    public class CgrpManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
-        private CTPK _ctpk = null;
+        private CGRP _cgrp = null;
 
-        public string Name => "CTPK";
-        public string Description => "CTR Texture PaCkage";
-        public string Extension => "*.ctpk";
-        public string About => "This is the CTPK file adapter for Kukkii.";
+        #region Properties
+
+        // Information
+        public string Name => Settings.Default.PluginName;
+        public string Description => "CTR GRouP";
+        public string Extension => "*.bcgrp";
+        public string About => "This is the CGRP archive manager for Karameru.";
 
         // Feature Support
-        public bool FileHasExtendedProperties => false;
+        public bool ArchiveHasExtendedProperties => false;
+        public bool CanAddFiles => false;
+        public bool CanRenameFiles => false;
+        public bool CanReplaceFiles => true;
+        public bool CanDeleteFiles => false;
         public bool CanSave => true;
+
         public FileInfo FileInfo
         {
             get
@@ -31,12 +42,14 @@ namespace image_ctpk
             }
         }
 
+        #endregion
+
         public bool Identify(string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "CTPK" || Path.GetExtension(filename)==".ctpk";
+                return br.ReadString(4) == "CGRP";
             }
         }
 
@@ -47,11 +60,7 @@ namespace image_ctpk
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                using(var br=new BinaryReaderX(File.OpenRead(_fileInfo.FullName)))
-                    if (br.ReadString(4) == "CTPK")
-                        _ctpk = new CTPK(_fileInfo.FullName);
-                    else
-                        _ctpk = new CTPK(_fileInfo.FullName, true);
+                _cgrp = new CGRP(_fileInfo.FullName);
             else
                 result = LoadResult.FileNotFound;
 
@@ -67,7 +76,7 @@ namespace image_ctpk
 
             try
             {
-                _ctpk.Save(_fileInfo.FullName);
+                //_cgrp.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {
@@ -77,17 +86,34 @@ namespace image_ctpk
             return result;
         }
 
-        // Bitmaps
-        public Bitmap Bitmap
+        public void Unload()
+        {
+            // TODO: Implement closing open handles here
+        }
+
+        // Files
+        public IEnumerable<ArchiveFileInfo> Files
         {
             get
             {
-                return _ctpk.bmp;
+                return _cgrp.Files;
             }
-            set
-            {
-                _ctpk.bmp = value;
-            }
+        }
+
+        public bool AddFile(ArchiveFileInfo afi)
+        {
+            return false;
+        }
+
+        public bool DeleteFile(ArchiveFileInfo afi)
+        {
+            return false;
+        }
+
+        // Features
+        public bool ShowProperties(Icon icon)
+        {
+            return false;
         }
     }
 }
