@@ -12,19 +12,19 @@ namespace image_ctpk
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
-        Magic magic = "CTPK";
-        short version = 0x1;
-        public short texCount = 0;
-        public int texSecOffset = 0;
-        public int texSecSize = 0;
-        public int crc32SecOffset = 0;
-        public int texInfoOffset = 0;
-        int zero0 = 0;
-        int zero1 = 0;
+        public Magic magic;
+        public short version;
+        public short texCount;
+        public int texSecOffset;
+        public int texSecSize;
+        public int crc32SecOffset;
+        public int texInfoOffset;
+        public int zero0;
+        public int zero1;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Entry
+    public class Entry
     {
         public int nameOffset;
         public int texDataSize;
@@ -42,7 +42,7 @@ namespace image_ctpk
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class HashEntry
     {
-        public int crc32;
+        public uint crc32;
         public int entryNr;
     }
 }

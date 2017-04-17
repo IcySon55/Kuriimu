@@ -52,25 +52,18 @@ namespace archive_nus3bank
                 //Banktoc
                 banktocHeader = br.ReadStruct<BankToc>();
 
-                int t = 3;
-
                 int offset = 0x18 + banktocHeader.entryCount * 0x8;
                 banktocEntries = new List<BankTocEntry>();
                 for (int i = 0; i < banktocHeader.entryCount; i++)
                 {
                     banktocEntries.Add(new BankTocEntry(br.BaseStream));
-                    t = 4;
                     banktocEntries[i].offset = offset;
                     offset += banktocEntries[i].secSize + 8;
                 }
 
-                t = 2;
-
                 //PROP
                 if (br.ReadStruct<Header>().magic != "PROP") throw new Exception();
                 prop = new PROP(br.BaseStream);
-
-                t = -1;
 
                 //BINF
                 br.BaseStream.Position = banktocEntries[1].offset;
@@ -82,8 +75,6 @@ namespace archive_nus3bank
                 if (br.ReadStruct<Header>().magic != "GRP ") throw new Exception();
                 grp=br.ReadBytes(banktocEntries[2].secSize);
 
-                t = 0;
-
                 //DTON - not yet mapped
                 br.BaseStream.Position = banktocEntries[3].offset;
                 if (br.ReadStruct<Header>().magic != "DTON") throw new Exception();
@@ -93,8 +84,6 @@ namespace archive_nus3bank
                 br.BaseStream.Position = banktocEntries[4].offset;
                 if (br.ReadStruct<Header>().magic != "TONE") throw new Exception();
                 tone = new TONE(br.BaseStream, banktocEntries[4].offset, banktocEntries[6].offset);
-
-                t = 1;
 
                 //JUNK - not yet mapped
                 br.BaseStream.Position = banktocEntries[5].offset;
