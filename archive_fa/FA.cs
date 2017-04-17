@@ -24,9 +24,9 @@ namespace archive_fa
         private List<String> foldernames;
         private List<uint> hashes;
 
-        public FA(String filename)
+        public FA(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -83,9 +83,9 @@ namespace archive_fa
             }
         }
 
-        public void Save(String filename)
+        public void Save(Stream input)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(input))
             {
                 bw.BaseStream.Position = 0x48;
 

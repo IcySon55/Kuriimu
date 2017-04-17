@@ -52,9 +52,9 @@ namespace Cetera.Archive
 
         private Header header;
 
-        public DARC(String filename)
+        public DARC(Stream input)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -98,9 +98,9 @@ namespace Cetera.Archive
 
         public List<DirEntry> dirEntries;
 
-        public void Save(String filename)
+        public void Save(Stream input)
         {
-            using (var bw = new BinaryWriterX(File.Create(filename)))
+            using (var bw = new BinaryWriterX(input))
             {
                 bw.BaseStream.Position = 0x1c;
 
