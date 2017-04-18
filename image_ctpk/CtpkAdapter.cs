@@ -89,5 +89,7 @@ namespace image_ctpk
                 _ctpk.bmp = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

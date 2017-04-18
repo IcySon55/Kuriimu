@@ -19,7 +19,7 @@ namespace Kuriimu.Contract
 
         // Features
         bool ShowSettings(Icon icon); // Show the settings dialog
-        IList<Bitmap> GeneratePreviews(IEntry entry);
+        IList<Bitmap> GeneratePreviews(TextEntry entry);
     }
 
     public sealed class DefaultGameHandler : IGameHandler
@@ -34,7 +34,7 @@ namespace Kuriimu.Contract
         public string GetRawString(string kuriimuString) => kuriimuString;
 
         public bool ShowSettings(Icon icon) => false;
-        public IList<Bitmap> GeneratePreviews(IEntry entry) => new List<Bitmap>();
+        public IList<Bitmap> GeneratePreviews(TextEntry entry) => new List<Bitmap>();
 
         public DefaultGameHandler(Image icon) { Icon = icon; }
     }

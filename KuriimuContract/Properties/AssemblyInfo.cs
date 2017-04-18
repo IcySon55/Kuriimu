@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Kuriimu Contract")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Kuriimu Contract is the information interchange library between the applications and all plugins.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Kuriimu Contract")]

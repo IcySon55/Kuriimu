@@ -51,7 +51,7 @@ namespace game_theatrythm_final_fantasy
         Bitmap textBox = new Bitmap(Resources.background);
 
         // Previewer
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
             if (entry == null) return pages;

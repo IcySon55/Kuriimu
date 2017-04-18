@@ -114,5 +114,7 @@ namespace image_tex
                 _tex.Image = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

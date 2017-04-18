@@ -94,7 +94,7 @@ namespace game_zelda_a_link_between_worlds
         Bitmap textBox = new Bitmap(Resources.textbox);
 
         // Previewer
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
             if (entry == null) return pages;

@@ -55,7 +55,7 @@ namespace game_great_detective_pikachu
         Bitmap background = new Bitmap(Resources.background);
 
         // Previewer
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
             if (entry == null) return pages;

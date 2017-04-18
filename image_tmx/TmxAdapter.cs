@@ -86,5 +86,7 @@ namespace image_tmx
                 _tmx.bmp = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

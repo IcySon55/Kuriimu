@@ -11,7 +11,7 @@ namespace Kuriimu.Contract
 {
     public static class Tools
     {
-        public static string LoadFileFilters(IEnumerable<IFileAdapter> fileAdapters)
+        public static string LoadFileFilters(IEnumerable<ITextAdapter> fileAdapters)
         {
             var alltypes = fileAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
 
@@ -77,7 +77,7 @@ namespace Kuriimu.Contract
             cmb.SelectedValue = encoding;
         }
 
-        public static TreeNode FindNodeByIEntry(this TreeView tre, IEntry entry)
+        public static TreeNode FindNodeByTextEntry(this TreeView tre, TextEntry entry)
         {
             TreeNode result = null;
 
@@ -101,7 +101,7 @@ namespace Kuriimu.Contract
             return result;
         }
 
-        public static void SelectNodeByIEntry(this TreeView tre, IEntry entry)
+        public static void SelectNodeByTextEntry(this TreeView tre, TextEntry entry)
         {
             TreeNode result = null;
 

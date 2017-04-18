@@ -8,8 +8,8 @@ namespace Kuriimu
 {
     public partial class Search : Form
     {
-        public IEnumerable<IEntry> Entries { get; set; }
-        public IEntry Selected { get; set; }
+        public IEnumerable<TextEntry> Entries { get; set; }
+        public TextEntry Selected { get; set; }
 
         public Search()
         {
@@ -41,7 +41,7 @@ namespace Kuriimu
 
         private void Find()
         {
-            List<IEntry> matches = new List<IEntry>();
+            List<TextEntry> matches = new List<TextEntry>();
 
             lstResults.BeginUpdate();
 
@@ -49,7 +49,7 @@ namespace Kuriimu
 
             if (txtFindText.Text.Trim() != string.Empty && Entries != null)
             {
-                foreach (IEntry entry in Entries)
+                foreach (TextEntry entry in Entries)
                 {
                     if (chkMatchCase.Checked)
                     {
@@ -62,7 +62,7 @@ namespace Kuriimu
                             lstResults.Items.Add(new ListItem(entry.ToString(), entry));
                     }
 
-                    foreach (IEntry subEntry in entry.SubEntries)
+                    foreach (TextEntry subEntry in entry.SubEntries)
                     {
                         if (chkMatchCase.Checked)
                         {
@@ -104,7 +104,7 @@ namespace Kuriimu
         {
             if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
             {
-                Selected = (IEntry)((ListItem)lstResults.SelectedItem).Value;
+                Selected = (TextEntry)((ListItem)lstResults.SelectedItem).Value;
                 DialogResult = DialogResult.OK;
             }
         }

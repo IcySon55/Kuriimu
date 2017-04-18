@@ -10,7 +10,7 @@ namespace Kuriimu
 {
     public partial class Name : Form
     {
-        private IEntry _entry = null;
+        private TextEntry _entry = null;
         private bool _namesMustBeUnique = false;
         private IEnumerable<string> _nameList = null;
         private string _validNameRegex = ".*";
@@ -22,7 +22,7 @@ namespace Kuriimu
 
         #region Properties
 
-        public IEntry Entry
+        public TextEntry Entry
         {
             set { _entry = value; }
         }
@@ -54,7 +54,7 @@ namespace Kuriimu
 
         #endregion
 
-        public Name(IEntry entry, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
+        public Name(TextEntry entry, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
         {
             InitializeComponent();
 

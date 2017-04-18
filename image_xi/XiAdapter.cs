@@ -85,5 +85,7 @@ namespace image_xi
                 _xi = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

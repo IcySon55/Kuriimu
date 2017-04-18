@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("game_zelda_a_link_between_worlds")]
-[assembly: AssemblyDescription("A Link Between Worlds Game plugin for Kuriimu")]
+[assembly: AssemblyDescription("A Link Between Worlds Game handler for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("game_zelda_a_link_between_worlds")]
