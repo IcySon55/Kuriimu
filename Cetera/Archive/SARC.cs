@@ -54,8 +54,23 @@ namespace Cetera.Archive
 
         bool usesSFNT;
 
-        int padding = 1;
-        int Pad(int pos) => (pos + padding - 1) & -padding;
+        int Pad(int pos, string filename)
+        {
+            if (!dicPadding.TryGetValue(Path.GetExtension(filename), out int padding))
+            {
+                padding = 4;
+            }
+            return (pos + padding - 1) & -padding;
+        }
+
+        public static Dictionary<string, int> dicPadding = new Dictionary<string, int>
+        {
+            //[".msbt"] = 0x4,
+            //[".bflyt"] = 0x4,
+            //[".bflan"] = 0x4,
+            [".bflim"] = 0x80,
+            [".bffnt"] = 0x2000,
+        };
 
         public SARC(Stream input)
         {
@@ -79,10 +94,6 @@ namespace Cetera.Archive
                         State = ArchiveFileState.Archived
                     };
                 }).ToList();
-
-                // heuristically determine the padding
-                var tmp = sfatEntries.Aggregate(sarcHeader.dataOffset, (i, e) => i | e.dataStart);
-                while ((tmp & padding) == 0) padding <<= 1;
             }
         }
 
@@ -91,7 +102,7 @@ namespace Cetera.Archive
             using (var bw = new BinaryWriterX(output, leaveOpen))
             {
                 //SARCHeader
-                var header = new SARCHeader { dataOffset = Pad(40 + Files.Sum(afi => usesSFNT ? afi.FileName.Length / 4 * 4 + 20 : 16)) };
+                var header = new SARCHeader { dataOffset = Pad(40 + Files.Sum(afi => usesSFNT ? afi.FileName.Length / 4 * 4 + 20 : 16), Files[0].FileName) };
                 bw.WriteStruct(header); // filesize is added later
 
                 //SFATHeader
@@ -102,6 +113,7 @@ namespace Cetera.Archive
                 int dataOffset = 0;
                 foreach (var afi in Files)
                 {
+                    dataOffset = Pad(dataOffset, afi.FileName);
                     var fileLen = (int)afi.FileData.Length;
                     var sfatEntry = new SFATEntry
                     {
@@ -113,7 +125,7 @@ namespace Cetera.Archive
                     };
                     bw.WriteStruct(sfatEntry);
                     nameOffset += afi.FileName.Length / 4 + 1;
-                    dataOffset = Pad(sfatEntry.dataEnd);
+                    dataOffset = sfatEntry.dataEnd;
                 }
 
                 bw.WriteStruct(new SFNTHeader());
@@ -127,7 +139,7 @@ namespace Cetera.Archive
 
                 foreach (var afi in Files)
                 {
-                    bw.Write(new byte[Pad((int)bw.BaseStream.Length) - (int)bw.BaseStream.Length]); // padding
+                    bw.Write(new byte[Pad((int)bw.BaseStream.Length, afi.FileName) - (int)bw.BaseStream.Length]); // padding
                     afi.FileData.CopyTo(bw.BaseStream);
                 }
 
