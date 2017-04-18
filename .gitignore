@@ -10,3 +10,4 @@ Publish.bat
 /Kuriimu/.vs/Kuriimu.sqlite
 /Kuriimu/.vs/Kuriimu.sqlite
 *.sqlite
+/Kuriimu/packages

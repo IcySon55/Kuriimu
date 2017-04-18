@@ -163,6 +163,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_ctxb", "..\image_ctxb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_cgrp", "..\archive_cgrp\archive_cgrp.csproj", "{00259E65-3F5B-48AC-BF33-5AC6EF770934}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuTests", "..\KuriimuTests\KuriimuTests.csproj", "{0105C7BE-5D1C-446A-B121-E84C9F659DAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -361,6 +363,10 @@ Global
 		{00259E65-3F5B-48AC-BF33-5AC6EF770934}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00259E65-3F5B-48AC-BF33-5AC6EF770934}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00259E65-3F5B-48AC-BF33-5AC6EF770934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0105C7BE-5D1C-446A-B121-E84C9F659DAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0105C7BE-5D1C-446A-B121-E84C9F659DAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0105C7BE-5D1C-446A-B121-E84C9F659DAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0105C7BE-5D1C-446A-B121-E84C9F659DAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
