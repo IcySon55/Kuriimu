@@ -8,14 +8,14 @@ namespace KuriimuTests
     [TestClass]
     public class ArchiveTests
     {
-        const string sample_file_path = "../../../sample_files";
+        const string sample_file_path = "../../../sample_files/test_files";
         const string tmp_path = "tmp";
 
         public static void Test<T>(string file1) where T : IArchiveManager, new()
         {
             Directory.CreateDirectory(tmp_path);
             var path1 = Path.Combine(sample_file_path, file1);
-            var path2 = Path.Combine(tmp_path, "test-" + Path.GetFileName(file1));
+            var path2 = Path.Combine(sample_file_path, tmp_path, "test-" + Path.GetFileName(file1));
 
             var mgr = new T();
             mgr.Load(path1);
