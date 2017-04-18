@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ext_fenceposts")]
-[assembly: AssemblyDescription("Fenceposts Extension plugin for Kuriimu")]
+[assembly: AssemblyDescription("Fenceposts is the game translation binary string extractor for authors of fan translations.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ext_fenceposts")]

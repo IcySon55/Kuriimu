@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Kukki")]
-[assembly: AssemblyDescription("A general purpose game translation toolkit for authors of fan translations.")]
+[assembly: AssemblyTitle("Kukkii")]
+[assembly: AssemblyDescription("Kukkii is the game translation image converter for authors of fan translations.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Kukki")]
+[assembly: AssemblyProduct("Kukkii")]
 [assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

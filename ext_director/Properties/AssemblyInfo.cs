@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ext_director")]
-[assembly: AssemblyDescription("Director is a simple pointer finding utility for binary files.")]
+[assembly: AssemblyDescription("Director is the game translation string pointer finder for authors of fan translations.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ext_director")]

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Cetera")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Cetera is a 3DS class library handling various file formats.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Cetera")]

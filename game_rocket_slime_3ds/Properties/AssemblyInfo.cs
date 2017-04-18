@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("game_rocket_slime_3ds")]
-[assembly: AssemblyDescription("Rocket Slime 3DS Game plugin for Kuriimu")]
+[assembly: AssemblyDescription("Rocket Slime 3DS Game handler for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("game_rocket_slime_3ds")]

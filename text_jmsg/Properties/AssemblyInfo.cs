@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("file_jmsg")]
-[assembly: AssemblyDescription("JMSG File plugin for Kuriimu")]
+[assembly: AssemblyDescription("JMSG Text adapter for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("file_jmsg")]
