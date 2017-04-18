@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Kuriimu.IO;
 
-namespace file_jmsg
+namespace text_jmsg
 {
     public sealed class JMSG
     {

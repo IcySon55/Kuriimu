@@ -7,8 +7,8 @@
     <ProjectGuid>{243CFA03-BB36-421B-9E64-F446C8D6E5B0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_btxt</RootNamespace>
-    <AssemblyName>file_btxt</AssemblyName>
+    <RootNamespace>text_btxt</RootNamespace>
+    <AssemblyName>text_btxt</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -4,13 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_btxt.Properties;
+using text_btxt.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_btxt
+namespace text_btxt
 {
-    class BtxtAdapter : IFileAdapter
+    class BtxtAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private BTXT _btxt = null;

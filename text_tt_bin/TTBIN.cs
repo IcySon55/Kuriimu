@@ -7,7 +7,7 @@ using Cetera.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_ttbin
+namespace text_ttbin
 {
     public sealed class TTBIN
     {

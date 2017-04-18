@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Kuriimu.Contract;
 
-namespace file_kup
+namespace text_kup
 {
     public partial class EntryProperties : Form
     {

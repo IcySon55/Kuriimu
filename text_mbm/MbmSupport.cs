@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Kuriimu.Contract;
 
-namespace file_mbm
+namespace text_mbm
 {
     #region Entry_Definition
     public sealed class Entry : TextEntry

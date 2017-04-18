@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace file_gmml.Properties {
+namespace text_gmml.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

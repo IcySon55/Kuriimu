@@ -7,8 +7,8 @@
     <ProjectGuid>{9665286A-F74F-4180-A73C-F427FDF29B2E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_gmml</RootNamespace>
-    <AssemblyName>file_gmml</AssemblyName>
+    <RootNamespace>text_gmml</RootNamespace>
+    <AssemblyName>text_gmml</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

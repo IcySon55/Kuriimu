@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Kuriimu.IO;
 
-namespace file_gmd
+namespace text_gmd
 {
     public sealed class GMD
     {

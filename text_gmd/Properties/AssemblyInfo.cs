@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("file_gmd")]
+[assembly: AssemblyTitle("text_gmd")]
 [assembly: AssemblyDescription("GMD Text adapter for Kuriimu")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("file_gmd")]
+[assembly: AssemblyProduct("text_gmd")]
 [assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

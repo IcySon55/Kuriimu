@@ -7,8 +7,8 @@
     <ProjectGuid>{DF200FAA-0808-44AF-B2D6-66DCB041151E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_mdt</RootNamespace>
-    <AssemblyName>file_mdt</AssemblyName>
+    <RootNamespace>text_mdt</RootNamespace>
+    <AssemblyName>text_mdt</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

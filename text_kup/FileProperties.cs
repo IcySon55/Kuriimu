@@ -2,10 +2,10 @@
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using file_kup.Properties;
+using text_kup.Properties;
 using Kuriimu.Contract;
 
-namespace file_kup
+namespace text_kup
 {
     public partial class FileProperties : Form
     {

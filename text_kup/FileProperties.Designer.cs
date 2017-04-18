@@ -1,4 +1,4 @@
-﻿namespace file_kup
+﻿namespace text_kup
 {
     partial class FileProperties
     {

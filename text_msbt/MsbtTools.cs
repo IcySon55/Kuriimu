@@ -1,4 +1,4 @@
-﻿//namespace file_msbt
+﻿//namespace text_msbt
 //{
 //	class MsbtTools
 //	{

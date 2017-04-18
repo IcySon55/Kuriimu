@@ -7,7 +7,7 @@ using System.Text;
 using Kuriimu.IO;
 using Kuriimu.Contract;
 
-namespace file_mbm
+namespace text_mbm
 {
     public sealed class MBM
     {

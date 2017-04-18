@@ -4,13 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_jmsg.Properties;
+using text_jmsg.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_jmsg
+namespace text_jmsg
 {
-    public sealed class JmsgAdapter : IFileAdapter
+    public sealed class JmsgAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private JMSG _jmsg = null;

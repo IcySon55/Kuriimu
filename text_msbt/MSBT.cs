@@ -5,7 +5,7 @@ using System.Text;
 using Kuriimu.IO;
 using Cetera.Hash;
 
-namespace file_msbt
+namespace text_msbt
 {
     public sealed class MSBT
     {

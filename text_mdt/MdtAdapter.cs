@@ -4,13 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_mdt.Properties;
+using text_mdt.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_mdt
+namespace text_mdt
 {
-    public sealed class TdtAdapter : IFileAdapter
+    public sealed class TdtAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private MDT _mdt = null;

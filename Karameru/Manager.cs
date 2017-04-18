@@ -17,10 +17,10 @@ namespace Karameru
         private bool _fileOpen = false;
         private bool _hasChanges = false;
 
-        private List<IFileAdapter> _fileAdapters = null;
+        private List<ITextAdapter> _textAdapters = null;
         private List<IImageAdapter> _imageAdapters = null;
         private List<IArchiveManager> _archiveManagers = null;
-        private HashSet<string> _fileExtensions = null;
+        private HashSet<string> _textExtensions = null;
         private HashSet<string> _imageExtensions = null;
         private HashSet<string> _archiveExtensions = null;
 
@@ -57,11 +57,11 @@ namespace Karameru
             lstFiles.LargeImageList = imlFilesLarge;
 
             // Load Plugins
-            _fileAdapters = PluginLoader<IFileAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "file*.dll").ToList();
+            _textAdapters = PluginLoader<ITextAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "text*.dll").ToList();
             _imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
             _archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
 
-            _fileExtensions = new HashSet<string>(_fileAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
+            _textExtensions = new HashSet<string>(_textAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
             _imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
             _archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
 
@@ -467,7 +467,7 @@ namespace Karameru
                     // Get the items from the file system, and add each of them to the ListView,
                     // complete with their corresponding name and icon indices.
                     var ext = Path.GetExtension(file.FileName).ToLower();
-                    var kuriimuFile = ext.Length > 0 && _fileExtensions.Contains(ext);
+                    var kuriimuFile = ext.Length > 0 && _textExtensions.Contains(ext);
                     var kukkiiFile = ext.Length > 0 && _imageExtensions.Contains(ext);
                     var karameruFile = ext.Length > 0 && _archiveExtensions.Contains(ext);
 
@@ -677,7 +677,7 @@ namespace Karameru
             deleteFileToolStripMenuItem.Tag = afi;
 
             // Generate supported application menu items
-            var kuriimuVisible = ext.Length > 0 && _fileExtensions.Contains(ext);
+            var kuriimuVisible = ext.Length > 0 && _textExtensions.Contains(ext);
             var kukkiiVisible = ext.Length > 0 && _imageExtensions.Contains(ext);
             var karameruVisible = ext.Length > 0 && _archiveExtensions.Contains(ext);
 

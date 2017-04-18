@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_mdt
+namespace text_mdt
 {
     public sealed class MDT
     {

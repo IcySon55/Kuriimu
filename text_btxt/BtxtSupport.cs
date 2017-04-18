@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace file_btxt
+namespace text_btxt
 {
     public sealed class Header
     {

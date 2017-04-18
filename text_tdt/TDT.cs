@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Kuriimu.IO;
 
-namespace file_tdt
+namespace text_tdt
 {
     public sealed class TDT
     {

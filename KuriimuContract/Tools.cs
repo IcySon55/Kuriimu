@@ -11,7 +11,7 @@ namespace Kuriimu.Contract
 {
     public static class Tools
     {
-        public static string LoadFileFilters(IEnumerable<IFileAdapter> fileAdapters)
+        public static string LoadFileFilters(IEnumerable<ITextAdapter> fileAdapters)
         {
             var alltypes = fileAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
 

@@ -7,8 +7,8 @@
     <ProjectGuid>{7FF82162-F86F-411B-98C8-F646BB09A172}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_tdt</RootNamespace>
-    <AssemblyName>file_tdt</AssemblyName>
+    <RootNamespace>text_tdt</RootNamespace>
+    <AssemblyName>text_tdt</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

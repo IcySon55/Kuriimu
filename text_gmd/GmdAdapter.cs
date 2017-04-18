@@ -4,13 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_gmd.Properties;
+using text_gmd.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_gmd
+namespace text_gmd
 {
-    public class GmdAdapter : IFileAdapter
+    public class GmdAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private GMD _gmd = null;

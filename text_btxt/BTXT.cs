@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 
-namespace file_btxt
+namespace text_btxt
 {
     public class BTXT
     {

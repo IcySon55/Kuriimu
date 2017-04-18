@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace file_jmsg
+namespace text_jmsg
 {
     public enum EncodingByte : byte
     {

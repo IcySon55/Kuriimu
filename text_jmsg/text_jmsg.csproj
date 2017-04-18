@@ -7,8 +7,8 @@
     <ProjectGuid>{AD39D297-4420-4044-ACB4-21B22076B213}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_jmsg</RootNamespace>
-    <AssemblyName>file_jmsg</AssemblyName>
+    <RootNamespace>text_jmsg</RootNamespace>
+    <AssemblyName>text_jmsg</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

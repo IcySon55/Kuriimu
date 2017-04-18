@@ -8,8 +8,8 @@
     <ProjectGuid>{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_kup</RootNamespace>
-    <AssemblyName>file_kup</AssemblyName>
+    <RootNamespace>text_kup</RootNamespace>
+    <AssemblyName>text_kup</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

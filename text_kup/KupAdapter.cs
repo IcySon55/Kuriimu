@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using file_kup.Properties;
+using text_kup.Properties;
 using Kuriimu.Contract;
 using System.Linq;
 
-namespace file_kup
+namespace text_kup
 {
-    public class KupAdatper : IFileAdapter
+    public class KupAdatper : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private KUP _kup = null;

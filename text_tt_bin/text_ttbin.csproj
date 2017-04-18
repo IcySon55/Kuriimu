@@ -7,8 +7,8 @@
     <ProjectGuid>{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>file_ttbin</RootNamespace>
-    <AssemblyName>file_ttbin</AssemblyName>
+    <RootNamespace>text_ttbin</RootNamespace>
+    <AssemblyName>text_ttbin</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
 namespace Kuriimu.Contract
 {
-    public interface IFileAdapter
+    public interface ITextAdapter
     {
         // Information
         string Name { get; }

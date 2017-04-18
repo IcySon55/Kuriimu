@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace file_msbt
+namespace text_msbt
 {
     public enum EncodingByte : byte
     {

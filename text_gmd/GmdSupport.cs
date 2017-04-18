@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace file_gmd
+namespace text_gmd
 {
     public sealed class Header
     {

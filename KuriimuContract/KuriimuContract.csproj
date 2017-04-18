@@ -52,7 +52,7 @@
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
-    <Compile Include="Interface\IFileAdapter.cs" />
+    <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />
     <Compile Include="IO\BinaryWriterX.cs" />
     <Compile Include="IO\Shared.cs" />

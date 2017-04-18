@@ -4,12 +4,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_tdt.Properties;
+using text_tdt.Properties;
 using Kuriimu.Contract;
 
-namespace file_tdt
+namespace text_tdt
 {
-    public sealed class TdtAdapter : IFileAdapter
+    public sealed class TdtAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private TDT _tdt = null;

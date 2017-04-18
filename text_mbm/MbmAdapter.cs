@@ -4,13 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_mbm.Properties;
+using text_mbm.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_mbm
+namespace text_mbm
 {
-    public sealed class MbmAdapter : IFileAdapter
+    public sealed class MbmAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private MBM _mbm = null;

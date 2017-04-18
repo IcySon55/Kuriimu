@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace file_gmml
+namespace text_gmml
 {
     [XmlRoot("gmml")]
     public sealed class GMML

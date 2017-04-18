@@ -4,13 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_msbt.Properties;
+using text_msbt.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_msbt
+namespace text_msbt
 {
-    public sealed class MsbtAdapter : IFileAdapter
+    public sealed class MsbtAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private MSBT _msbt = null;

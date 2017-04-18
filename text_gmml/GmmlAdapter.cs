@@ -4,12 +4,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using file_gmml.Properties;
+using text_gmml.Properties;
 using Kuriimu.Contract;
 
-namespace file_gmml
+namespace text_gmml
 {
-    public sealed class GmmlAdapter : IFileAdapter
+    public sealed class GmmlAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private GMML _gmml = null;

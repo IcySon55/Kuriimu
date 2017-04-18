@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Cetera.Compression;
-using file_ttbin.Properties;
+using text_ttbin.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace file_ttbin
+namespace text_ttbin
 {
-    public sealed class TTBinAdapter : IFileAdapter
+    public sealed class TTBinAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private TTBIN _ttbin = null;
