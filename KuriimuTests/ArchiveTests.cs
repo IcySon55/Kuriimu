@@ -18,8 +18,8 @@ namespace KuriimuTests
             var path2 = Path.Combine(sample_file_path, tmp_path, "test-" + Path.GetFileName(file1));
 
             var mgr = new T();
-            mgr.Load(path1);
-            mgr.Save(path2);
+            Assert.AreEqual(LoadResult.Success, mgr.Load(path1));
+            Assert.AreEqual(SaveResult.Success, mgr.Save(path2));
             FileAssert.AreEqual(path1, path2);
         }
 
@@ -34,6 +34,12 @@ namespace KuriimuTests
 
         [TestMethod]
         public void SarcTest2() => Test<archive_sarc.SarcManager>("svn_message.sarc");
+
+        [TestMethod]
+        public void SarcTest3() => Test<archive_sarc.SarcManager>("MainLang.arc");
+
+        [TestMethod]
+        public void SarcTest4() => Test<archive_sarc.SarcManager>("lovelevel.sarc");
 
         [TestMethod]
         public void DarcTest1() => Test<archive_darc.DARCManager>("Australia.arc");

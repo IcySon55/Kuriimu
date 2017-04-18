@@ -38,8 +38,21 @@ namespace Kuriimu.Contract
 
     public class ArchiveFileInfo // This might need to be an interface.
     {
+        protected Stream _fileData = null;
+
         public string FileName { get; set; } = string.Empty; // Complete filename including path and extension.
-        public virtual Stream FileData { get; set; } = null; // Provides a stream to read the file data from.
+        public virtual Stream FileData // Provides a stream to read the file data from.
+        {
+            get
+            {
+                _fileData.Position = 0;
+                return _fileData;
+            }
+            set
+            {
+                _fileData = value;
+            }
+        }
         public virtual long? FileSize => FileData?.Length; // The length of the (uncompressed) stream
         public ArchiveFileState State { get; set; } = ArchiveFileState.Empty; // Dictates the state of the FileData stream.
     }
