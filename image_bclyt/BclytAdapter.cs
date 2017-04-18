@@ -88,5 +88,7 @@ namespace image_bclyt
                 _bclyt = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

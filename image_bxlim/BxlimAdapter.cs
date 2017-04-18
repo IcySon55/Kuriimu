@@ -98,5 +98,7 @@ namespace image_bxlim
                 _bxlim.Image = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

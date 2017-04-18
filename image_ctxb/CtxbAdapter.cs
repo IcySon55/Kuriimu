@@ -85,5 +85,7 @@ namespace image_ctxb
                 _ctxb.bmp = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

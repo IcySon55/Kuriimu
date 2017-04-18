@@ -128,5 +128,7 @@ namespace image_jtex
                 }
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

@@ -85,5 +85,7 @@ namespace image_xf
                 _xf = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }

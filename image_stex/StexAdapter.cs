@@ -85,5 +85,7 @@ namespace image_stex
                 _stex.bmp = value;
             }
         }
+
+        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
     }
 }
