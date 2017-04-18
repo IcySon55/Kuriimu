@@ -64,7 +64,7 @@ namespace game_maple_story_3ds
         Bitmap textBox = new Bitmap(Resources.blank);
 
         // Previewer
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
             if (entry == null) return pages;

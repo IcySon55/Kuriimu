@@ -195,7 +195,7 @@ namespace game_miitopia_3ds
             return false;
         }
 
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             string labelString = GetKuriimuString(entry.EditedText);
             if (string.IsNullOrWhiteSpace(labelString))

@@ -24,7 +24,7 @@ namespace Kuriimu
         private List<IGameHandler> _gameHandlers = null;
         private List<IExtension> _extensions = null;
 
-        private IEnumerable<IEntry> _entries = null;
+        private List<TextEntry> _entries = null;
 
         private int _page = 0;
 
@@ -107,7 +107,7 @@ namespace Kuriimu
 
             if (search.Selected != null)
             {
-                treEntries.SelectNodeByIEntry(search.Selected);
+                treEntries.SelectNodeByTextEntry(search.Selected);
 
                 if (txtEdit.Text.Contains(Settings.Default.FindWhat))
                 {
@@ -187,7 +187,7 @@ namespace Kuriimu
         {
             if (treEntries.Focused)
             {
-                IEntry entry = _fileAdapter.NewEntry();
+                TextEntry entry = _fileAdapter.NewEntry();
 
                 Name name = new Name(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength, true);
 
@@ -198,7 +198,7 @@ namespace Kuriimu
                     {
                         _hasChanges = true;
                         LoadEntries();
-                        treEntries.SelectNodeByIEntry(entry);
+                        treEntries.SelectNodeByTextEntry(entry);
                         UpdateForm();
                     }
                 }
@@ -213,7 +213,7 @@ namespace Kuriimu
         {
             if (treEntries.Focused)
             {
-                IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+                TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
 
                 Name name = new Name(entry, _fileAdapter.EntriesHaveUniqueNames, _fileAdapter.NameList, _fileAdapter.NameFilter, _fileAdapter.NameMaxLength);
 
@@ -222,7 +222,7 @@ namespace Kuriimu
                     if (_fileAdapter.RenameEntry(entry, name.NewName))
                     {
                         _hasChanges = true;
-                        treEntries.FindNodeByIEntry(entry).Text = name.NewName;
+                        treEntries.FindNodeByTextEntry(entry).Text = name.NewName;
                         UpdateForm();
                     }
                 }
@@ -237,7 +237,7 @@ namespace Kuriimu
         {
             if (treEntries.Focused)
             {
-                IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+                TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
 
                 if (MessageBox.Show("Are you sure you want to delete " + entry.Name + "?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -246,7 +246,7 @@ namespace Kuriimu
                         _hasChanges = true;
                         TreeNode nextNode = treEntries.SelectedNode.NextNode;
                         UpdateEntries();
-                        treEntries.Nodes.Remove(treEntries.FindNodeByIEntry(entry));
+                        treEntries.Nodes.Remove(treEntries.FindNodeByTextEntry(entry));
                         treEntries.SelectedNode = nextNode;
                     }
                 }
@@ -259,7 +259,7 @@ namespace Kuriimu
 
         private void entryPropertiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+            TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
             if (_fileAdapter.ShowEntryProperties(entry, Resources.kuriimu))
             {
                 _hasChanges = true;
@@ -603,14 +603,14 @@ namespace Kuriimu
 
             treEntries.BeginUpdate();
 
-            IEntry selectedEntry = null;
+            TextEntry selectedEntry = null;
             if (treEntries.SelectedNode != null)
-                selectedEntry = (IEntry)treEntries.SelectedNode.Tag;
+                selectedEntry = (TextEntry)treEntries.SelectedNode.Tag;
 
             treEntries.Nodes.Clear();
             if (_entries != null)
             {
-                foreach (IEntry entry in _entries)
+                foreach (TextEntry entry in _entries)
                 {
                     TreeNode node = new TreeNode(entry.ToString());
                     node.Tag = entry;
@@ -621,7 +621,7 @@ namespace Kuriimu
                     treEntries.Nodes.Add(node);
 
                     if (_fileAdapter.EntriesHaveSubEntries)
-                        foreach (IEntry sub in entry.SubEntries)
+                        foreach (TextEntry sub in entry.SubEntries)
                         {
                             TreeNode subNode = new TreeNode(sub.ToString());
                             subNode.Tag = sub;
@@ -635,7 +635,7 @@ namespace Kuriimu
             if ((selectedEntry == null || !_entries.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
                 treEntries.SelectedNode = treEntries.Nodes[0];
             else
-                treEntries.SelectNodeByIEntry(selectedEntry);
+                treEntries.SelectNodeByTextEntry(selectedEntry);
 
             treEntries.EndUpdate();
 
@@ -644,16 +644,13 @@ namespace Kuriimu
 
         private void UpdateEntries()
         {
-            _entries = _fileAdapter.Entries;
-
-            if (_fileAdapter.SortEntries)
-                _entries = _entries.OrderBy(x => x);
+            _entries = _fileAdapter.Entries.ToList();
         }
 
         // Utilities
         private void UpdateTextView()
         {
-            IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+            TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
 
             if (entry == null)
             {
@@ -672,7 +669,7 @@ namespace Kuriimu
 
         private void UpdatePreview()
         {
-            IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+            TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
             _gameHandlerPages = _gameHandler.GeneratePreviews(entry);
             SetPage(0);
 
@@ -686,7 +683,7 @@ namespace Kuriimu
         {
             Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_fileAdapter != null ? " - " + _fileAdapter.Name + " Adapter" : string.Empty);
 
-            IEntry entry = (IEntry)treEntries.SelectedNode?.Tag;
+            TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
 
             if (_fileOpen)
                 tslEntries.Text = (_fileAdapter.Entries?.Count() + " Entries").Trim();
@@ -847,7 +844,7 @@ namespace Kuriimu
                                 KUP kup = new KUP();
 
                                 currentAdapter.Load(file, true);
-                                foreach (IEntry entry in currentAdapter.Entries)
+                                foreach (TextEntry entry in currentAdapter.Entries)
                                 {
                                     Entry kEntry = new Entry();
                                     kEntry.Name = entry.Name;
@@ -858,7 +855,7 @@ namespace Kuriimu
 
                                     if (currentAdapter.EntriesHaveSubEntries)
                                     {
-                                        foreach (IEntry sub in entry.SubEntries)
+                                        foreach (TextEntry sub in entry.SubEntries)
                                         {
                                             Entry kSub = new Entry();
                                             kSub.Name = sub.Name;
@@ -925,7 +922,7 @@ namespace Kuriimu
                                 KUP kup = KUP.Load(fi.FullName + ".kup");
 
                                 currentAdapter.Load(file, true);
-                                foreach (IEntry entry in currentAdapter.Entries)
+                                foreach (TextEntry entry in currentAdapter.Entries)
                                 {
                                     Entry kEntry = kup.Entries.Find(o => o.Name == entry.Name);
 
@@ -934,7 +931,7 @@ namespace Kuriimu
 
                                     if (currentAdapter.EntriesHaveSubEntries && kEntry != null)
                                     {
-                                        foreach (IEntry sub in entry.SubEntries)
+                                        foreach (TextEntry sub in entry.SubEntries)
                                         {
                                             Entry kSub = (Entry)kEntry.SubEntries.Find(o => o.Name == sub.Name);
 
@@ -997,7 +994,7 @@ namespace Kuriimu
         // Text
         private void txtEdit_KeyUp(object sender, KeyEventArgs e)
         {
-            IEntry entry = (IEntry)treEntries.SelectedNode.Tag;
+            TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
             string next = string.Empty;
             string previous = string.Empty;
 

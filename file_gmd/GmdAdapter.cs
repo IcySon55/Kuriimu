@@ -124,7 +124,7 @@ namespace file_gmd
         }
 
         // Entries
-        public IEnumerable<IEntry> Entries
+        public IEnumerable<TextEntry> Entries
         {
             get
             {
@@ -147,6 +147,9 @@ namespace file_gmd
                     }
                 }
 
+                if (SortEntries)
+                    return _entries.OrderBy(e => e.EditedLabel.ID);
+
                 return _entries;
             }
         }
@@ -160,15 +163,15 @@ namespace file_gmd
         // Features
         public bool ShowProperties(Icon icon) => false;
 
-        public IEntry NewEntry() => new Entry();
+        public TextEntry NewEntry() => new Entry();
 
-        public bool AddEntry(IEntry entry) => false;
+        public bool AddEntry(TextEntry entry) => false;
 
-        public bool RenameEntry(IEntry entry, string newName) => false;
+        public bool RenameEntry(TextEntry entry, string newName) => false;
 
-        public bool DeleteEntry(IEntry entry) => false;
+        public bool DeleteEntry(TextEntry entry) => false;
 
-        public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
+        public bool ShowEntryProperties(TextEntry entry, Icon icon) => false;
 
         // Settings
         public bool SortEntries
@@ -182,7 +185,7 @@ namespace file_gmd
         }
     }
 
-    public sealed class Entry : IEntry
+    public sealed class Entry : TextEntry
     {
         // Interface
         public string Name
@@ -201,13 +204,13 @@ namespace file_gmd
 
         public int MaxLength { get; set; }
 
-        public IEntry ParentEntry { get; set; }
+        public TextEntry ParentEntry { get; set; }
 
         public bool IsSubEntry => ParentEntry != null;
 
         public bool HasText { get; }
 
-        public List<IEntry> SubEntries { get; set; }
+        public List<TextEntry> SubEntries { get; set; }
 
         // Adapter
         public Label EditedLabel { get; set; }
@@ -222,7 +225,7 @@ namespace file_gmd
             MaxLength = 0;
             ParentEntry = null;
             HasText = true;
-            SubEntries = new List<IEntry>();
+            SubEntries = new List<TextEntry>();
         }
 
         public Entry(Label editedLabel) : this()
@@ -240,12 +243,6 @@ namespace file_gmd
         public override string ToString()
         {
             return Name == string.Empty ? EditedLabel.ID.ToString() : Name;
-        }
-
-        public int CompareTo(IEntry rhs)
-        {
-            int result = EditedLabel.ID.CompareTo(((Entry)rhs).EditedLabel.ID);
-            return result;
         }
     }
 }

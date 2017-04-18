@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using file_kup.Properties;
 using Kuriimu.Contract;
+using System.Linq;
 
 namespace file_kup
 {
@@ -113,10 +114,12 @@ namespace file_kup
         }
 
         // Entries
-        public IEnumerable<IEntry> Entries
+        public IEnumerable<TextEntry> Entries
         {
             get
             {
+                if (SortEntries)
+                    return _kup.Entries.OrderBy(e => e.Name).ThenBy(e => e.Offset);
                 return _kup.Entries;
             }
         }
@@ -135,9 +138,9 @@ namespace file_kup
             return properties.HasChanges;
         }
 
-        public IEntry NewEntry() => new Entry();
+        public TextEntry NewEntry() => new Entry();
 
-        public bool AddEntry(IEntry entry)
+        public bool AddEntry(TextEntry entry)
         {
             bool result = true;
 
@@ -153,7 +156,7 @@ namespace file_kup
             return result;
         }
 
-        public bool RenameEntry(IEntry entry, string name)
+        public bool RenameEntry(TextEntry entry, string name)
         {
             bool result = true;
 
@@ -169,7 +172,7 @@ namespace file_kup
             return result;
         }
 
-        public bool DeleteEntry(IEntry entry)
+        public bool DeleteEntry(TextEntry entry)
         {
             bool result = true;
 
@@ -185,7 +188,7 @@ namespace file_kup
             return result;
         }
 
-        public bool ShowEntryProperties(IEntry entry, Icon icon)
+        public bool ShowEntryProperties(TextEntry entry, Icon icon)
         {
             EntryProperties entryProperties = new EntryProperties((Entry)entry, icon);
             entryProperties.ShowDialog();

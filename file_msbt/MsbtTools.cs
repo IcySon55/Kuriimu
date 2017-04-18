@@ -12,7 +12,7 @@
 
 //				List<string> row = new List<string>();
 
-//				IEntry ent = null;
+//				TextEntry ent = null;
 //				if (HasLabels)
 //				{
 //					sb.AppendLine("Label,String");

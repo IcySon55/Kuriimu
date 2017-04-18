@@ -130,7 +130,7 @@ namespace file_gmml
         }
 
         // Entries
-        public IEnumerable<IEntry> Entries
+        public IEnumerable<TextEntry> Entries
         {
             get
             {
@@ -161,6 +161,9 @@ namespace file_gmml
                     }
                 }
 
+                if (SortEntries)
+                    return _entries.OrderBy(e => e.Name).ThenBy(e => e.Row.ID);
+
                 return _entries;
             }
         }
@@ -174,15 +177,15 @@ namespace file_gmml
         // Features
         public bool ShowProperties(Icon icon) => false;
 
-        public IEntry NewEntry() => null;
+        public TextEntry NewEntry() => null;
 
-        public bool AddEntry(IEntry entry) => false;
+        public bool AddEntry(TextEntry entry) => false;
 
-        public bool RenameEntry(IEntry entry, string name) => false;
+        public bool RenameEntry(TextEntry entry, string name) => false;
 
-        public bool DeleteEntry(IEntry entry) => false;
+        public bool DeleteEntry(TextEntry entry) => false;
 
-        public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
+        public bool ShowEntryProperties(TextEntry entry, Icon icon) => false;
 
         // Settings
         public bool SortEntries
@@ -196,7 +199,7 @@ namespace file_gmml
         }
     }
 
-    public sealed class Entry : IEntry
+    public sealed class Entry : TextEntry
     {
         // Interface
         public string Name
@@ -215,13 +218,13 @@ namespace file_gmml
 
         public int MaxLength { get; set; }
 
-        public IEntry ParentEntry { get; set; }
+        public TextEntry ParentEntry { get; set; }
 
         public bool IsSubEntry => ParentEntry != null;
 
         public bool HasText { get; }
 
-        public List<IEntry> SubEntries { get; set; }
+        public List<TextEntry> SubEntries { get; set; }
 
         // Adapter
         public Row Row { get; set; }
@@ -238,7 +241,7 @@ namespace file_gmml
             MaxLength = 0;
             ParentEntry = null;
             HasText = false;
-            SubEntries = new List<IEntry>();
+            SubEntries = new List<TextEntry>();
         }
 
         public Entry(Row row) : this()
@@ -262,14 +265,6 @@ namespace file_gmml
         public override string ToString()
         {
             return IsSubEntry ? EditedLanguage.Name : Name == string.Empty ? Row.ID : Name;
-        }
-
-        public int CompareTo(IEntry rhs)
-        {
-            int result = Name.CompareTo(rhs.Name);
-            if (result == 0)
-                result = Row.ID.CompareTo(((Entry)rhs).Row.ID);
-            return result;
         }
     }
 }

@@ -139,7 +139,7 @@ namespace Kuriimu.Contract
         }
     }
 
-    public sealed class Entry : IEntry
+    public sealed class Entry : TextEntry
     {
         // Interface
         [XmlAttribute("name")]
@@ -179,7 +179,7 @@ namespace Kuriimu.Contract
         public int MaxLength { get; set; }
 
         [XmlIgnore]
-        public IEntry ParentEntry { get; set; }
+        public TextEntry ParentEntry { get; set; }
 
         [XmlIgnore]
         public bool IsSubEntry => ParentEntry != null;
@@ -188,14 +188,14 @@ namespace Kuriimu.Contract
         public bool HasText { get; }
 
         [XmlIgnore]
-        public List<IEntry> SubEntries { get; set; }
+        public List<TextEntry> SubEntries { get; set; }
 
         [XmlArray("subEntries")]
         [XmlArrayItem("subEntry")]
         public List<Entry> SubEntriesXML
         {
             get { return SubEntries.ConvertAll(o => (Entry)o); }
-            set { SubEntries = value.ConvertAll(o => (IEntry)o); }
+            set { SubEntries = value.ConvertAll(o => (TextEntry)o); }
         }
 
         public Entry()
@@ -210,7 +210,7 @@ namespace Kuriimu.Contract
             MaxLength = 0;
             ParentEntry = null;
             HasText = true;
-            SubEntries = new List<IEntry>();
+            SubEntries = new List<TextEntry>();
         }
 
         public override string ToString()
@@ -243,14 +243,6 @@ namespace Kuriimu.Contract
 
             Pointers.Clear();
             Pointers.AddRange(pointers);
-        }
-
-        public int CompareTo(IEntry rhs)
-        {
-            int result = Name.CompareTo(rhs.Name);
-            if (result == 0)
-                result = Offset.CompareTo(((Entry)rhs).Offset);
-            return result;
         }
     }
 

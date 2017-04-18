@@ -15,7 +15,7 @@ namespace file_msbt
         private FileInfo _fileInfo = null;
         private MSBT _msbt = null;
         private MSBT _msbtBackup = null;
-        private List<Entry> _entries = null;
+        private List<MsbtEntry> _entries = null;
 
         #region Properties
 
@@ -124,17 +124,20 @@ namespace file_msbt
         }
 
         // Entries
-        public IEnumerable<IEntry> Entries
+        public IEnumerable<TextEntry> Entries
         {
             get
             {
                 if (_entries == null)
                 {
                     if (_msbtBackup == null)
-                        _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(o)).ToList();
+                        _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o)).ToList();
                     else
-                        _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new Entry(o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
+                        _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
                 }
+
+                if (SortEntries)
+                    return _entries.OrderBy(e => e.Name).ThenBy(e => e.EditedLabel.Index);
 
                 return _entries;
             }
@@ -149,17 +152,17 @@ namespace file_msbt
         // Features
         public bool ShowProperties(Icon icon) => false;
 
-        public IEntry NewEntry() => new Entry();
+        public TextEntry NewEntry() => new MsbtEntry();
 
-        public bool AddEntry(IEntry entry)
+        public bool AddEntry(TextEntry entry)
         {
             bool result = true;
 
             try
             {
-                Entry ent = (Entry)entry;
+                MsbtEntry ent = (MsbtEntry)entry;
                 ent.EditedLabel = _msbt.AddLabel(entry.Name);
-                _entries.Add((Entry)entry);
+                _entries.Add((MsbtEntry)entry);
             }
             catch (Exception)
             {
@@ -169,13 +172,13 @@ namespace file_msbt
             return result;
         }
 
-        public bool RenameEntry(IEntry entry, string newName)
+        public bool RenameEntry(TextEntry entry, string newName)
         {
             bool result = true;
 
             try
             {
-                Entry ent = (Entry)entry;
+                MsbtEntry ent = (MsbtEntry)entry;
                 _msbt.RenameLabel(ent.EditedLabel, newName);
             }
             catch (Exception)
@@ -186,13 +189,13 @@ namespace file_msbt
             return result;
         }
 
-        public bool DeleteEntry(IEntry entry)
+        public bool DeleteEntry(TextEntry entry)
         {
             bool result = true;
 
             try
             {
-                Entry ent = (Entry)entry;
+                MsbtEntry ent = (MsbtEntry)entry;
                 _msbt.RemoveLabel(ent.EditedLabel);
                 _entries.Remove(ent);
             }
@@ -204,7 +207,7 @@ namespace file_msbt
             return result;
         }
 
-        public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
+        public bool ShowEntryProperties(TextEntry entry, Icon icon) => false;
 
         // Settings
         public bool SortEntries
@@ -218,7 +221,7 @@ namespace file_msbt
         }
     }
 
-    public sealed class Entry : IEntry
+    public sealed class MsbtEntry : TextEntry
     {
         // Interface
         public string Name
@@ -237,19 +240,19 @@ namespace file_msbt
 
         public int MaxLength { get; set; }
 
-        public IEntry ParentEntry { get; set; }
+        public TextEntry ParentEntry { get; set; }
 
         public bool IsSubEntry => ParentEntry != null;
 
         public bool HasText { get; }
 
-        public List<IEntry> SubEntries { get; set; }
+        public List<TextEntry> SubEntries { get; set; }
 
         // Adapter
         public Label OriginalLabel { get; }
         public Label EditedLabel { get; set; }
 
-        public Entry()
+        public MsbtEntry()
         {
             OriginalLabel = new Label();
             EditedLabel = new Label();
@@ -258,16 +261,16 @@ namespace file_msbt
             MaxLength = 0;
             ParentEntry = null;
             HasText = true;
-            SubEntries = new List<IEntry>();
+            SubEntries = new List<TextEntry>();
         }
 
-        public Entry(Label editedLabel) : this()
+        public MsbtEntry(Label editedLabel) : this()
         {
             if (editedLabel != null)
                 EditedLabel = editedLabel;
         }
 
-        public Entry(Label editedLabel, Label originalLabel) : this(editedLabel)
+        public MsbtEntry(Label editedLabel, Label originalLabel) : this(editedLabel)
         {
             if (originalLabel != null)
                 OriginalLabel = originalLabel;
@@ -276,14 +279,6 @@ namespace file_msbt
         public override string ToString()
         {
             return Name == string.Empty ? EditedLabel.Index.ToString() : Name;
-        }
-
-        public int CompareTo(IEntry rhs)
-        {
-            int result = Name.CompareTo(rhs.Name);
-            if (result == 0)
-                result = EditedLabel.Index.CompareTo(((Entry)rhs).EditedLabel.Index);
-            return result;
         }
     }
 }

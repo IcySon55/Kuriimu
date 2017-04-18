@@ -190,7 +190,7 @@ namespace game_daigasso_band_brothers_p
         }
 
         // Previewer
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
             if (entry == null) return pages;

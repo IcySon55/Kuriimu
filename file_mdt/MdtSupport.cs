@@ -4,7 +4,7 @@ using Kuriimu.Contract;
 namespace file_mdt
 {
     #region Entry_Definition
-    public sealed class Entry : IEntry
+    public sealed class Entry : TextEntry
     {
         // Interface
         public string Name
@@ -23,13 +23,13 @@ namespace file_mdt
 
         public int MaxLength { get; set; }
 
-        public IEntry ParentEntry { get; set; }
+        public TextEntry ParentEntry { get; set; }
 
         public bool IsSubEntry => ParentEntry != null;
 
         public bool HasText { get; }
 
-        public List<IEntry> SubEntries { get; set; }
+        public List<TextEntry> SubEntries { get; set; }
 
         // Adapter
         public Label OriginalLabel { get; }
@@ -44,7 +44,7 @@ namespace file_mdt
             MaxLength = 0;
             ParentEntry = null;
             HasText = true;
-            SubEntries = new List<IEntry>();
+            SubEntries = new List<TextEntry>();
         }
 
         public Entry(Label editedLabel) : this()
@@ -62,14 +62,6 @@ namespace file_mdt
         public override string ToString()
         {
             return Name == string.Empty ? "!NoName!" : Name;
-        }
-
-        public int CompareTo(IEntry rhs)
-        {
-            int result = Name.CompareTo(rhs.Name);
-            if (result == 0)
-                result = EditedLabel.TextID.CompareTo(((Entry)rhs).EditedLabel.TextID);
-            return result;
         }
     }
     #endregion

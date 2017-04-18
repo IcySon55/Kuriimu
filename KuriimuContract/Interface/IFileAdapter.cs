@@ -32,36 +32,35 @@ namespace Kuriimu.Contract
         SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
         // Entries
-        IEnumerable<IEntry> Entries { get; }
+        IEnumerable<TextEntry> Entries { get; }
         IEnumerable<string> NameList { get; }
         string NameFilter { get; } // This must be a regular expression that the incoming names must match. Use @".*" to accept any charcter.
         int NameMaxLength { get; }
 
         // Features
         bool ShowProperties(Icon icon);
-        IEntry NewEntry();
-        bool AddEntry(IEntry entry);
-        bool RenameEntry(IEntry entry, string newName);
-        bool DeleteEntry(IEntry entry);
-        bool ShowEntryProperties(IEntry entry, Icon icon);
+        TextEntry NewEntry();
+        bool AddEntry(TextEntry entry);
+        bool RenameEntry(TextEntry entry, string newName);
+        bool DeleteEntry(TextEntry entry);
+        bool ShowEntryProperties(TextEntry entry, Icon icon);
 
         // Settings
         bool SortEntries { get; set; }
     }
 
-    public interface IEntry : IComparable<IEntry>
+    // named this way instead of ITextEntry because we're going to turn it into a class
+    public interface TextEntry
     {
         string Name { get; set; }
         string OriginalText { get; }
         string EditedText { get; set; }
         int MaxLength { get; }
 
-        IEntry ParentEntry { get; set; } // Reference to the parent entry
+        TextEntry ParentEntry { get; set; } // Reference to the parent entry
         bool IsSubEntry { get; } // Determines whether this entry is a sub entry
         bool HasText { get; } // Determines whether this entry can be edited in the Editor
 
-        List<IEntry> SubEntries { get; }
-
-        string ToString(); // This will appear in the entry list in the Editor
+        List<TextEntry> SubEntries { get; }
     }
 }

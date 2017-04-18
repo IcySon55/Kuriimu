@@ -52,7 +52,7 @@ namespace game_etrian_odyssey_v
         Bitmap textBox = new Bitmap(Resources.blank_top);
 
         // Previewer
-        public IList<Bitmap> GeneratePreviews(IEntry entry)
+        public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
             if (entry == null) return pages;

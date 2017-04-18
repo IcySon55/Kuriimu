@@ -126,7 +126,7 @@ namespace file_mdt
         }
 
         // Entries
-        public IEnumerable<IEntry> Entries
+        public IEnumerable<TextEntry> Entries
         {
             get
             {
@@ -149,6 +149,9 @@ namespace file_mdt
                     }
                 }
 
+                if (SortEntries)
+                    return _entries.OrderBy(e => e.Name).ThenBy(e => e.EditedLabel.TextID);
+
                 return _entries;
             }
         }
@@ -162,15 +165,15 @@ namespace file_mdt
         // Features
         public bool ShowProperties(Icon icon) => false;
 
-        public IEntry NewEntry() => new Entry();
+        public TextEntry NewEntry() => new Entry();
 
-        public bool AddEntry(IEntry entry) => false;
+        public bool AddEntry(TextEntry entry) => false;
 
-        public bool RenameEntry(IEntry entry, string newName) => false;
+        public bool RenameEntry(TextEntry entry, string newName) => false;
 
-        public bool DeleteEntry(IEntry entry) => false;
+        public bool DeleteEntry(TextEntry entry) => false;
 
-        public bool ShowEntryProperties(IEntry entry, Icon icon) => false;
+        public bool ShowEntryProperties(TextEntry entry, Icon icon) => false;
 
         // Settings
         public bool SortEntries
