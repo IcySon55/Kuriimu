@@ -13,7 +13,7 @@ namespace KuriimuTests
 
         public static void Test<T>(string file1) where T : IArchiveManager, new()
         {
-            Directory.CreateDirectory(tmp_path);
+            Directory.CreateDirectory(Path.Combine(sample_file_path, tmp_path));
             var path1 = Path.Combine(sample_file_path, file1);
             var path2 = Path.Combine(sample_file_path, tmp_path, "test-" + Path.GetFileName(file1));
 
