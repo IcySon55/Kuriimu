@@ -49,7 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileAssert.cs" />
-    <Compile Include="ArchiveTest.cs" />
+    <Compile Include="ArchiveTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
