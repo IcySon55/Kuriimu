@@ -32,17 +32,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuContract", "..\KuriimuContract\KuriimuContract.csproj", "{51E474F7-1497-4C30-BC18-C357C884B8B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_kup", "..\file_kup\file_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_kup", "..\text_kup\text_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_msbt", "..\file_msbt\file_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_msbt", "..\text_msbt\text_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmml", "..\file_gmml\file_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmml", "..\text_gmml\text_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_gmd", "..\file_gmd\file_gmd.csproj", "{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmd", "..\text_gmd\text_gmd.csproj", "{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_jmsg", "..\file_jmsg\file_jmsg.csproj", "{AD39D297-4420-4044-ACB4-21B22076B213}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_jmsg", "..\text_jmsg\text_jmsg.csproj", "{AD39D297-4420-4044-ACB4-21B22076B213}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_btxt", "..\file_btxt\file_btxt.csproj", "{243CFA03-BB36-421B-9E64-F446C8D6E5B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_btxt", "..\text_btxt\text_btxt.csproj", "{243CFA03-BB36-421B-9E64-F446C8D6E5B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_director", "..\ext_director\ext_director.csproj", "{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}"
 EndProject
@@ -82,7 +82,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_daigasso_band_brothers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_time_travelers", "..\game_time_travelers\game_time_travelers.csproj", "{9913FA89-71FC-486A-9B81-43289AA70A55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_ttbin", "..\file_tt_bin\file_ttbin.csproj", "{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_ttbin", "..\text_tt_bin\text_ttbin.csproj", "{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_jtex", "..\image_jtex\image_jtex.csproj", "{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}"
 EndProject
@@ -111,11 +111,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karameru", "..\Karameru\Kar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_dpk", "..\archive_dpk\archive_dpk.csproj", "{1BFF38F5-1848-45B1-B84D-1270A25B7675}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_tdt", "..\file_tdt\file_tdt.csproj", "{7FF82162-F86F-411B-98C8-F646BB09A172}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_tdt", "..\text_tdt\text_tdt.csproj", "{7FF82162-F86F-411B-98C8-F646BB09A172}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_theatrythm_final_fantasy", "..\game_theatrythm_final_fantasy\game_theatrythm_final_fantasy.csproj", "{98C3517B-2105-430B-90F6-E85D3AC22817}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_mdt", "..\file_mdt\file_mdt.csproj", "{DF200FAA-0808-44AF-B2D6-66DCB041151E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_mdt", "..\text_mdt\text_mdt.csproj", "{DF200FAA-0808-44AF-B2D6-66DCB041151E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_sarc", "..\archive_sarc\archive_sarc.csproj", "{EFDC3079-B1ED-493D-B9DC-55658A84B1A4}"
 EndProject
@@ -133,7 +133,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_nus3bank", "..\arch
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "archive", "archive", "{793D1110-C4FD-41A5-9124-6138A5C0B8A7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "file", "file", "{B509D23F-0D4E-42F9-87F5-50CF5E982A75}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "text", "text", "{B509D23F-0D4E-42F9-87F5-50CF5E982A75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "game", "game", "{E9A3E23A-FF49-4F03-B801-36CDA9CCCF9C}"
 EndProject
@@ -149,7 +149,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_stex", "..\image_stex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tmx", "..\image_tmx\image_tmx.csproj", "{7F679E7F-EA49-4EB9-8D6C-16DD131CB3AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "file_mbm", "..\file_mbm\file_mbm.csproj", "{A19343AD-292B-4951-94B4-63A329CBD21B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_mbm", "..\text_mbm\text_mbm.csproj", "{A19343AD-292B-4951-94B4-63A329CBD21B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_etrian_odyssey_v", "..\game_etrian_odyssey_v\game_etrian_odyssey_v.csproj", "{2E4BC70E-67FF-4728-9799-A4840E617FFA}"
 EndProject
