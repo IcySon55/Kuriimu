@@ -12,7 +12,7 @@ namespace Kuriimu.Contract
         string About { get; }
 
         // Feature Support
-        //bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
+        bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
         bool CanSave { get; } // Is saving supported?
 
         // I/O
@@ -24,7 +24,7 @@ namespace Kuriimu.Contract
         // Images
         Bitmap Bitmap { get; set; }
 
-        //// Features
-        //bool ShowProperties(Icon icon);
+        // Features
+        bool ShowProperties(Icon icon);
     }
 }
