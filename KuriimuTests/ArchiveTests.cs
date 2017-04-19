@@ -42,7 +42,13 @@ namespace KuriimuTests
         }
 
         [TestMethod]
-        public void HpiHpbTest1() => HpiHpbTest("mori5.hpi");
+        public void HpiHpbTest1() => HpiHpbTest("mori1r.hpi");
+
+        [TestMethod]
+        public void HpiHpbTest2() => HpiHpbTest("mori2r.hpi");
+
+        [TestMethod]
+        public void HpiHpbTest3() => HpiHpbTest("mori5.hpi");
 
         [TestMethod]
         public void SimpleSarcTest() => Test<archive_sarc.SimpleSarcManager>("fs2.sarc");

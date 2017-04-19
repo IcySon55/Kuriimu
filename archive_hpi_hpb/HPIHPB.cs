@@ -32,7 +32,7 @@ namespace archive_hpi_hpb
                 Files = br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
                 {
                     Entry = entry,
-                    FileName = br.ReadCStringA(), // String Table
+                    FileName = br.ReadCStringSJIS(), // String Table
                     FileData = new SubStream(hpb, Math.Max(0, entry.fileOffset), entry.fileSize),
                     State = ArchiveFileState.Archived
                 }).ToList();
@@ -47,16 +47,20 @@ namespace archive_hpi_hpb
                 // HPI Header
                 bw.WriteStruct(new HpiHeader { hashCount = (short)HashSlotCount, entryCount = Files.Count });
 
+                var sjis = System.Text.Encoding.GetEncoding("sjis");
+                string GetSJIS(string s) => string.Concat(sjis.GetBytes(s).Select(b => (char)(sbyte)b));
+
                 int stringOffset = 0;
                 foreach (var afi in Files)
                 {
                     afi.Entry.stringOffset = stringOffset;
-                    afi.WriteToHpb(hpb);
-                    stringOffset += afi.FileName.Length + 1;
+                    if (afi.Entry.fileSize != 0) afi.WriteToHpb(hpb);
+                    stringOffset += GetSJIS(afi.FileName).Length + 1;
                 }
 
                 // Hash List
-                var lookup = Files.ToLookup(e => SimpleHash.Create(e.FileName, PathHashMagic, HashSlotCount));
+
+                var lookup = Files.ToLookup(e => SimpleHash.Create(GetSJIS(e.FileName), PathHashMagic, HashSlotCount));
                 for (int i = 0, offset = 0; i < HashSlotCount; i++)
                 {
                     var count = lookup[(uint)i].Count();
@@ -70,7 +74,7 @@ namespace archive_hpi_hpb
 
                 // String Table
                 foreach (var afi in Files)
-                    bw.WriteASCII(afi.FileName + '\0');
+                    bw.Write(sjis.GetBytes(afi.FileName + '\0'));
             }
         }
 

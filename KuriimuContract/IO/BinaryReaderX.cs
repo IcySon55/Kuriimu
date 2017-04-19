@@ -9,6 +9,8 @@ namespace Kuriimu.IO
 {
     public class BinaryReaderX : BinaryReader
     {
+        static Encoding SJISEncoding = Encoding.GetEncoding("sjis");
+
         int nibble = -1;
 
         public ByteOrder ByteOrder { get; set; }
@@ -24,6 +26,7 @@ namespace Kuriimu.IO
 
         public string ReadCStringA() => string.Concat(Enumerable.Range(0, 999).Select(_ => (char)ReadByte()).TakeWhile(c => c != 0));
         public string ReadCStringW() => string.Concat(Enumerable.Range(0, 999).Select(_ => (char)ReadInt16()).TakeWhile(c => c != 0));
+        public string ReadCStringSJIS() => SJISEncoding.GetString(Enumerable.Range(0, 999).Select(_ => ReadByte()).TakeWhile(c => c != 0).ToArray());
         public T ReadStruct<T>() => ReadBytes(Marshal.SizeOf<T>()).ToStruct<T>();
         public List<T> ReadMultiple<T>(int count, Func<int, T> func) => Enumerable.Range(0, count).Select(func).ToList();
         public List<T> ReadMultiple<T>(int count) => Enumerable.Range(0, count).Select(_ => ReadStruct<T>()).ToList();
