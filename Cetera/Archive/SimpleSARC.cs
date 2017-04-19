@@ -13,7 +13,7 @@ namespace Cetera.Archive
 
         public class SimpleSARCFileInfo : ArchiveFileInfo
         {
-            public SimpleSFATEntry Entry;
+            public uint FilenameHash { get; set; }
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -41,12 +41,12 @@ namespace Cetera.Archive
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 header = br.ReadStruct<SimpleSARCHeader>();
-                Files = br.ReadMultiple<SimpleSFATEntry>(header.nodeCount).Select(entry => new SimpleSARCFileInfo
+                Files = br.ReadMultiple<SimpleSFATEntry>(header.nodeCount).OrderBy(e => e.dataStart).Select(entry => new SimpleSARCFileInfo
                     {
                         FileName = $"0x{entry.hash:X8}.bin",
                         FileData = new SubStream(input, entry.dataStart, entry.dataSize),
                         State = ArchiveFileState.Archived,
-                        Entry = entry
+                        FilenameHash = entry.hash
                     }).ToList();
             }
         }
@@ -59,12 +59,20 @@ namespace Cetera.Archive
                 bw.WriteStruct(header);
 
                 int offset = (Files.Count + 1) * 0x10;
-                foreach (var afi in Files)
+                var entries = Files.Select(afi =>
                 {
-                    afi.Entry.dataStart = offset;
-                    afi.Entry.dataSize = (int)afi.FileData.Length;
-                    bw.WriteStruct(afi.Entry);
-                    offset += afi.Entry.dataSize;
+                    var entry = new SimpleSFATEntry
+                    {
+                        hash = afi.FilenameHash,
+                        dataStart = offset,
+                        dataSize = (int)afi.FileData.Length
+                    };
+                    offset += entry.dataSize;
+                    return entry;
+                }).ToList();
+                foreach (var entry in entries.OrderBy(e => e.hash))
+                {
+                    bw.WriteStruct(entry);
                 }
                 foreach (var afi in Files)
                 {
