@@ -76,5 +76,17 @@ namespace KuriimuTests
 
         [TestMethod]
         public void DarcTest4() => Test<archive_darc.DARCManager>("BgGtrA_L.arc");
+
+        [TestMethod]
+        public void CgrpTest() => Test<archive_cgrp.CgrpManager>("GROUP_BADMINTON_EN.bcgrp");
+
+        [TestMethod]
+        public void CtpkTest() => Test<archive_ctpk.CTPKManager>("bt_recipe.ctpk");
+
+        [TestMethod]
+        public void PckTest() => Test<archive_pck.PckManager>("A01.pck");
+
+        [TestMethod]
+        public void XpckTest() => Test<archive_xpck.XpckManager>("ef_etc_0000.xc");
     }
 }
