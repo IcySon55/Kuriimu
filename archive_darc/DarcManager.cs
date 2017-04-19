@@ -7,6 +7,7 @@ using archive_darc.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 using Cetera.Archive;
+using System.Linq;
 
 namespace archive_darc
 {
@@ -97,13 +98,7 @@ namespace archive_darc
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _darc.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _darc.Files.Where(afi => !afi.Entry.IsFolder);
 
         public bool AddFile(ArchiveFileInfo afi)
         {
