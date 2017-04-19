@@ -7,6 +7,7 @@ namespace Kuriimu.IO
     {
         public static unsafe T ToStruct<T>(this byte[] buffer, int offset = 0)
         {
+            if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset));
             fixed (byte* pBuffer = buffer)
                 return Marshal.PtrToStructure<T>((IntPtr)pBuffer + offset);
         }
