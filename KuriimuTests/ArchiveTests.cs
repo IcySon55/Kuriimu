@@ -41,6 +41,7 @@ namespace KuriimuTests
             File.Delete(path2);
         }
 
+        // HPIHPB
         [TestMethod]
         public void HpiHpbTest1() => HpiHpbTest("mori1r.hpi");
 
@@ -50,9 +51,11 @@ namespace KuriimuTests
         [TestMethod]
         public void HpiHpbTest3() => HpiHpbTest("mori5.hpi");
 
+        // SSARC
         [TestMethod]
         public void SimpleSarcTest() => Test<archive_sarc.SimpleSarcManager>("fs2.sarc");
 
+        // SARC
         [TestMethod]
         public void SarcTest1() => Test<archive_sarc.SarcManager>("svn_font.sarc");
 
@@ -65,6 +68,7 @@ namespace KuriimuTests
         [TestMethod]
         public void SarcTest4() => Test<archive_sarc.SarcManager>("lovelevel.sarc");
 
+        // DARC
         [TestMethod]
         public void DarcTest1() => Test<archive_darc.DARCManager>("Africa.arc");
 
@@ -77,16 +81,31 @@ namespace KuriimuTests
         [TestMethod]
         public void DarcTest4() => Test<archive_darc.DARCManager>("BgGtrA_L.arc");
 
+        // CGRP
         [TestMethod]
         public void CgrpTest() => Test<archive_cgrp.CgrpManager>("GROUP_BADMINTON_EN.bcgrp");
 
+        // CTPK
         [TestMethod]
         public void CtpkTest() => Test<archive_ctpk.CTPKManager>("bt_recipe.ctpk");
 
+        // PCK
         [TestMethod]
         public void PckTest() => Test<archive_pck.PckManager>("A01.pck");
 
+        // XPCK
         [TestMethod]
         public void XpckTest() => Test<archive_xpck.XpckManager>("ef_etc_0000.xc");
+
+        // FA
+        [TestMethod]
+        public void FaTest1() => Test<archive_fa.FaManager>("yw2_a.fa");
+
+        [TestMethod]
+        public void FaTest2() => Test<archive_fa.FaManager>("yw2_lg_en.fa");
+
+        // UMSBT
+        [TestMethod]
+        public void UmsbtTest() => Test<archive_umsbt.UmsbtManager>("AN_3P_An.umsbt");
     }
 }
