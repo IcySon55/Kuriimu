@@ -10,57 +10,66 @@ namespace archive_pck
 {
     public sealed class PCK
     {
-        public List<PckFileInfo> Files = new List<PckFileInfo>();
-
-        List<PCKEntry> entries = new List<PCKEntry>();
+        public List<PckFileInfo> Files;
 
         public PCK(Stream input)
         {
-            using (BinaryReaderX pckBr = new BinaryReaderX(input, true))
+            using (var br = new BinaryReaderX(input, true))
             {
-                int pckEntryCount = pckBr.ReadInt32();
+                var entries = br.ReadMultiple<PCKEntry>(br.ReadInt32()).ToList();
 
-                entries.AddRange(pckBr.ReadMultiple<PCKEntry>(pckEntryCount).OrderBy(e => e.fileOffset));
-
-                for (int i = 0; i < entries.Count; i++)
+                Files = entries.Select(entry =>
                 {
-                    pckBr.BaseStream.Position = entries[i].fileOffset;
-                    int blockOffset = (pckBr.ReadInt16() == 0x64) ? pckBr.ReadInt16() + 1 : 0;
+                    br.BaseStream.Position = entry.fileOffset;
+                    var hashes = (br.ReadInt16() == 0x64) ? br.ReadMultiple(br.ReadInt16(), _ => br.ReadUInt32()).ToList() : null;
+                    int blockOffset = hashes?.Count + 1 ?? 0;
 
-                    Files.Add(new PckFileInfo()
+                    return new PckFileInfo
                     {
                         FileData = new SubStream(
                             input,
-                            entries[i].fileOffset + blockOffset * 4,
-                            entries[i].fileLength - blockOffset * 4),
-                        FileName = "File " + i,
+                            entry.fileOffset + blockOffset * 4,
+                            entry.fileLength - blockOffset * 4),
+                        FileName = $"0x{entry.hash:X8}.bin",
                         State = ArchiveFileState.Archived,
-                        Entry = entries[i]
-                    });
-                }
+                        Entry = entry,
+                        Hashes = hashes
+                    };
+                }).ToList();
             }
         }
 
         public void Save(Stream input)
         {
-            using (BinaryWriterX pckBw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(input))
             {
-                pckBw.Write(Files.Count);
+                bw.Write(Files.Count);
 
-                //entryList + Data
+                // entryList
                 int dataPos = 4 + Files.Count * 0xc;
-                for (int i = 0; i < Files.Count; i++)
+                foreach (var afi in Files)
                 {
-                    pckBw.Write(Files[i].Entry.crc32);
-                    pckBw.Write(dataPos);
+                    var entry = new PCKEntry
+                    {
+                        hash = afi.Entry.hash,
+                        fileOffset = dataPos,
+                        fileLength = 4 * (afi.Hashes?.Count + 1 ?? 0) + (int)afi.FileSize
+                    };
+                    dataPos += entry.fileLength;
+                    bw.WriteStruct(entry);
+                }
 
-                    pckBw.BaseStream.Position = dataPos;
-                    pckBw.Write(new byte[] { 0x64, 0, 0, 0 });
-                    pckBw.Write(new BinaryReaderX(Files[i].FileData, true).ReadBytes((int)Files[i].FileData.Length));
-                    pckBw.BaseStream.Position = 4 + i * 0xc + 8;
-
-                    pckBw.Write((int)Files[i].FileData.Length + 4);
-                    dataPos += (int)Files[i].FileData.Length + 4;
+                // data
+                foreach (var afi in Files)
+                {
+                    if (afi.Hashes != null)
+                    {
+                        bw.Write((short)0x64);
+                        bw.Write((short)afi.Hashes.Count);
+                        foreach (var hash in afi.Hashes)
+                            bw.Write(hash);
+                    }
+                    afi.FileData.CopyTo(bw.BaseStream);
                 }
             }
         }
