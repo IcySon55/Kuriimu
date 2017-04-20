@@ -13,8 +13,8 @@ namespace archive_fa
     public class FaManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
-        private FA _fa = null;  
-        
+        private FA _fa = null;
+
         #region Properties
 
         // Information
@@ -62,8 +62,7 @@ namespace archive_fa
 
             if (_fileInfo.Exists)
             {
-                var file = File.OpenRead(_fileInfo.FullName);
-                _fa = new FA(file);
+                _fa = new FA(File.OpenRead(_fileInfo.FullName));
             }
             else
                 result = LoadResult.FileNotFound;
@@ -80,8 +79,7 @@ namespace archive_fa
 
             try
             {
-                var file = File.Create(filename);
-                _fa.Save(file);
+                _fa.Save(File.Create(filename));
             }
             catch (Exception)
             {
@@ -97,13 +95,7 @@ namespace archive_fa
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _fa.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _fa.Files;
 
         public bool AddFile(ArchiveFileInfo afi)
         {

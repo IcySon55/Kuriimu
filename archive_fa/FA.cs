@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using Cetera.Image;
-using System.Linq;
+﻿using Cetera.Hash;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Hash;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace archive_fa
 {
@@ -18,7 +16,7 @@ namespace archive_fa
         private Header header;
         private byte[] unk1;
         private byte[] unk2;
-        
+
         private List<Entry> entries;
         private List<String> filenames;
         private List<String> foldernames;
@@ -32,16 +30,16 @@ namespace archive_fa
                 header = br.ReadStruct<Header>();
 
                 //unknown lists
-                unk1 = br.ReadBytes(header.offset1-header.offset0);
-                unk2 = br.ReadBytes(header.entryOffset-header.offset1);
+                unk1 = br.ReadBytes(header.offset1 - header.offset0);
+                unk2 = br.ReadBytes(header.entryOffset - header.offset1);
 
                 //Entries
                 entries = br.ReadMultiple<Entry>(header.entryCount);
                 br.BaseStream.Position++;
 
                 //Names
-                filenames=new List<string>();
-                foldernames=new List<string>();
+                filenames = new List<string>();
+                foldernames = new List<string>();
                 String currentFolder = "";
                 String tmp = br.ReadCStringA();
                 while (tmp != "")
@@ -53,18 +51,19 @@ namespace archive_fa
                     }
                     else
                     {
-                        filenames.Add(currentFolder+tmp);
+                        filenames.Add(currentFolder + tmp);
                     }
                     tmp = br.ReadCStringA();
                 }
 
                 hashes = new List<uint>();
-                foreach(var name in filenames)
+                foreach (var name in filenames)
                 {
                     bool found = false;
                     int count = 0;
                     uint crc32 = Crc32.Create(Encoding.ASCII.GetBytes(name.Split('/').Last().ToLower()));
-                    while (!found && count < entries.Count) {
+                    while (!found && count < entries.Count)
+                    {
                         if (entries[count].crc32 == crc32)
                         {
                             Files.Add(new FAFileInfo
@@ -75,7 +74,8 @@ namespace archive_fa
                                 Entry = entries[count]
                             });
                             found = true;
-                        } else 
+                        }
+                        else
                             count++;
                     }
                     hashes.Add(crc32);
@@ -107,7 +107,7 @@ namespace archive_fa
                     bw.Write((int)file.FileSize.GetValueOrDefault());
 
                     long bk = bw.BaseStream.Position;
-                    bw.BaseStream.Position = dataOffset+offset;
+                    bw.BaseStream.Position = dataOffset + offset;
                     bw.Write(new BinaryReaderX(file.FileData).ReadBytes((int)file.FileSize.GetValueOrDefault()));
                     bw.BaseStream.Position = bk;
 
@@ -153,17 +153,17 @@ namespace archive_fa
                         if (!file.Contains(foldernames[pos])) pos++;
                         else
                             if (pos + 1 < foldernames.Count)
-                                if (!file.Contains(foldernames[pos + 1]))
-                                {
-                                    lastFolder = foldernames[pos];
-                                    found = true;
-                                }
-                                else pos++;
-                            else
+                            if (!file.Contains(foldernames[pos + 1]))
                             {
                                 lastFolder = foldernames[pos];
                                 found = true;
                             }
+                            else pos++;
+                        else
+                        {
+                            lastFolder = foldernames[pos];
+                            found = true;
+                        }
                     }
 
                     list.AddRange(ascii.GetBytes(file.Split('/').Last()));
