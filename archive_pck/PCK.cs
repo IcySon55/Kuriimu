@@ -21,7 +21,7 @@ namespace archive_pck
                 Files = entries.Select(entry =>
                 {
                     br.BaseStream.Position = entry.fileOffset;
-                    var hashes = (br.ReadInt16() == 0x64) ? br.ReadMultiple(br.ReadInt16(), _ => br.ReadUInt32()).ToList() : null;
+                    var hashes = (br.ReadInt16() == 0x64) ? br.ReadMultiple<uint>(br.ReadInt16()).ToList() : null;
                     int blockOffset = hashes?.Count + 1 ?? 0;
 
                     return new PckFileInfo
