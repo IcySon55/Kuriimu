@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace archive_darc
 {
-    public class DARCManager : IArchiveManager
+    public class DarcManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private DARC _darc = null;

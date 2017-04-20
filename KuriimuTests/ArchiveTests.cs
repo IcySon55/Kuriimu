@@ -70,16 +70,16 @@ namespace KuriimuTests
 
         // DARC
         [TestMethod]
-        public void DarcTest1() => Test<archive_darc.DARCManager>("Africa.arc");
+        public void DarcTest1() => Test<archive_darc.DarcManager>("Africa.arc");
 
         [TestMethod]
-        public void DarcTest2() => Test<archive_darc.DARCManager>("Australia.arc");
+        public void DarcTest2() => Test<archive_darc.DarcManager>("Australia.arc");
 
         [TestMethod]
-        public void DarcTest3() => Test<archive_darc.DARCManager>("WestAustralia.arc");
+        public void DarcTest3() => Test<archive_darc.DarcManager>("WestAustralia.arc");
 
         [TestMethod]
-        public void DarcTest4() => Test<archive_darc.DARCManager>("BgGtrA_L.arc");
+        public void DarcTest4() => Test<archive_darc.DarcManager>("BgGtrA_L.arc");
 
         // CGRP
         [TestMethod]
@@ -87,7 +87,7 @@ namespace KuriimuTests
 
         // CTPK
         [TestMethod]
-        public void CtpkTest() => Test<archive_ctpk.CTPKManager>("bt_recipe.ctpk");
+        public void CtpkTest() => Test<archive_ctpk.CtpkManager>("bt_recipe.ctpk");
 
         // PCK
         [TestMethod]

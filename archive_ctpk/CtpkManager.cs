@@ -10,7 +10,7 @@ using Cetera.Hash;
 
 namespace archive_ctpk
 {
-    public class CTPKManager : IArchiveManager
+    public class CtpkManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
