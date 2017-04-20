@@ -87,7 +87,10 @@ namespace KuriimuTests
 
         // CTPK
         [TestMethod]
-        public void CtpkTest() => Test<archive_ctpk.CtpkManager>("bt_recipe.ctpk");
+        public void CtpkTest1() => Test<archive_ctpk.CtpkManager>("bt_recipe.ctpk");
+
+        [TestMethod]
+        public void CtpkTest2() => Test<archive_ctpk.CtpkManager>("Edit_Ptrn_Key3.ctpk");
 
         // PCK
         [TestMethod]
@@ -97,11 +100,11 @@ namespace KuriimuTests
         [TestMethod]
         public void XpckTest() => Test<archive_xpck.XpckManager>("ef_etc_0000.xc");
 
-        // FA
-        [TestMethod]
+        // FA (these are currently incorrect files)
+        //[TestMethod]
         public void FaTest1() => Test<archive_fa.FaManager>("yw2_a.fa");
 
-        [TestMethod]
+        //[TestMethod]
         public void FaTest2() => Test<archive_fa.FaManager>("yw2_lg_en.fa");
 
         // UMSBT
