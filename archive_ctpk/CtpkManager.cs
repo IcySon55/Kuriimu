@@ -62,7 +62,7 @@ namespace archive_ctpk
 
             if (_fileInfo.Exists)
             {
-                var file = File.OpenRead(_fileInfo.FullName);
+                var file = _fileInfo.OpenRead();
                 _ctpk = new CTPK(file);
             }
             else
@@ -80,7 +80,7 @@ namespace archive_ctpk
 
             try
             {
-                var file = File.Create(filename);
+                var file = _fileInfo.Create();
                 _ctpk.Save(file);
             }
             catch (Exception)
