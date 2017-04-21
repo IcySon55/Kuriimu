@@ -8,7 +8,6 @@ namespace archive_umsbt
 {
     public class UmsbtManager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         private UMSBT _umsbt = null;
 
         #region Properties
@@ -27,17 +26,7 @@ namespace archive_umsbt
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -49,46 +38,41 @@ namespace archive_umsbt
 
         public LoadResult Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
+            if (!FileInfo.Exists) return LoadResult.FileNotFound;
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _umsbt = new UMSBT(_fileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            _umsbt = new UMSBT(FileInfo.OpenRead());
+            return LoadResult.Success;
         }
 
         public SaveResult Save(string filename = "")
         {
             SaveResult result = SaveResult.Success;
 
-            if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
             try
             {
                 // Save As...
-                if (!string.IsNullOrWhiteSpace(filename))
+                if (!string.IsNullOrEmpty(filename))
                 {
-                    _umsbt.Save(File.Create(_fileInfo.FullName));
+                    _umsbt.Save(FileInfo.Create());
                     _umsbt.Close();
                 }
                 else
                 {
                     // Create the temp file
-                    _umsbt.Save(File.Create(_fileInfo.FullName + ".tmp"));
+                    _umsbt.Save(File.Create(FileInfo.FullName + ".tmp"));
                     _umsbt.Close();
                     // Delete the original
-                    _fileInfo.Delete();
+                    FileInfo.Delete();
                     // Rename the temporary file
-                    File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
+                    File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
                 }
 
                 // Reload the new file to make sure everything is in order
-                Load(_fileInfo.FullName);
+                Load(FileInfo.FullName);
             }
             catch (Exception)
             {
@@ -104,13 +88,7 @@ namespace archive_umsbt
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _umsbt.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _umsbt.Files;
 
         public bool AddFile(ArchiveFileInfo afi)
         {

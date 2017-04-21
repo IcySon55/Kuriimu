@@ -4,14 +4,14 @@ using Kuriimu.Contract;
 namespace archive_umsbt
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class UMSBTFileEntry
+    public class UmsbtFileEntry
     {
         public uint Offset = 0;
         public uint Size = 0;
     }
 
-    public class UMSBTFileInfo : ArchiveFileInfo
+    public class UmsbtFileInfo : ArchiveFileInfo
     {
-        public UMSBTFileEntry Entry = null;
+        public UmsbtFileEntry Entry = null;
     }
 }
