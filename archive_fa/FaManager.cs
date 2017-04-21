@@ -61,9 +61,7 @@ namespace archive_fa
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-            {
-                _fa = new FA(File.OpenRead(_fileInfo.FullName));
-            }
+                _fa = new FA(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -79,7 +77,7 @@ namespace archive_fa
 
             try
             {
-                _fa.Save(File.Create(filename));
+                _fa.Save(_fileInfo.Create());
             }
             catch (Exception)
             {
