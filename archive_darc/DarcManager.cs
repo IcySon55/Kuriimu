@@ -62,10 +62,7 @@ namespace archive_darc
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-            {
-                var file = File.OpenRead(_fileInfo.FullName);
-                _darc = new DARC(file);
-            }
+                _darc = new DARC(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -81,8 +78,7 @@ namespace archive_darc
 
             try
             {
-                var file = File.Create(filename);
-                _darc.Save(file);
+                _darc.Save(_fileInfo.Create());
             }
             catch (Exception)
             {
