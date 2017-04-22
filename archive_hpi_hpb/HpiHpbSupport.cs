@@ -55,9 +55,9 @@ namespace archive_hpi_hpb
         {
             get
             {
-                base.FileData.Position = 0;
-                if (State != ArchiveFileState.Archived || Entry.uncompressedSize == 0) return base.FileData;
-                using (var br = new BinaryReaderX(base.FileData, true))
+                var baseStream = base.FileData;
+                if (State != ArchiveFileState.Archived || Entry.uncompressedSize == 0) return baseStream;
+                using (var br = new BinaryReaderX(baseStream, true))
                 {
                     var header = br.ReadStruct<AcmpHeader>();
                     return new MemoryStream(RevLZ77.Decompress(br.ReadBytes(header.compressedSize)));
@@ -73,7 +73,7 @@ namespace archive_hpi_hpb
             if (State == ArchiveFileState.Replaced && Entry.uncompressedSize != 0)
             {
                 // Only here if we need to compress from a FileStream in the base.FileData
-                var uncompData = new byte[base.FileData.Length];
+                var uncompData = new byte[_fileData.Length];
                 base.FileData.Read(uncompData, 0, uncompData.Length);
                 var compData = RevLZ77.Compress(uncompData);
                 if (compData == null)
@@ -103,7 +103,7 @@ namespace archive_hpi_hpb
             }
             else
             {
-                Entry.fileSize = (int)base.FileData.Length;
+                Entry.fileSize = (int)_fileData.Length;
                 base.FileData.CopyTo(stream);
             }
 

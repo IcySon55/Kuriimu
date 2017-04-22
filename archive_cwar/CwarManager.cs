@@ -61,10 +61,7 @@ namespace archive_cwar
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-            {
-                var file = File.OpenRead(_fileInfo.FullName);
-                _cwar = new CWAR(file);
-            }
+                _cwar = new CWAR(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -80,8 +77,7 @@ namespace archive_cwar
 
             try
             {
-                var file = File.Create(filename);
-                _cwar.Save(file);
+                _cwar.Save(_fileInfo.Create());
             }
             catch (Exception)
             {

@@ -8,7 +8,7 @@ namespace archive_umsbt
 {
     public class UMSBT
     {
-        public List<UMSBTFileInfo> Files = new List<UMSBTFileInfo>();
+        public List<UmsbtFileInfo> Files = new List<UmsbtFileInfo>();
         private FileStream _fileStream = null;
 
         public UMSBT(FileStream fs)
@@ -19,8 +19,8 @@ namespace archive_umsbt
                 uint index = 0;
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    var info = new UMSBTFileInfo();
-                    info.Entry = br.ReadStruct<UMSBTFileEntry>();
+                    var info = new UmsbtFileInfo();
+                    info.Entry = br.ReadStruct<UmsbtFileEntry>();
                     info.FileName = index.ToString("00000000") + ".msbt";
                     info.FileData = new SubStream(fs, info.Entry.Offset, info.Entry.Size);
                     info.State = ArchiveFileState.Archived;

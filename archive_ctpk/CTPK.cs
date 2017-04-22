@@ -16,33 +16,27 @@ namespace archive_ctpk
 
         public CTPK(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 //Header
-                Header header = br.ReadStruct<Header>();
+                var header = br.ReadStruct<Header>();
 
                 //TexEntries
-                List<Entry> entries = new List<Entry>();
-                entries.AddRange(br.ReadMultiple<Entry>(header.texCount));
+                var entries = br.ReadMultiple<Entry>(header.texCount).ToList();
 
                 //TexInfo List
-                List<int> texSizeList = new List<int>();
-                texSizeList.AddRange(br.ReadMultiple<int>(header.texCount));
+                var texSizeList = br.ReadMultiple<int>(header.texCount).ToList();
 
                 //Name List
-                List<String> nameList = new List<String>();
-                for (int i = 0; i < entries.Count; i++)
-                    nameList.Add(br.ReadCStringA());
+                var nameList = entries.Select(_ => br.ReadCStringA()).ToList();
 
                 //Hash List
                 br.BaseStream.Position = header.crc32SecOffset;
-                List<HashEntry> crc32List = new List<HashEntry>();
-                crc32List.AddRange(br.ReadMultiple<HashEntry>(header.texCount).OrderBy(e=>e.entryNr));
+                var crc32List = br.ReadMultiple<HashEntry>(header.texCount).ToList();
 
                 //TexInfo List 2
                 br.BaseStream.Position = header.texInfoOffset;
-                List<uint> texInfoList2 = new List<uint>();
-                texInfoList2.AddRange(br.ReadMultiple<uint>(header.texCount));
+                var texInfoList = br.ReadMultiple<uint>(header.texCount).ToList();
 
                 //Get FileData
                 for (int i = 0; i < header.texCount; i++)
@@ -50,78 +44,69 @@ namespace archive_ctpk
                     {
                         State = ArchiveFileState.Archived,
                         FileName = nameList[i],
-                        FileData = new SubStream(br.BaseStream, entries[i].texOffset+header.texSecOffset, entries[i].texDataSize),
+                        FileData = new SubStream(br.BaseStream, entries[i].texOffset + header.texSecOffset, entries[i].texDataSize),
                         Entry = entries[i],
                         hashEntry = crc32List[i],
-                        texInfo = texInfoList2[i]
+                        texInfo = texInfoList[i]
                     });
             }
         }
 
         public void Save(Stream input)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            int Pad128(int n) => (n + 127) & ~127;
+
+            using (var bw = new BinaryWriterX(input))
             {
                 //get nameList Length
-                int nameListLength=0;
-                for (int i = 0; i < Files.Count; i++) nameListLength += Files[i].FileName.Length + 1;
-                while (nameListLength % 4 != 0) nameListLength += 1;
+                int nameListLength = (Files.Sum(afi => afi.FileName.Length + 1) + 3) & ~3;
 
                 //Offsets
                 int nameOffset = (Files.Count + 1) * 0x20 + Files.Count * 0x4;
-                int dataOffset = nameOffset + nameListLength + Files.Count * 0x4 * 2;
 
                 //Header
                 bw.WriteStruct(new Header
                 {
                     texCount = (short)Files.Count,
-                    texSecOffset= dataOffset,
-                    crc32SecOffset = nameOffset+nameListLength,
-                    texInfoOffset = nameOffset + nameListLength+Files.Count*0x4
+                    texSecOffset = Pad128(nameOffset + nameListLength + Files.Count * 12),
+                    texSecSize = (int)Files.Sum(afi => afi.FileSize),
+                    crc32SecOffset = nameOffset + nameListLength,
+                    texInfoOffset = nameOffset + nameListLength + Files.Count * 0x8
                 });
 
                 //entryList
-                for (int i = 0; i < Files.Count; i++)
+                int dataOffset = 0;
+                foreach (var afi in Files)
                 {
-                    bw.WriteStruct(new Entry
-                    {
-                        nameOffset = nameOffset,
-                        texDataSize = (int) Files[i].FileData.Length,
-                        texOffset = dataOffset,
-                        format = Files[i].Entry.format,
-                        width = Files[i].Entry.width,
-                        height = Files[i].Entry.height,
-                        mipLvl = Files[i].Entry.mipLvl,
-                        type = Files[i].Entry.type,
-                        bitmapSizeOffset = Files[i].Entry.bitmapSizeOffset,
-                        timeStamp = Files[i].Entry.timeStamp,
-                    });
-                    nameOffset += Files[i].FileName.Length + 1;
-                    dataOffset += (int) Files[i].FileData.Length;
+                    dataOffset = Pad128(dataOffset);
+                    var entry = afi.Entry;
+                    entry.texDataSize = (int)afi.FileData.Length;
+                    entry.nameOffset = nameOffset;
+                    entry.texOffset = dataOffset;
+                    bw.WriteStruct(entry);
+                    nameOffset += afi.FileName.Length + 1;
+                    dataOffset += (int)afi.FileSize;
                 }
 
                 //texInfo 1 List
-                for (int i = 0; i < Files.Count; i++) bw.Write((int)Files[i].FileData.Length);
+                foreach (var afi in Files) bw.Write((int)afi.FileData.Length);
 
                 //nameList
-                for (int i = 0; i < Files.Count; i++) { bw.WriteASCII(Files[i].FileName); bw.Write((byte)0); }
+                foreach (var afi in Files) { bw.WriteASCII(afi.FileName + '\0'); }
                 while (bw.BaseStream.Position % 4 != 0) bw.BaseStream.Position++;
 
                 //crc32List
-                for (int i = 0; i < Files.Count; i++) {bw.Write(Files[i].hashEntry.crc32); bw.Write(Files[i].hashEntry.entryNr); }
+                foreach (var afi in Files) { bw.Write(afi.hashEntry.crc32); bw.Write(afi.hashEntry.entryNr); }
 
                 //texInfo 2 List
-                for (int i = 0; i < Files.Count; i++) bw.Write(Files[i].texInfo);
+                foreach (var afi in Files) bw.Write(afi.texInfo);
 
                 //Write data
-                int texSecSize = 0;
-                for (int i = 0; i < Files.Count; i++)
+                foreach (var afi in Files)
                 {
-                    bw.Write(new BinaryReaderX(Files[i].FileData,true).ReadBytes((int)Files[i].FileData.Length));
-                    texSecSize += (int) Files[i].FileData.Length;
+                    bw.Write(new byte[Pad128((int)bw.BaseStream.Length) - (int)bw.BaseStream.Length]);
+                    afi.FileData.CopyTo(bw.BaseStream);
                 }
-                bw.BaseStream.Position = 0xc;
-                bw.Write(texSecSize);
             }
         }
     }

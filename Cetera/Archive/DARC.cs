@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
 using Kuriimu.Contract;
+using System.Text;
 
 namespace Cetera.Archive
 {
@@ -15,18 +14,19 @@ namespace Cetera.Archive
 
         public class DarcFileInfo : ArchiveFileInfo
         {
+            public string SingleName;
             public Entry Entry;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct Header
+        class Header
         {
-            public String4 magic;
-            public ByteOrder byteOrder;
-            public short headerSize;
-            public int version;
+            public Magic magic = "darc";
+            public ByteOrder byteOrder = ByteOrder.LittleEndian;
+            public short headerSize = 0x1C;
+            public int version = 0x1000000;
             public int fileSize;
-            public int tableOffset;
+            public int tableOffset = 0x1C;
             public int tableLength;
             public int dataOffset;
         }
@@ -34,169 +34,106 @@ namespace Cetera.Archive
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class Entry
         {
-            private int tmp1;
+            public int filenameOffset;
             public int fileOffset;
             public int size;
 
-            public bool IsFolder => (tmp1 >> 24) == 1;
-            public int FilenameOffset => tmp1 & 0xFFFFFF;
+            public bool IsFolder => (filenameOffset >> 24) == 1;
         }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public class DirEntry
-        {
-            public String dir;
-            public int dirCount;
-            public int lvl;
-        }
-
-        private Header header;
 
         public DARC(Stream input)
         {
             using (var br = new BinaryReaderX(input, true))
             {
                 //Header
-                header = br.ReadStruct<Header>();
+                var header = br.ReadStruct<Header>();
 
                 //EntryList
-                List<Entry> entries = new List<Entry>();
-                entries.Add(br.ReadStruct<Entry>());
+                var entries = br.ReadMultiple<Entry>(1).ToList();
                 entries.AddRange(br.ReadMultiple<Entry>(entries[0].size - 1));
 
                 //FileData + names
-                Files = new List<DarcFileInfo>();
-                String[] paths = new String[entries[0].size];
-                var basePos = br.BaseStream.Position;
-                for (int i = 0; i < entries[0].size; i++)
+                Files = entries.Select(entry => new DarcFileInfo
                 {
-                    var entry = entries[i];
-                    br.BaseStream.Position = basePos + entry.FilenameOffset;
+                    Entry = entry,
+                    SingleName = br.ReadCStringW(),
+                    FileData = entry.IsFolder ? null : new SubStream(br.BaseStream, entry.fileOffset, entry.size),
+                    State = ArchiveFileState.Archived
+                }).ToList();
 
-                    var arcPath = br.ReadCStringW();
-                    if (entry.IsFolder)
+                for (int i = 0; i < Files.Count; i++)
+                {
+                    var arcPath = Files[i].SingleName;
+                    if (Files[i].Entry.IsFolder)
                     {
-                        arcPath += '/';
-                        for (int j = i; j < entry.size; j++)
+                        for (int j = i; j < Files[i].Entry.size; j++)
                         {
-                            paths[j] += arcPath;
+                            Files[j].FileName += arcPath + '/';
                         }
                     }
                     else
                     {
-                        paths[i] += arcPath;
-                        Files.Add(new DarcFileInfo
-                        {
-                            FileName = paths[i],
-                            FileData = new SubStream(br.BaseStream, entry.fileOffset, entry.size),
-                            State = ArchiveFileState.Archived
-                        });
+                        Files[i].FileName += arcPath;
                     }
                 }
             }
+
         }
 
-        public List<DirEntry> dirEntries;
+        int Pad(int pos, string filename)
+        {
+            if (!dicPadding.TryGetValue(Path.GetExtension(filename), out int padding))
+            {
+                padding = 4;
+            }
+            return (pos + padding - 1) & -padding;
+        }
+
+        public static Dictionary<string, int> dicPadding = new Dictionary<string, int>
+        {
+            [".bclim"] = 0x80,
+            [".bcfnt"] = 0x2000,
+        };
 
         public void Save(Stream input)
         {
             using (var bw = new BinaryWriterX(input))
             {
-                bw.BaseStream.Position = 0x1c;
+                var header = new Header { tableLength = Files.Count * 12 + Files.Sum(afi => afi.SingleName.Length + 1) * 2 };
+                int dataOffset = Pad(header.tableLength + 0x1C, "");
+                header.dataOffset = dataOffset;
+                bw.WriteStruct(header);
 
-                GetDirInfo();
-
-                int nameListLength = 0;
-                foreach (var name in dirEntries)
-                    nameListLength += (name.dir.Length + 1) * 2;
+                foreach (var afi in Files.Where(afi => !afi.Entry.IsFolder).OrderBy(afi => afi.Entry.fileOffset))
+                {
+                    dataOffset = Pad(dataOffset, afi.FileName);
+                    afi.Entry.fileOffset = dataOffset;
+                    afi.Entry.size = (int)afi.FileData.Length;
+                    dataOffset += afi.Entry.size;
+                }
 
                 //Write Entry table
-                int filesOffset = 0;
-                int offset = 0;
-                int dataOffset = 0x1c + dirEntries.Count * 0xc + nameListLength;
-                for (int i = 0; i < dirEntries.Count; i++)
-                {
-                    if (dirEntries[i].dir != "." && dirEntries[i].dir.Contains('.'))
-                    {
-                        bw.Write(offset);
-                        bw.Write(dataOffset);
-                        bw.Write((uint)Files[filesOffset].FileSize.GetValueOrDefault());
-
-                        dataOffset += (int)Files[filesOffset++].FileSize.GetValueOrDefault();
-                        offset += (dirEntries[i].dir.Length + 1) * 2;
-                    }
-                    else
-                    {
-                        bw.Write(offset | 0x01000000);
-                        bw.Write(dirEntries[i].lvl);
-                        bw.Write(dirEntries[i].dirCount);
-
-                        offset += (dirEntries[i].dir.Length + 1) * 2;
-                    }
-                }
+                foreach (var afi in Files)
+                    bw.WriteStruct(afi.Entry);
 
                 //Write names
-                foreach (var dir in dirEntries)
-                {
-                    for (int i = 0; i < dir.dir.Length; i++)
-                        bw.Write((short)dir.dir[i]);
-                    bw.Write((short)0);
-                }
+                foreach (var afi in Files)
+                    bw.Write(Encoding.Unicode.GetBytes(afi.SingleName + '\0'));
+
+                //Write padding
+                while (bw.BaseStream.Position % 4 != 0)
+                    bw.Write((byte)0);
 
                 //Write FileData
-                foreach (var data in Files)
-                    bw.Write(new BinaryReaderX(data.FileData).ReadBytes((int)data.FileSize.GetValueOrDefault()));
+                foreach (var afi in Files.Where(afi => !afi.Entry.IsFolder).OrderBy(afi => afi.Entry.fileOffset))
+                {
+                    bw.Write(new byte[Pad((int)bw.BaseStream.Length, afi.FileName) - (int)bw.BaseStream.Length]); // padding
+                    afi.FileData.CopyTo(bw.BaseStream);
+                }
 
-                //Header
                 bw.BaseStream.Position = 0;
                 header.fileSize = (int)bw.BaseStream.Length;
-                header.tableLength = dirEntries.Count * 0xc + nameListLength;
-                header.dataOffset = 0x1c + dirEntries.Count * 0xc + nameListLength;
                 bw.WriteStruct(header);
-            }
-        }
-
-        public void GetDirInfo()
-        {
-            List<String> dirsNames = new List<string>();
-            foreach (var file in Files)
-            {
-                String[] splitStr = file.FileName.Split('/');
-                String tmp = "";
-                foreach (var partStr in splitStr)
-                {
-                    tmp += partStr;
-                    if (dirsNames.Find(e => e.Contains(tmp)) == null)
-                        dirsNames.Add(tmp);
-                    tmp += "/";
-                }
-            }
-
-            List<string[]> result = new List<string[]>();
-            foreach (var parts in dirsNames)
-                result.Add(parts.Split('/'));
-
-            int count = 1;
-            dirEntries = new List<DirEntry>();
-            foreach (var part in result)
-            {
-                foreach (var subpart in part)
-                    if (dirEntries.Find(e => e.dir.Contains(subpart)) == null)
-                    {
-                        dirEntries.Add(new DirEntry
-                        {
-                            dir = subpart,
-                            dirCount = count,
-                            lvl = (subpart == "." || subpart == "") ? 0 : part.Length - 2
-                        });
-                    }
-                    else
-                    {
-                        for (int i = 0; i < dirEntries.Count; i++)
-                            if (dirEntries[i].dir == subpart)
-                                dirEntries[i].dirCount++;
-                    }
-                count++;
             }
         }
     }

@@ -17,6 +17,7 @@ namespace KuriimuTests
                     while ((b1 = fs1.ReadByte()) != -1)
                     {
                         int b2 = fs2.ReadByte();
+                        if (b1 == b2) continue; // This makes it run a lot faster
                         Assert.AreEqual(b1, b2, $"Byte mismatch at position 0x{fs1.Position - 1:X}");
                     }
                 }

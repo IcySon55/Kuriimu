@@ -19,15 +19,15 @@ namespace archive_ctpk
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
-        Magic magic="CTPK";
-        short version=0x1;
-        public short texCount=0;
-        public int texSecOffset=0;
-        public int texSecSize=0;
-        public int crc32SecOffset=0;
-        public int texInfoOffset=0;
-        int zero0=0;
-        int zero1=0;
+        Magic magic = "CTPK";
+        short version = 0x1;
+        public short texCount = 0;
+        public int texSecOffset = 0;
+        public int texSecSize = 0;
+        public int crc32SecOffset = 0;
+        public int texInfoOffset = 0;
+        int zero0 = 0;
+        int zero1 = 0;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

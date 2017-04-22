@@ -61,10 +61,7 @@ namespace archive_cgrp
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-            {
-                var file = File.OpenRead(_fileInfo.FullName);
-                _cgrp = new CGRP(file);
-            }
+                _cgrp = new CGRP(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -80,8 +77,7 @@ namespace archive_cgrp
 
             try
             {
-                var file = File.Create(filename);
-                _cgrp.Save(file);
+                _cgrp.Save(_fileInfo.Create());
             }
             catch (Exception)
             {

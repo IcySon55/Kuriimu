@@ -7,10 +7,11 @@ using archive_darc.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 using Cetera.Archive;
+using System.Linq;
 
 namespace archive_darc
 {
-    public class DARCManager : IArchiveManager
+    public class DarcManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private DARC _darc = null;
@@ -61,10 +62,7 @@ namespace archive_darc
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-            {
-                var file = File.OpenRead(_fileInfo.FullName);
-                _darc = new DARC(file);
-            }
+                _darc = new DARC(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -80,8 +78,7 @@ namespace archive_darc
 
             try
             {
-                var file = File.Create(filename);
-                _darc.Save(file);
+                _darc.Save(_fileInfo.Create());
             }
             catch (Exception)
             {
@@ -97,13 +94,7 @@ namespace archive_darc
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _darc.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _darc.Files.Where(afi => !afi.Entry.IsFolder);
 
         public bool AddFile(ArchiveFileInfo afi)
         {

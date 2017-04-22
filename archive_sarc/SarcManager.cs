@@ -16,7 +16,7 @@ namespace archive_sarc
 
         // Information
         public string Name => "SARC";
-        public string Description => "Simple ARChive";
+        public string Description => "NW4C Sorted ARChive";
         public string Extension => "*.sarc;*.arc";
         public string About => "This is the SARC archive manager for Karameru.";
 

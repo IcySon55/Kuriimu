@@ -10,7 +10,7 @@ using Cetera.Hash;
 
 namespace archive_ctpk
 {
-    public class CTPKManager : IArchiveManager
+    public class CtpkManager : IArchiveManager
     {
         private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
@@ -61,10 +61,7 @@ namespace archive_ctpk
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-            {
-                var file = File.OpenRead(_fileInfo.FullName);
-                _ctpk = new CTPK(file);
-            }
+                _ctpk = new CTPK(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -80,8 +77,7 @@ namespace archive_ctpk
 
             try
             {
-                var file = File.Create(filename);
-                _ctpk.Save(file);
+                _ctpk.Save(_fileInfo.Create());
             }
             catch (Exception)
             {

@@ -19,7 +19,7 @@ namespace archive_sarc
 
         // Information
         public string Name => "ZLib-SARC";
-        public string Description => "ZLib-Compressed Simple ARChive";
+        public string Description => "ZLib-Compressed NW4C Sorted ARChive";
         public string Extension => "*.zlib";
         public string About => "This is the ZLib-Compressed SARC archive manager for Karameru.";
 

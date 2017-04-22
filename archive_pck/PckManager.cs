@@ -56,7 +56,7 @@ namespace archive_pck
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _pck = new PCK(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                _pck = new PCK(_fileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -72,9 +72,9 @@ namespace archive_pck
 
             try
             {
-                _pck.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                _pck.Save(_fileInfo.Create());
             }
-            catch (Exception)
+            catch
             {
                 result = SaveResult.Failure;
             }

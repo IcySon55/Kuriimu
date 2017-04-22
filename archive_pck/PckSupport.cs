@@ -11,13 +11,14 @@ namespace archive_pck
     public class PckFileInfo : ArchiveFileInfo
     {
         public PCKEntry Entry;
+        public List<uint> Hashes;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class PCKEntry
     {
-        public uint crc32;
-        public uint fileOffset;
-        public uint fileLength;
+        public uint hash;
+        public int fileOffset;
+        public int fileLength;
     }
 }
