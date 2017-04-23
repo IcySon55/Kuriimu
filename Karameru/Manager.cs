@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 
 namespace Karameru
@@ -479,7 +480,7 @@ namespace Karameru
                     var shfi = new Win32.SHFILEINFO();
                     try
                     {
-                        if (!imlFiles.Images.ContainsKey(ext))
+                        if (!imlFiles.Images.ContainsKey(ext) && !string.IsNullOrEmpty(ext))
                         {
                             Win32.SHGetFileInfo(ext, 0, out shfi, Marshal.SizeOf(shfi), Win32.SHGFI_ICON | Win32.SHGFI_SMALLICON | Win32.SHGFI_USEFILEATTRIBUTES);
                             imlFiles.Images.Add(ext, Icon.FromHandle(shfi.hIcon));
@@ -492,7 +493,7 @@ namespace Karameru
                     }
                     try
                     {
-                        if (!imlFilesLarge.Images.ContainsKey(ext))
+                        if (!imlFilesLarge.Images.ContainsKey(ext) && !string.IsNullOrEmpty(ext))
                         {
                             Win32.SHGetFileInfo(ext, 0, out shfi, Marshal.SizeOf(shfi), Win32.SHGFI_ICON | Win32.SHGFI_LARGEICON | Win32.SHGFI_USEFILEATTRIBUTES);
                             imlFilesLarge.Images.Add(ext, Icon.FromHandle(shfi.hIcon));
@@ -508,7 +509,9 @@ namespace Karameru
                     if (kukkiiFile) ext = "tree-image-file";
                     if (karameruFile) ext = "tree-archive-file";
 
-                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), file.FileSize.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
+                    var sb = new StringBuilder(16);
+                    Win32.StrFormatByteSize((long)file.FileSize, sb, 16);
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), sb.ToString()}, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
                 }
 
                 tslFileCount.Text = $"Files: {files.Count()}";

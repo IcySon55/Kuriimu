@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Kuriimu.Contract
 {
@@ -55,5 +56,9 @@ namespace Kuriimu.Contract
 
         [DllImport("uxtheme", CharSet = CharSet.Unicode)]
         public static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
+
+        // FileSize
+        [DllImport("Shlwapi.dll", CharSet = CharSet.Auto)]
+        public static extern int StrFormatByteSize(long fileSize, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder buffer, int bufferSize);
     }
 }
