@@ -1,23 +1,18 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_pck.Properties;
 using Kuriimu.Contract;
-using Kuriimu.IO;
-using Cetera.Hash;
 
 namespace archive_pck
 {
     public class PckManager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         private PCK _pck = null;
 
         #region Properties
 
         // Information
-        public string Name => Settings.Default.PluginName;
+        public string Name => Properties.Settings.Default.PluginName;
         public string Description => "Level 5 PaCKage";
         public string Extension => "*.pck";
         public string About => "This is the PCK archive manager for Karameru.";
@@ -30,56 +25,30 @@ namespace archive_pck
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
         public bool Identify(string filename)
         {
+            // TODO: Make this way more robust
             return filename.EndsWith(".pck");
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _pck = new PCK(_fileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _pck = new PCK(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
-            if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
-
-            try
-            {
-                _pck.Save(_fileInfo.Create());
-            }
-            catch
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            _pck.Save(FileInfo.Create());
         }
 
         public void Unload()
@@ -88,28 +57,13 @@ namespace archive_pck
         }
 
         //Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _pck.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _pck.Files;
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }

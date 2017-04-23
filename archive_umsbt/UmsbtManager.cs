@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -36,50 +35,38 @@ namespace archive_umsbt
             return filename.EndsWith(".umsbt");
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            if (!FileInfo.Exists) return LoadResult.FileNotFound;
 
-            _umsbt = new UMSBT(FileInfo.OpenRead());
-            return LoadResult.Success;
+            if (FileInfo.Exists)
+                _umsbt = new UMSBT(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            try
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
             {
-                // Save As...
-                if (!string.IsNullOrEmpty(filename))
-                {
-                    _umsbt.Save(FileInfo.Create());
-                    _umsbt.Close();
-                }
-                else
-                {
-                    // Create the temp file
-                    _umsbt.Save(File.Create(FileInfo.FullName + ".tmp"));
-                    _umsbt.Close();
-                    // Delete the original
-                    FileInfo.Delete();
-                    // Rename the temporary file
-                    File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
-                }
-
-                // Reload the new file to make sure everything is in order
-                Load(FileInfo.FullName);
+                _umsbt.Save(FileInfo.Create());
+                _umsbt.Close();
             }
-            catch (Exception)
+            else
             {
-                result = SaveResult.Failure;
+                // Create the temp file
+                _umsbt.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _umsbt.Close();
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
             }
 
-            return result;
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
@@ -90,20 +77,11 @@ namespace archive_umsbt
         // Files
         public IEnumerable<ArchiveFileInfo> Files => _umsbt.Files;
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }

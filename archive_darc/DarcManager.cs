@@ -2,24 +2,22 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
+using System.Linq;
 using archive_darc.Properties;
+using Cetera.Archive;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Archive;
-using System.Linq;
 
 namespace archive_darc
 {
     public class DarcManager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         private DARC _darc = null;
 
         #region Properties
 
         // Information
-        public string Name => Settings.Default.PluginName;
+        public string Name => Properties.Settings.Default.PluginName;
         public string Description => "Default ARChive";
         public string Extension => "*.arc";
         public string About => "This is the DARC archive manager for Karameru.";
@@ -32,17 +30,7 @@ namespace archive_darc
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -55,37 +43,20 @@ namespace archive_darc
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _darc = new DARC(_fileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _darc = new DARC(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
-            if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
-
-            try
-            {
-                _darc.Save(_fileInfo.Create());
-            }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            _darc.Save(FileInfo.Create());
         }
 
         public void Unload()
@@ -96,20 +67,11 @@ namespace archive_darc
         // Files
         public IEnumerable<ArchiveFileInfo> Files => _darc.Files.Where(afi => !afi.Entry.IsFolder);
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }

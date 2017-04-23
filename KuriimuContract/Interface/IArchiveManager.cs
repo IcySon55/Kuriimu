@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
@@ -23,8 +24,8 @@ namespace Kuriimu.Contract
         // I/O
         FileInfo FileInfo { get; set; }
         bool Identify(string filename); // Determines if the given file is opened by the plugin.
-        LoadResult Load(string filename);
-        SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
+        void Load(string filename);
+        void Save(string filename = ""); // A non-blank filename is provided when using Save As...
         void Unload(); // Instructs the archive manager to close open file handles.
 
         // Files
@@ -36,7 +37,7 @@ namespace Kuriimu.Contract
         bool ShowProperties(Icon icon);
     }
 
-    public class ArchiveFileInfo // This might need to be an interface.
+    public class ArchiveFileInfo
     {
         protected Stream _fileData = null;
 
@@ -48,22 +49,20 @@ namespace Kuriimu.Contract
                 _fileData.Position = 0;
                 return _fileData;
             }
-            set
-            {
-                _fileData = value;
-            }
+            set => _fileData = value;
         }
-        public virtual long? FileSize => FileData?.Length; // The length of the (uncompressed) stream
-        public ArchiveFileState State { get; set; } = ArchiveFileState.Empty; // Dictates the state of the FileData stream.
+        public virtual long? FileSize => FileData?.Length; // The length of the (uncompressed) stream, override this in derived classes when FileData is also overridden.
+        public ArchiveFileState State { get; set; } = ArchiveFileState.Empty; // Dictates the state of the ArchiveFileInfo to the UI. Plugins should not rely on this field for code logic.
     }
 
+    [Flags]
     public enum ArchiveFileState
     {
-        Empty,
-        Archived,
-        Added,
-        Replaced,
-        Renamed,
-        Deleted
+        Empty = 0,
+        Archived = 1,
+        Added = 2,
+        Replaced = 4,
+        Renamed = 8,
+        Deleted = 16
     }
 }

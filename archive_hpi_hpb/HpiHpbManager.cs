@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using archive_hpi_hpb.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Compression;
 
 //Notes:
 //Load in the class constructor
@@ -25,13 +23,12 @@ namespace archive_hpi_hpb
 {
     public class HpiHpbManager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         private HPIHPB _hpihpb = null;
 
         #region Properties
 
         // Information
-        public string Name => Settings.Default.PluginName;
+        public string Name => Properties.Settings.Default.PluginName;
         public string Description => "Atlus Archive (Etrian Odyssey Series)";
         public string Extension => "*.hpi";
         public string About => "This is the HPI/HPB archive manager for Karameru.";
@@ -44,24 +41,15 @@ namespace archive_hpi_hpb
         public bool CanSave => true;
         public bool CanReplaceFiles => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
         public bool Identify(string filename)
         {
-            String hpiFilename = filename;
-            String hpbFilename = filename.Remove(filename.Length - 1) + "B";
+            var hpiFilename = filename;
+            var hpbFilename = filename.Remove(filename.Length - 1) + "B";
+
             if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return false;
 
             using (var br = new BinaryReaderX(File.OpenRead(hpiFilename)))
@@ -70,62 +58,45 @@ namespace archive_hpi_hpb
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
+            FileInfo = new FileInfo(filename);
+
             var hpiFilename = filename;
             var hpbFilename = filename.Remove(filename.Length - 1) + "B";
 
-            _fileInfo = new FileInfo(filename);
-
-            if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename))
-            {
-                return LoadResult.FileNotFound;
-            }
-
             _hpihpb = new HPIHPB(File.OpenRead(hpiFilename), File.OpenRead(hpbFilename));
-            return LoadResult.Success;
         }
 
-        public SaveResult Save(string filename)
+        public void Save(string filename)
         {
-            SaveResult result = SaveResult.Success;
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
+            var hpiFilename = FileInfo.FullName;
+            var hpbFilename = FileInfo.FullName.Remove(FileInfo.FullName.Length - 1) + "B";
+
+            // Save As...
             if (!string.IsNullOrWhiteSpace(filename))
-                _fileInfo = new FileInfo(filename);
-
-            var hpiFilename = _fileInfo.FullName;
-            var hpbFilename = _fileInfo.FullName.Remove(_fileInfo.FullName.Length - 1) + "B";
-
-            try
             {
-                // Save As...
-                if (!string.IsNullOrWhiteSpace(filename))
-                {
-                    _hpihpb.Save(File.Create(hpiFilename), File.Create(hpbFilename));
-                    _hpihpb.Dispose();
-                }
-                else
-                {
-                    // Create the temp files
-                    _hpihpb.Save(File.Create(hpiFilename + ".tmp"), File.Create(hpbFilename + ".tmp"));
-                    _hpihpb.Dispose();
-                    // Delete the originals
-                    _fileInfo.Delete();
-                    File.Delete(hpbFilename);
-                    // Rename the temporary files
-                    File.Move(hpiFilename + ".tmp", hpiFilename);
-                    File.Move(hpbFilename + ".tmp", hpbFilename);
-                }
-
-                // Reload the new file to make sure everything is in order
-                Load(_fileInfo.FullName);
+                _hpihpb.Save(File.Create(hpiFilename), File.Create(hpbFilename));
+                _hpihpb.Dispose();
             }
-            catch
+            else
             {
-                result = SaveResult.Failure;
+                // Create the temp files
+                _hpihpb.Save(File.Create(hpiFilename + ".tmp"), File.Create(hpbFilename + ".tmp"));
+                _hpihpb.Dispose();
+                // Delete the originals
+                FileInfo.Delete();
+                File.Delete(hpbFilename);
+                // Rename the temporary files
+                File.Move(hpiFilename + ".tmp", hpiFilename);
+                File.Move(hpbFilename + ".tmp", hpbFilename);
             }
 
-            return result;
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
@@ -138,32 +109,19 @@ namespace archive_hpi_hpb
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            try
+            _hpihpb.Files.Add(new HpiHpbAfi
             {
-                _hpihpb.Files.Add(new HpiHpbAfi
-                {
-                    FileName = afi.FileName,
-                    FileData = afi.FileData,
-                    State = afi.State
-                });
-            }
-            catch
-            {
-                return false;
-            }
+                FileName = afi.FileName,
+                FileData = afi.FileData,
+                State = afi.State
+            });
 
             return true;
         }
 
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            throw new NotSupportedException();
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }
