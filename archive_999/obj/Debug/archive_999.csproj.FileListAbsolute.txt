@@ -4,3 +4,9 @@ C:\Users\Kirito\Desktop\Kuriimu-master\Kuriimu\bin\Debug\plugins\archive_999.pdb
 C:\Users\Kirito\Desktop\Kuriimu-master\archive_999\obj\Debug\archive_999.csprojResolveAssemblyReference.cache
 C:\Users\Kirito\Desktop\Kuriimu-master\archive_999\obj\Debug\archive_999.dll
 C:\Users\Kirito\Desktop\Kuriimu-master\archive_999\obj\Debug\archive_999.pdb
+C:\Users\Kirito\Desktop\Kuriimu_master\Kuriimu\bin\Debug\plugins\archive_999.dll.config
+C:\Users\Kirito\Desktop\Kuriimu_master\Kuriimu\bin\Debug\plugins\archive_999.dll
+C:\Users\Kirito\Desktop\Kuriimu_master\Kuriimu\bin\Debug\plugins\archive_999.pdb
+C:\Users\Kirito\Desktop\Kuriimu_master\archive_999\obj\Debug\archive_999.csprojResolveAssemblyReference.cache
+C:\Users\Kirito\Desktop\Kuriimu_master\archive_999\obj\Debug\archive_999.dll
+C:\Users\Kirito\Desktop\Kuriimu_master\archive_999\obj\Debug\archive_999.pdb
