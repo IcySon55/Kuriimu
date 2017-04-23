@@ -309,7 +309,7 @@ namespace Karameru
                 ConfirmOpenFile(files[0]);
         }
 
-        private void ConfirmOpenFile(string fileName = "")
+        private void ConfirmOpenFile(string filename = "")
         {
             var dr = DialogResult.No;
 
@@ -320,15 +320,15 @@ namespace Karameru
             {
                 case DialogResult.Yes:
                     dr = SaveFile();
-                    if (dr == DialogResult.OK) OpenFile(fileName);
+                    if (dr == DialogResult.OK) OpenFile(filename);
                     break;
                 case DialogResult.No:
-                    OpenFile(fileName);
+                    OpenFile(filename);
                     break;
             }
         }
 
-        private void OpenFile(string fileName = "")
+        private void OpenFile(string filename = "")
         {
             var ofd = new OpenFileDialog
             {
@@ -338,21 +338,21 @@ namespace Karameru
 
             var dr = DialogResult.OK;
 
-            if (fileName == string.Empty)
+            if (filename == string.Empty)
                 dr = ofd.ShowDialog();
 
             if (dr != DialogResult.OK) return;
 
-            if (fileName == string.Empty)
-                fileName = ofd.FileName;
+            if (filename == string.Empty)
+                filename = ofd.FileName;
 
-            var tempManager = SelectArchiveManager(fileName);
+            var tempManager = SelectArchiveManager(filename);
 
             try
             {
                 if (tempManager != null)
                 {
-                    tempManager.Load(fileName);
+                    tempManager.Load(filename);
 
                     _archiveManager?.Unload();
                     _archiveManager = tempManager;
@@ -363,7 +363,7 @@ namespace Karameru
                     UpdateForm();
                 }
 
-                Settings.Default.LastDirectory = new FileInfo(fileName).DirectoryName;
+                Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
                 Settings.Default.Save();
             }
             catch (Exception ex)
@@ -410,18 +410,18 @@ namespace Karameru
             return dr;
         }
 
-        private IArchiveManager SelectArchiveManager(string fileName, bool batchMode = false)
+        private IArchiveManager SelectArchiveManager(string filename, bool batchMode = false)
         {
             IArchiveManager result = null;
 
             // first look for managers whose extension matches that of our file name
-            List<IArchiveManager> matchingManagers = _archiveManagers.Where(manager => manager.Extension.Split(';').Any(s => fileName.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+            List<IArchiveManager> matchingManagers = _archiveManagers.Where(manager => manager.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
 
-            result = matchingManagers.FirstOrDefault(manager => manager.Identify(fileName));
+            result = matchingManagers.FirstOrDefault(manager => manager.Identify(filename));
 
             // if none of them match, then try all other managers
             if (result == null)
-                result = _archiveManagers.Except(matchingManagers).FirstOrDefault(manager => manager.Identify(fileName));
+                result = _archiveManagers.Except(matchingManagers).FirstOrDefault(manager => manager.Identify(filename));
 
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -725,17 +725,17 @@ namespace Karameru
         private void LaunchFile(ArchiveFileInfo afi, Applications application)
         {
             var stream = afi?.FileData;
-            var fileName = Path.GetFileName(afi?.FileName);
+            var filename = Path.GetFileName(afi?.FileName);
 
             if (stream == null)
             {
-                MessageBox.Show($"Uninitialized file stream. Unable to extract \"{fileName}\".", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Uninitialized file stream. Unable to extract \"{filename}\".", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (application == Applications.None) return;
             var tempDir = Path.Combine(Application.StartupPath, "temp");
-            var outputFileName = Path.Combine(tempDir, fileName);
+            var outputFileName = Path.Combine(tempDir, filename);
 
             if (!Directory.Exists(tempDir)) Directory.CreateDirectory(tempDir);
             using (var fs = File.Create(outputFileName))
@@ -773,18 +773,18 @@ namespace Karameru
             {
                 var afi = files.First();
                 var stream = afi?.FileData;
-                var fileName = Path.GetFileName(afi?.FileName);
+                var filename = Path.GetFileName(afi?.FileName);
 
                 if (stream == null)
                 {
-                    MessageBox.Show($"Uninitialized file stream. Unable to extract \"{fileName}\".", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"Uninitialized file stream. Unable to extract \"{filename}\".", "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                var extension = Path.GetExtension(fileName).ToLower();
+                var extension = Path.GetExtension(filename).ToLower();
                 var sfd = new SaveFileDialog();
                 sfd.InitialDirectory = Settings.Default.LastDirectory;
-                sfd.FileName = fileName;
+                sfd.FileName = filename;
                 sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension})|*{extension}";
 
                 if (sfd.ShowDialog() != DialogResult.OK) return;
@@ -798,7 +798,7 @@ namespace Karameru
                         if (afi.FileSize > 0)
                             stream.CopyTo(fs);
 
-                        MessageBox.Show($"\"{fileName}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show($"\"{filename}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
@@ -811,10 +811,10 @@ namespace Karameru
         private void ReplaceFile(ArchiveFileInfo afi)
         {
             if (afi == null) return;
-            var fileName = Path.GetFileName(afi.FileName);
+            var filename = Path.GetFileName(afi.FileName);
 
             var ofd = new OpenFileDialog();
-            ofd.Title = $"Select a file to replace {fileName} with...";
+            ofd.Title = $"Select a file to replace {filename} with...";
             ofd.InitialDirectory = Settings.Default.LastDirectory;
 
             // TODO: Implement file type filtering if replacement filetype matters
@@ -826,7 +826,7 @@ namespace Karameru
                 afi.FileData = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.None);
                 afi.State = ArchiveFileState.Replaced;
                 lstFiles.SelectedItems[0].ForeColor = StateToColor(afi.State);
-                MessageBox.Show($"{fileName} has been replaced with {Path.GetFileName(ofd.FileName)}.", "File Replaced", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{filename} has been replaced with {Path.GetFileName(ofd.FileName)}.", "File Replaced", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
