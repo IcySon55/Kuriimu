@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Cetera.Archive;
@@ -43,32 +42,20 @@ namespace archive_sarc
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            if (!FileInfo.Exists) return LoadResult.FileNotFound;
 
-            _sarc = new SimpleSARC(FileInfo.OpenRead());
-            return LoadResult.Success;
+            if (FileInfo.Exists)
+                _sarc = new SimpleSARC(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename)
+        public void Save(string filename)
         {
-            SaveResult result = SaveResult.Success;
-
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _sarc.Save(FileInfo.Create());
-            }
-            catch
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            _sarc.Save(FileInfo.Create());
         }
 
         public void Unload()
@@ -78,8 +65,10 @@ namespace archive_sarc
 
         // Files
         public IEnumerable<ArchiveFileInfo> Files => _sarc.Files;
-        public bool AddFile(ArchiveFileInfo afi) => throw new NotSupportedException();
-        public bool DeleteFile(ArchiveFileInfo afi) => throw new NotSupportedException();
+
+        public bool AddFile(ArchiveFileInfo afi) => false;
+
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
         public bool ShowProperties(Icon icon) => false;

@@ -8,8 +8,8 @@ namespace KuriimuTests
     [TestClass]
     public class ArchiveTests
     {
-        const string sample_file_path = "../../../sample_files/test_files";
-        const string tmp_path = "tmp";
+        private const string sample_file_path = "../../../sample_files/test_files";
+        private const string tmp_path = "tmp";
 
         public static void Test<T>(string file) where T : IArchiveManager, new()
         {
@@ -18,12 +18,12 @@ namespace KuriimuTests
             var path2 = Path.Combine(sample_file_path, tmp_path, "test-" + Path.GetFileName(file));
 
             var mgr = new T();
-            Assert.AreEqual(LoadResult.Success, mgr.Load(path1));
-            Assert.AreEqual(SaveResult.Success, mgr.Save(path2));
+            mgr.Load(path1);
+            mgr.Save(path2);
             FileAssert.AreEqual(path1, path2);
             mgr.Unload();
 
-            // delete if successful
+            // Delete if successful
             File.Delete(path2);
         }
 
@@ -31,13 +31,13 @@ namespace KuriimuTests
         {
             Test<archive_hpi_hpb.HpiHpbManager>(hpiFile);
 
-            // additionally compare the hpb files
+            // Additionally compare the hpb files
             var hpbFile = hpiFile.Remove(hpiFile.Length - 1) + "b";
             var path1 = Path.Combine(sample_file_path, hpbFile);
             var path2 = Path.Combine(sample_file_path, tmp_path, "test-" + Path.GetFileName(hpbFile));
             FileAssert.AreEqual(path1, path2);
 
-            // delete if successful
+            // Delete if successful
             File.Delete(path2);
         }
 
@@ -100,7 +100,7 @@ namespace KuriimuTests
         [TestMethod]
         public void XpckTest() => Test<archive_xpck.XpckManager>("ef_etc_0000.xc");
 
-        // FA (these are currently incorrect files)
+        // ARC0 - There is no plugin for these files
         //[TestMethod]
         public void FaTest1() => Test<archive_fa.FaManager>("yw2_a.fa");
 

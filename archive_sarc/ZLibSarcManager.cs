@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using Kuriimu.Contract;
-using Kuriimu.IO;
 using Cetera.Archive;
 using Cetera.Compression;
-using System.IO.Compression;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_sarc
 {
@@ -58,47 +58,34 @@ namespace archive_sarc
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            if (!FileInfo.Exists) return LoadResult.FileNotFound;
 
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
                 br.ReadBytes(4);
                 _sarc = new SARC(new MemoryStream(ZLib.Decompress(br.ReadBytes((int)FileInfo.Length - 4))));
-                return LoadResult.Success;
             }
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            try
+            var ms = new MemoryStream();
+            _sarc.Save(ms, true);
+            using (var bw = new BinaryWriterX(FileInfo.Create()))
             {
-                var ms = new MemoryStream();
-                _sarc.Save(ms, true);
-                using (var bw = new BinaryWriterX(FileInfo.Create()))
-                {
-                    bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
-                    bw.Write(ZLib.Compress(ms.ToArray()));
-                }
+                bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
+                bw.Write(ZLib.Compress(ms.ToArray()));
             }
-            catch
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
         }
 
-        // nothing to unload
         public void Unload()
         {
+            // Nothing to unload
         }
 
         // Files
@@ -110,7 +97,7 @@ namespace archive_sarc
             return true;
         }
 
-        public bool DeleteFile(ArchiveFileInfo afi) => throw new NotSupportedException();
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
         public bool ShowProperties(Icon icon) => false;

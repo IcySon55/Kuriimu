@@ -1,25 +1,22 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using archive_xpck.Properties;
 using Cetera.Compression;
+using Cetera.Hash;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Hash;
 
 namespace archive_xpck
 {
     public class XpckManager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         private XPCK _xpck = null;
 
         #region Properties
 
         // Information
-        public string Name => Settings.Default.PluginName;
+        public string Name => Properties.Settings.Default.PluginName;
         public string Description => "Level 5 eXtractable PaCKage";
         public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
         public string About => "This is the XPCK archive manager for Karameru.";
@@ -32,17 +29,7 @@ namespace archive_xpck
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -63,103 +50,67 @@ namespace archive_xpck
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _xpck = new XPCK(_fileInfo.FullName);
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _xpck = new XPCK(FileInfo.FullName);
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
-            if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
-
-            try
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
             {
-                // Save As...
-                if (!string.IsNullOrWhiteSpace(filename))
-                {
-                    _xpck.Save(File.Create(_fileInfo.FullName));
-                }
-                else
-                {
-                    // Create the temp file
-                    _xpck.Save(File.Create(_fileInfo.FullName + ".tmp"));
-                    // Delete the original
-                    _fileInfo.Delete();
-                    // Rename the temporary file
-                    File.Move(_fileInfo.FullName + ".tmp", _fileInfo.FullName);
-                }
-
-                // Reload the new file to make sure everything is in order
-                Load(_fileInfo.FullName);
+                _xpck.Save(File.Create(FileInfo.FullName));
             }
-            catch (Exception)
+            else
             {
-                result = SaveResult.Failure;
+                // Create the temp file
+                _xpck.Save(File.Create(FileInfo.FullName + ".tmp"));
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
             }
 
-            return result;
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-
+            // TODO: Implement closing open handles here
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _xpck.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _xpck.Files;
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            try
+            _xpck.Files.Add(new XPCKFileInfo()
             {
-                _xpck.Files.Add(new XPCKFileInfo()
+                Entry = new Entry()
                 {
-                    Entry = new Entry()
-                    {
-                        crc32 = Crc32.Create(Encoding.ASCII.GetBytes(afi.FileName)),
-                        ID = (ushort)(_xpck.Files.Count * 8),
-                        fileSize = (int)afi.FileData.Length
-                    },
-                    FileData = afi.FileData,
-                    FileName = afi.FileName,
-                    State = afi.State
-                });
-            }
-            catch
-            {
-                return false;
-            }
+                    crc32 = Crc32.Create(Encoding.ASCII.GetBytes(afi.FileName)),
+                    ID = (ushort)(_xpck.Files.Count * 8),
+                    fileSize = (int)afi.FileData.Length
+                },
+                FileData = afi.FileData,
+                FileName = afi.FileName,
+                State = afi.State
+            });
 
             return true;
         }
 
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }

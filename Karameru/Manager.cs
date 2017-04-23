@@ -311,10 +311,10 @@ namespace Karameru
 
         private void ConfirmOpenFile(string fileName = "")
         {
-            DialogResult dr = DialogResult.No;
+            var dr = DialogResult.No;
 
             if (_fileOpen && _hasChanges)
-                dr = MessageBox.Show("You have unsaved changes in " + FileName() + ". Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                dr = MessageBox.Show($"You have unsaved changes in {FileName()}. Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
             switch (dr)
             {
@@ -330,13 +330,13 @@ namespace Karameru
 
         private void OpenFile(string fileName = "")
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Settings.Default.LastDirectory;
+            var ofd = new OpenFileDialog
+            {
+                InitialDirectory = Settings.Default.LastDirectory,
+                Filter = Tools.LoadArchiveFilters(_archiveManagers)
+            };
 
-            // Supported Types
-            ofd.Filter = Tools.LoadArchiveFilters(_archiveManagers);
-
-            DialogResult dr = DialogResult.OK;
+            var dr = DialogResult.OK;
 
             if (fileName == string.Empty)
                 dr = ofd.ShowDialog();
@@ -346,12 +346,14 @@ namespace Karameru
             if (fileName == string.Empty)
                 fileName = ofd.FileName;
 
-            IArchiveManager tempManager = SelectArchiveManager(fileName);
+            var tempManager = SelectArchiveManager(fileName);
 
             try
             {
-                if (tempManager?.Load(fileName) == LoadResult.Success)
+                if (tempManager != null)
                 {
+                    tempManager.Load(fileName);
+
                     _archiveManager?.Unload();
                     _archiveManager = tempManager;
                     _fileOpen = true;
@@ -366,19 +368,16 @@ namespace Karameru
             }
             catch (Exception ex)
             {
-                if (tempManager != null)
-                    MessageBox.Show(this, ex.ToString(), tempManager.Name + " - " + tempManager.Description + " Manager", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                else
-                    MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.ToString(), tempManager != null ? $"{tempManager.Name} - {tempManager.Description} Manager" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private DialogResult SaveFile(bool saveAs = false)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            DialogResult dr = DialogResult.OK;
+            var sfd = new SaveFileDialog();
+            var dr = DialogResult.OK;
 
-            sfd.Title = "Save as " + _archiveManager.Description;
+            sfd.Title = $"Save as {_archiveManager.Description}";
             sfd.FileName = _archiveManager.FileInfo.Name;
             sfd.Filter = _archiveManager.Description + " (" + _archiveManager.Extension + ")|" + _archiveManager.Extension;
 
@@ -395,11 +394,17 @@ namespace Karameru
                 Settings.Default.Save();
             }
 
-            if (dr == DialogResult.OK)
+            if (dr != DialogResult.OK) return dr;
+
+            try
             {
-                _archiveManager.Save(saveAs ? _archiveManager.FileInfo.FullName : string.Empty);
+                _archiveManager.Save(saveAs ? _archiveManager.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
                 UpdateForm();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.ToString(), _archiveManager != null ? $"{_archiveManager.Name} - {_archiveManager.Description} Manager" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return dr;
@@ -440,11 +445,11 @@ namespace Karameru
             var lookup = _files.OrderBy(f => f.FileName).ToLookup(f => Path.GetDirectoryName(f.FileName));
 
             // Build directory tree
-            var root = treDirectories.Nodes.Add("root", $"{FileName()} - {lookup[""].Count()} file(s)", "tree-archive-file", "tree-archive-file");
+            var root = treDirectories.Nodes.Add("root", FileName(), "tree-archive-file", "tree-archive-file");
             foreach (var dir in lookup.Select(g => g.Key))
             {
                 dir.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, $"{part} - {lookup[dir].Count()} file(s)"))
+                    .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, part))
                     .Tag = lookup[dir];
             }
 

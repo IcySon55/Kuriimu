@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -9,7 +8,6 @@ namespace archive_dpk
 {
     public class DpkManager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         //private DPK4 _dpk4 = null;
 
         #region Properties
@@ -28,17 +26,7 @@ namespace archive_dpk
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -47,42 +35,25 @@ namespace archive_dpk
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                string magic = br.ReadString(4);
+                var magic = br.ReadString(4);
                 return magic == "DPK4";
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            //if (_fileInfo.Exists)
-            //	_dpk4 = new DPK4(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-            //else
-            //	result = LoadResult.FileNotFound;
-
-            return result;
+            //if (FileInfo.Exists)
+            //	_dpk4 = new DPK4(new FileStream(FileInfo.FullName, FileMode.Open, FileAccess.Read));
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
-            try
-            {
-                //_dpk4.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
-            }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            //_dpk4.Save(new FileStream(FileInfo.FullName, FileMode.Create, FileAccess.Write));
         }
 
         public void Unload()
@@ -91,65 +62,40 @@ namespace archive_dpk
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
+        public IEnumerable<ArchiveFileInfo> Files => new List<ArchiveFileInfo>
         {
-            get
+            new ArchiveFileInfo
             {
-                var files = new List<ArchiveFileInfo>();
+                FileName = "",
+                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
+            },
+            new ArchiveFileInfo
+            {
+                FileName = "archive_file.ctpk",
+                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
+            },
+            new ArchiveFileInfo
+            {
+                FileName = "image_file.bclim",
+                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
+            },
+            new ArchiveFileInfo
+            {
+                FileName = "text_file.msbt",
+                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
+            },
+            new ArchiveFileInfo {FileName = "dir1/subfile1.ext"},
+            new ArchiveFileInfo {FileName = "dir1/subfile2.ext"},
+            new ArchiveFileInfo {FileName = "dir1/subdir2/filez.xi"},
+            new ArchiveFileInfo {FileName = "dir2/zilla.ext"},
+            new ArchiveFileInfo {FileName = "dir2/somefile.ext"}
+        };
 
-                var file = new ArchiveFileInfo();
-                file.FileName = "archive_file.ctpk";
-                file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
-                files.Add(file);
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
-                file = new ArchiveFileInfo();
-                file.FileName = "image_file.bclim";
-                file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
-                files.Add(file);
-
-                file = new ArchiveFileInfo();
-                file.FileName = "text_file.msbt";
-                file.FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 });
-                files.Add(file);
-
-                file = new ArchiveFileInfo();
-                file.FileName = "dir1/subfile1.ext";
-                files.Add(file);
-
-                file = new ArchiveFileInfo();
-                file.FileName = "dir1/subfile2.ext";
-                files.Add(file);
-
-                file = new ArchiveFileInfo();
-                file.FileName = "dir1/subdir2/filez.xi";
-                files.Add(file);
-
-                file = new ArchiveFileInfo();
-                file.FileName = "dir2/zilla.ext";
-                files.Add(file);
-
-                file = new ArchiveFileInfo();
-                file.FileName = "dir2/somefile.ext";
-                files.Add(file);
-
-                return files;
-            }
-        }
-
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
-
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }
