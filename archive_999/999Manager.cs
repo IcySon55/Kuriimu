@@ -52,7 +52,7 @@ namespace archive_999
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            //_tng.Save(_fileInfo.Create());
+            //_tng.Save(FileInfo.Create());
         }
 
         public void Unload()
