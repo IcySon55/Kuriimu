@@ -20,7 +20,7 @@ namespace archive_999
                 if (State==ArchiveFileState.Archived)
                 {
                     base.FileData.Position = 0;
-                    var result = A999Support.deXOR(base.FileData, XORpad, _fileData.Length);
+                    var result = A999Support.deXOR(base.FileData, XORpad, (long)FileSize);
                     return new MemoryStream(result);
                 } else
                 {
@@ -29,7 +29,7 @@ namespace archive_999
             }
         }
 
-        public override long? FileSize => Entry.size;
+        public override long? FileSize => Entry.fileSize;
     }
 
     public class A999Support
@@ -68,22 +68,22 @@ namespace archive_999
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct unkEntry
+    public struct DirectoryEntry
     {
-        public uint unk1;
-        public int size;
-        public int offset;
+        public uint directoryHash;
+        public int fileCount;
+        public int unk1;
         public uint hold0;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Entry
     {
-        public long offset;
-        public uint unk1;
-        public long size;
+        public long fileOffset;
+        public uint XORpad;
+        public long fileSize;
         public uint XORID;
-        public short unkID;
+        public short directoryHashID;
         public short const0;
         public uint hold0;
     }

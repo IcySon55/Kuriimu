@@ -13,8 +13,8 @@ namespace archive_999
     {
         public List<A999FileInfo> Files=new List<A999FileInfo>();
 
-        List<uint> unk1=new List<uint>();
-        List<unkEntry> unkEntries=new List<unkEntry>();
+        List<uint> directoryHashes=new List<uint>();
+        List<DirectoryEntry> directoryEntries=new List<DirectoryEntry>();
         List<uint> XORs=new List<uint>();
 
         private uint headXORpad=0xFABACEDA;
@@ -37,10 +37,10 @@ namespace archive_999
                     var header = br.ReadStruct<Header>();
 
                     //unknown
-                    var unkTop = br.ReadStruct<TableHeader>();
-                    unk1 = br.ReadMultiple<uint>(unkTop.entryCount);
+                    var directoryTop = br.ReadStruct<TableHeader>();
+                    directoryHashes = br.ReadMultiple<uint>(directoryTop.entryCount);
                     while (br.BaseStream.Position % 16 != 0) br.BaseStream.Position++;
-                    unkEntries = br.ReadMultiple<unkEntry>(unkTop.entryCount);
+                    directoryEntries = br.ReadMultiple<DirectoryEntry>(directoryTop.entryCount);
 
                     //FileEntries
                     var entryTop = br.ReadStruct<TableHeader>();
@@ -48,21 +48,19 @@ namespace archive_999
                     while (br.BaseStream.Position % 16 != 0) br.BaseStream.Position++;
 
                     //Files
-                    for (int i = 0; i < entryTop.entryCount; i++)
-                    {
-                        int t;
-                        if (i > 0xcdc1)
-                            t = 0;
-                        var entry = br.ReadStruct<Entry>();
+                    for (int i = 0, overallFileCount = 0; i < directoryTop.entryCount; i++)
+                        for (int j = 0; j < directoryEntries[i].fileCount; j++, overallFileCount++)
+                        {
+                            var entry = br.ReadStruct<Entry>();
                             Files.Add(new A999FileInfo
                             {
                                 Entry = entry,
-                                XORpad = XORs[i],
-                                FileName = $"File {i:00000}.unk",
+                                XORpad = entry.XORpad,
+                                FileName = $"{i:00}/File{overallFileCount:00000}.unk",
                                 State = ArchiveFileState.Archived,
-                                FileData = new SubStream(br0.BaseStream, header.dataOffset + entry.offset, entry.size)
+                                FileData = new SubStream(br0.BaseStream, header.dataOffset + entry.fileOffset, entry.fileSize)
                             });
-                    }
+                        }
                 }
             }
         }
