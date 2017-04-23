@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using archive_999.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -11,13 +8,12 @@ namespace archive_999
 {
     public class A999Manager : IArchiveManager
     {
-        private FileInfo _fileInfo = null;
         private A999 _tng = null;
 
         #region Properties
 
         // Information
-        public string Name => Settings.Default.PluginName;
+        public string Name => Properties.Settings.Default.PluginName;
         public string Description => "Archive for 999 on PC";
         public string Extension => "*.bin";
         public string About => "This is the 999 archive manager for Karameru.";
@@ -30,17 +26,7 @@ namespace archive_999
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -49,7 +35,7 @@ namespace archive_999
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 8) return false;
-                return br.ReadUInt32()== 3621168824 && br.ReadUInt32() == 4257008638;
+                return br.ReadUInt32() == 3621168824 && br.ReadUInt32() == 4257008638;
             }
         }
 
@@ -75,28 +61,13 @@ namespace archive_999
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files
-        {
-            get
-            {
-                return _tng.Files;
-            }
-        }
+        public IEnumerable<ArchiveFileInfo> Files => _tng.Files;
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
-        public bool DeleteFile(ArchiveFileInfo afi)
-        {
-            return false;
-        }
+        public bool DeleteFile(ArchiveFileInfo afi) => false;
 
         // Features
-        public bool ShowProperties(Icon icon)
-        {
-            return false;
-        }
+        public bool ShowProperties(Icon icon) => false;
     }
 }
