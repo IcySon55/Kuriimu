@@ -53,37 +53,20 @@ namespace archive_999
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _tng = new A999(_fileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _tng = new A999(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
-            if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
-
-            try
-            {
-                //_tng.Save(_fileInfo.Create());
-            }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            //_tng.Save(FileInfo.Create());
         }
 
         public void Unload()
