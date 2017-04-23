@@ -466,8 +466,6 @@ namespace Karameru
             lstFiles.BeginUpdate();
             lstFiles.Items.Clear();
 
-            int count = 0;
-
             if (treDirectories.SelectedNode.Tag is IEnumerable<ArchiveFileInfo> files)
             {
                 foreach (var file in files)
@@ -513,7 +511,7 @@ namespace Karameru
 
                     var sb = new StringBuilder(16);
                     Win32.StrFormatByteSize((long)file.FileSize, sb, 16);
-                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), sb.ToString()}, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), sb.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
                 }
 
                 tslFileCount.Text = $"Files: {files.Count()}";
