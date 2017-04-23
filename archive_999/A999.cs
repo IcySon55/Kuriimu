@@ -23,7 +23,13 @@ namespace archive_999
         {
             using (var br0 = new BinaryReaderX(input, true))
             {
-                var inputTop = A999Support.deXOR(br0.BaseStream, headXORpad, 0x1D0150);
+                var tmpHeader = A999Support.deXOR(br0.BaseStream, headXORpad, 0x20);
+                var tmpBr = new BinaryReaderX(new MemoryStream(tmpHeader));
+                tmpBr.BaseStream.Position = 0x14;
+                var inputTopSize = tmpBr.ReadInt64();
+
+                br0.BaseStream.Position = 0;
+                var inputTop = A999Support.deXOR(br0.BaseStream, headXORpad, inputTopSize);
 
                 using (var br = new BinaryReaderX(new MemoryStream(inputTop)))
                 {
@@ -52,7 +58,7 @@ namespace archive_999
                             {
                                 Entry = entry,
                                 XORpad = XORs[i],
-                                FileName = "File " + i,
+                                FileName = $"File {i:00000}.unk",
                                 State = ArchiveFileState.Archived,
                                 FileData = new SubStream(br0.BaseStream, header.dataOffset + entry.offset, entry.size)
                             });

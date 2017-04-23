@@ -44,6 +44,8 @@ namespace archive_999
 
             return result.ToArray();
         }
+
+        public static byte[] reXOR(Stream input, uint XORpad, long length) => deXOR(input, XORpad, length);
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
