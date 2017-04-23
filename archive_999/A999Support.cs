@@ -20,7 +20,7 @@ namespace archive_999
                 if (State==ArchiveFileState.Archived)
                 {
                     base.FileData.Position = 0;
-                    var result = A999Support.deXOR(base.FileData, XORpad, FileSize.GetValueOrDefault());
+                    var result = A999Support.deXOR(base.FileData, XORpad, _fileData.Length);
                     return new MemoryStream(result);
                 } else
                 {
@@ -28,6 +28,8 @@ namespace archive_999
                 }
             }
         }
+
+        public override long? FileSize => Entry.size;
     }
 
     public class A999Support
@@ -42,6 +44,8 @@ namespace archive_999
 
             return result.ToArray();
         }
+
+        public static byte[] reXOR(Stream input, uint XORpad, long length) => deXOR(input, XORpad, length);
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

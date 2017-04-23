@@ -466,6 +466,8 @@ namespace Karameru
             lstFiles.BeginUpdate();
             lstFiles.Items.Clear();
 
+            int count = 0;
+
             if (treDirectories.SelectedNode.Tag is IEnumerable<ArchiveFileInfo> files)
             {
                 foreach (var file in files)
