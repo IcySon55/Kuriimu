@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Kuriimu.Contract;
 
@@ -13,6 +9,7 @@ namespace archive_999
     public class A999FileInfo : ArchiveFileInfo
     {
         public Entry Entry;
+<<<<<<< HEAD
         public uint XORpad;
 
         public override Stream FileData
@@ -33,21 +30,31 @@ namespace archive_999
         }
 
         public override long? FileSize => Entry.fileSize;
+=======
+>>>>>>> refs/heads/pr/15
     }
 
-    public class A999Support
+    internal class XorStream : Stream
     {
-        public static byte[] deXOR(Stream input, uint XORpad, long length)
+        Stream baseStream;
+        byte[] xorBytes;
+
+        public XorStream(Stream input, uint xor)
         {
-            var result = new MemoryStream();
-
-            var b = BitConverter.GetBytes(XORpad);
-            for (int i = 0; i < length; i++)
-                result.WriteByte((byte)(input.ReadByte() ^ i ^ b[i % 4]));
-
-            return result.ToArray();
+            baseStream = input ?? throw new ArgumentNullException(nameof(input));
+            xorBytes = BitConverter.GetBytes(xor);
         }
 
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            var orig = (byte)Position;
+            int read = baseStream.Read(buffer, offset, count);
+            for (int i = orig; i < orig + read; i++)
+                buffer[offset + i - orig] ^= (byte)(i ^ xorBytes[i % 4]);
+            return read;
+        }
+
+<<<<<<< HEAD
         public static byte[] reXOR(Stream input, uint XORpad, long length) => deXOR(input, XORpad, length);
 
         public static int Hash999(string s) => (s.Aggregate(0, (n, c) => n * 131 + (c & ~32)) * 16 | s.Sum(c => c) % 16) & int.MaxValue;
@@ -29037,6 +29044,17 @@ namespace archive_999
             [0x1b0ba466] = "/etc/place.dat",
             [0x42d242b5] = "/etc/staff.dat"
         };
+=======
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override bool CanRead => baseStream.CanRead;
+        public override bool CanSeek => baseStream.CanSeek;
+        public override bool CanWrite => false;
+        public override long Length => baseStream.Length;
+        public override long Position { get => baseStream.Position; set => baseStream.Position = value; }
+        public override void Flush() => baseStream.Flush();
+        public override long Seek(long offset, SeekOrigin origin) => baseStream.Seek(offset, origin);
+        public override void SetLength(long value) => baseStream.SetLength(value);
+>>>>>>> refs/heads/pr/15
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
