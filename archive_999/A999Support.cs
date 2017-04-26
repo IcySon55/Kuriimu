@@ -1,37 +1,15 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using Kuriimu.Contract;
 
 namespace archive_999
 {
-
     public class A999FileInfo : ArchiveFileInfo
     {
         public Entry Entry;
-<<<<<<< HEAD
-        public uint XORpad;
-
-        public override Stream FileData
-        {
-            get
-            {
-                if (State == ArchiveFileState.Archived)
-                {
-                    base.FileData.Position = 0;
-                    var result = A999Support.deXOR(base.FileData, XORpad, (long) FileSize);
-                    return new MemoryStream(result);
-                }
-                else
-                {
-                    return base.FileData;
-                }
-            }
-        }
-
-        public override long? FileSize => Entry.fileSize;
-=======
->>>>>>> refs/heads/pr/15
     }
 
     internal class XorStream : Stream
@@ -54,9 +32,19 @@ namespace archive_999
             return read;
         }
 
-<<<<<<< HEAD
-        public static byte[] reXOR(Stream input, uint XORpad, long length) => deXOR(input, XORpad, length);
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override bool CanRead => baseStream.CanRead;
+        public override bool CanSeek => baseStream.CanSeek;
+        public override bool CanWrite => false;
+        public override long Length => baseStream.Length;
+        public override long Position { get => baseStream.Position; set => baseStream.Position = value; }
+        public override void Flush() => baseStream.Flush();
+        public override long Seek(long offset, SeekOrigin origin) => baseStream.Seek(offset, origin);
+        public override void SetLength(long value) => baseStream.SetLength(value);
+    }
 
+    public class A999Support
+    {
         public static int Hash999(string s) => (s.Aggregate(0, (n, c) => n * 131 + (c & ~32)) * 16 | s.Sum(c => c) % 16) & int.MaxValue;
 
         public static Dictionary<uint, string> foldernames = new Dictionary<uint, string>
@@ -29044,17 +29032,6 @@ namespace archive_999
             [0x1b0ba466] = "/etc/place.dat",
             [0x42d242b5] = "/etc/staff.dat"
         };
-=======
-        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-        public override bool CanRead => baseStream.CanRead;
-        public override bool CanSeek => baseStream.CanSeek;
-        public override bool CanWrite => false;
-        public override long Length => baseStream.Length;
-        public override long Position { get => baseStream.Position; set => baseStream.Position = value; }
-        public override void Flush() => baseStream.Flush();
-        public override long Seek(long offset, SeekOrigin origin) => baseStream.Seek(offset, origin);
-        public override void SetLength(long value) => baseStream.SetLength(value);
->>>>>>> refs/heads/pr/15
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
