@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;

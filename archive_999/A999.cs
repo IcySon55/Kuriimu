@@ -52,11 +52,24 @@ namespace archive_999
                         for (int j = 0; j < directoryEntries[i].fileCount; j++, overallFileCount++)
                         {
                             var entry = br.ReadStruct<Entry>();
+                            string nameTmp, name="";
+                            if (A999Support.foldernames.TryGetValue(directoryHashes[i], out nameTmp))
+                            {
+                                if (!A999Support.filenames.TryGetValue(entry.XORpad, out name))
+                                {
+                                    name = nameTmp + $"File{overallFileCount:00000}";
+                                }
+                            }
+                            else
+                            {
+                                name= $"{i:00}/File{overallFileCount:00000}";
+                            }
+
                             Files.Add(new A999FileInfo
                             {
                                 Entry = entry,
                                 XORpad = entry.XORpad,
-                                FileName = $"{i:00}/File{overallFileCount:00000}.unk",
+                                FileName = name,
                                 State = ArchiveFileState.Archived,
                                 FileData = new SubStream(br0.BaseStream, header.dataOffset + entry.fileOffset, entry.fileSize)
                             });
