@@ -548,6 +548,9 @@ namespace Kuriimu
 
             SetFont();
 
+            // Tools
+            UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+
             // Extensions
             if (_extensions.Count > 0)
             {
