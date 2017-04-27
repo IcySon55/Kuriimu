@@ -51,6 +51,10 @@ namespace KuriimuTests
         [TestMethod]
         public void HpiHpbTest3() => HpiHpbTest("mori5.hpi");
 
+        //GAR
+        [TestMethod]
+        public void GarTest() => Test<archive_gar.GarManager>("Joker.Main.gar");
+
         // SSARC
         [TestMethod]
         public void SimpleSarcTest() => Test<archive_sarc.SimpleSarcManager>("fs2.sarc");

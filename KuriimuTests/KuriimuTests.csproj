@@ -76,6 +76,10 @@
       <Project>{44ed1984-768d-45bb-a548-f93c7d086876}</Project>
       <Name>archive_fa</Name>
     </ProjectReference>
+    <ProjectReference Include="..\archive_gar\archive_gar.csproj">
+      <Project>{0ed39fe6-f470-4791-a2ca-50e57e6f350c}</Project>
+      <Name>archive_gar</Name>
+    </ProjectReference>
     <ProjectReference Include="..\archive_hpi_hpb\archive_hpi_hpb.csproj">
       <Project>{30be912f-6874-4f11-9094-ef9cf098d16a}</Project>
       <Name>archive_hpi_hpb</Name>

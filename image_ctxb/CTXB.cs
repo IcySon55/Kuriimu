@@ -17,7 +17,7 @@ namespace image_ctxb
 {
     public class CTXB
     {
-        public enum DataTypes : uint
+        public enum DataTypes : ushort
         {
             Byte = 0x1400,
             UByte = 0x1401,
@@ -33,7 +33,7 @@ namespace image_ctxb
             UnsignedShort565 = 0x8363
         };
 
-        public enum Format : uint
+        public enum Format : ushort
         {
             RGBA8888 = 0x6752,
             RGB888 = 0x6754,
@@ -49,8 +49,7 @@ namespace image_ctxb
         {
             public Magic magic; //ctxb
             public int fileSize;
-            public int chunkCount;
-            public int zero0;
+            public long chunkCount;
             public int chunkOffset;
             public int texDataOffset;
         }
@@ -61,7 +60,7 @@ namespace image_ctxb
             {
                 using (var br = new BinaryReaderX(input,true))
                 {
-                    magic = br.ReadStruct<Magic>();
+                    magic = br.ReadStruct<Magic>(); //"tex "
                     chunkSize = br.ReadInt32();
                     texCount = br.ReadInt32();
 
@@ -83,6 +82,7 @@ namespace image_ctxb
             public ushort width;
             public ushort height;
             public Format imageFormat;
+            public DataTypes dataType;
         }
 
         public Header header;
@@ -106,7 +106,13 @@ namespace image_ctxb
                 {
                     Width = chunks[0].textures[0].width,
                     Height = chunks[0].textures[0].height,
-                    Format=ImageSettings.ConvertFormat(chunks[0].textures[0].imageFormat)
+                    Format= (chunks[0].textures[0].dataType == DataTypes.UnsignedShort565)
+                        ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
+                        : (chunks[0].textures[0].dataType == DataTypes.UnsignedShort5551)
+                            ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)
+                            : (chunks[0].textures[0].dataType == DataTypes.UnsignedShort4444)
+                                ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA4444)
+                                : ImageSettings.ConvertFormat(chunks[0].textures[0].imageFormat)
                 };
                 br.BaseStream.Position = header.texDataOffset;
                 bmp = Common.Load(br.ReadBytes(chunks[0].textures[0].dataLength), settings);
