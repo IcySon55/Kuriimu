@@ -414,7 +414,7 @@ namespace Kuriimu
             ofd.InitialDirectory = Settings.Default.LastDirectory;
 
             // Supported Types
-            ofd.Filter = Tools.LoadFileFilters(_textAdapters);
+            ofd.Filter = Tools.LoadTextFilters(_textAdapters);
 
             DialogResult dr = DialogResult.OK;
 

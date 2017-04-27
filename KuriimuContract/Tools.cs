@@ -4,16 +4,15 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Kuriimu.Contract
 {
     public static class Tools
     {
-        public static string LoadFileFilters(IEnumerable<ITextAdapter> fileAdapters)
+        public static string LoadTextFilters(IEnumerable<ITextAdapter> textAdapters)
         {
-            var alltypes = fileAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
+            var alltypes = textAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
 
             // Add two special cases at start and end
             if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension)) });
@@ -123,11 +122,6 @@ namespace Kuriimu.Contract
             }
 
             tre.SelectedNode = result;
-        }
-
-        public static string GetExtension(string path)
-        {
-            return Regex.Match(path, @"\..+$").Value;
         }
 
         public static void DoubleBuffer(Control ctrl, bool doubleBuffered)
