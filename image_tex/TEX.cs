@@ -1,8 +1,8 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using Cetera.Compression;
 using Cetera.Image;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 

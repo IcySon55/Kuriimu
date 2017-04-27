@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Manager));
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,7 +61,7 @@
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.treDirectories = new System.Windows.Forms.TreeView();
-            this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip();
             this.extractDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsFiles = new System.Windows.Forms.ToolStrip();
@@ -70,7 +69,7 @@
             this.lstFiles = new System.Windows.Forms.ListView();
             this.clmName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clmSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.mnuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuFiles = new System.Windows.Forms.ContextMenuStrip();
             this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,8 +93,9 @@
             this.listToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.detailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imlFiles = new System.Windows.Forms.ImageList(this.components);
-            this.imlFilesLarge = new System.Windows.Forms.ImageList(this.components);
+            this.imlFiles = new System.Windows.Forms.ImageList();
+            this.imlFilesLarge = new System.Windows.Forms.ImageList();
+            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -225,6 +225,8 @@
             // 
             // tolsToolStripMenuItem
             // 
+            this.tolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.compressionToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
             this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
@@ -753,6 +755,13 @@
             this.imlFilesLarge.ImageSize = new System.Drawing.Size(32, 32);
             this.imlFilesLarge.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // compressionToolStripMenuItem
+            // 
+            this.compressionToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_compression;
+            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compressionToolStripMenuItem.Text = "&Compression";
+            // 
             // Manager
             // 
             this.AllowDrop = true;
@@ -858,6 +867,7 @@
         private System.Windows.Forms.ToolStripMenuItem detailsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
     }
 }
 

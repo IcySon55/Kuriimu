@@ -4,9 +4,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using Cetera.Compression;
 using Cetera.Font;
 using game_zelda_a_link_between_worlds.Properties;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 
 namespace game_zelda_a_link_between_worlds

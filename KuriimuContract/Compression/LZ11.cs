@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Kuriimu.IO;
 
-namespace Cetera.Compression
+namespace Kuriimu.Compression
 {
     public class LZ11
     {

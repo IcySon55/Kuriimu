@@ -49,6 +49,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.sortEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extensionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noExtensionsLoadedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -326,9 +327,18 @@
             // 
             // tolsToolStripMenuItem
             // 
+            this.tolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.compressionToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
             this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // compressionToolStripMenuItem
+            // 
+            this.compressionToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_compression;
+            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // extensionsToolStripMenuItem
             // 
@@ -1176,5 +1186,6 @@
         private System.Windows.Forms.ToolStripButton tsbNextPage;
         private System.Windows.Forms.ToolStripButton tsbHandlerSettings;
         private System.Windows.Forms.ToolStripButton tsbKarameru;
+        private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
     }
 }

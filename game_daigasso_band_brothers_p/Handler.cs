@@ -5,10 +5,10 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Cetera.Compression;
 using Cetera.Font;
 using Cetera.Text;
 using game_daigasso_band_brothers_p.Properties;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 
 namespace game_daigasso_band_brothers_p

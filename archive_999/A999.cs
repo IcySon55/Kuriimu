@@ -9,7 +9,7 @@ namespace archive_999
 {
     public class A999
     {
-        public List<A999FileInfo> Files=new List<A999FileInfo>();
+        public List<A999FileInfo> Files;
 
         const uint headXORpad = 0xFABACEDA;
 
@@ -32,31 +32,25 @@ namespace archive_999
                 while (br.BaseStream.Position % 16 != 0) br.BaseStream.Position++;
 
                 //Files
-                for (int i = 0, overallFileCount = 0; i < directoryTop.entryCount; i++)
-                    for (int j = 0; j < directoryEntries[i].fileCount; j++, overallFileCount++)
-                    {
-                        var entry = br.ReadStruct<Entry>();
-                        string nameTmp, name = "";
-                        if (A999Support.foldernames.TryGetValue(directoryHashes[i], out nameTmp))
-                        {
-                            if (!A999Support.filenames.TryGetValue(entry.XORpad, out name))
-                            {
-                                name = nameTmp + $"File{overallFileCount:00000}";
-                            }
-                        }
-                        else
-                        {
-                            name = $"{i:00}/File{overallFileCount:00000}";
-                        }
+                Files = directoryEntries.SelectMany(dirEntry =>
+                {
+                    if (!A999Support.foldernames.TryGetValue(dirEntry.directoryHash, out var path))
+                        path = $"/UNK/0x{dirEntry.directoryHash:X8}";
 
-                        Files.Add(new A999FileInfo
+                    return br.ReadMultiple<Entry>(dirEntry.fileCount).Select(entry =>
+                    {
+                        if (!A999Support.filenames.TryGetValue(entry.XORpad, out var filename))
+                            filename = $"{path}/0x{entry.XORpad:X8}.unk";
+
+                        return new A999FileInfo
                         {
                             Entry = entry,
-                            FileName = name,
+                            FileName = filename,
                             State = ArchiveFileState.Archived,
                             FileData = new XorStream(new SubStream(input, header.dataOffset + entry.fileOffset, entry.fileSize), entry.XORpad)
-                        });
-                    }
+                        };
+                    });
+                }).ToList();
             }
         }
     }

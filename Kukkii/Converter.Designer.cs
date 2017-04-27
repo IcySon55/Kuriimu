@@ -66,6 +66,8 @@
             this.tslTool = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -81,6 +83,7 @@
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.batchToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
@@ -462,6 +465,21 @@
             this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
             this.propertyGrid1.TabIndex = 0;
             // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.compressionToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // compressionToolStripMenuItem
+            // 
+            this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
+            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compressionToolStripMenuItem.Text = "&Compression";
+            // 
             // Converter
             // 
             this.AllowDrop = true;
@@ -532,6 +550,8 @@
         private System.Windows.Forms.ToolStripButton tsbKarameru;
         private System.Windows.Forms.ToolStripMenuItem batchExportPNGToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem batchImportPNGToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
     }
 }
 

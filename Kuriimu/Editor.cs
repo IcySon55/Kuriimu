@@ -414,7 +414,7 @@ namespace Kuriimu
             ofd.InitialDirectory = Settings.Default.LastDirectory;
 
             // Supported Types
-            ofd.Filter = Tools.LoadFileFilters(_textAdapters);
+            ofd.Filter = Tools.LoadTextFilters(_textAdapters);
 
             DialogResult dr = DialogResult.OK;
 
@@ -547,6 +547,9 @@ namespace Kuriimu
             scbFontSize.TextChanged += new EventHandler(scbFontSize_TextChanged);
 
             SetFont();
+
+            // Tools
+            UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
 
             // Extensions
             if (_extensions.Count > 0)

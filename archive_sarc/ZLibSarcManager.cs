@@ -5,7 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Cetera.Archive;
-using Cetera.Compression;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 

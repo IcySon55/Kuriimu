@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Cetera.Compression;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Hash;
 
 namespace archive_xpck
 {

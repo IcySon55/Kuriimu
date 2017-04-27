@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Cetera.Compression;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 

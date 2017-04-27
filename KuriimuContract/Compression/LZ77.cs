@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Kuriimu.IO;
 
-namespace Cetera.Compression
+namespace Kuriimu.Compression
 {
     public class LZ77
     {
