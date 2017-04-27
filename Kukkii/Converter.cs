@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -35,6 +34,10 @@ namespace Kukkii
         private void frmConverter_Load(object sender, EventArgs e)
         {
             Icon = Resources.kukkii;
+
+            // Tools
+            Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+
             UpdateForm();
         }
 

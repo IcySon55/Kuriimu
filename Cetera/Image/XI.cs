@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using Cetera.Compression;
+using Kuriimu.Compression;
 using Kuriimu.IO;
 
 namespace Cetera.Image

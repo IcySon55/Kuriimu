@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Cetera.Compression
+namespace Kuriimu.Compression
 {
     public class CriWare
     {

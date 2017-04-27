@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Text;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Cetera.Font;
 using game_etrian_odyssey_v.Properties;
 using Kuriimu.Contract;

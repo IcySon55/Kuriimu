@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
 
-namespace Cetera.Compression
+namespace Kuriimu.Compression
 {
     public sealed class RevLZ77
     {

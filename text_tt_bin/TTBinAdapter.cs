@@ -4,10 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Cetera.Compression;
-using text_ttbin.Properties;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using text_ttbin.Properties;
 
 namespace text_ttbin
 {

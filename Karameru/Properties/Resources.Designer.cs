@@ -153,6 +153,16 @@ namespace Karameru.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_compression {
+            get {
+                object obj = ResourceManager.GetObject("menu_compression", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_delete {
             get {
                 object obj = ResourceManager.GetObject("menu_delete", resourceCulture);

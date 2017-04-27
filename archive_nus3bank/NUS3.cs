@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using Cetera;
-using Cetera.Compression;
+using Kuriimu.Compression;
 using Kuriimu.IO;
 
 namespace archive_nus3bank

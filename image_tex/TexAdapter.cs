@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.IO;
-using Cetera.Compression;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 

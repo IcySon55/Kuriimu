@@ -4,7 +4,7 @@ using Kuriimu.IO;
 
 //Compression code from dsdecmp
 
-namespace Cetera.Compression
+namespace Kuriimu.Compression
 {
     public class LZ10
     {

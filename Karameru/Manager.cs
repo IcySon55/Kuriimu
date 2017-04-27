@@ -1,6 +1,4 @@
-﻿using Karameru.Properties;
-using Kuriimu.Contract;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,6 +7,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Karameru.Properties;
+using Kuriimu.Contract;
 
 namespace Karameru
 {
@@ -81,6 +81,9 @@ namespace Karameru
             detailsToolStripMenuItem.Tag = View.Details;
             tileToolStripMenuItem.Tag = View.Tile;
             detailsToolStripMenuItem.Checked = true; // Default for now TODO: Make this saved in user settings
+
+            // Tools
+            Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
 
             Tools.DoubleBuffer(treDirectories, true);
             Tools.DoubleBuffer(lstFiles, true);

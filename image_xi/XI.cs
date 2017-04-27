@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.IO.Compression;
 using System.Runtime.InteropServices;
-using System.Threading;
-using Cetera.Compression;
 using Cetera.Image;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
