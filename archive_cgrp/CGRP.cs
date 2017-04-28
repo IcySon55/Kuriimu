@@ -13,6 +13,7 @@ namespace archive_cgrp
     public sealed class CGRP
     {
         public List<CGRPFileInfo> Files = new List<CGRPFileInfo>();
+        Stream _stream = null;
 
         private Header header;
         private List<Info1> info1;
@@ -21,6 +22,7 @@ namespace archive_cgrp
 
         public CGRP(Stream input)
         {
+            _stream = input;
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 //Header
@@ -116,6 +118,12 @@ namespace archive_cgrp
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Dispose();
+            _stream = null;
         }
     }
 }

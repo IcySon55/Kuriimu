@@ -11,27 +11,26 @@ namespace archive_xpck
     public sealed class XPCK
     {
         public List<XPCKFileInfo> Files = new List<XPCKFileInfo>();
+        Stream _stream = null;
 
         public XPCK(String filename)
         {
-            Stream input;
-
             using (BinaryReaderX xpckBr = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (xpckBr.ReadString(4) == "XPCK")
                 {
                     xpckBr.BaseStream.Position = 0;
-                    input = new MemoryStream(xpckBr.ReadBytes((int)xpckBr.BaseStream.Length));
+                    _stream = new MemoryStream(xpckBr.ReadBytes((int)xpckBr.BaseStream.Length));
                 }
                 else
                 {
                     xpckBr.BaseStream.Position = 0;
                     byte[] decomp = CriWare.GetDecompressedBytes(xpckBr.BaseStream);
-                    input = new MemoryStream(decomp);
+                    _stream = new MemoryStream(decomp);
                 }
             }
 
-            using (BinaryReaderX xpckBr = new BinaryReaderX(input))
+            using (BinaryReaderX xpckBr = new BinaryReaderX(_stream))
             {
                 //Header
                 var header = xpckBr.ReadStruct<Header>();
@@ -118,6 +117,12 @@ namespace archive_xpck
                 xpckBw.BaseStream.Position = 0x10;
                 xpckBw.Write(dataLength);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

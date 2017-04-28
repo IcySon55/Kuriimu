@@ -11,9 +11,11 @@ namespace archive_pck
     public sealed class PCK
     {
         public List<PckFileInfo> Files;
+        Stream _stream = null;
 
         public PCK(Stream input)
         {
+            _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 var entries = br.ReadMultiple<PCKEntry>(br.ReadInt32()).ToList();
@@ -72,6 +74,12 @@ namespace archive_pck
                     afi.FileData.CopyTo(bw.BaseStream);
                 }
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

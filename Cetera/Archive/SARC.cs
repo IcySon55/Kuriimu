@@ -14,6 +14,7 @@ namespace Cetera.Archive
     public sealed class SARC
     {
         public List<ArchiveFileInfo> Files;
+        Stream _stream = null;
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class SARCHeader
@@ -74,6 +75,7 @@ namespace Cetera.Archive
 
         public SARC(Stream input)
         {
+            _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 var sarcHeader = br.ReadStruct<SARCHeader>();
@@ -147,6 +149,12 @@ namespace Cetera.Archive
                 header.fileSize = (int)bw.BaseStream.Length;
                 bw.WriteStruct(header);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

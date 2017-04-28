@@ -48,12 +48,30 @@ namespace archive_pck
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            _pck.Save(FileInfo.Create());
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
+            {
+                _pck.Save(FileInfo.Create());
+                _pck.Close();
+            }
+            else
+            {
+                // Create the temp file
+                _pck.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _pck.Close();
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+            }
+
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-            // TODO: Implement closing open handles here
+            _pck.Close();
         }
 
         //Files

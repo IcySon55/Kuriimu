@@ -12,6 +12,7 @@ namespace archive_zar
     public sealed class ZAR
     {
         public List<ZARFileInfo> Files = new List<ZARFileInfo>();
+        Stream _stream = null;
 
         public Header header;
         public List<ChunkEntry> entries = new List<ChunkEntry>();
@@ -22,6 +23,7 @@ namespace archive_zar
 
         public ZAR(Stream input)
         {
+            _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 //Header
@@ -191,6 +193,12 @@ namespace archive_zar
                 header.offsetList = offListOffset;
                 bw.WriteStruct(header);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

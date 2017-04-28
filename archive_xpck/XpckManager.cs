@@ -35,9 +35,6 @@ namespace archive_xpck
 
         public bool Identify(string filename)
         {
-            //Console.WriteLine(Crc32.Create(new byte[] { 0x30, 0x30, 0x30, 0x2e, 0x61, 0x74, 0x72 }));
-            //return false;
-
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
@@ -66,12 +63,14 @@ namespace archive_xpck
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _xpck.Save(File.Create(FileInfo.FullName));
+                _xpck.Save(FileInfo.Create());
+                _xpck.Close();
             }
             else
             {
                 // Create the temp file
                 _xpck.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _xpck.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -84,7 +83,7 @@ namespace archive_xpck
 
         public void Unload()
         {
-            // TODO: Implement closing open handles here
+            _xpck.Close();
         }
 
         // Files

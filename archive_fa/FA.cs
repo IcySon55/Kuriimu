@@ -12,6 +12,7 @@ namespace archive_fa
     public sealed class FA
     {
         public List<FAFileInfo> Files = new List<FAFileInfo>();
+        Stream _stream = null;
 
         private Header header;
         private byte[] unk1;
@@ -24,6 +25,7 @@ namespace archive_fa
 
         public FA(Stream input)
         {
+            _stream = input;
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 //Header
@@ -180,6 +182,12 @@ namespace archive_fa
             while (list.Count % 4 != 0) list.Add(0);
 
             return list.ToArray();
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

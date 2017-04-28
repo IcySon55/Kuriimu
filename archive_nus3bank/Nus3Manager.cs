@@ -76,12 +76,30 @@ namespace archive_nus3bank
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            _nus3.Save(FileInfo.FullName, _isZlibCompressed);
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
+            {
+                _nus3.Save(FileInfo.FullName, _isZlibCompressed);
+                _nus3.Close();
+            }
+            else
+            {
+                // Create the temp file
+                _nus3.Save(FileInfo.FullName + ".tmp", _isZlibCompressed);
+                _nus3.Close();
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+            }
+
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-            // TODO: Implement closing open handles here
+            _nus3.Close();
         }
 
         // Files

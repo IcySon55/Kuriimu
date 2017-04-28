@@ -13,6 +13,7 @@ namespace archive_cwar
     public sealed class CWAR
     {
         public List<CWARFileInfo> Files = new List<CWARFileInfo>();
+        Stream _stream = null;
 
         private Header header;
         private List<InfoEntry> infos;
@@ -20,6 +21,7 @@ namespace archive_cwar
 
         public CWAR(Stream input)
         {
+            _stream = input;
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 //Header
@@ -108,6 +110,12 @@ namespace archive_cwar
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);
             }*/
+        }
+
+        public void Close()
+        {
+            _stream.Close();
+            _stream = null;
         }
     }
 }
