@@ -104,6 +104,10 @@
       <Project>{95f859b9-118c-4f39-aa04-76901412413e}</Project>
       <Name>archive_xpck</Name>
     </ProjectReference>
+    <ProjectReference Include="..\archive_zar\archive_zar.csproj">
+      <Project>{2c31ddb6-3f96-41aa-8f0d-1830f8be68e8}</Project>
+      <Name>archive_zar</Name>
+    </ProjectReference>
     <ProjectReference Include="..\image_bclyt\image_bclyt.csproj">
       <Project>{508881f8-e128-4d4e-a38b-d3e60d8a668e}</Project>
       <Name>image_bclyt</Name>

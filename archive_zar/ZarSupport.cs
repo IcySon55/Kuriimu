@@ -8,9 +8,9 @@ using Kuriimu.Contract;
 using System.IO;
 using Kuriimu.IO;
 
-namespace archive_gar
+namespace archive_zar
 {
-    public class GARFileInfo : ArchiveFileInfo
+    public class ZARFileInfo : ArchiveFileInfo
     {
         public string ext;
     }
@@ -25,7 +25,7 @@ namespace archive_gar
         public int chunkEntryOffset;
         public int chunkInfOffset;
         public int offsetList;
-        public Magic8 hold0; //jenkins
+        public Magic8 hold0; //queen
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -41,15 +41,12 @@ namespace archive_gar
     {
         public ChunkInfo(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 fileSize = br.ReadUInt32();
-                nameOffset = br.ReadInt32();
                 fileNameOffset = br.ReadInt32();
 
                 long bk = br.BaseStream.Position;
-                br.BaseStream.Position = nameOffset;
-                name = br.ReadCStringA();
                 br.BaseStream.Position = fileNameOffset;
                 fileName = br.ReadCStringA();
                 br.BaseStream.Position = bk;
@@ -57,10 +54,8 @@ namespace archive_gar
         }
 
         public uint fileSize;
-        public int nameOffset;
         public int fileNameOffset;
 
-        public string name;
         public string fileName;
     }
 }
