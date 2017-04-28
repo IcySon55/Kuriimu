@@ -24,7 +24,7 @@ namespace archive_cwar
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
@@ -52,12 +52,30 @@ namespace archive_cwar
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            _cwar.Save(FileInfo.Create());
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
+            {
+                _cwar.Save(FileInfo.Create());
+                _cwar.Close();
+            }
+            else
+            {
+                // Create the temp file
+                _cwar.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _cwar.Close();
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+            }
+
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-            // TODO: Implement closing open handles here
+            _cwar.Close();
         }
 
         // Files

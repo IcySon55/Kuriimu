@@ -13,9 +13,11 @@ namespace archive_ctpk
     public sealed class CTPK
     {
         public List<CTPKFileInfo> Files = new List<CTPKFileInfo>();
+        Stream _stream = null;
 
         public CTPK(Stream input)
         {
+            _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 //Header
@@ -108,6 +110,12 @@ namespace archive_ctpk
                     afi.FileData.CopyTo(bw.BaseStream);
                 }
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

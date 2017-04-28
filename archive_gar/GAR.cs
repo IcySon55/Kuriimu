@@ -12,6 +12,7 @@ namespace archive_gar
     public sealed class GAR
     {
         public List<GARFileInfo> Files = new List<GARFileInfo>();
+        Stream _stream = null;
 
         public Header header;
         public List<ChunkEntry> entries = new List<ChunkEntry>();
@@ -22,6 +23,7 @@ namespace archive_gar
 
         public GAR(Stream input)
         {
+            _stream = input;
             using (var br=new BinaryReaderX(input,true))
             {
                 //Header
@@ -195,6 +197,12 @@ namespace archive_gar
                 header.offsetList = offListOffset;
                 bw.WriteStruct(header);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

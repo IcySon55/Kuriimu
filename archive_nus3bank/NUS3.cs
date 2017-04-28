@@ -14,6 +14,7 @@ namespace archive_nus3bank
     public sealed class NUS3
     {
         public List<NUS3FileInfo> Files = new List<NUS3FileInfo>();
+        Stream _stream = null;
 
         public Header header;
         public BankToc banktocHeader;
@@ -27,8 +28,6 @@ namespace archive_nus3bank
 
         public NUS3(String filename, bool isZlibCompressed = false)
         {
-            Stream stream;
-
             if (isZlibCompressed)
             {
                 using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
@@ -37,14 +36,14 @@ namespace archive_nus3bank
                     File.OpenWrite(filename + ".decomp").Write(decomp, 0, decomp.Length);
                 }
 
-                stream = File.OpenRead(filename + ".decomp");
+                _stream = File.OpenRead(filename + ".decomp");
             }
             else
             {
-                stream = File.OpenRead(filename);
+                _stream = File.OpenRead(filename);
             }
 
-            using (var br = new BinaryReaderX(stream, true))
+            using (var br = new BinaryReaderX(_stream, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -101,7 +100,7 @@ namespace archive_nus3bank
                     {
                         FileName = tone.toneEntries[i].name + ".idsp",
                         Entry = tone.toneEntries[i],
-                        FileData = new SubStream(stream, tone.toneEntries[i].packOffset, tone.toneEntries[i].size)
+                        FileData = new SubStream(_stream, tone.toneEntries[i].packOffset, tone.toneEntries[i].size)
                     });
                 }
             }
@@ -254,6 +253,12 @@ namespace archive_nus3bank
                 File.Delete(filename);
                 File.OpenWrite(filename).Write(comp,0,comp.Length);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }

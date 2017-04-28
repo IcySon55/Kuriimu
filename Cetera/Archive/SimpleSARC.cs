@@ -10,6 +10,7 @@ namespace Cetera.Archive
     public class SimpleSARC
     {
         public List<SimpleSARCFileInfo> Files;
+        Stream _stream = null;
 
         public class SimpleSARCFileInfo : ArchiveFileInfo
         {
@@ -38,6 +39,7 @@ namespace Cetera.Archive
 
         public SimpleSARC(Stream input)
         {
+            _stream = input;
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 header = br.ReadStruct<SimpleSARCHeader>();
@@ -79,6 +81,12 @@ namespace Cetera.Archive
                     afi.FileData.CopyTo(bw.BaseStream);
                 }
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Close();
+            _stream = null;
         }
     }
 }
