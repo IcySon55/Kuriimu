@@ -15,12 +15,12 @@ namespace archive_hpi_hpb
         const uint HashSlotCount = 0x1000;
         const uint PathHashMagic = 0x25;
 
-        private Stream _hpb = null;
+        private Stream _stream = null;
 
-        public HPIHPB(Stream hpi, Stream hpb)
+        public HPIHPB(Stream hpiInput, Stream hpbInput)
         {
-            _hpb = hpb;
-            using (var br = new BinaryReaderX(hpi))
+            _stream = hpbInput;
+            using (var br = new BinaryReaderX(hpiInput))
             {
                 // HPI Header
                 var header = br.ReadStruct<HpiHeader>();
@@ -33,16 +33,16 @@ namespace archive_hpi_hpb
                 {
                     Entry = entry,
                     FileName = br.ReadCStringSJIS(), // String Table
-                    FileData = new SubStream(hpb, Math.Max(0, entry.fileOffset), entry.fileSize),
+                    FileData = new SubStream(hpbInput, Math.Max(0, entry.fileOffset), entry.fileSize),
                     State = ArchiveFileState.Archived
                 }).ToList();
             }
         }
 
-        public void Save(Stream hpi, Stream hpb)
+        public void Save(Stream hpiOutput, Stream hpbOutput)
         {
-            using (hpb)
-            using (var bw = new BinaryWriterX(hpi))
+            using (hpbOutput)
+            using (var bw = new BinaryWriterX(hpiOutput))
             {
                 // HPI Header
                 bw.WriteStruct(new HpiHeader { hashCount = (short)HashSlotCount, entryCount = Files.Count });
@@ -54,12 +54,11 @@ namespace archive_hpi_hpb
                 foreach (var afi in Files)
                 {
                     afi.Entry.stringOffset = stringOffset;
-                    if (afi.Entry.fileSize != 0) afi.WriteToHpb(hpb);
+                    if (afi.Entry.fileSize != 0) afi.WriteToHpb(hpbOutput);
                     stringOffset += GetSJIS(afi.FileName).Length + 1;
                 }
 
                 // Hash List
-
                 var lookup = Files.ToLookup(e => SimpleHash.Create(GetSJIS(e.FileName), PathHashMagic, HashSlotCount));
                 for (int i = 0, offset = 0; i < HashSlotCount; i++)
                 {
@@ -80,7 +79,8 @@ namespace archive_hpi_hpb
 
         public void Dispose()
         {
-            _hpb.Dispose();
+            _stream?.Dispose();
+            _stream = null;
         }
     }
 }

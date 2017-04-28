@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using archive_darc.Properties;
 using Cetera.Archive;
 using Kuriimu.Contract;
 using Kuriimu.IO;
@@ -56,12 +54,30 @@ namespace archive_darc
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            _darc.Save(FileInfo.Create());
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
+            {
+                _darc.Save(FileInfo.Create());
+                _darc.Close();
+            }
+            else
+            {
+                // Create the temp file
+                _darc.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _darc.Close();
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+            }
+
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-            // TODO: Implement closing open handles here
+            _darc?.Close();
         }
 
         // Files
