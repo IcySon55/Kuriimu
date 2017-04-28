@@ -15,11 +15,11 @@ namespace archive_hpi_hpb
         const uint HashSlotCount = 0x1000;
         const uint PathHashMagic = 0x25;
 
-        private Stream _hpb = null;
+        private Stream _stream = null;
 
         public HPIHPB(Stream hpi, Stream hpb)
         {
-            _hpb = hpb;
+            _stream = hpb;
             using (var br = new BinaryReaderX(hpi))
             {
                 // HPI Header
@@ -80,7 +80,8 @@ namespace archive_hpi_hpb
 
         public void Dispose()
         {
-            _hpb.Dispose();
+            _stream?.Dispose();
+            _stream = null;
         }
     }
 }
