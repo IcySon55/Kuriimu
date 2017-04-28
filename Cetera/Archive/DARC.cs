@@ -11,6 +11,7 @@ namespace Cetera.Archive
     public sealed class DARC
     {
         public List<DarcFileInfo> Files;
+        private Stream _stream = null;
 
         public class DarcFileInfo : ArchiveFileInfo
         {
@@ -43,6 +44,7 @@ namespace Cetera.Archive
 
         public DARC(Stream input)
         {
+            _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 //Header
@@ -95,9 +97,9 @@ namespace Cetera.Archive
             [".bcfnt"] = 0x2000,
         };
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output))
             {
                 var header = new Header { tableLength = Files.Count * 12 + Files.Sum(afi => afi.SingleName.Length + 1) * 2 };
                 int dataOffset = Pad(header.tableLength + 0x1C, "");
@@ -135,6 +137,12 @@ namespace Cetera.Archive
                 header.fileSize = (int)bw.BaseStream.Length;
                 bw.WriteStruct(header);
             }
+        }
+
+        public void Close()
+        {
+            _stream?.Dispose();
+            _stream = null;
         }
     }
 }

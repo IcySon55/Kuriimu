@@ -11,10 +11,10 @@ namespace archive_umsbt
         public List<UmsbtFileInfo> Files = new List<UmsbtFileInfo>();
         private Stream _stream = null;
 
-        public UMSBT(Stream stream)
+        public UMSBT(Stream input)
         {
-            _stream = stream;
-            using (var br = new BinaryReaderX(stream, true))
+            _stream = input;
+            using (var br = new BinaryReaderX(input, true))
             {
                 uint index = 0;
                 while (br.BaseStream.Position < br.BaseStream.Length)
@@ -22,7 +22,7 @@ namespace archive_umsbt
                     var info = new UmsbtFileInfo();
                     info.Entry = br.ReadStruct<UmsbtFileEntry>();
                     info.FileName = index.ToString("00000000") + ".msbt";
-                    info.FileData = new SubStream(stream, info.Entry.Offset, info.Entry.Size);
+                    info.FileData = new SubStream(input, info.Entry.Offset, info.Entry.Size);
                     info.State = ArchiveFileState.Archived;
 
                     if (info.Entry.Offset == 0 && info.Entry.Size == 0)
@@ -35,13 +35,13 @@ namespace archive_umsbt
             }
         }
 
-        public bool Save(Stream stream)
+        public bool Save(Stream output)
         {
             bool result = true;
 
             try
             {
-                using (var bw = new BinaryWriterX(stream))
+                using (var bw = new BinaryWriterX(output))
                 {
                     uint padding = 24;
                     uint headerLength = ((uint)Files.Count) * (sizeof(uint) * 2) + padding;
