@@ -179,9 +179,7 @@ namespace archive_zar
                 //write fileData
                 foreach (var file in files)
                 {
-                    var data = new byte[(uint)file.FileSize];
-                    file.FileData.Read(data, 0, (int)file.FileSize);
-                    bw.Write(data);
+                    file.FileData.CopyTo(bw.BaseStream);
                 }
 
                 //Header
