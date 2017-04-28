@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Contract;
 using System.IO;
 using Kuriimu.IO;
+using Kuriimu.Contract;
 
-namespace archive_gar
+namespace archive_zar
 {
-    public sealed class GAR
+    public sealed class ZAR
     {
-        public List<GARFileInfo> Files = new List<GARFileInfo>();
+        public List<ZARFileInfo> Files = new List<ZARFileInfo>();
 
         public Header header;
         public List<ChunkEntry> entries = new List<ChunkEntry>();
@@ -20,9 +20,9 @@ namespace archive_gar
         public List<ChunkInfo> chunkInfos = new List<ChunkInfo>();
         public List<uint> offsets = new List<uint>();
 
-        public GAR(Stream input)
+        public ZAR(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -55,7 +55,7 @@ namespace archive_gar
                 int offsetID = 0;
                 foreach (var chunkInfo in chunkInfos)
                 {
-                    Files.Add(new GARFileInfo
+                    Files.Add(new ZARFileInfo
                     {
                         State = ArchiveFileState.Archived,
                         FileName = chunkInfo.fileName,
@@ -89,17 +89,16 @@ namespace archive_gar
                 //get offsets
                 int chunkIDOffset = 0x20 + (exts.Count + 1) * 0x10;
                 int chunkInfOffset = chunkIDOffset + 8 + files.Count * 0x4;
-                for (int i = 0; i < exts.Count; i++)
+                for (int i=0;i<exts.Count;i++)
                 {
                     chunkInfOffset += (exts[i].Length + 1);
                     while (chunkInfOffset % 4 != 0) chunkInfOffset++;
                 }
-                int nameOffset = chunkInfOffset + files.Count * 0xc;
+                int nameOffset = chunkInfOffset + files.Count * 0x8;
                 int offListOffset = nameOffset;
-                for (int i = 0; i < files.Count; i++)
+                for (int i=0;i<files.Count;i++)
                 {
-                    offListOffset += files[i].FileName.Length + 1;
-                    offListOffset += files[i].FileName.Split('.')[0].Length + 1;
+                    offListOffset += files[i].FileName.Length+1;
                     while (offListOffset % 4 != 0) offListOffset++;
                 }
                 int dataOffset = offListOffset + files.Count * 0x4;
@@ -125,7 +124,7 @@ namespace archive_gar
                         bw.Write(0xFFFFFFFF);
 
                         var padding = 0;
-                        while ((exts[i - 1].Length + 1 + padding) % 4 != 0) padding++;
+                        while ((exts[i - 1].Length + 1 + padding)%4!=0) padding++;
                         tmp += extsCount[i - 1] * 4 + exts[i - 1].Length + 1 + padding;
                     }
 
@@ -154,9 +153,8 @@ namespace archive_gar
                 foreach (var file in files)
                 {
                     bw.Write((uint)file.FileSize);
-                    bw.Write(tmp+file.FileName.Length+1);
                     bw.Write(tmp);
-                    tmp += file.FileName.Length + 1 + file.FileName.Split('.')[0].Length+1;
+                    tmp += file.FileName.Length+1;
                     while (tmp % 4 != 0) tmp++;
                 }
 
@@ -164,8 +162,6 @@ namespace archive_gar
                 foreach (var file in files)
                 {
                     bw.WriteASCII(file.FileName);
-                    bw.Write((byte)0);
-                    bw.WriteASCII(file.FileName.Split('.')[0]);
                     bw.Write((byte)0);
                     while (bw.BaseStream.Position % 4 != 0) bw.BaseStream.Position++;
                 }
