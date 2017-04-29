@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
+﻿using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
-using System.Drawing;
-using Kuriimu.IO;
-using Kuriimu.Contract;
+using System.Runtime.InteropServices;
 using Cetera.Image;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 /*Original image and data types by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */
@@ -71,7 +66,7 @@ namespace image_stex
             }
             public int offset = 0x20;
             public uint unk1 = 0xFFFFFFFF;
-            public String name = "";
+            public string name = "";
         }
 
         public Header header;
@@ -103,7 +98,7 @@ namespace image_stex
             }
         }
 
-        public void Save(String filename, Bitmap bitmap)
+        public void Save(string filename, Bitmap bitmap)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
