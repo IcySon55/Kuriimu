@@ -83,7 +83,7 @@ namespace archive_xpck
 
         public void Unload()
         {
-            _xpck.Close();
+            _xpck?.Close();
         }
 
         // Files

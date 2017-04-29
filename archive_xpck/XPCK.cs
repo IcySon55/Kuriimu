@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +12,7 @@ namespace archive_xpck
         public List<XPCKFileInfo> Files = new List<XPCKFileInfo>();
         Stream _stream = null;
 
-        public XPCK(String filename)
+        public XPCK(string filename)
         {
             using (BinaryReaderX xpckBr = new BinaryReaderX(File.OpenRead(filename)))
             {
@@ -41,7 +40,7 @@ namespace archive_xpck
                 entries.AddRange(xpckBr.ReadMultiple<Entry>(fileCount).OrderBy(e => e.fileOffset));
 
                 //nameList
-                var nameList = new List<String>();
+                var nameList = new List<string>();
                 byte[] uncompressedNameList = CriWare.GetDecompressedBytes(new MemoryStream(xpckBr.ReadBytes(header.filenameTableSize)));
                 using (BinaryReaderX nlBr = new BinaryReaderX(new MemoryStream(uncompressedNameList)))
                     for (int i = 0; i < fileCount; i++)

@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kuriimu.Contract;
 
 namespace archive_xpck
