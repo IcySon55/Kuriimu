@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kuriimu.Contract;
-using System.IO;
 using Kuriimu.IO;
 
 namespace archive_gar
@@ -41,7 +36,7 @@ namespace archive_gar
     {
         public ChunkInfo(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 fileSize = br.ReadUInt32();
                 nameOffset = br.ReadInt32();

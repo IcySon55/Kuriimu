@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_gar.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -76,7 +75,7 @@ namespace archive_gar
 
         public void Unload()
         {
-            _gar.Close();
+            _gar?.Close();
         }
 
         // Files
