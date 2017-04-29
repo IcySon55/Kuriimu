@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_cgrp.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -76,7 +75,7 @@ namespace archive_cgrp
 
         public void Unload()
         {
-            _cgrp.Close();
+            _cgrp?.Close();
         }
 
         // Files
