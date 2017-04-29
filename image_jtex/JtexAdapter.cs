@@ -18,16 +18,12 @@ namespace image_jtex
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-
         public string Description => "J Texture";
-
         public string Extension => "*.jtex";
-
         public string About => "This is the JTEX file adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
 
         public FileInfo FileInfo
@@ -129,6 +125,6 @@ namespace image_jtex
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }
