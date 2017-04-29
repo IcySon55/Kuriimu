@@ -74,7 +74,7 @@ namespace Kuriimu
                 Text = "Rename Entry";
             Icon = Resources.kuriimu;
 
-            txtName.MaxLength = _maxLength == 0 ? Int32.MaxValue : _maxLength;
+            txtName.MaxLength = _maxLength == 0 ? int.MaxValue : _maxLength;
             txtName.Text = _entry.Name;
         }
 
