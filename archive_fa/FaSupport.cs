@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using Kuriimu.Contract;
-using Cetera.Image;
 
 namespace archive_fa
 {
@@ -16,7 +10,7 @@ namespace archive_fa
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Header
-    { 
+    {
         public Magic magic;
         public int offset0;
         public int offset1;
