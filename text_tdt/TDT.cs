@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,14 +35,14 @@ namespace text_tdt
             public int entrySize;
             public int dataOffset;
             public int nameSize;
-            public String name;
-            public String text;
+            public string name;
+            public string text;
         }
 
-        public static String readASCII(Stream input)
+        public static string readASCII(Stream input)
         {
             Encoding encode = Encoding.GetEncoding("ascii");
-            String result = "";
+            string result = "";
 
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
@@ -60,10 +59,10 @@ namespace text_tdt
                 return result;
             }
         }
-        public static String readSJIS(Stream input)
+        public static string readSJIS(Stream input)
         {
             Encoding encode = Encoding.GetEncoding("sjis");
-            String result = "";
+            string result = "";
 
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
@@ -80,7 +79,7 @@ namespace text_tdt
                 return result;
             }
         }
-        public static byte[] writeText(String input, String method)
+        public static byte[] writeText(string input, string method)
         {
             Encoding encode = Encoding.GetEncoding(method);
             return encode.GetBytes(input);
@@ -89,7 +88,7 @@ namespace text_tdt
         public static Header header;
         public static TDTEntry[] entries;
 
-        public TDT(String filename)
+        public TDT(string filename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read), true))
             {
@@ -116,7 +115,7 @@ namespace text_tdt
             }
         }
 
-        public void Save(String filename)
+        public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.Write)))
             {

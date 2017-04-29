@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Kuriimu.IO;
 using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace text_mbm
 {
@@ -38,13 +37,13 @@ namespace text_mbm
         public Header header;
         public List<MBMEntry> entries;
 
-        public MBM(String filename)
+        public MBM(string filename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
             {
                 header = br.ReadStruct<Header>();
 
-                entries=new List<MBMEntry>();
+                entries = new List<MBMEntry>();
                 entries.AddRange(br.ReadMultiple<MBMEntry>(header.entryCount).OrderBy(e => e.ID));
 
                 Encoding sjis = Encoding.GetEncoding("SJIS");
@@ -52,7 +51,7 @@ namespace text_mbm
                 foreach (var entry in entries)
                 {
                     br.BaseStream.Position = entry.stringOffset;
-                    if (entry.stringOffset!=0)
+                    if (entry.stringOffset != 0)
                         Labels.Add(new Label
                         {
                             Name = "Text " + (entry.ID + 1),
@@ -63,7 +62,7 @@ namespace text_mbm
             }
         }
 
-        public void Save(String filename)
+        public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
@@ -86,7 +85,7 @@ namespace text_mbm
                             long bk = bw.BaseStream.Position;
                             bw.BaseStream.Position = offset;
                             bw.Write(sjis.GetBytes(Labels[count].Text));
-                            bw.Write((ushort) 0xffff);
+                            bw.Write((ushort)0xffff);
                             bw.BaseStream.Position = bk;
 
                             offset += stringSize;

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -41,7 +40,7 @@ namespace text_mdt
                 {
                     Label label = new Label();
                     ushort part = br.ReadUInt16();
-                    String result = "";
+                    string result = "";
                     do
                     {
                         result += (char)(part ^ 0xff73);
@@ -57,7 +56,7 @@ namespace text_mdt
             }
         }
 
-        public void Save(String filename)
+        public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.Write)))
             {
