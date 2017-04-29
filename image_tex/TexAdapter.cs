@@ -16,16 +16,12 @@ namespace image_tex
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-
         public string Description => "Normal Texture";
-
         public string Extension => "*.tex";
-
         public string About => "This is the TEX file adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
 
         public FileInfo FileInfo
@@ -115,6 +111,6 @@ namespace image_tex
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }
