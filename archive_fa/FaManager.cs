@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_fa.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -77,7 +75,7 @@ namespace archive_fa
 
         public void Unload()
         {
-            _fa.Close();
+            _fa?.Close();
         }
 
         // Files

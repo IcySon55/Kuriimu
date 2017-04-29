@@ -11,6 +11,8 @@ namespace image_xi
         private FileInfo _fileInfo = null;
         private Bitmap _xi = null;
 
+        #region Properties
+
         public string Name => "XI";
         public string Description => "Level 5 Compressed Image";
         public string Extension => "*.xi";
@@ -19,6 +21,7 @@ namespace image_xi
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+
         public FileInfo FileInfo
         {
             get
@@ -30,6 +33,8 @@ namespace image_xi
                 _fileInfo = value;
             }
         }
+
+        #endregion
 
         public bool Identify(string filename)
         {
@@ -63,7 +68,7 @@ namespace image_xi
 
             try
             {
-                XI.Save(_fileInfo.FullName,_xi);
+                XI.Save(_fileInfo.FullName, _xi);
             }
             catch (Exception)
             {
@@ -86,6 +91,6 @@ namespace image_xi
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

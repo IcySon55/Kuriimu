@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Kuriimu.IO;
-using Kuriimu.Contract;
-using Cetera.Image;
 
 /*Original functions and understanding by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */
@@ -21,7 +13,7 @@ namespace image_tmx
         public Bitmap bmp;
 
         public Header header;
-        public String comment;
+        public string comment;
         public Color[] Palette;
 
         public TMX(Stream input)
@@ -54,20 +46,21 @@ namespace image_tmx
             }
         }
 
-        public void Save(String filename)
+        public void Save(string filename)
         {
             Color[] colors = TmxSupport.GetPalette(bmp);
-            byte[] picData=null;
-            byte[] paletteData=null;
+            byte[] picData = null;
+            byte[] paletteData = null;
 
             if (colors.Length == 16)
             {
                 picData = TmxSupport.CreateIndexed4(bmp, colors);
                 paletteData = TmxSupport.GetPaletteBytes(colors);
 
-                header.imageFormat=TMXPixelFormat.PSMT4;
-                header.paletteFormat= TMXPixelFormat.PSMCT32;
-            } else if (colors.Length == 256)
+                header.imageFormat = TMXPixelFormat.PSMT4;
+                header.paletteFormat = TMXPixelFormat.PSMCT32;
+            }
+            else if (colors.Length == 256)
             {
                 picData = TmxSupport.CreateIndexed8(bmp, colors);
                 paletteData = TmxSupport.GetPaletteBytes(colors);
@@ -77,7 +70,7 @@ namespace image_tmx
             }
             else
             {
-                picData=TmxSupport.Create32(bmp);
+                picData = TmxSupport.Create32(bmp);
 
                 header.imageFormat = TMXPixelFormat.PSMCT32;
             }

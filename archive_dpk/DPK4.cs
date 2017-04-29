@@ -35,8 +35,8 @@ namespace archive_dpk
             Filename = str;
 
             // Set the I/O readers
-            fs = new System.IO.FileStream(Filename, FileMode.Open, FileAccess.Read);
-            br = new System.IO.BinaryReader(fs);
+            fs = new FileStream(Filename, FileMode.Open, FileAccess.Read);
+            br = new BinaryReader(fs);
 
             // The file is now openened by the program
             isOpen = true;

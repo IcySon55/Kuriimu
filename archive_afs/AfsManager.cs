@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_afs.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 

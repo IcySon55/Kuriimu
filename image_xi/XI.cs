@@ -149,7 +149,7 @@ namespace image_xi
             return ms.ToArray();
         }
 
-        public static void Save(String filename, Bitmap bitmap)
+        public static void Save(string filename, Bitmap bitmap)
         {
             int width = bitmap.Width;
             int height = bitmap.Height;
@@ -162,7 +162,7 @@ namespace image_xi
                 Height = height,
                 Orientation = Orientation.TransposeTile,
                 Format = ImageSettings.ConvertFormat(header.imageFormat),
-                PadToPowerOf2 =false
+                PadToPowerOf2 = false
             });
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
@@ -177,11 +177,11 @@ namespace image_xi
                 header.imgDataSize = importPic.Length + 4;
                 bw.WriteStruct(header);
 
-                bw.Write(header.tableSize1<<3);
+                bw.Write(header.tableSize1 << 3);
                 foreach (var tableEntry in table) bw.Write(tableEntry);
 
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
-                bw.Write(header.imgDataSize<<3);
+                bw.Write(header.imgDataSize << 3);
                 bw.Write(importPic);
             }
         }
@@ -216,7 +216,7 @@ namespace image_xi
                 }
 
                 int resOffset = 0;
-                foreach (var part in parts) part.CopyTo(result,(resOffset+=part.Length)-part.Length);
+                foreach (var part in parts) part.CopyTo(result, (resOffset += part.Length) - part.Length);
             }
 
             return result;

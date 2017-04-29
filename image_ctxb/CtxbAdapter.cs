@@ -11,6 +11,8 @@ namespace image_ctxb
         private FileInfo _fileInfo = null;
         private CTXB _ctxb = null;
 
+        #region Properties
+
         public string Name => "CTXB";
         public string Description => "Whatever CTXB should mean";
         public string Extension => "*.ctxb";
@@ -19,6 +21,7 @@ namespace image_ctxb
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+
         public FileInfo FileInfo
         {
             get
@@ -30,6 +33,8 @@ namespace image_ctxb
                 _fileInfo = value;
             }
         }
+
+        #endregion
 
         public bool Identify(string filename)
         {
@@ -86,6 +91,6 @@ namespace image_ctxb
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

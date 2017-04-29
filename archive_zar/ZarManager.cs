@@ -76,7 +76,7 @@ namespace archive_zar
 
         public void Unload()
         {
-            _zar.Close();
+            _zar?.Close();
         }
 
         // Files

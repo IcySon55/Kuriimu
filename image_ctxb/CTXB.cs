@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using Kuriimu.IO;
-using Kuriimu.Contract;
+using System.IO;
+using System.Runtime.InteropServices;
 using Cetera.Image;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 /*Original image and data types by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */

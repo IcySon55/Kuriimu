@@ -11,9 +11,9 @@ namespace image_bclyt
     {
         public static string ToCString(byte[] bytes) => string.Concat(from b in bytes where b != 0 select (char)b);
 
-        public static String filename;
+        public static string filename;
 
-        public static Bitmap Load(Stream input, String name)
+        public static Bitmap Load(Stream input, string name)
         {
             filename = name;
 
@@ -112,7 +112,7 @@ namespace image_bclyt
                         //create placeholder
                         BclytSupport.Window wnd = (BclytSupport.Window)sec.Obj;
                         //bool withPicture = false;
-                        String filename = Path.GetDirectoryName(BCLYT.filename) + "\\";
+                        string filename = Path.GetDirectoryName(BCLYT.filename) + "\\";
 
                         //if (mats.maters[wnd.content.matID].texMaps.Length > 0) { withPicture = true; }
 
@@ -213,7 +213,7 @@ namespace image_bclyt
                         BclytSupport.Picture pic = (BclytSupport.Picture)sec.Obj;
                         bool withPicturep = false;
                         bool fileExistsp = false;
-                        String filenamep = Path.GetDirectoryName(BCLYT.filename) + "\\";
+                        string filenamep = Path.GetDirectoryName(BCLYT.filename) + "\\";
 
                         if (mats.maters[pic.matID].texMaps.Length > 0) { filenamep += names.nameList2[mats.maters[pic.matID].texMaps[0].index]; withPicturep = true; }
                         if (File.Exists(filenamep)) fileExistsp = true;

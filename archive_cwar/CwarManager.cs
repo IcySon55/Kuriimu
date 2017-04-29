@@ -75,7 +75,7 @@ namespace archive_cwar
 
         public void Unload()
         {
-            _cwar.Close();
+            _cwar?.Close();
         }
 
         // Files

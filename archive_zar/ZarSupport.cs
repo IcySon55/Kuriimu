@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kuriimu.Contract;
-using System.IO;
 using Kuriimu.IO;
 
 namespace archive_zar

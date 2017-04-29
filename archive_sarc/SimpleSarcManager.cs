@@ -78,7 +78,7 @@ namespace archive_sarc
 
         public void Unload()
         {
-            _sarc.Close();
+            _sarc?.Close();
         }
 
         // Files

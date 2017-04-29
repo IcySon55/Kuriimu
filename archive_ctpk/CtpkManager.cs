@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_ctpk.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -76,7 +75,7 @@ namespace archive_ctpk
 
         public void Unload()
         {
-            _ctpk.Close();
+            _ctpk?.Close();
         }
 
         // Files

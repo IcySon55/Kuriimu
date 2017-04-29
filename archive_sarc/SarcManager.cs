@@ -46,7 +46,7 @@ namespace archive_sarc
         {
             FileInfo = new FileInfo(filename);
 
-            if(FileInfo.Exists)
+            if (FileInfo.Exists)
                 _sarc = new SARC(FileInfo.OpenRead());
         }
 
@@ -78,7 +78,7 @@ namespace archive_sarc
 
         public void Unload()
         {
-            _sarc.Close();
+            _sarc?.Close();
         }
 
         // Files

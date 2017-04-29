@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -114,7 +113,7 @@ namespace image_bclyt
 
             return new Bitmap(wndWidth, wndHeight, g);
         }
-        public static Bitmap DrawText(Bitmap bitmap, String text, int posX, int posY, Color fontColor)
+        public static Bitmap DrawText(Bitmap bitmap, string text, int posX, int posY, Color fontColor)
         {
             int wndWidth = bitmap.Width;
             int wndHeight = bitmap.Height;
@@ -141,10 +140,10 @@ namespace image_bclyt
             }
         }*/
 
-        public static String readASCII(BinaryReaderX br)
+        public static string readASCII(BinaryReaderX br)
         {
             Encoding ascii = Encoding.GetEncoding("ascii");
-            String result = "";
+            string result = "";
 
             byte[] part = br.ReadBytes(1);
             do
@@ -156,7 +155,7 @@ namespace image_bclyt
             return result;
         }
 
-        public static String readUnicode(BinaryReaderX br)
+        public static string readUnicode(BinaryReaderX br)
         {
             Encoding unicode = Encoding.GetEncoding("unicode");
             string uni = ""; byte part; byte part2;
@@ -244,7 +243,7 @@ namespace image_bclyt
                 file_size = br.ReadInt32();
                 section_count = br.ReadInt32();
             }
-            public String magic;
+            public string magic;
             public ByteOrder byte_order;
             public short header_size;
             public int version;
@@ -254,14 +253,14 @@ namespace image_bclyt
 
         public class NW4CSection
         {
-            public NW4CSection(String magic, byte[] data)
+            public NW4CSection(string magic, byte[] data)
             {
                 Magic = magic;
                 Data = data;
             }
-            public String Magic;
+            public string Magic;
             public byte[] Data;
-            public Object Obj;
+            public object Obj;
         }
 
         public class NW4CSectionList : List<NW4CSection>
@@ -286,13 +285,13 @@ namespace image_bclyt
             {
                 elemCount = br.ReadInt32();
                 offsetList2 = new int[elemCount];
-                nameList2 = new String[elemCount];
+                nameList2 = new string[elemCount];
                 for (int i = 0; i < elemCount; i++) offsetList2[i] = br.ReadInt32();
                 for (int i = 0; i < elemCount; i++) nameList2[i] = readASCII(br);
             }
             public int elemCount;
             public int[] offsetList2;
-            public String[] nameList2;
+            public string[] nameList2;
         }
 
         public class Material
@@ -340,7 +339,7 @@ namespace image_bclyt
                 texCGens = new TextureCoordGen[texCoordGen_count];
                 for (int i = 0; i < texCoordGen_count; i++) texCGens[i] = new TextureCoordGen(br);
             }
-            public String name;
+            public string name;
             public int tevColor;
             public int[] tevConstColors;
             public byte texMap_count;
@@ -382,7 +381,7 @@ namespace image_bclyt
                 scale = new Vector2D(br);
             }
             public Vector2D translation;
-            public Single rotation;
+            public float rotation;
             public Vector2D scale;
         }
         public class TextureCoordGen
@@ -415,7 +414,7 @@ namespace image_bclyt
             public YOrigin yorigin;
             public byte alpha;
             public byte magFlags;
-            public String paneName;
+            public string paneName;
             public Vector3D translation;
             public Vector3D rotation;
             public Vector2D scale;
@@ -595,7 +594,7 @@ namespace image_bclyt
             public Vector2D fontSize;
             public float charSpace;
             public float lineSpace;
-            public String text;
+            public string text;
         }
 
         public class Group
@@ -604,15 +603,15 @@ namespace image_bclyt
             {
                 groupName = br.ReadString(16);
                 paneReferenceCount = br.ReadUInt32();
-                paneReferences = new String[paneReferenceCount];
+                paneReferences = new string[paneReferenceCount];
                 for (int i = 0; i < paneReferenceCount; i++)
                 {
                     paneReferences[i] = br.ReadString(16);
                 }
             }
-            public String groupName;
+            public string groupName;
             public uint paneReferenceCount;
-            public String[] paneReferences;
+            public string[] paneReferences;
         }
     }
 }

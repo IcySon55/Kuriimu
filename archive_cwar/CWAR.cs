@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using Cetera.Image;
-using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -41,15 +36,15 @@ namespace archive_cwar
                     Files.Add(new CWARFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = (br.BaseStream.Position + infos[i].dataOffset)+".bcwav",
+                        FileName = (br.BaseStream.Position + infos[i].dataOffset) + ".bcwav",
                         FileData = new SubStream(br.BaseStream, br.BaseStream.Position + infos[i].dataOffset, infos[i].dataSize)
                     });
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            /*using (BinaryWriterX bw = new BinaryWriterX(input))
+            /*using (BinaryWriterX bw = new BinaryWriterX(output))
             {
                 int infoPartSize = 0x8 + 0x4 + info1.Count * 0x8 + infos.Count * 0x10;
                 while (infoPartSize % 0x10 != 0) infoPartSize++;
@@ -114,7 +109,7 @@ namespace archive_cwar
 
         public void Close()
         {
-            _stream.Close();
+            _stream?.Close();
             _stream = null;
         }
     }

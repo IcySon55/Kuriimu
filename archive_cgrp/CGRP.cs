@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using Cetera.Image;
-using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -31,7 +26,7 @@ namespace archive_cgrp
                 //infoSec
                 br.ReadStruct<PartitionHeader>();
                 int fileCount = br.ReadInt32();
-                info1=new List<Info1>();
+                info1 = new List<Info1>();
                 infos = new List<InfoEntry>();
                 for (int i = 0; i < fileCount; i++)
                     info1.Add(br.ReadStruct<Info1>());
@@ -44,9 +39,9 @@ namespace archive_cgrp
                 for (int i = 0; i < fileCount; i++)
                     Files.Add(new CGRPFileInfo
                     {
-                        State=ArchiveFileState.Archived,
-                        FileName = "File "+i,
-                        FileData = new SubStream(br.BaseStream,br.BaseStream.Position+infos[i].dataOffset, infos[i].dataSize)
+                        State = ArchiveFileState.Archived,
+                        FileName = "File " + i,
+                        FileData = new SubStream(br.BaseStream, br.BaseStream.Position + infos[i].dataOffset, infos[i].dataSize)
                     });
 
                 //Infx
@@ -55,16 +50,16 @@ namespace archive_cgrp
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            using (BinaryWriterX bw = new BinaryWriterX(output))
             {
                 int infoPartSize = 0x8 + 0x4 + info1.Count * 0x8 + infos.Count * 0x10;
                 while (infoPartSize % 0x10 != 0) infoPartSize++;
                 uint dataPartSize = 0x20;
                 for (int i = 0; i < Files.Count; i++)
                 {
-                    dataPartSize += (uint) Files[i].FileSize.GetValueOrDefault();
+                    dataPartSize += (uint)Files[i].FileSize.GetValueOrDefault();
                     while (dataPartSize % 0x10 != 0) dataPartSize++;
                 }
 
@@ -85,7 +80,7 @@ namespace archive_cgrp
 
                     bw.WriteStruct(infos[i]);
 
-                    uint tmp= (uint)Files[i].FileSize.GetValueOrDefault();
+                    uint tmp = (uint)Files[i].FileSize.GetValueOrDefault();
                     while (tmp % 16 != 0) tmp++;
                     dataOffset += tmp;
                 }
@@ -101,7 +96,7 @@ namespace archive_cgrp
                 bw.BaseStream.Position += 0x18;
                 for (int i = 0; i < infos.Count; i++)
                 {
-                    bw.Write(new BinaryReaderX(Files[i].FileData,true).ReadBytes((int) Files[i].FileSize.GetValueOrDefault()));
+                    bw.Write(new BinaryReaderX(Files[i].FileData, true).ReadBytes((int)Files[i].FileSize.GetValueOrDefault()));
                     while (bw.BaseStream.Position % 0x10 != 0) bw.BaseStream.Position++;
                 }
 

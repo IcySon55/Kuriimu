@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using Kuriimu.IO;
-using Kuriimu.Contract;
-using Cetera.Hash;
 using System.Linq;
+using System.Runtime.InteropServices;
+using Cetera.Hash;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace Cetera.Archive
 {

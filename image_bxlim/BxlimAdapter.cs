@@ -16,16 +16,12 @@ namespace image_bxlim
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-
         public string Description => "Binary Layout Image";
-
         public string Extension => "*.bclim;*.bflim";
-
         public string About => "This is the BCLIM and BFLIM file adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
 
         public FileInfo FileInfo
@@ -99,6 +95,6 @@ namespace image_bxlim
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

@@ -11,6 +11,8 @@ namespace image_bclyt
         private FileInfo _fileInfo = null;
         private Bitmap _bclyt = null;
 
+        #region Properties
+
         public string Name => "BCLYT";
         public string Description => "Standard Nintendo Layout format";
         public string Extension => "*.bclyt";
@@ -19,6 +21,7 @@ namespace image_bclyt
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+
         public FileInfo FileInfo
         {
             get
@@ -30,6 +33,8 @@ namespace image_bclyt
                 _fileInfo = value;
             }
         }
+
+        #endregion
 
         public bool Identify(string filename)
         {

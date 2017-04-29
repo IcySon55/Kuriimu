@@ -1,11 +1,10 @@
-﻿using Cetera.Hash;
-using Kuriimu.Contract;
-using Kuriimu.IO;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Cetera.Hash;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_fa
 {
@@ -19,8 +18,8 @@ namespace archive_fa
         private byte[] unk2;
 
         private List<Entry> entries;
-        private List<String> filenames;
-        private List<String> foldernames;
+        private List<string> filenames;
+        private List<string> foldernames;
         private List<uint> hashes;
 
         public FA(Stream input)
@@ -42,8 +41,8 @@ namespace archive_fa
                 //Names
                 filenames = new List<string>();
                 foldernames = new List<string>();
-                String currentFolder = "";
-                String tmp = br.ReadCStringA();
+                string currentFolder = "";
+                string tmp = br.ReadCStringA();
                 while (tmp != "")
                 {
                     if (tmp[tmp.Length - 1] == '/')
@@ -85,9 +84,9 @@ namespace archive_fa
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            using (BinaryWriterX bw = new BinaryWriterX(output))
             {
                 bw.BaseStream.Position = 0x48;
 
@@ -130,7 +129,7 @@ namespace archive_fa
             List<byte> list = new List<byte>();
             list.Add(0);
             int pos = 0;
-            String lastFolder = "";
+            string lastFolder = "";
             Encoding ascii = Encoding.ASCII;
 
             foreach (var file in filenames)

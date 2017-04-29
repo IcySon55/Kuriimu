@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_hpi_hpb.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -101,7 +100,7 @@ namespace archive_hpi_hpb
 
         public void Unload()
         {
-            _hpihpb.Dispose();
+            _hpihpb?.Dispose();
         }
 
         // Files

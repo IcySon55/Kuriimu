@@ -11,6 +11,8 @@ namespace image_xf
         private FileInfo _fileInfo = null;
         private Bitmap _xf = null;
 
+        #region Properties
+
         public string Name => "XF";
         public string Description => "Level 5 Font";
         public string Extension => "*.xf";
@@ -19,6 +21,7 @@ namespace image_xf
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+
         public FileInfo FileInfo
         {
             get
@@ -31,12 +34,14 @@ namespace image_xf
             }
         }
 
+        #endregion
+
         public bool Identify(string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "XPCK" && Path.GetExtension(filename)==".xf";
+                return br.ReadString(4) == "XPCK" && Path.GetExtension(filename) == ".xf";
             }
         }
 
@@ -86,6 +91,6 @@ namespace image_xf
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

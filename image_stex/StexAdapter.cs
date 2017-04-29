@@ -11,6 +11,8 @@ namespace image_stex
         private FileInfo _fileInfo = null;
         private STEX _stex = null;
 
+        #region Properties
+
         public string Name => "STEX";
         public string Description => "Atlus Simple Texture";
         public string Extension => "*.stex";
@@ -19,6 +21,7 @@ namespace image_stex
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+
         public FileInfo FileInfo
         {
             get
@@ -30,6 +33,8 @@ namespace image_stex
                 _fileInfo = value;
             }
         }
+
+        #endregion
 
         public bool Identify(string filename)
         {
@@ -86,6 +91,6 @@ namespace image_stex
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

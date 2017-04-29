@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kuriimu.Contract;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 
 namespace archive_gar
@@ -24,7 +21,7 @@ namespace archive_gar
         public GAR(Stream input)
         {
             _stream = input;
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -68,9 +65,9 @@ namespace archive_gar
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output))
             {
                 var files = Files.OrderBy(x => x.ext.Length).ToList();
 
@@ -156,9 +153,9 @@ namespace archive_gar
                 foreach (var file in files)
                 {
                     bw.Write((uint)file.FileSize);
-                    bw.Write(tmp+file.FileName.Length+1);
+                    bw.Write(tmp + file.FileName.Length + 1);
                     bw.Write(tmp);
-                    tmp += file.FileName.Length + 1 + file.FileName.Split('.')[0].Length+1;
+                    tmp += file.FileName.Length + 1 + file.FileName.Split('.')[0].Length + 1;
                     while (tmp % 4 != 0) tmp++;
                 }
 

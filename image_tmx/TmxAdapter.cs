@@ -11,6 +11,8 @@ namespace image_tmx
         private FileInfo _fileInfo = null;
         private TMX _tmx = null;
 
+        #region Properties
+
         public string Name => "TMX";
         public string Description => "Atlus Texture Matrix";
         public string Extension => "*.tmx";
@@ -19,6 +21,7 @@ namespace image_tmx
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+
         public FileInfo FileInfo
         {
             get
@@ -30,6 +33,8 @@ namespace image_tmx
                 _fileInfo = value;
             }
         }
+
+        #endregion
 
         public bool Identify(string filename)
         {
@@ -87,6 +92,6 @@ namespace image_tmx
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

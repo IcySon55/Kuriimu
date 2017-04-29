@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.IO;
-using Kuriimu.IO;
+using System.Linq;
 using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_zar
 {
@@ -68,9 +65,9 @@ namespace archive_zar
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output))
             {
                 var files = Files.OrderBy(x => x.ext.Length).ToList();
 
