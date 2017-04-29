@@ -74,18 +74,42 @@ namespace archive_sarc
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            var ms = new MemoryStream();
-            _sarc.Save(ms, true);
-            using (var bw = new BinaryWriterX(FileInfo.Create()))
+            // Save As...
+            if (!string.IsNullOrEmpty(filename))
             {
-                bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
-                bw.Write(ZLib.Compress(ms.ToArray()));
+                var ms = new MemoryStream();
+                _sarc.Save(ms, true);
+                _sarc.Close();
+                using (var bw = new BinaryWriterX(FileInfo.Create()))
+                {
+                    bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
+                    bw.Write(ZLib.Compress(ms.ToArray()));
+                }
             }
+            else
+            {
+                // Create the temp file
+                var ms = new MemoryStream();
+                _sarc.Save(ms, true);
+                _sarc.Close();
+                using (var bw = new BinaryWriterX(File.Create(FileInfo.FullName + ".tmp")))
+                {
+                    bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
+                    bw.Write(ZLib.Compress(ms.ToArray()));
+                }
+                // Delete the original
+                FileInfo.Delete();
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+            }
+
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-            _sarc?.Close();
+            _sarc.Close();
         }
 
         // Files
