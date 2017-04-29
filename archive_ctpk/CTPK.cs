@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
-using Cetera.Image;
 using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
@@ -54,11 +50,11 @@ namespace archive_ctpk
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
             int Pad128(int n) => (n + 127) & ~127;
 
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output))
             {
                 //get nameList Length
                 int nameListLength = (Files.Sum(afi => afi.FileName.Length + 1) + 3) & ~3;
