@@ -95,6 +95,6 @@ namespace image_ctpk
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }
