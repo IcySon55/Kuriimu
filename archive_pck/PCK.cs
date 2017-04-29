@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Kuriimu.IO;
 using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_pck
 {
@@ -41,9 +39,9 @@ namespace archive_pck
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output))
             {
                 bw.Write(Files.Count);
 

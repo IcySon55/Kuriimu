@@ -71,7 +71,7 @@ namespace archive_pck
 
         public void Unload()
         {
-            _pck.Close();
+            _pck?.Close();
         }
 
         //Files
