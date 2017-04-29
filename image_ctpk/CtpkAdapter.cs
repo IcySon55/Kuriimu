@@ -11,6 +11,8 @@ namespace image_ctpk
         private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
 
+        #region Properties
+
         public string Name => "CTPK";
         public string Description => "CTR Texture PaCkage";
         public string Extension => "*.ctpk";
@@ -19,6 +21,7 @@ namespace image_ctpk
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+
         public FileInfo FileInfo
         {
             get
@@ -31,12 +34,14 @@ namespace image_ctpk
             }
         }
 
+        #endregion
+
         public bool Identify(string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "CTPK" || Path.GetExtension(filename)==".ctpk";
+                return br.ReadString(4) == "CTPK" || Path.GetExtension(filename) == ".ctpk";
             }
         }
 
@@ -47,7 +52,7 @@ namespace image_ctpk
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                using(var br=new BinaryReaderX(File.OpenRead(_fileInfo.FullName)))
+                using (var br = new BinaryReaderX(File.OpenRead(_fileInfo.FullName)))
                     if (br.ReadString(4) == "CTPK")
                         _ctpk = new CTPK(_fileInfo.FullName);
                     else

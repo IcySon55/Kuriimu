@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
-using Cetera.Image;
+using System.IO;
 using System.Linq;
-using Kuriimu.Contract;
+using Cetera.Image;
 using Kuriimu.IO;
 
 namespace image_ctpk
@@ -16,7 +13,7 @@ namespace image_ctpk
         private Header header;
         private List<Entry> entries;
         private List<int> texSizeList;
-        private List<String> nameList;
+        private List<string> nameList;
         private List<HashEntry> crc32List;
         private List<uint> texInfoList2;
         private byte[] rest;
@@ -24,7 +21,7 @@ namespace image_ctpk
         public Bitmap bmp;
         bool isRaw = false;
 
-        public CTPK(String filename, bool isRaw=false)
+        public CTPK(string filename, bool isRaw = false)
         {
             if (isRaw)
                 GetRaw(filename);
@@ -43,7 +40,7 @@ namespace image_ctpk
                     texSizeList.AddRange(br.ReadMultiple<int>(header.texCount));
 
                     //Name List
-                    nameList = new List<String>();
+                    nameList = new List<string>();
                     for (int i = 0; i < entries.Count; i++)
                         nameList.Add(br.ReadCStringA());
 
@@ -67,13 +64,13 @@ namespace image_ctpk
                     bmp = Common.Load(br.ReadBytes(entries[0].texDataSize), settings);
 
                     if (br.BaseStream.Position < br.BaseStream.Length)
-                        rest = br.ReadBytes((int)(br.BaseStream.Length- br.BaseStream.Position));
+                        rest = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
                 }
         }
 
         public int size;
 
-        public void GetRaw(String filename)
+        public void GetRaw(string filename)
         {
             isRaw = true;
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
@@ -82,7 +79,7 @@ namespace image_ctpk
 
                 int count = 1;
                 bool found = false;
-                while (!found && count*count<br.BaseStream.Length)
+                while (!found && count * count < br.BaseStream.Length)
                     if (pixelCount / count == count)
                         found = true;
                     else
@@ -98,7 +95,7 @@ namespace image_ctpk
                         Format = Format.RGB565,
                         PadToPowerOf2 = false
                     };
-                    bmp = Common.Load(br.ReadBytes((int) br.BaseStream.Length), settings);
+                    bmp = Common.Load(br.ReadBytes((int)br.BaseStream.Length), settings);
                 }
                 else
                 {
@@ -107,25 +104,25 @@ namespace image_ctpk
             }
         }
 
-        public void Save(String filename)
+        public void Save(string filename)
         {
-            if (isRaw) 
+            if (isRaw)
                 SaveRaw(filename);
             else
                 using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
                 {
-                    var settings=new ImageSettings
+                    var settings = new ImageSettings
                     {
-                        Width=bmp.Width,
-                        Height=bmp.Height,
-                        Format=ImageSettings.ConvertFormat(entries[0].imageFormat),
+                        Width = bmp.Width,
+                        Height = bmp.Height,
+                        Format = ImageSettings.ConvertFormat(entries[0].imageFormat),
                         PadToPowerOf2 = false
                     };
                     byte[] resBmp = Common.Save(bmp, settings);
 
                     int diff = resBmp.Length - entries[0].texDataSize;
                     entries[0].width = (short)bmp.Width;
-                    entries[0].height = (short) bmp.Height;
+                    entries[0].height = (short)bmp.Height;
                     entries[0].texDataSize = resBmp.Length;
                     for (int i = 1; i < header.texCount; i++)
                         entries[i].texOffset -= diff;
@@ -134,7 +131,7 @@ namespace image_ctpk
 
                     //write entries
                     bw.BaseStream.Position = 0x20;
-                    for(int i=0;i<header.texCount;i++) bw.WriteStruct(entries[i]);
+                    for (int i = 0; i < header.texCount; i++) bw.WriteStruct(entries[i]);
 
                     //write texSizeInfo
                     for (int i = 0; i < header.texCount; i++) bw.Write(texSizeList[i]);
@@ -147,7 +144,7 @@ namespace image_ctpk
                     }
 
                     //write hashes
-                    crc32List=crc32List.OrderBy(e => e.crc32).ToList();
+                    crc32List = crc32List.OrderBy(e => e.crc32).ToList();
                     bw.BaseStream.Position = header.crc32SecOffset;
                     for (int i = 0; i < header.texCount; i++)
                     {
@@ -170,18 +167,18 @@ namespace image_ctpk
                 }
         }
 
-        public void SaveRaw(String filename)
+        public void SaveRaw(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
                 var settings = new ImageSettings
                 {
-                    Width=size,
-                    Height=size,
-                    Format=Format.RGB565,
+                    Width = size,
+                    Height = size,
+                    Format = Format.RGB565,
                     PadToPowerOf2 = false
                 };
-                bw.Write(Common.Save(bmp,settings));
+                bw.Write(Common.Save(bmp, settings));
             }
         }
     }
