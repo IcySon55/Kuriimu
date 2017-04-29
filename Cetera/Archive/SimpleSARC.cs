@@ -44,18 +44,18 @@ namespace Cetera.Archive
             {
                 header = br.ReadStruct<SimpleSARCHeader>();
                 Files = br.ReadMultiple<SimpleSFATEntry>(header.nodeCount).OrderBy(e => e.dataStart).Select(entry => new SimpleSARCFileInfo
-                    {
-                        FileName = $"0x{entry.hash:X8}.bin",
-                        FileData = new SubStream(input, entry.dataStart, entry.dataSize),
-                        State = ArchiveFileState.Archived,
-                        FilenameHash = entry.hash
-                    }).ToList();
+                {
+                    FileName = $"0x{entry.hash:X8}.bin",
+                    FileData = new SubStream(input, entry.dataStart, entry.dataSize),
+                    State = ArchiveFileState.Archived,
+                    FilenameHash = entry.hash
+                }).ToList();
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(output))
             {
                 header.nodeCount = Files.Count;
                 bw.WriteStruct(header);
