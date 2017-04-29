@@ -66,10 +66,14 @@ namespace archive_ndsfs
             return crc;
         }
 
-        public static List<string> parseFileNames(List<NameTableEntry> fntEntries, List<string> nameList=null, string filename="", int id=0)
+        public static int id = 0;
+        public static List<string> parseFileNames(List<NameTableEntry> fntEntries, List<string> nameList=null, string filename="")
         {
             if (nameList == null)
+            {
                 nameList = new List<string>();
+                id = 0;
+            }
 
             for (int i = 0; i < fntEntries[id].subTable.files.Count; i++)
                 if (filename == "")
@@ -77,8 +81,11 @@ namespace archive_ndsfs
                 else
                     nameList.Add(filename + "/" + fntEntries[id].subTable.files[i].name);
 
-            for (int i = 0; i < fntEntries[id].subTable.folders.Count; i++)
-                parseFileNames(fntEntries, nameList, filename+"/"+ fntEntries[id].subTable.folders[i].name, id+1);
+            for (int i = 0, j = id; i < fntEntries[j].subTable.folders.Count; i++)
+            {
+                id++;
+                nameList = parseFileNames(fntEntries, nameList, filename + "/" + fntEntries[j].subTable.folders[i].name);
+            }
 
             return nameList;
         }
