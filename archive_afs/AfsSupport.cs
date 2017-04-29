@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kuriimu.Contract;
-using System.IO;
 using Kuriimu.IO;
 
 namespace archive_afs
@@ -33,7 +28,7 @@ namespace archive_afs
     {
         public NameEntry(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 name = br.ReadString(0x20);
                 unk1 = br.ReadBytes(0xc);
@@ -42,7 +37,7 @@ namespace archive_afs
         }
 
         public string name;
-        public byte[] unk1=new byte[0xc];
+        public byte[] unk1 = new byte[0xc];
         public uint offset;
     }
 }

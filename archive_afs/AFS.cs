@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kuriimu.Contract;
+﻿using System.Collections.Generic;
 using System.IO;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 
 namespace archive_afs
@@ -32,7 +28,8 @@ namespace archive_afs
                 uint nameListSize = br.ReadUInt32();
 
                 br.BaseStream.Position = nameListOffset;
-                foreach (var entry in entries) {
+                foreach (var entry in entries)
+                {
                     nameList.Add(new NameEntry(br.BaseStream));
                 }
 
