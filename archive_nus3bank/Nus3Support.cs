@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using System.IO;
 
 namespace archive_nus3bank
 {
@@ -35,7 +31,7 @@ namespace archive_nus3bank
     {
         public BankTocEntry(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(input,true))
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 magic = br.ReadStruct<Magic>();
                 secSize = br.ReadInt32();
@@ -43,7 +39,7 @@ namespace archive_nus3bank
         }
         public Magic magic;
         public int secSize;
-        public int offset=0;
+        public int offset = 0;
     }
 
     public class PROP
@@ -56,14 +52,14 @@ namespace archive_nus3bank
                 unk2 = br.ReadInt32();
                 unk3 = br.ReadInt32();
                 projectNameSize = br.ReadByte();
-                projectName = br.ReadCStringA() + Encoding.ASCII.GetString(new byte[] {0});
+                projectName = br.ReadCStringA() + Encoding.ASCII.GetString(new byte[] { 0 });
 
                 int paddingTmp = 0;
-                br.BaseStream.Position ++;
+                br.BaseStream.Position++;
                 paddingTmp++;
                 while (br.BaseStream.Position % 4 > 0)
                 {
-                    br.BaseStream.Position ++;
+                    br.BaseStream.Position++;
                     paddingTmp++;
                 }
                 padding = new byte[paddingTmp];
@@ -78,12 +74,12 @@ namespace archive_nus3bank
         public int unk2;
         public int unk3;
         public byte projectNameSize;
-        public String projectName;
+        public string projectName;
         public byte[] padding;
         public int unk4;
         public byte dateSize;
-        public String date;
-        public byte[] padding2={0,0,0};
+        public string date;
+        public byte[] padding2 = { 0, 0, 0 };
     }
 
     public class BINF
@@ -98,14 +94,14 @@ namespace archive_nus3bank
                 name = br.ReadCStringA() + Encoding.ASCII.GetString(new byte[] { 0 });
 
                 int paddingTmp = 0;
-                br.BaseStream.Position ++;
+                br.BaseStream.Position++;
                 paddingTmp++;
                 while (br.BaseStream.Position % 4 > 0)
                 {
-                    br.BaseStream.Position ++;
+                    br.BaseStream.Position++;
                     paddingTmp++;
                 }
-                padding=new byte[paddingTmp];
+                padding = new byte[paddingTmp];
                 for (int i = 0; i < paddingTmp; i++) padding[i] = 0;
 
                 ID = br.ReadInt32();
@@ -114,7 +110,7 @@ namespace archive_nus3bank
         public int unk1;
         public int unk2;
         public byte nameSize;
-        public String name;
+        public string name;
         public byte[] padding;
         public int ID;
     }
@@ -155,11 +151,11 @@ namespace archive_nus3bank
                         toneEntries[i].name = br.ReadCStringA();
 
                         int paddingTmp = 0;
-                        br.BaseStream.Position ++;
+                        br.BaseStream.Position++;
                         paddingTmp++;
                         while (br.BaseStream.Position % 4 > 0)
                         {
-                            br.BaseStream.Position ++;
+                            br.BaseStream.Position++;
                             paddingTmp++;
                         }
                         toneEntries[i].padding = new byte[paddingTmp];
@@ -192,7 +188,7 @@ namespace archive_nus3bank
             public int metaSize;
             public byte[] unk1;
             public byte nameSize;
-            public String name;
+            public string name;
             public byte[] padding;
             public int zero0 = -1;
             public int packOffset;

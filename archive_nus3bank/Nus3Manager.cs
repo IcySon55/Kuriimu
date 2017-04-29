@@ -99,7 +99,7 @@ namespace archive_nus3bank
 
         public void Unload()
         {
-            _nus3.Close();
+            _nus3?.Close();
         }
 
         // Files

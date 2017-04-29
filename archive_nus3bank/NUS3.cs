@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-using Cetera;
 using Kuriimu.Compression;
 using Kuriimu.IO;
 
@@ -26,7 +21,7 @@ namespace archive_nus3bank
         public TONE tone;
         public byte[] junk;
 
-        public NUS3(String filename, bool isZlibCompressed = false)
+        public NUS3(string filename, bool isZlibCompressed = false)
         {
             if (isZlibCompressed)
             {
@@ -72,12 +67,12 @@ namespace archive_nus3bank
                 //GRP - not yet mapped
                 br.BaseStream.Position = banktocEntries[2].offset;
                 if (br.ReadStruct<Header>().magic != "GRP ") throw new Exception();
-                grp=br.ReadBytes(banktocEntries[2].secSize);
+                grp = br.ReadBytes(banktocEntries[2].secSize);
 
                 //DTON - not yet mapped
                 br.BaseStream.Position = banktocEntries[3].offset;
                 if (br.ReadStruct<Header>().magic != "DTON") throw new Exception();
-                dton=br.ReadBytes(banktocEntries[3].secSize);
+                dton = br.ReadBytes(banktocEntries[3].secSize);
 
                 //TONE
                 br.BaseStream.Position = banktocEntries[4].offset;
@@ -87,7 +82,7 @@ namespace archive_nus3bank
                 //JUNK - not yet mapped
                 br.BaseStream.Position = banktocEntries[5].offset;
                 if (br.ReadStruct<Header>().magic != "JUNK") throw new Exception();
-                junk=br.ReadBytes(banktocEntries[5].secSize);
+                junk = br.ReadBytes(banktocEntries[5].secSize);
 
                 //PACK and finishing
                 br.BaseStream.Position = banktocEntries[6].offset;
@@ -126,9 +121,9 @@ namespace archive_nus3bank
                 int tmp = 0; for (int i = 0; i < tone.toneCount; i++) tmp += Files[i].Entry.metaSize;
                 int toneSize = 4 + tone.toneCount * 0x8 + tmp;
                 int packSize = 0;
-                for (int i = 0; i < tone.toneCount; i++) packSize += (int) Files[i].FileData.Length;
+                for (int i = 0; i < tone.toneCount; i++) packSize += (int)Files[i].FileData.Length;
 
-                string[] banktocList=new string[7]{"PROP","BINF","GRP ","DTON","TONE","JUNK","PACK"};
+                string[] banktocList = new string[7] { "PROP", "BINF", "GRP ", "DTON", "TONE", "JUNK", "PACK" };
                 for (int i = 0; i < 7; i++)
                 {
                     bw.WriteASCII(banktocList[i]);
@@ -207,17 +202,17 @@ namespace archive_nus3bank
                     if (Files[i].Entry.metaSize > 0xc)
                     {
                         bw.Write(0);
-                        bw.Write((short) -1);
+                        bw.Write((short)-1);
                         bw.Write(Files[i].Entry.unk1);
                         bw.Write(Files[i].Entry.nameSize);
                         bw.WriteASCII(Files[i].Entry.name);
-                        bw.Write((byte) 0);
+                        bw.Write((byte)0);
                         bw.Write(Files[i].Entry.padding);
                         if (Files[i].Entry.zero0 == 0) bw.Write(0);
                         bw.Write(8);
                         bw.Write(packOffset);
-                        bw.Write((int) Files[i].FileData.Length);
-                        packOffset += (int) Files[i].FileData.Length;
+                        bw.Write((int)Files[i].FileData.Length);
+                        packOffset += (int)Files[i].FileData.Length;
                         bw.Write(Files[i].Entry.rest);
                     }
                     else
@@ -239,19 +234,19 @@ namespace archive_nus3bank
 
                 //update fileSize in NUS3 Header
                 bw.BaseStream.Position = 4;
-                bw.Write((int) bw.BaseStream.Length);
+                bw.Write((int)bw.BaseStream.Length);
             }
 
             if (isZLibCompressed)
             {
                 FileStream origFile = File.OpenRead(filename);
-                byte[] decomp=new byte[(int)origFile.Length];
-                origFile.Read(decomp,0,(int)origFile.Length);
-                byte[] comp=ZLib.Compress(decomp);
+                byte[] decomp = new byte[(int)origFile.Length];
+                origFile.Read(decomp, 0, (int)origFile.Length);
+                byte[] comp = ZLib.Compress(decomp);
 
                 origFile.Close();
                 File.Delete(filename);
-                File.OpenWrite(filename).Write(comp,0,comp.Length);
+                File.OpenWrite(filename).Write(comp, 0, comp.Length);
             }
         }
 
