@@ -4,12 +4,14 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_tmx
+namespace image_tm2
 {
     public sealed class Tm2Adapter : IImageAdapter
     {
         private FileInfo _fileInfo = null;
-        private TM2 _tm2 = null;
+        //private TM2 _tm2 = null;
+
+        #region Properties
 
         public string Name => "TM2";
         public string Description => "Texture Matrix 2";
@@ -19,6 +21,7 @@ namespace image_tmx
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+
         public FileInfo FileInfo
         {
             get
@@ -30,6 +33,8 @@ namespace image_tmx
                 _fileInfo = value;
             }
         }
+
+        #endregion
 
         public bool Identify(string filename)
         {
@@ -48,7 +53,7 @@ namespace image_tmx
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _tm2 = new TM2(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                ; //_tm2 = new TM2(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
             else
                 result = LoadResult.FileNotFound;
 
@@ -79,14 +84,14 @@ namespace image_tmx
         {
             get
             {
-                return _tm2.bmp;
+                return null; // TODO: Put this back: _tm2.bmp;
             }
             set
             {
-                _tm2.bmp = value;
+                //_tm2.bmp = value;
             }
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }
