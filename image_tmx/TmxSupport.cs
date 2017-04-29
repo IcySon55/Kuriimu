@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Text;
-using System.Threading.Tasks;
-using Kuriimu.IO;
+using System.Runtime.InteropServices;
 using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace image_tmx
 {
@@ -78,8 +75,8 @@ namespace image_tmx
 
             Bitmap bmp = new Bitmap(header.width, header.height);
             for (int y = 0; y < header.height; y++)
-            for (int x = 0; x < header.width; x++)
-                bmp.SetPixel(x, y, Palette[br.ReadByte()]);
+                for (int x = 0; x < header.width; x++)
+                    bmp.SetPixel(x, y, Palette[br.ReadByte()]);
 
             return bmp;
         }
@@ -164,7 +161,7 @@ namespace image_tmx
 
         public static byte[] CreateIndexed4(Bitmap bmp, Color[] Palette)
         {
-            List<byte> picData=new List<byte>();
+            List<byte> picData = new List<byte>();
 
             for (int y = 0; y < bmp.Height; y++)
             {
@@ -207,7 +204,7 @@ namespace image_tmx
 
             for (int y = 0; y < bmp.Height; y++)
             {
-                for (int x = 0; x < bmp.Width; x ++)
+                for (int x = 0; x < bmp.Width; x++)
                 {
                     bool found = false;
                     byte count = 0;
@@ -248,15 +245,15 @@ namespace image_tmx
 
         private static byte ResampleChannel(int value, int sourceBits, int targetBits)
         {
-            byte sourceMask = (byte) ((1 << sourceBits) - 1);
-            byte targetMask = (byte) ((1 << targetBits) - 1);
-            return (byte) ((((value & sourceMask) * targetMask) + (sourceMask >> 1)) / sourceMask);
+            byte sourceMask = (byte)((1 << sourceBits) - 1);
+            byte targetMask = (byte)((1 << targetBits) - 1);
+            return (byte)((((value & sourceMask) * targetMask) + (sourceMask >> 1)) / sourceMask);
         }
 
         private static byte ScaleAlpha(byte a)
         {
             /* Required for indexed AND non-indexed formats */
-            return (byte) Math.Min((255.0f * (a / 128.0f)), 0xFF);
+            return (byte)Math.Min((255.0f * (a / 128.0f)), 0xFF);
         }
 
         private static Color[] SetPalette(BinaryReaderX br, TMXPixelFormat paletteFormat, int colorCount)
@@ -269,18 +266,18 @@ namespace image_tmx
                 if (paletteFormat == TMXPixelFormat.PSMCT32)
                 {
                     uint color = br.ReadUInt32();
-                    r = (byte) color;
-                    g = (byte) (color >> 8);
-                    b = (byte) (color >> 16);
-                    a = (byte) (color >> 24);
+                    r = (byte)color;
+                    g = (byte)(color >> 8);
+                    b = (byte)(color >> 16);
+                    a = (byte)(color >> 24);
                 }
                 else
                 {
                     ushort color = br.ReadUInt16();
-                    r = (byte) ((color & 0x001F) << 3);
-                    g = (byte) (((color & 0x03E0) >> 5) << 3);
-                    b = (byte) (((color & 0x7C00) >> 10) << 3);
-                    a = (byte) (i == 0 ? 0 : 0x80);
+                    r = (byte)((color & 0x001F) << 3);
+                    g = (byte)(((color & 0x03E0) >> 5) << 3);
+                    b = (byte)(((color & 0x7C00) >> 10) << 3);
+                    a = (byte)(i == 0 ? 0 : 0x80);
                 }
 
                 tmpPalette[i] = Color.FromArgb(a, r, g, b);
@@ -305,7 +302,7 @@ namespace image_tmx
 
         public static Color[] GetPalette(Bitmap bmp)
         {
-            List<Color> colors=new List<Color>();
+            List<Color> colors = new List<Color>();
 
             for (int y = 0; y < bmp.Height; y++)
             {
@@ -313,7 +310,7 @@ namespace image_tmx
                 {
                     bool found = false;
                     int count = 0;
-                    Color color= bmp.GetPixel(x, y);
+                    Color color = bmp.GetPixel(x, y);
                     while (!found && count < colors.Count)
                     {
                         if (color == colors[count])
@@ -330,7 +327,8 @@ namespace image_tmx
             if (colors.Count < 16)
             {
                 while (colors.Count < 16) colors.Add(new Color());
-            } else if (colors.Count > 16 && colors.Count < 256)
+            }
+            else if (colors.Count > 16 && colors.Count < 256)
             {
                 while (colors.Count < 256) colors.Add(new Color());
             }
@@ -344,20 +342,20 @@ namespace image_tmx
             {
                 for (int i = 0; i < 256; i += 32)
                 {
-                    Color[] tmp=new Color[8];
-                    Array.Copy(Palette,i+8,tmp,0,8);
-                    Array.Copy(Palette,i+16,Palette,i+8,8);
-                    Array.Copy(tmp,0,Palette,i+16,8);
+                    Color[] tmp = new Color[8];
+                    Array.Copy(Palette, i + 8, tmp, 0, 8);
+                    Array.Copy(Palette, i + 16, Palette, i + 8, 8);
+                    Array.Copy(tmp, 0, Palette, i + 16, 8);
                 }
             }
 
-            byte[] paletteBytes=new byte[Palette.Length*4];
+            byte[] paletteBytes = new byte[Palette.Length * 4];
             for (int i = 0; i < Palette.Length; i++)
             {
                 paletteBytes[i * 4] = Palette[i].R;
-                paletteBytes[i * 4+1] = Palette[i].G;
-                paletteBytes[i * 4+2] = Palette[i].B;
-                paletteBytes[i * 4+3] = Palette[i].A;
+                paletteBytes[i * 4 + 1] = Palette[i].G;
+                paletteBytes[i * 4 + 2] = Palette[i].B;
+                paletteBytes[i * 4 + 3] = Palette[i].A;
             }
 
             return paletteBytes;
