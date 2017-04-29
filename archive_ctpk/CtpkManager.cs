@@ -75,7 +75,7 @@ namespace archive_ctpk
 
         public void Unload()
         {
-            _ctpk.Close();
+            _ctpk?.Close();
         }
 
         // Files
