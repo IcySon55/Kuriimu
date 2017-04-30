@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cetera;
-using Kuriimu.Contract;
 using System.IO;
+using System.Runtime.InteropServices;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 
 //source code adjusted from pleonex' github:
@@ -67,7 +63,8 @@ namespace archive_ndsfs
         }
 
         public static int id = 0;
-        public static List<string> parseFileNames(List<NameTableEntry> fntEntries, List<string> nameList=null, string filename="")
+
+        public static List<string> parseFileNames(List<NameTableEntry> fntEntries, List<string> nameList = null, string filename = "")
         {
             if (nameList == null)
             {
@@ -209,7 +206,7 @@ namespace archive_ndsfs
     {
         public NameTableEntry(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 subTableOffset = br.ReadUInt32();
                 idFirstFile = br.ReadUInt16();
@@ -241,7 +238,7 @@ namespace archive_ndsfs
         public string name;             // File name
         public ushort id;               // Internal id
         public string path;             // Path where the file is
-        public Format format;           // Format file 
+        public Format format;           // Format file
         public Object tag;              // Extra information
     }
 

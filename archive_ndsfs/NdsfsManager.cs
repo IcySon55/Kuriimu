@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_ndsfs.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using System;
 
 namespace archive_ndsfs
 {
@@ -78,7 +77,7 @@ namespace archive_ndsfs
 
         public void Unload()
         {
-            _ndsfs.Close();
+            _ndsfs?.Close();
         }
 
         // Files
