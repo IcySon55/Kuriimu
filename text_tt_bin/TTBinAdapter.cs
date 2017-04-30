@@ -68,45 +68,49 @@ namespace text_ttbin
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                //possible identifications: PCK, cfg.bin, XPCK-Archive
-                //if cfg.bin
-                br.BaseStream.Position = 0x18;
-                uint t1 = br.ReadUInt32();
-                br.BaseStream.Position = 0x24;
-                uint t2 = br.ReadUInt32();
-                if (t1 == 0x0 && t2 == 0x14)
+                try
                 {
-                    return true;
-                }
-                br.BaseStream.Position = 0;
-
-                //if PCK
-                int entryCount = br.ReadInt32();
-                br.BaseStream.Position = 0x8;
-                if (entryCount * 3 * 4 + 4 == br.ReadInt32())
-                {
-                    return true;
-                }
-                br.BaseStream.Position = 0;
-
-                //if XPCK
-                if (br.ReadString(4) == "XPCK")
-                {
-                    return true;
-                }
-                else
-                {
-                    br.BaseStream.Position = 0;
-                    byte[] result = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
-                    using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(result)))
+                    //possible identifications: PCK, cfg.bin, XPCK-Archive
+                    //if cfg.bin
+                    br.BaseStream.Position = 0x18;
+                    uint t1 = br.ReadUInt32();
+                    br.BaseStream.Position = 0x24;
+                    uint t2 = br.ReadUInt32();
+                    if (t1 == 0x0 && t2 == 0x14)
                     {
-                        if (br2.ReadString(4) == "XPCK")
+                        return true;
+                    }
+                    br.BaseStream.Position = 0;
+
+                    //if PCK
+                    int entryCount = br.ReadInt32();
+                    br.BaseStream.Position = 0x8;
+                    if (entryCount * 3 * 4 + 4 == br.ReadInt32())
+                    {
+                        return true;
+                    }
+                    br.BaseStream.Position = 0;
+
+                    //if XPCK
+                    if (br.ReadString(4) == "XPCK")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        br.BaseStream.Position = 0;
+                        byte[] result = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
+                        using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(result)))
                         {
-                            br2.BaseStream.Position = 0;
-                            return true;
+                            if (br2.ReadString(4) == "XPCK")
+                            {
+                                br2.BaseStream.Position = 0;
+                                return true;
+                            }
                         }
                     }
                 }
+                catch (Exception) { }
 
                 return false;
             }
