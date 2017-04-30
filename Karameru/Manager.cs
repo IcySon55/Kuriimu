@@ -404,6 +404,7 @@ namespace Karameru
             {
                 _archiveManager.Save(saveAs ? _archiveManager.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
+                LoadDirectories();
                 UpdateForm();
             }
             catch (Exception ex)
