@@ -13,7 +13,7 @@ namespace archive_ndsfs
 {
     public class NDSFileInfo : ArchiveFileInfo
     {
-
+        public int ID;
     }
 
     public class NDSSupport
@@ -63,20 +63,24 @@ namespace archive_ndsfs
         }
 
         public static int id = 0;
-
-        public static List<string> parseFileNames(List<NameTableEntry> fntEntries, List<string> nameList = null, string filename = "")
+        public static List<List<string>> parseFileNames(List<NameTableEntry> fntEntries, List<List<string>> nameList=null, string filename="")
         {
             if (nameList == null)
             {
-                nameList = new List<string>();
+                nameList = new List<List<string>>();
+                nameList.Add(new List<string>());
+                nameList.Add(new List<string>());
                 id = 0;
             }
 
             for (int i = 0; i < fntEntries[id].subTable.files.Count; i++)
+            {
                 if (filename == "")
-                    nameList.Add(fntEntries[id].subTable.files[i].name);
+                    nameList[0].Add(fntEntries[id].subTable.files[i].name);
                 else
-                    nameList.Add(filename + "/" + fntEntries[id].subTable.files[i].name);
+                    nameList[0].Add(filename + "/" + fntEntries[id].subTable.files[i].name);
+                nameList[1].Add(fntEntries[id].idFirstFile++.ToString());
+            }
 
             for (int i = 0, j = id; i < fntEntries[j].subTable.folders.Count; i++)
             {
@@ -237,8 +241,7 @@ namespace archive_ndsfs
         public uint size;             // Length of the file
         public string name;             // File name
         public ushort id;               // Internal id
-        public string path;             // Path where the file is
-        public Format format;           // Format file
+        public Format format;           // Format file 
         public Object tag;              // Extra information
     }
 
