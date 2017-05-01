@@ -410,70 +410,68 @@ namespace Kuriimu
 
         private void OpenFile(string filename = "")
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Settings.Default.LastDirectory;
+            var ofd = new OpenFileDialog
+            {
+                InitialDirectory = Settings.Default.LastDirectory,
+                Filter = Tools.LoadTextFilters(_textAdapters)
+            };
 
-            // Supported Types
-            ofd.Filter = Tools.LoadTextFilters(_textAdapters);
-
-            DialogResult dr = DialogResult.OK;
+            var dr = DialogResult.OK;
 
             if (filename == string.Empty)
                 dr = ofd.ShowDialog();
 
-            if (dr == DialogResult.OK)
+            if (dr != DialogResult.OK) return;
+
+            if (filename == string.Empty)
+                filename = ofd.FileName;
+
+            var tempAdapter = SelectTextAdapter(filename);
+
+            try
             {
-                if (filename == string.Empty)
-                    filename = ofd.FileName;
-
-                ITextAdapter _tempAdapter = SelectTextAdapter(filename);
-
-                try
+                if (tempAdapter != null)
                 {
-                    if (_tempAdapter != null && _tempAdapter.Load(filename) == LoadResult.Success)
-                    {
-                        _textAdapter = _tempAdapter;
-                        _fileOpen = true;
-                        _hasChanges = false;
+                    tempAdapter.Load(filename);
 
-                        // Select Game Handler
-                        foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
-                            if (tsi.Text == Settings.Default.SelectedGameHandler)
-                            {
-                                _gameHandler = (IGameHandler)tsi.Tag;
-                                tsbGameSelect.Text = tsi.Text;
-                                tsbGameSelect.Image = tsi.Image;
+                    _textAdapter = tempAdapter;
+                    _fileOpen = true;
+                    _hasChanges = false;
 
-                                break;
-                            }
-                        if (_gameHandler == null)
-                            _gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
+                    // Select Game Handler
+                    foreach (ToolStripItem tsi in tsbGameSelect.DropDownItems)
+                        if (tsi.Text == Settings.Default.SelectedGameHandler)
+                        {
+                            _gameHandler = (IGameHandler)tsi.Tag;
+                            tsbGameSelect.Text = tsi.Text;
+                            tsbGameSelect.Image = tsi.Image;
 
-                        LoadEntries();
-                        UpdateTextView();
-                        UpdatePreview();
-                        UpdateForm();
-                    }
+                            break;
+                        }
+                    if (_gameHandler == null)
+                        _gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
 
-                    Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
-                    Settings.Default.Save();
+                    LoadEntries();
+                    UpdateTextView();
+                    UpdatePreview();
+                    UpdateForm();
                 }
-                catch (Exception ex)
-                {
-                    if (_tempAdapter != null)
-                        MessageBox.Show(this, ex.ToString(), _tempAdapter.Name + " - " + _tempAdapter.Description + " Adapter", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    else
-                        MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+
+                Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Name} - {tempAdapter.Description} Manager" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private DialogResult SaveFile(bool saveAs = false)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            DialogResult dr = DialogResult.OK;
+            var sfd = new SaveFileDialog();
+            var dr = DialogResult.OK;
 
-            sfd.Title = "Save as " + _textAdapter.Description;
+            sfd.Title = $"Save as {_textAdapter.Description}";
             sfd.FileName = _textAdapter.FileInfo.Name;
             sfd.Filter = _textAdapter.Description + " (" + _textAdapter.Extension + ")|" + _textAdapter.Extension;
 
@@ -490,11 +488,18 @@ namespace Kuriimu
                 Settings.Default.Save();
             }
 
-            if (dr == DialogResult.OK)
+            if (dr != DialogResult.OK) return dr;
+
+            try
             {
-                _textAdapter.Save(_textAdapter.FileInfo.FullName);
+                _textAdapter.Save(saveAs ? _textAdapter.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
+                //LoadEntries();
                 UpdateForm();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.ToString(), _textAdapter != null ? $"{_textAdapter.Name} - {_textAdapter.Description} Adapter" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return dr;

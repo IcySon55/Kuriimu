@@ -134,55 +134,54 @@ namespace Kukkii
 
         private void OpenFile(string filename = "")
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Settings.Default.LastDirectory;
+            var ofd = new OpenFileDialog
+            {
+                InitialDirectory = Settings.Default.LastDirectory,
+                Filter = Tools.LoadImageFilters(_imageAdapters)
+            };
 
-            // Supported Types
-            ofd.Filter = Tools.LoadImageFilters(_imageAdapters);
-
-            DialogResult dr = DialogResult.OK;
+            var dr = DialogResult.OK;
 
             if (filename == string.Empty)
                 dr = ofd.ShowDialog();
 
-            if (dr == DialogResult.OK)
+            if (dr != DialogResult.OK) return;
+
+            if (filename == string.Empty)
+                filename = ofd.FileName;
+
+            var tempAdapter = SelectImageAdapter(filename);
+
+            try
             {
-                if (filename == string.Empty)
-                    filename = ofd.FileName;
-
-                IImageAdapter _tempAdapter = SelectImageAdapter(filename);
-
-                try
+                if (tempAdapter != null)
                 {
-                    if (_tempAdapter != null && _tempAdapter.Load(filename) == LoadResult.Success)
-                    {
-                        _imageAdapter = _tempAdapter;
-                        _fileOpen = true;
-                        _hasChanges = false;
+                    tempAdapter.Load(filename);
 
-                        UpdatePreview();
-                        UpdateForm();
-                    }
+                    _imageAdapter = tempAdapter;
+                    _fileOpen = true;
+                    _hasChanges = false;
+                    imbPreview.Zoom = 100;
 
-                    Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
-                    Settings.Default.Save();
+                    UpdatePreview();
+                    UpdateForm();
                 }
-                catch (Exception ex)
-                {
-                    if (_tempAdapter != null)
-                        MessageBox.Show(this, ex.ToString(), _tempAdapter.Name + " - " + _tempAdapter.Description + " Adapter", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    else
-                        MessageBox.Show(this, ex.ToString(), "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+
+                Settings.Default.LastDirectory = new FileInfo(filename).DirectoryName;
+                Settings.Default.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Name} - {tempAdapter.Description} Manager" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private DialogResult SaveFile(bool saveAs = false)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            DialogResult dr = DialogResult.OK;
+            var sfd = new SaveFileDialog();
+            var dr = DialogResult.OK;
 
-            sfd.Title = "Save as " + _imageAdapter.Description;
+            sfd.Title = $"Save as {_imageAdapter.Description}";
             sfd.FileName = _imageAdapter.FileInfo.Name;
             sfd.Filter = _imageAdapter.Description + " (" + _imageAdapter.Extension + ")|" + _imageAdapter.Extension;
 
@@ -199,11 +198,18 @@ namespace Kukkii
                 Settings.Default.Save();
             }
 
-            if (dr == DialogResult.OK)
+            if (dr != DialogResult.OK) return dr;
+
+            try
             {
-                _imageAdapter.Save(_imageAdapter.FileInfo.FullName);
+                _imageAdapter.Save(saveAs ? _imageAdapter.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
+                UpdatePreview();
                 UpdateForm();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.ToString(), _imageAdapter != null ? $"{_imageAdapter.Name} - {_imageAdapter.Description} Adapter" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return dr;
@@ -270,7 +276,6 @@ namespace Kukkii
         private void UpdatePreview()
         {
             imbPreview.Image = _imageAdapter.Bitmap;
-            imbPreview.Zoom = 100;
         }
 
         private void UpdateForm()

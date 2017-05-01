@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
-using Cetera.Image;
-using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -22,10 +18,10 @@ namespace archive_ndsfs
             _stream = input;
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
-                //ROM Header
+                // ROM Header
                 header = new Header(br.BaseStream);
 
-                //Add ARM9 file
+                // Add ARM9 file
                 Files.Add(new NDSFileInfo
                 {
                     State = ArchiveFileState.Archived,
@@ -33,7 +29,7 @@ namespace archive_ndsfs
                     FileData = new SubStream(br.BaseStream, header.ARM9romOffset, header.ARM9size)
                 });
 
-                //Add ARM7 file
+                // Add ARM7 file
                 Files.Add(new NDSFileInfo
                 {
                     State = ArchiveFileState.Archived,
@@ -41,7 +37,7 @@ namespace archive_ndsfs
                     FileData = new SubStream(br.BaseStream, header.ARM7romOffset, header.ARM7size)
                 });
 
-                //NameTable
+                // Name Table
                 br.BaseStream.Position = header.fileNameTableOffset;
                 List<NameTableEntry> fntEntries = new List<NameTableEntry>();
                 fntEntries.Add(new NameTableEntry(br.BaseStream));
@@ -76,14 +72,13 @@ namespace archive_ndsfs
                     }
                 }
 
-                //parse Filenames
+                // Parse Filenames
                 var nameList = NDSSupport.parseFileNames(fntEntries);
+
 
                 //FileData
                 for (int i= int.Parse(nameList[1][0]); i<nameList[0].Count; i++)
                 {
-                    if (i == 0x1929)
-                    {
                         br.BaseStream.Position = header.FAToffset + i * 0x8;
                         uint fileOffset = br.ReadUInt32();
                         Files.Add(new NDSFileInfo
@@ -93,14 +88,13 @@ namespace archive_ndsfs
                             ID = int.Parse(nameList[1][i]),
                             FileData = new SubStream(br.BaseStream, fileOffset, br.ReadUInt32() - fileOffset)
                         });
-                    }
                 }
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream output)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            using (BinaryWriterX bw = new BinaryWriterX(output))
             {
 
             }
