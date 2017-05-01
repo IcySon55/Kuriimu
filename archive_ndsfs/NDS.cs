@@ -80,16 +80,20 @@ namespace archive_ndsfs
                 var nameList = NDSSupport.parseFileNames(fntEntries);
 
                 //FileData
-                br.BaseStream.Position = header.FAToffset;
-                foreach (var name in nameList)
+                for (int i= int.Parse(nameList[1][0]); i<nameList[0].Count; i++)
                 {
-                    uint fileOffset= br.ReadUInt32();
-                    Files.Add(new NDSFileInfo
+                    if (i == 0x1929)
                     {
-                        State = ArchiveFileState.Archived,
-                        FileName = name,
-                        FileData = new SubStream(br.BaseStream, fileOffset, br.ReadUInt32()-fileOffset)
-                    });
+                        br.BaseStream.Position = header.FAToffset + i * 0x8;
+                        uint fileOffset = br.ReadUInt32();
+                        Files.Add(new NDSFileInfo
+                        {
+                            State = ArchiveFileState.Archived,
+                            FileName = nameList[0][i],
+                            ID = int.Parse(nameList[1][i]),
+                            FileData = new SubStream(br.BaseStream, fileOffset, br.ReadUInt32() - fileOffset)
+                        });
+                    }
                 }
             }
         }
