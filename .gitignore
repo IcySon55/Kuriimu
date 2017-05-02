@@ -1,3 +1,7 @@
+# Will be generated on build time
+Kuriimu/Properties/AssemblyInfo.cs
+Kuriimu/Version.cs
+
 bin
 obj
 *.suo
