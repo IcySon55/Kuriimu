@@ -7,13 +7,10 @@ namespace Kuriimu
     {
         public static string GetAppMessage()
         {
-            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            //Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
-            return string.Format("Kuriimu v{0}.{1}.{2}.{3} built on {4}\r\nCopyright {5} IcySon55\r\n\r\n",
-                version.Major,
-                version.Minor,
-                version.Build,
-                version.Revision,
+            return string.Format("Kuriimu v{0} built on {1}\r\nCopyright {2} IcySon55\r\n\r\n",
+                Version.gitLastTag + "." + Version.gitCount,
                 RetrieveLinkerTimestamp().ToString("MMM dd yyyy hh:mm:ss"),
                 GetCopyrightYears(new DateTime(2016, 1, 1)));
         }
