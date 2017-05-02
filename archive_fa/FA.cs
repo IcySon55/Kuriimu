@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System;
 using System.Linq;
 using System.Text;
 using Cetera.Hash;
@@ -39,14 +40,15 @@ namespace archive_fa
 
                 //Names
                 br.BaseStream.Position = header.nameOffset;
-                br.BaseStream.Position++;
 
                 string currentFolder = "";
+                br.BaseStream.Position++;
                 string tmp = ReadString(br.BaseStream);
+                br.BaseStream.Position--;
                 fileNames = new List<string>();
                 folderCounts.Add(0);
 
-                while ((tmp != "" || !tmp.Contains('A')) && br.BaseStream.Position <= header.dataOffset)
+                while (tmp !="" && br.BaseStream.Position < header.dataOffset)
                 {
                     if (tmp.Last() == '/')
                     {
@@ -61,7 +63,12 @@ namespace archive_fa
                         folderCounts[folderCounts.Count - 1] += 1;
                     }
 
-                    tmp = ReadString(br.BaseStream);
+                    br.BaseStream.Position++;
+                    if (br.BaseStream.Position < header.dataOffset)
+                    {
+                        tmp = ReadString(br.BaseStream);
+                        br.BaseStream.Position--;
+                    }
                 }
 
                 //FileData
@@ -112,7 +119,7 @@ namespace archive_fa
                 {
                     var nameSorted = new List<NameEntry>();
                     for (int i = 0; i < folderCount; i++) nameSorted.Add(new NameEntry { name = Files[pos + i].FileName, crc32 = Files[pos + i].crc32, size = (uint)Files[pos + i].FileSize });
-                    nameSorted = nameSorted.OrderBy(x => x.name.ToUpper()).ToList();
+                    nameSorted = nameSorted.OrderBy(x => x.name, StringComparer.OrdinalIgnoreCase).ToList();
 
                     var entriesTmp = new List<Entry>();
                     uint nameOffset = 0;
