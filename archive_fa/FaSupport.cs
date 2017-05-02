@@ -5,7 +5,7 @@ namespace archive_fa
 {
     public class FAFileInfo : ArchiveFileInfo
     {
-        public Entry Entry;
+        public uint crc32;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -35,11 +35,19 @@ namespace archive_fa
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Entry
+    public class Entry
     {
         public uint crc32;
-        public uint nameOffset;
+        public uint nameOffsetInFolder;
         public uint fileOffset;
         public uint fileSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class NameEntry
+    {
+        public uint crc32;
+        public string name;
+        public uint size;
     }
 }
