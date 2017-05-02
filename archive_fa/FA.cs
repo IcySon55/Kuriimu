@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System;
 using System.Linq;
 using System.Text;
 using Cetera.Hash;
@@ -39,14 +40,15 @@ namespace archive_fa
 
                 //Names
                 br.BaseStream.Position = header.nameOffset;
-                br.BaseStream.Position++;
 
                 string currentFolder = "";
-                string tmp = br.ReadCStringA();
+                br.BaseStream.Position++;
+                string tmp = ReadString(br.BaseStream);
+                br.BaseStream.Position--;
                 fileNames = new List<string>();
                 folderCounts.Add(0);
 
-                while (tmp != "" && br.BaseStream.Position < header.dataOffset)
+                while (tmp !="" && br.BaseStream.Position < header.dataOffset)
                 {
                     if (tmp.Last() == '/')
                     {
@@ -61,7 +63,12 @@ namespace archive_fa
                         folderCounts[folderCounts.Count - 1] += 1;
                     }
 
-                    tmp = br.ReadCStringA();
+                    br.BaseStream.Position++;
+                    if (br.BaseStream.Position < header.dataOffset)
+                    {
+                        tmp = ReadString(br.BaseStream);
+                        br.BaseStream.Position--;
+                    }
                 }
 
                 //FileData
@@ -112,7 +119,7 @@ namespace archive_fa
                 {
                     var nameSorted = new List<NameEntry>();
                     for (int i = 0; i < folderCount; i++) nameSorted.Add(new NameEntry { name = Files[pos + i].FileName, crc32 = Files[pos + i].crc32, size = (uint)Files[pos + i].FileSize });
-                    nameSorted = nameSorted.OrderBy(x => x.name.ToUpper()).ToList();
+                    nameSorted = nameSorted.OrderBy(x => x.name, StringComparer.OrdinalIgnoreCase).ToList();
 
                     var entriesTmp = new List<Entry>();
                     uint nameOffset = 0;
@@ -167,6 +174,22 @@ namespace archive_fa
                 //Write Header
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);
+            }
+        }
+
+        public string ReadString(Stream input)
+        {
+            using (var br=new BinaryReaderX(input,true))
+            {
+                var result = new List<byte>();
+                var tmp = br.ReadByte();
+                while(tmp!=0x00)
+                {
+                    result.Add(tmp);
+                    tmp = br.ReadByte();
+                }
+
+                return Encoding.GetEncoding("SJIS").GetString(result.ToArray());
             }
         }
 
