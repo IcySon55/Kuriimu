@@ -14,7 +14,7 @@ namespace archive_fa
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Level 5 Format Archive";
+        public string Description => "Level 5 File Archive";
         public string Extension => "*.fa";
         public string About => "This is the FA archive manager for Karameru.";
 

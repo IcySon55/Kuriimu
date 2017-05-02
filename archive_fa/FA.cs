@@ -18,8 +18,9 @@ namespace archive_fa
         private byte[] unk2;
 
         private List<Entry> entries;
-        private List<string> filenames;
-        private List<string> foldernames;
+        private List<string> fileNames;
+        private List<string> dirStruct = new List<string>();
+        private List<int> folderCounts = new List<int>();
         private List<uint> hashes;
 
         public FA(Stream input)
@@ -36,50 +37,57 @@ namespace archive_fa
 
                 //Entries
                 entries = br.ReadMultiple<Entry>(header.entryCount);
-                br.BaseStream.Position++;
 
                 //Names
-                filenames = new List<string>();
-                foldernames = new List<string>();
+                br.BaseStream.Position = header.nameOffset;
+                br.BaseStream.Position++;
+
                 string currentFolder = "";
                 string tmp = br.ReadCStringA();
-                while (tmp != "")
+                fileNames = new List<string>();
+                folderCounts.Add(0);
+
+                while (tmp != "" && br.BaseStream.Position < header.dataOffset)
                 {
-                    if (tmp[tmp.Length - 1] == '/')
+                    if (tmp.Last() == '/')
                     {
-                        foldernames.Add(tmp);
+                        folderCounts.Add(0);
+                        dirStruct.Add(tmp);
                         currentFolder = tmp;
                     }
                     else
                     {
-                        filenames.Add(currentFolder + tmp);
+                        dirStruct.Add(currentFolder + tmp);
+                        fileNames.Add(currentFolder + tmp);
+                        folderCounts[folderCounts.Count - 1] += 1;
                     }
+
                     tmp = br.ReadCStringA();
                 }
 
-                hashes = new List<uint>();
-                foreach (var name in filenames)
+                //FileData
+                int pos = 0;
+                foreach (var folderCount in folderCounts)
                 {
-                    bool found = false;
-                    int count = 0;
-                    uint crc32 = Crc32.Create(Encoding.ASCII.GetBytes(name.Split('/').Last().ToLower()));
-                    while (!found && count < entries.Count)
+                    var tmpFiles = new List<NameEntry>();
+                    for (int i = 0; i < folderCount; i++)
+                        tmpFiles.Add(new NameEntry {
+                            name = fileNames[pos + i],
+                            crc32 = Crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(fileNames[pos + i].Split('/').Last().ToLower()))
+                        });
+                    tmpFiles = tmpFiles.OrderBy(x => x.crc32).ToList();
+
+                    foreach (var nameEntry in tmpFiles)
                     {
-                        if (entries[count].crc32 == crc32)
-                        {
+                        if (nameEntry.crc32 == entries[pos].crc32)
                             Files.Add(new FAFileInfo
                             {
                                 State = ArchiveFileState.Archived,
-                                FileName = name,
-                                FileData = new SubStream(br.BaseStream, entries[count].fileOffset + header.dataOffset, entries[count].fileSize),
-                                Entry = entries[count]
+                                FileName = nameEntry.name,
+                                FileData = new SubStream(br.BaseStream, entries[pos].fileOffset + header.dataOffset, entries[pos].fileSize),
+                                crc32 = entries[pos++].crc32
                             });
-                            found = true;
-                        }
-                        else
-                            count++;
                     }
-                    hashes.Add(crc32);
                 }
             }
         }
@@ -94,29 +102,61 @@ namespace archive_fa
                 bw.Write(unk1);
                 bw.Write(unk2);
 
-                //filename List
-                byte[] dirnameList = GetDirNameList();
-
                 //entryList and Data
-                uint offset = 0;
-                uint dataOffset = (uint)(0x48 + unk1.Length + unk2.Length + Files.Count * 0x10 + dirnameList.Length);
-                foreach (var file in Files)
+                uint movDataOffset = (uint)(0x48 + unk1.Length + unk2.Length + Files.Count * 0x10);
+                foreach (var name in dirStruct) movDataOffset += 1 + (uint)Encoding.GetEncoding("SJIS").GetBytes((name.Last() != '/') ? name.Split('/').Last() : name).Length;
+                while (movDataOffset % 4 != 0) movDataOffset++;
+
+                int pos = 0;
+                foreach (var folderCount in folderCounts)
                 {
-                    bw.Write(file.Entry.crc32);
-                    bw.Write(file.Entry.nameOffset);
-                    bw.Write(offset);
-                    bw.Write((int)file.FileSize.GetValueOrDefault());
+                    var nameSorted = new List<NameEntry>();
+                    for (int i = 0; i < folderCount; i++) nameSorted.Add(new NameEntry { name = Files[pos + i].FileName, crc32 = Files[pos + i].crc32, size = (uint)Files[pos + i].FileSize });
+                    nameSorted = nameSorted.OrderBy(x => x.name).ToList();
 
-                    long bk = bw.BaseStream.Position;
-                    bw.BaseStream.Position = dataOffset + offset;
-                    bw.Write(new BinaryReaderX(file.FileData).ReadBytes((int)file.FileSize.GetValueOrDefault()));
-                    bw.BaseStream.Position = bk;
+                    var entriesTmp = new List<Entry>();
+                    uint nameOffset = 0;
+                    for (int i = 0; i < folderCount; i++)
+                    {
+                        entriesTmp.Add(new Entry { crc32 = Files[pos + i].crc32 });
+                    }
+                    for (int i = 0; i < folderCount; i++)
+                    {
+                        var foundEntry = entriesTmp.Find(x => x.crc32 == nameSorted[i].crc32);
+                        foundEntry.nameOffsetInFolder = nameOffset;
+                        foundEntry.fileOffset = movDataOffset;
+                        foundEntry.fileSize = nameSorted[i].size;
 
-                    offset += (uint)file.FileSize.GetValueOrDefault();
+                        nameOffset += 1 + (uint)nameSorted[i].name.Length;
+
+                        long bk = bw.BaseStream.Position;
+                        bw.BaseStream.Position = movDataOffset;
+                        Files.Find(x => x.FileName == nameSorted[i].name).FileData.CopyTo(bw.BaseStream);
+                        bw.BaseStream.Position++;
+                        while (bw.BaseStream.Position % 4 != 0) bw.BaseStream.Position++;
+                        movDataOffset = (uint)bw.BaseStream.Position;
+                        bw.BaseStream.Position = bk;
+                    }
+                    for (int i = 0; i < folderCount; i++)
+                    {
+                        bw.WriteStruct(entriesTmp[i]);
+                    }
+
+                    pos += folderCount;
                 }
+                
 
-                //write filenameList
-                bw.Write(dirnameList);
+                //nameList
+                foreach(var name in dirStruct)
+                {
+                    bw.Write((byte)0);
+                    if (name.Last() != '/')
+                        bw.Write(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last().ToLower()));
+                    else
+                        bw.Write(Encoding.GetEncoding("SJIS").GetBytes(name));
+                }
+                bw.BaseStream.Position++;
+                while (bw.BaseStream.Position % 4 != 0) bw.BaseStream.Position++;
 
                 //Write Header
                 bw.BaseStream.Position = 0;
@@ -124,20 +164,17 @@ namespace archive_fa
             }
         }
 
-        public byte[] GetDirNameList()
+        /*public List<string> GetDirNameList()
         {
-            List<byte> list = new List<byte>();
-            list.Add(0);
+            List<string> list = new List<string>();
             int pos = 0;
             string lastFolder = "";
-            Encoding ascii = Encoding.ASCII;
 
             foreach (var file in filenames)
             {
                 if (!file.Contains('/'))
                 {
-                    list.AddRange(ascii.GetBytes(file));
-                    list.Add(0);
+                    list.Add(file);
                 }
                 else
                 {
@@ -147,8 +184,7 @@ namespace archive_fa
                     {
                         if (lastFolder != foldernames[pos])
                         {
-                            list.AddRange(ascii.GetBytes(foldernames[pos]));
-                            list.Add(0);
+                            list.Add(foldernames[pos]);
                         }
 
                         if (!file.Contains(foldernames[pos])) pos++;
@@ -167,21 +203,17 @@ namespace archive_fa
                         }
                     }
 
-                    list.AddRange(ascii.GetBytes(file.Split('/').Last()));
-                    list.Add(0);
+                    list.Add(file.Split('/').Last());
                 }
             }
 
             for (int i = pos + 1; i < foldernames.Count; i++)
             {
-                list.AddRange(ascii.GetBytes(foldernames[i]));
-                list.Add(0);
+                list.Add(foldernames[i]);
             }
 
-            while (list.Count % 4 != 0) list.Add(0);
-
-            return list.ToArray();
-        }
+            return list;
+        }*/
 
         public void Close()
         {
