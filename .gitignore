@@ -1,3 +1,4 @@
+# Will be generated on build time
 bin
 obj
 *.suo
@@ -11,3 +12,5 @@ Publish.bat
 /Kuriimu/.vs/Kuriimu.sqlite
 *.sqlite
 /Kuriimu/packages
+/Kuriimu/Version.cs
+/Kuriimu/Properties/AssemblyInfo.cs
