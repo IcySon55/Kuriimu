@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Kuriimu")]
-[assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepeacefreak\r\nGIT information:\r\n\tBranch:\t$gitOwner$/$gitRepo$/$gitBranch$\r\n\tCommit:\t$gitHashLong$\r\n\tCompiled:\t$compileTime$\r\n\tby:\t$gitUser$ ($gitEmail$)")]
+[assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepiecefreak\r\nGIT Info:\r\n\tBranch:\t$gitOwner$/$gitRepo$/$gitBranch$\r\n\tCommit:\t$gitHashShort$\r\n\tCompiled:\t$compileTime$\r\n\tby:\t$gitUser$ ($gitEmail$)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Kuriimu")]
