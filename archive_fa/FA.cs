@@ -21,7 +21,6 @@ namespace archive_fa
         private List<string> fileNames;
         private List<string> dirStruct = new List<string>();
         private List<int> folderCounts = new List<int>();
-        private List<uint> hashes;
 
         public FA(Stream input)
         {
@@ -103,6 +102,7 @@ namespace archive_fa
                 bw.Write(unk2);
 
                 //entryList and Data
+                uint dataOffset=0;
                 uint movDataOffset = (uint)(0x48 + unk1.Length + unk2.Length + Files.Count * 0x10);
                 foreach (var name in dirStruct) movDataOffset += 1 + (uint)Encoding.GetEncoding("SJIS").GetBytes((name.Last() != '/') ? name.Split('/').Last() : name).Length;
                 while (movDataOffset % 4 != 0) movDataOffset++;
@@ -112,7 +112,7 @@ namespace archive_fa
                 {
                     var nameSorted = new List<NameEntry>();
                     for (int i = 0; i < folderCount; i++) nameSorted.Add(new NameEntry { name = Files[pos + i].FileName, crc32 = Files[pos + i].crc32, size = (uint)Files[pos + i].FileSize });
-                    nameSorted = nameSorted.OrderBy(x => x.name).ToList();
+                    nameSorted = nameSorted.OrderBy(x => x.name.ToUpper()).ToList();
 
                     var entriesTmp = new List<Entry>();
                     uint nameOffset = 0;
@@ -124,16 +124,22 @@ namespace archive_fa
                     {
                         var foundEntry = entriesTmp.Find(x => x.crc32 == nameSorted[i].crc32);
                         foundEntry.nameOffsetInFolder = nameOffset;
-                        foundEntry.fileOffset = movDataOffset;
+                        foundEntry.fileOffset = dataOffset;
                         foundEntry.fileSize = nameSorted[i].size;
 
-                        nameOffset += 1 + (uint)nameSorted[i].name.Length;
+                        var t = "";
+                        if (bw.BaseStream.Position == 0x74fc)
+                            t = nameSorted[i].name;
+                        t = "";
+
+                        nameOffset += 1 + (uint)nameSorted[i].name.Split('/').Last().Length;
 
                         long bk = bw.BaseStream.Position;
                         bw.BaseStream.Position = movDataOffset;
                         Files.Find(x => x.FileName == nameSorted[i].name).FileData.CopyTo(bw.BaseStream);
                         bw.BaseStream.Position++;
                         while (bw.BaseStream.Position % 4 != 0) bw.BaseStream.Position++;
+                        dataOffset += (uint)bw.BaseStream.Position - movDataOffset;
                         movDataOffset = (uint)bw.BaseStream.Position;
                         bw.BaseStream.Position = bk;
                     }
@@ -151,7 +157,7 @@ namespace archive_fa
                 {
                     bw.Write((byte)0);
                     if (name.Last() != '/')
-                        bw.Write(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last().ToLower()));
+                        bw.Write(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last()));
                     else
                         bw.Write(Encoding.GetEncoding("SJIS").GetBytes(name));
                 }
@@ -163,57 +169,6 @@ namespace archive_fa
                 bw.WriteStruct(header);
             }
         }
-
-        /*public List<string> GetDirNameList()
-        {
-            List<string> list = new List<string>();
-            int pos = 0;
-            string lastFolder = "";
-
-            foreach (var file in filenames)
-            {
-                if (!file.Contains('/'))
-                {
-                    list.Add(file);
-                }
-                else
-                {
-                    bool found = false;
-
-                    while (!found)
-                    {
-                        if (lastFolder != foldernames[pos])
-                        {
-                            list.Add(foldernames[pos]);
-                        }
-
-                        if (!file.Contains(foldernames[pos])) pos++;
-                        else
-                            if (pos + 1 < foldernames.Count)
-                            if (!file.Contains(foldernames[pos + 1]))
-                            {
-                                lastFolder = foldernames[pos];
-                                found = true;
-                            }
-                            else pos++;
-                        else
-                        {
-                            lastFolder = foldernames[pos];
-                            found = true;
-                        }
-                    }
-
-                    list.Add(file.Split('/').Last());
-                }
-            }
-
-            for (int i = pos + 1; i < foldernames.Count; i++)
-            {
-                list.Add(foldernames[i]);
-            }
-
-            return list;
-        }*/
 
         public void Close()
         {
