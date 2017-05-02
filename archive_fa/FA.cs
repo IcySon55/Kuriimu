@@ -42,11 +42,11 @@ namespace archive_fa
                 br.BaseStream.Position++;
 
                 string currentFolder = "";
-                string tmp = br.ReadCStringA();
+                string tmp = ReadString(br.BaseStream);
                 fileNames = new List<string>();
                 folderCounts.Add(0);
 
-                while (tmp != "" && br.BaseStream.Position < header.dataOffset)
+                while ((tmp != "" || !tmp.Contains('A')) && br.BaseStream.Position <= header.dataOffset)
                 {
                     if (tmp.Last() == '/')
                     {
@@ -61,7 +61,7 @@ namespace archive_fa
                         folderCounts[folderCounts.Count - 1] += 1;
                     }
 
-                    tmp = br.ReadCStringA();
+                    tmp = ReadString(br.BaseStream);
                 }
 
                 //FileData
@@ -167,6 +167,22 @@ namespace archive_fa
                 //Write Header
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);
+            }
+        }
+
+        public string ReadString(Stream input)
+        {
+            using (var br=new BinaryReaderX(input,true))
+            {
+                var result = new List<byte>();
+                var tmp = br.ReadByte();
+                while(tmp!=0x00)
+                {
+                    result.Add(tmp);
+                    tmp = br.ReadByte();
+                }
+
+                return Encoding.GetEncoding("SJIS").GetString(result.ToArray());
             }
         }
 
