@@ -510,7 +510,7 @@ namespace Kuriimu
             ITextAdapter result = null;
 
             // first look for adapters whose extension matches that of our filename
-            List<ITextAdapter> matchingAdapters = _textAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s.Substring(1).ToLower()))).ToList();
+            List<ITextAdapter> matchingAdapters = _textAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s))).ToList();
 
             result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
