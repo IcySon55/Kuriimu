@@ -9,7 +9,7 @@ namespace image_tm2
     public sealed class Tm2Adapter : IImageAdapter
     {
         private FileInfo _fileInfo = null;
-        //private TM2 _tm2 = null;
+        private TM2 _tm2 = null;
 
         #region Properties
 
@@ -40,9 +40,14 @@ namespace image_tm2
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 8) return false;
-                br.BaseStream.Position = 4;
-                return (br.ReadInt32() == 0x80);
+                if (br.BaseStream.Length < 4) return false;
+                int count = br.ReadInt32();
+                if (br.BaseStream.Length < count * 0x4) return false;
+                br.BaseStream.Position = (count - 1) * 0x4;
+                int off = br.ReadInt32();
+                if (br.BaseStream.Length < off+8) return false;
+                br.BaseStream.Position = off;
+                return (br.ReadString(8) == "EMUARC__");
             }
         }
 
@@ -53,7 +58,7 @@ namespace image_tm2
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                ; //_tm2 = new TM2(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+                _tm2 = new TM2(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
             else
                 result = LoadResult.FileNotFound;
 
@@ -84,11 +89,11 @@ namespace image_tm2
         {
             get
             {
-                return null; // TODO: Put this back: _tm2.bmp;
+                return _tm2.bmp;
             }
             set
             {
-                //_tm2.bmp = value;
+                _tm2.bmp = value;
             }
         }
 
