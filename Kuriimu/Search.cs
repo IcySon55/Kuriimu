@@ -53,12 +53,12 @@ namespace Kuriimu
                 {
                     if (chkMatchCase.Checked)
                     {
-                        if (entry.EditedText.Contains(txtFindText.Text) || entry.OriginalText.Contains(txtFindText.Text))
+                        if (entry.EditedText.Contains(txtFindText.Text) || entry.OriginalText.Contains(txtFindText.Text) || entry.Name.Contains(txtFindText.Text))
                             lstResults.Items.Add(new ListItem(entry.ToString(), entry));
                     }
                     else
                     {
-                        if (entry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || entry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()))
+                        if (entry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || entry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()) || entry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
                             lstResults.Items.Add(new ListItem(entry.ToString(), entry));
                     }
 
@@ -66,12 +66,12 @@ namespace Kuriimu
                     {
                         if (chkMatchCase.Checked)
                         {
-                            if (subEntry.EditedText.Contains(txtFindText.Text) || subEntry.OriginalText.Contains(txtFindText.Text))
+                            if (subEntry.EditedText.Contains(txtFindText.Text) || subEntry.OriginalText.Contains(txtFindText.Text) || subEntry.Name.Contains(txtFindText.Text))
                                 lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
                         }
                         else
                         {
-                            if (subEntry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()))
+                            if (subEntry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
                                 lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
                         }
                     }
