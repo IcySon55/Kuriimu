@@ -36,7 +36,7 @@ namespace archive_fa
                 unk2 = br.ReadBytes(header.entryOffset - header.offset1);
 
                 //Entries
-                entries = br.ReadMultiple<Entry>(header.entryCount);
+                entries = br.ReadMultiple<Entry>(header.fileCount);
 
                 //Names
                 br.BaseStream.Position = header.nameOffset;
@@ -113,6 +113,12 @@ namespace archive_fa
                 uint movDataOffset = (uint)(0x48 + unk1.Length + unk2.Length + Files.Count * 0x10);
                 foreach (var name in dirStruct) movDataOffset += 1 + (uint)Encoding.GetEncoding("SJIS").GetBytes((name.Last() != '/') ? name.Split('/').Last() : name).Length;
                 while (movDataOffset % 4 != 0) movDataOffset++;
+
+                header.dataOffset = movDataOffset;
+                header.nameOffset = (uint)(0x48 + unk1.Length + unk2.Length + Files.Count * 0x10);
+                header.folderCount = (short)folderCounts.Count;
+                header.fileCount = Files.Count;
+                header.fileCount2 = Files.Count;
 
                 int pos = 0;
                 foreach (var folderCount in folderCounts)
