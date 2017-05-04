@@ -38,6 +38,8 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchExportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchImportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,8 +68,10 @@
             this.tslTool = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbGridColor = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbGridColorAlternate = new System.Windows.Forms.ToolStripDropDownButton();
+            this.clrDialog = new System.Windows.Forms.ColorDialog();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -176,6 +180,21 @@
             this.importPNGToolStripMenuItem.Text = "&Import PNG";
             this.importPNGToolStripMenuItem.Click += new System.EventHandler(this.importPNGToolStripMenuItem_Click);
             // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.compressionToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // compressionToolStripMenuItem
+            // 
+            this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
+            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.compressionToolStripMenuItem.Text = "&Compression";
+            // 
             // batchToolStripMenuItem
             // 
             this.batchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -259,7 +278,10 @@
             this.tsbBatchExport,
             this.tsbBatchImport,
             this.tsbKarameru,
-            this.tsbKuriimu});
+            this.tsbKuriimu,
+            this.toolStripSeparator5,
+            this.tsbGridColor,
+            this.tsbGridColorAlternate});
             this.tlsMain.Location = new System.Drawing.Point(0, 24);
             this.tlsMain.Name = "tlsMain";
             this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -465,20 +487,30 @@
             this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
             this.propertyGrid1.TabIndex = 0;
             // 
-            // toolsToolStripMenuItem
+            // toolStripSeparator5
             // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.compressionToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-            this.toolsToolStripMenuItem.Text = "&Tools";
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
-            // compressionToolStripMenuItem
+            // tsbGridColor
             // 
-            this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
-            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.compressionToolStripMenuItem.Text = "&Compression";
+            this.tsbGridColor.BackColor = System.Drawing.Color.Transparent;
+            this.tsbGridColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColor.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tsbGridColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColor.Name = "tsbGridColor";
+            this.tsbGridColor.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColor.Text = "Batch Import";
+            this.tsbGridColor.Click += new System.EventHandler(this.tsbGridColor_Click);
+            // 
+            // tsbGridColorAlternate
+            // 
+            this.tsbGridColorAlternate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColorAlternate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColorAlternate.Name = "tsbGridColorAlternate";
+            this.tsbGridColorAlternate.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColorAlternate.Text = "Batch Export";
+            this.tsbGridColorAlternate.Click += new System.EventHandler(this.tsbGridColorAlternate_Click);
             // 
             // Converter
             // 
@@ -552,6 +584,10 @@
         private System.Windows.Forms.ToolStripMenuItem batchImportPNGToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripDropDownButton tsbGridColor;
+        private System.Windows.Forms.ToolStripDropDownButton tsbGridColorAlternate;
+        private System.Windows.Forms.ColorDialog clrDialog;
     }
 }
 
