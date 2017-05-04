@@ -872,7 +872,7 @@ namespace Kuriimu
                                             kSub.OriginalText = sub.OriginalText;
                                             kSub.MaxLength = sub.MaxLength;
                                             kSub.ParentEntry = entry;
-                                            entry.SubEntries.Add(kSub);
+                                            kEntry.SubEntries.Add(kSub);
                                         }
                                     }
                                 }
