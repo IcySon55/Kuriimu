@@ -275,7 +275,7 @@ namespace Kukkii
 
         private void UpdatePreview()
         {
-            imbPreview.Image = _imageAdapter.Bitmap;
+            imbPreview.Image = _imageAdapter?.Bitmap;
         }
 
         private void UpdateForm()
@@ -296,6 +296,19 @@ namespace Kukkii
                 importPNGToolStripMenuItem.Enabled = _fileOpen;
                 tsbImportPNG.Enabled = _fileOpen;
             }
+
+            // Colors
+            imbPreview.GridColor = Settings.Default.GridColor;
+            var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            var gfx = Graphics.FromImage(gcBitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor), 0, 0, 16, 16);
+            tsbGridColor.Image = gcBitmap;
+
+            imbPreview.GridColorAlternate = Settings.Default.GridColorAlternate;
+            var gcaBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            gfx = Graphics.FromImage(gcaBitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), 0, 0, 16, 16);
+            tsbGridColorAlternate.Image = gcaBitmap;
         }
 
         private string FileName()
@@ -461,6 +474,28 @@ namespace Kukkii
                 imbPreview.Cursor = Cursors.Default;
                 tslTool.Text = "Tool: Zoom";
             }
+        }
+
+        private void tsbGridColor_Click(object sender, EventArgs e)
+        {
+            clrDialog.Color = imbPreview.GridColor;
+            if (clrDialog.ShowDialog() != DialogResult.OK) return;
+
+            imbPreview.GridColor = clrDialog.Color;
+            Settings.Default.GridColor = clrDialog.Color;
+            Settings.Default.Save();
+            UpdateForm();
+        }
+
+        private void tsbGridColorAlternate_Click(object sender, EventArgs e)
+        {
+            clrDialog.Color = imbPreview.GridColorAlternate;
+            if (clrDialog.ShowDialog() != DialogResult.OK) return;
+
+            imbPreview.GridColorAlternate = clrDialog.Color;
+            Settings.Default.GridColorAlternate = clrDialog.Color;
+            Settings.Default.Save();
+            UpdateForm();
         }
     }
 }
