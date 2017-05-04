@@ -11,8 +11,8 @@ namespace text_bmd
 {
     public class BMD
     {
-        private const int SpeakerNameCount = 0x5D;
-        private const int SpeakerNameLength = 0x20;
+        private const int SpeakerCount = 0x5D;
+        public const int SpeakerLength = 0x20;
         public const int MessageLength = 0x30;
 
         public Header Header;
@@ -28,17 +28,24 @@ namespace text_bmd
             {
                 Header = br.ReadStruct<Header>();
                 TableEntries = br.ReadMultiple<TableEntry>(Header.NumberOfTableEntries);
-                DialogGroups = br.ReadMultiple<DialogGroup>(TableEntries.Sum(te => te.GroupCount));
 
-                for (var i = 0; i < SpeakerNameCount; i++)
+                var tableEntryTotal = TableEntries.Sum(te => te.GroupCount);
+
+                DialogGroups = br.ReadMultiple<DialogGroup>(tableEntryTotal);
+
+                for (var i = 0; i < SpeakerCount; i++)
                     Speakers.Add(new Speaker
                     {
                         Name = (i + 1).ToString("00"),
-                        Text = br.ReadString(SpeakerNameLength, Encoding.Unicode)
+                        Text = br.ReadString(SpeakerLength, Encoding.Unicode)
                     });
 
-
-                Messages = br.ReadMultiple<Message>(TableEntries.Sum(te => te.GroupCount));
+                for (var i = 0; i < tableEntryTotal; i++)
+                    Messages.Add(new Message
+                    {
+                        Name = (i + 1).ToString("00"),
+                        Text = br.ReadString(MessageLength, Encoding.Unicode)
+                    });
             }
         }
 

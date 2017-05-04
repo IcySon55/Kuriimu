@@ -14,7 +14,7 @@ namespace text_bmd
     {
         private BMD _bmd = null;
         private BMD _bmdBackup = null;
-        private List<Entry> _entries = null;
+        private List<Heading> _entries = null;
 
         #region Properties
 
@@ -108,29 +108,17 @@ namespace text_bmd
             {
                 if (_entries == null)
                 {
-                    _entries = new List<Entry>();
+                    _entries = new List<Heading>();
 
-                    //foreach (Label label in _bmd.Labels)
-                    //{
-                    //    Entry entry = new Entry(label);
-                    //    _entries.Add(entry);
+                    // Speakers
+                    var speakerHeading = new Heading("Speakers");
+                    _entries.Add(speakerHeading);
+                    speakerHeading.SubEntries.AddRange(_bmd.Speakers.Select(s => new SpeakerEntry(s)));
 
-                    //    foreach (String str in label.Strings)
-                    //    {
-                    //        if (_bmdBackup == null)
-                    //        {
-                    //            Entry subEntry = new Entry(str);
-                    //            subEntry.ParentEntry = entry;
-                    //            entry.SubEntries.Add(subEntry);
-                    //        }
-                    //        else
-                    //        {
-                    //            Entry subEntry = new Entry(str, _bmdBackup.Labels.FirstOrDefault(o => o.Name == label.Name).Strings.FirstOrDefault(j => j.ID == str.ID));
-                    //            subEntry.ParentEntry = entry;
-                    //            entry.SubEntries.Add(subEntry);
-                    //        }
-                    //    }
-                    //}
+                    // Messages
+                    var messageHeading = new Heading("Messages");
+                    _entries.Add(messageHeading);
+                    messageHeading.SubEntries.AddRange(_bmd.Messages.Select(m => new MessageEntry(m)));
                 }
 
                 if (SortEntries)
@@ -146,7 +134,7 @@ namespace text_bmd
 
         // Features
         public bool ShowProperties(Icon icon) => false;
-        public TextEntry NewEntry() => new Entry();
+        public TextEntry NewEntry() => null;
         public bool AddEntry(TextEntry entry) => false;
         public bool RenameEntry(TextEntry entry, string newName) => false;
         public bool DeleteEntry(TextEntry entry) => false;
@@ -164,51 +152,28 @@ namespace text_bmd
         }
     }
 
-    public sealed class Entry : TextEntry
+    public sealed class Heading : TextEntry
     {
         // Interface
-        public string Name
-        {
-            get { return ""; }
-            set { }
-        }
-
-        public string OriginalText => OriginalSpeakerText.Text;
-
-        public string EditedText
-        {
-            get => SpeakerText.Text;
-            set => SpeakerText.Text = value;
-        }
-
-        public int MaxLength { get; set; }
+        public string Name { get; set; }
+        public string OriginalText => string.Empty;
+        public string EditedText { get; set; }
+        public int MaxLength { get; }
         public TextEntry ParentEntry { get; set; }
         public bool IsSubEntry => ParentEntry != null;
         public bool HasText { get; }
         public List<TextEntry> SubEntries { get; set; }
 
-        // Adapter
-        public Speaker SpeakerText { get; set; }
-        public Speaker OriginalSpeakerText { get; }
-
-        public Entry()
+        public Heading(string name)
         {
-            Name = string.Empty;
-            MaxLength = BMD.MessageLength;
+            Name = name;
+            MaxLength = 0;
             ParentEntry = null;
             HasText = false;
             SubEntries = new List<TextEntry>();
         }
 
-        public Entry(Label lbl) : this()
-        {
-            //Label = lbl;
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
 
         public int CompareTo(TextEntry rhs)
         {
@@ -217,19 +182,113 @@ namespace text_bmd
         }
     }
 
-    //public sealed class MessageEntry : TextEntry
-    //{
-    //    // Interface
-    //    public string Name
-    //    {
-    //        get => Message.Name;
-    //        set { }
-    //    }
+    public sealed class SpeakerEntry : TextEntry
+    {
+        // Interface
+        public string Name
+        {
+            get { return Speaker.Name; }
+            set { }
+        }
 
-    //    public string OriginalText => OriginalMessage.Text;
+        public string OriginalText => OriginalSpeaker?.Text ?? string.Empty;
 
-    //    // Adapter
-    //    public Message Message { get; set; }
-    //    public Message OriginalMessage { get; }
-    //}
+        public string EditedText
+        {
+            get => Speaker.Text;
+            set => Speaker.Text = value;
+        }
+
+        public int MaxLength { get; }
+        public TextEntry ParentEntry { get; set; }
+        public bool IsSubEntry => ParentEntry != null;
+        public bool HasText { get; }
+        public List<TextEntry> SubEntries { get; set; }
+
+        // Adapter
+        public Speaker Speaker { get; set; }
+        public Speaker OriginalSpeaker { get; }
+
+        public SpeakerEntry()
+        {
+            Name = string.Empty;
+            MaxLength = BMD.SpeakerLength;
+            ParentEntry = null;
+            HasText = true;
+            SubEntries = new List<TextEntry>();
+        }
+
+        public SpeakerEntry(Speaker speaker) : this()
+        {
+            Speaker = speaker;
+        }
+
+        public SpeakerEntry(Speaker speaker, Speaker originalSpeaker) : this(speaker)
+        {
+            OriginalSpeaker = originalSpeaker;
+        }
+
+        public override string ToString() => Name;
+
+        public int CompareTo(TextEntry rhs)
+        {
+            var result = Name.CompareTo(rhs.Name);
+            return result;
+        }
+    }
+
+    public sealed class MessageEntry : TextEntry
+    {
+        // Interface
+        public string Name
+        {
+            get { return Message.Name; }
+            set { }
+        }
+
+        public string OriginalText => OriginalMessage?.Text ?? string.Empty;
+
+        public string EditedText
+        {
+            get => Message.Text;
+            set => Message.Text = value;
+        }
+
+        public int MaxLength { get; }
+        public TextEntry ParentEntry { get; set; }
+        public bool IsSubEntry => ParentEntry != null;
+        public bool HasText { get; }
+        public List<TextEntry> SubEntries { get; set; }
+
+        // Adapter
+        public Message Message { get; set; }
+        public Message OriginalMessage { get; }
+
+        public MessageEntry()
+        {
+            Name = string.Empty;
+            MaxLength = BMD.MessageLength;
+            ParentEntry = null;
+            HasText = true;
+            SubEntries = new List<TextEntry>();
+        }
+
+        public MessageEntry(Message message) : this()
+        {
+            Message = message;
+        }
+
+        public MessageEntry(Message message, Message originalMessage) : this(message)
+        {
+            OriginalMessage = originalMessage;
+        }
+
+        public override string ToString() => Name;
+
+        public int CompareTo(TextEntry rhs)
+        {
+            var result = Name.CompareTo(rhs.Name);
+            return result;
+        }
+    }
 }
