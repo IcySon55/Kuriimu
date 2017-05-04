@@ -660,7 +660,7 @@ namespace Kuriimu
         {
             TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
 
-            if (entry == null)
+            if (entry?.EditedText == null)
             {
                 txtEdit.Text = string.Empty;
                 txtOriginal.Text = string.Empty;
@@ -668,7 +668,8 @@ namespace Kuriimu
             else
             {
                 txtEdit.Text = _gameHandler.GetKuriimuString(entry.EditedText).Replace("\0", "<null>").Replace(_textAdapter.LineEndings, "\r\n");
-                txtOriginal.Text = _gameHandler.GetKuriimuString(entry.OriginalText).Replace("\0", "<null>").Replace(_textAdapter.LineEndings, "\r\n");
+                if (entry.OriginalText != null)
+                    txtOriginal.Text = _gameHandler.GetKuriimuString(entry.OriginalText).Replace("\0", "<null>").Replace(_textAdapter.LineEndings, "\r\n");
             }
 
             if (entry != null && entry.MaxLength != 0)
