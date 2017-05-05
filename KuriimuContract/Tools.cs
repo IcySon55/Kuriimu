@@ -10,34 +10,12 @@ namespace Kuriimu.Contract
 {
     public static class Tools
     {
-        public static string LoadTextFilters(IEnumerable<ITextAdapter> textAdapters)
+        public static string LoadFilters(IEnumerable<IPlugin> plugins)
         {
-            var alltypes = textAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
+            var alltypes = plugins.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
 
             // Add two special cases at start and end
-            if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension)) });
-            alltypes.Add(new { Description = "All Files", Extension = "*.*" });
-
-            return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
-        }
-
-        public static string LoadImageFilters(IEnumerable<IImageAdapter> imageAdapters)
-        {
-            var alltypes = imageAdapters.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
-
-            // Add two special cases at start and end
-            if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension)) });
-            alltypes.Add(new { Description = "All Files", Extension = "*.*" });
-
-            return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
-        }
-
-        public static string LoadArchiveFilters(IEnumerable<IArchiveManager> archiveManagers)
-        {
-            var alltypes = archiveManagers.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
-
-            // Add two special cases at start and end
-            if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension)) });
+            if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension).Distinct()) });
             alltypes.Add(new { Description = "All Files", Extension = "*.*" });
 
             return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));

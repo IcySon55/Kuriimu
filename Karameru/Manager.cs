@@ -337,7 +337,7 @@ namespace Karameru
             var ofd = new OpenFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
-                Filter = Tools.LoadArchiveFilters(_archiveManagers)
+                Filter = Tools.LoadFilters(_archiveManagers)
             };
 
             var dr = DialogResult.OK;
