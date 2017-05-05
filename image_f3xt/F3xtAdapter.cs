@@ -5,7 +5,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_tex
+namespace image_f3xt
 {
     public class F3xtAdapter : IImageAdapter
     {
@@ -16,7 +16,7 @@ namespace image_tex
         // Information
         public string Name => image_f3xt.Properties.Settings.Default.PluginName;
 
-        public string Description => "Normal Texture";
+        public string Description => "F3XT Texture";
         public string Extension => "*.tex";
         public string About => "This is the F3XT file adapter for Kukkii.";
 

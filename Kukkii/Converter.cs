@@ -137,7 +137,7 @@ namespace Kukkii
             var ofd = new OpenFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
-                Filter = Tools.LoadImageFilters(_imageAdapters)
+                Filter = Tools.LoadFilters(_imageAdapters)
             };
 
             var dr = DialogResult.OK;

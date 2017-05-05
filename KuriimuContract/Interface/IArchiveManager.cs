@@ -5,14 +5,8 @@ using System.IO;
 
 namespace Kuriimu.Contract
 {
-    public interface IArchiveManager
+    public interface IArchiveManager : IPlugin
     {
-        // Information
-        string Name { get; }
-        string Description { get; } // i.e. return "Kuriimu Archive";
-        string Extension { get; } // i.e. return "*.ext";
-        string About { get; }
-
         // Feature Support
         bool ArchiveHasExtendedProperties { get; } // Format provides an extended properties dialog?
         bool CanAddFiles { get; } // Is the plugin able to add files?

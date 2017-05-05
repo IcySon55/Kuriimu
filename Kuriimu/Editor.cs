@@ -413,7 +413,7 @@ namespace Kuriimu
             var ofd = new OpenFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
-                Filter = Tools.LoadTextFilters(_textAdapters)
+                Filter = Tools.LoadFilters(_textAdapters)
             };
 
             var dr = DialogResult.OK;
