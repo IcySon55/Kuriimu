@@ -1,26 +1,28 @@
 using System;
 using System.Drawing;
 using System.IO;
+using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
 namespace image_tex
 {
-    public class TexAdapter : IImageAdapter
+    public class F3xtAdapter : IImageAdapter
     {
-        private TEX _tex = null;
+        private F3XT _f3xt = null;
 
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => image_f3xt.Properties.Settings.Default.PluginName;
+
         public string Description => "Normal Texture";
         public string Extension => "*.tex";
-        public string About => "This is the MT TEX file adapter for Kukkii.";
+        public string About => "This is the F3XT file adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -31,7 +33,25 @@ namespace image_tex
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(3) == "TEX";
+
+                //check for compression
+                if (br.ReadByte() == 0x11)
+                {
+                    br.BaseStream.Position = 0;
+                    uint size = br.ReadUInt32() >> 8;
+                    br.BaseStream.Position = 0;
+                    byte[] decomp = LZ11.Decompress(br.BaseStream);
+                    if (decomp.Length == size)
+                    {
+                        if (new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "F3XT")
+                        {
+                            return true;
+                        }
+                    }
+                }
+                br.BaseStream.Position = 0;
+
+                return br.ReadString(4) == "F3XT";
             }
         }
 
@@ -42,8 +62,7 @@ namespace image_tex
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                //_tex = new TEX(FileInfo.OpenRead());
-                result = LoadResult.Failure;
+                _f3xt = new F3XT(FileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -59,8 +78,7 @@ namespace image_tex
 
             try
             {
-                //_tex.Save(FileInfo.OpenWrite());
-                result = SaveResult.Failure;
+                _f3xt.Save(FileInfo.OpenWrite());
             }
             catch (Exception)
             {
@@ -75,11 +93,11 @@ namespace image_tex
         {
             get
             {
-                return _tex.Image;
+                return _f3xt.Image;
             }
             set
             {
-                _tex.Image = value;
+                _f3xt.Image = value;
             }
         }
 
