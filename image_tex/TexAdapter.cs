@@ -14,9 +14,9 @@ namespace image_tex
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Normal Texture";
+        public string Description => "MT Framework Texture";
         public string Extension => "*.tex";
-        public string About => "This is the MT TEX file adapter for Kukkii.";
+        public string About => "This is the MT Framework TEX file adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
