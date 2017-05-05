@@ -50,10 +50,8 @@ namespace Kuriimu.UI
         public static void CriWare_Decompress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            string openFile;
-            string saveFile;
 
-            if (!PrepareFiles("Open a CriWare compressed file", "Save your CriWare decompressed file", ".decomp", out openFile, out saveFile)) return;
+            if (!PrepareFiles("Open a CriWare compressed file", "Save your CriWare decompressed file", ".decomp", out string openFile, out string saveFile)) return;
 
             try
             {
