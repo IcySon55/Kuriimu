@@ -6,7 +6,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_tex
+namespace image_f3xt
 {
     class F3XT
     {
