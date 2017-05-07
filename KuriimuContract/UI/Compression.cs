@@ -12,11 +12,12 @@ namespace Kuriimu.UI
         {
             tsb.DropDownItems.Clear();
 
-            ToolStripMenuItem tsi;
-
             // CriWare
-            tsi = new ToolStripMenuItem("CriWare Decompress", null, CriWare_Decompress);
-            tsb.DropDownItems.Add(tsi);
+            tsb.DropDownItems.Add(new ToolStripMenuItem("CriWare Decompress", null, CriWare_Decompress));
+
+            // LZ11
+            tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11 Compress", null, LZ11_Compress));
+            tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11 Decompress", null, LZ11_Decompress));
         }
 
         public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out string openFile, out string saveFile)
@@ -50,10 +51,8 @@ namespace Kuriimu.UI
         public static void CriWare_Decompress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            string openFile;
-            string saveFile;
 
-            if (!PrepareFiles("Open a CriWare compressed file", "Save your CriWare decompressed file", ".decomp", out openFile, out saveFile)) return;
+            if (!PrepareFiles("Open a CriWare compressed file...", "Save your decompressed CriWare file...", ".decomp", out string openFile, out string saveFile)) return;
 
             try
             {
@@ -63,8 +62,50 @@ namespace Kuriimu.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(null, ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            MessageBox.Show($"Successfully decompressed {Path.GetFileName(openFile)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public static void LZ11_Compress(object sender, EventArgs e)
+        {
+            var tsi = sender as ToolStripMenuItem;
+
+            if (!PrepareFiles("Open a decompressed LZ11 file...", "Save your compressed LZ11 file...", ".lz11", out string openFile, out string saveFile)) return;
+
+            try
+            {
+                using (var fs = File.OpenRead(openFile))
+                using (var outFs = new BinaryWriterX(File.Create(saveFile)))
+                    outFs.Write(LZ11.Compress(fs));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            MessageBox.Show($"Successfully compressed {Path.GetFileName(saveFile)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public static void LZ11_Decompress(object sender, EventArgs e)
+        {
+            var tsi = sender as ToolStripMenuItem;
+
+            if (!PrepareFiles("Open an LZ11 compressed file...", "Save your decompressed LZ11 file...", ".decomp", out string openFile, out string saveFile)) return;
+
+            try
+            {
+                using (var fs = File.OpenRead(openFile))
+                using (var outFs = new BinaryWriterX(File.Create(saveFile)))
+                    outFs.Write(LZ11.Decompress(fs));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            MessageBox.Show($"Successfully decompressed {Path.GetFileName(openFile)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

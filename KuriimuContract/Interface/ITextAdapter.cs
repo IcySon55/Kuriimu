@@ -4,14 +4,8 @@ using System.IO;
 
 namespace Kuriimu.Contract
 {
-    public interface ITextAdapter
+    public interface ITextAdapter : IPlugin
     {
-        // Information
-        string Name { get; }
-        string Description { get; } // i.e. return "Kuriimu Archive";
-        string Extension { get; } // i.e. return "*.ext";
-        string About { get; }
-
         // Feature Support
         bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
         bool CanSave { get; } // Is saving supported?
