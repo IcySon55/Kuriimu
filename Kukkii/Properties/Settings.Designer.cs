@@ -97,5 +97,17 @@ namespace Kukkii.Properties {
                 this["GridColorAlternate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool BatchScanSubdirectories {
+            get {
+                return ((bool)(this["BatchScanSubdirectories"]));
+            }
+            set {
+                this["BatchScanSubdirectories"] = value;
+            }
+        }
     }
 }

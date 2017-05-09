@@ -297,6 +297,12 @@ namespace Kukkii
                 tsbImportPNG.Enabled = _fileOpen;
             }
 
+            // Batch Import/Export
+            batchScanSubdirectoriesToolStripMenuItem.Text = Settings.Default.BatchScanSubdirectories ? "Scan Subdirectories" : "Don't Scan Subdirectories";
+            batchScanSubdirectoriesToolStripMenuItem.Image = Settings.Default.BatchScanSubdirectories ? Resources.menu_scan_subdirectories_on : Resources.menu_scan_subdirectories_off;
+            tsbBatchScanSubdirectories.Text = batchScanSubdirectoriesToolStripMenuItem.Text;
+            tsbBatchScanSubdirectories.Image = batchScanSubdirectoriesToolStripMenuItem.Image;
+
             // Colors
             imbPreview.GridColor = Settings.Default.GridColor;
             var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
@@ -325,7 +331,7 @@ namespace Kukkii
         private void tsbBatchExport_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Select the source directory containing image files...";
+            fbd.Description = "Select the source directory containing image files..." + (Settings.Default.BatchScanSubdirectories ? "\r\nSubdirectories will be scanned." : string.Empty);
             fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
             fbd.ShowNewFolderButton = false;
 
@@ -343,7 +349,7 @@ namespace Kukkii
                     {
                         string[] subTypes = type.Split(';');
                         foreach (string subType in subTypes)
-                            files.AddRange(Directory.GetFiles(path, subType));
+                            files.AddRange(Directory.GetFiles(path, subType, (Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)));
                     }
 
                     foreach (string file in files)
@@ -378,7 +384,7 @@ namespace Kukkii
         private void tsbBatchImport_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Select the source directory containing image and png file pairs...";
+            fbd.Description = "Select the source directory containing image and png file pairs..." + (Settings.Default.BatchScanSubdirectories ? "\r\nSubdirectories will be scanned." : string.Empty);
             fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
             fbd.ShowNewFolderButton = false;
 
@@ -397,7 +403,7 @@ namespace Kukkii
                     {
                         string[] subTypes = type.Split(';');
                         foreach (string subType in subTypes)
-                            files.AddRange(Directory.GetFiles(path, subType));
+                            files.AddRange(Directory.GetFiles(path, subType, (Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)));
                     }
 
                     foreach (string file in files)
@@ -430,6 +436,42 @@ namespace Kukkii
             Settings.Default.Save();
         }
 
+        private void batchScanSubdirectoriesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tsbBatchScanSubdirectories_Click(sender, e);
+        }
+
+        private void tsbBatchScanSubdirectories_Click(object sender, EventArgs e)
+        {
+            Settings.Default.BatchScanSubdirectories = !Settings.Default.BatchScanSubdirectories;
+            Settings.Default.Save();
+            UpdateForm();
+        }
+
+        // Grid Colors
+        private void tsbGridColor_Click(object sender, EventArgs e)
+        {
+            clrDialog.Color = imbPreview.GridColor;
+            if (clrDialog.ShowDialog() != DialogResult.OK) return;
+
+            imbPreview.GridColor = clrDialog.Color;
+            Settings.Default.GridColor = clrDialog.Color;
+            Settings.Default.Save();
+            UpdateForm();
+        }
+
+        private void tsbGridColorAlternate_Click(object sender, EventArgs e)
+        {
+            clrDialog.Color = imbPreview.GridColorAlternate;
+            if (clrDialog.ShowDialog() != DialogResult.OK) return;
+
+            imbPreview.GridColorAlternate = clrDialog.Color;
+            Settings.Default.GridColorAlternate = clrDialog.Color;
+            Settings.Default.Save();
+            UpdateForm();
+        }
+
+        // Apps
         private void tsbKuriimu_Click(object sender, EventArgs e)
         {
             ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kuriimu.exe"));
@@ -474,28 +516,6 @@ namespace Kukkii
                 imbPreview.Cursor = Cursors.Default;
                 tslTool.Text = "Tool: Zoom";
             }
-        }
-
-        private void tsbGridColor_Click(object sender, EventArgs e)
-        {
-            clrDialog.Color = imbPreview.GridColor;
-            if (clrDialog.ShowDialog() != DialogResult.OK) return;
-
-            imbPreview.GridColor = clrDialog.Color;
-            Settings.Default.GridColor = clrDialog.Color;
-            Settings.Default.Save();
-            UpdateForm();
-        }
-
-        private void tsbGridColorAlternate_Click(object sender, EventArgs e)
-        {
-            clrDialog.Color = imbPreview.GridColorAlternate;
-            if (clrDialog.ShowDialog() != DialogResult.OK) return;
-
-            imbPreview.GridColorAlternate = clrDialog.Color;
-            Settings.Default.GridColorAlternate = clrDialog.Color;
-            Settings.Default.Save();
-            UpdateForm();
         }
     }
 }
