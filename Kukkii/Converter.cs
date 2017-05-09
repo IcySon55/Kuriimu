@@ -298,7 +298,7 @@ namespace Kukkii
             }
 
             // Batch Import/Export
-            batchScanSubdirectoriesToolStripMenuItem.Text = Settings.Default.BatchScanSubdirectories ? "Scan Subdirectories" : "Don't Scan Subdirectories";
+            batchScanSubdirectoriesToolStripMenuItem.Text = Settings.Default.BatchScanSubdirectories ? "Scan Sub-directories" : "Don't Scan Sub-directories";
             batchScanSubdirectoriesToolStripMenuItem.Image = Settings.Default.BatchScanSubdirectories ? Resources.menu_scan_subdirectories_on : Resources.menu_scan_subdirectories_off;
             tsbBatchScanSubdirectories.Text = batchScanSubdirectoriesToolStripMenuItem.Text;
             tsbBatchScanSubdirectories.Image = batchScanSubdirectoriesToolStripMenuItem.Image;
@@ -331,7 +331,7 @@ namespace Kukkii
         private void tsbBatchExport_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Select the source directory containing image files..." + (Settings.Default.BatchScanSubdirectories ? "\r\nSubdirectories will be scanned." : string.Empty);
+            fbd.Description = "Select the source directory containing image files..." + (Settings.Default.BatchScanSubdirectories ? "\r\nSub-directories will be scanned." : string.Empty);
             fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
             fbd.ShowNewFolderButton = false;
 
@@ -384,7 +384,7 @@ namespace Kukkii
         private void tsbBatchImport_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.Description = "Select the source directory containing image and png file pairs..." + (Settings.Default.BatchScanSubdirectories ? "\r\nSubdirectories will be scanned." : string.Empty);
+            fbd.Description = "Select the source directory containing image and png file pairs..." + (Settings.Default.BatchScanSubdirectories ? "\r\nSub-directories will be scanned." : string.Empty);
             fbd.SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory;
             fbd.ShowNewFolderButton = false;
 

@@ -232,7 +232,7 @@
             this.batchScanSubdirectoriesToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_scan_subdirectories_off;
             this.batchScanSubdirectoriesToolStripMenuItem.Name = "batchScanSubdirectoriesToolStripMenuItem";
             this.batchScanSubdirectoriesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
-            this.batchScanSubdirectoriesToolStripMenuItem.Text = "Scan Subdirectories";
+            this.batchScanSubdirectoriesToolStripMenuItem.Text = "Don\'t Scan Sub-directories";
             this.batchScanSubdirectoriesToolStripMenuItem.Click += new System.EventHandler(this.batchScanSubdirectoriesToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
@@ -391,7 +391,7 @@
             this.tsbBatchScanSubdirectories.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbBatchScanSubdirectories.Name = "tsbBatchScanSubdirectories";
             this.tsbBatchScanSubdirectories.Size = new System.Drawing.Size(23, 22);
-            this.tsbBatchScanSubdirectories.Text = "Don\'t Scan Subdirectories";
+            this.tsbBatchScanSubdirectories.Text = "Don\'t Scan Sub-directories";
             this.tsbBatchScanSubdirectories.Click += new System.EventHandler(this.tsbBatchScanSubdirectories_Click);
             // 
             // tsbKarameru
