@@ -678,19 +678,20 @@ namespace Karameru
 
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var extractFiles = new List<ArchiveFileInfo>();
-            CollectFiles(treDirectories.SelectedNode, ref extractFiles);
+            var extractFiles = CollectFiles(treDirectories.SelectedNode);
 
-            ExtractFiles(extractFiles, Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text));
+            ExtractFiles(extractFiles.ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text));
         }
 
-        private static void CollectFiles(TreeNode node, ref List<ArchiveFileInfo> extractFiles)
+        private static IEnumerable<ArchiveFileInfo> CollectFiles(TreeNode node)
         {
             if (node.Tag is IEnumerable<ArchiveFileInfo> files)
-                extractFiles.AddRange(files);
+                foreach (var file in files)
+                    yield return file;
 
             foreach (TreeNode childNode in node.Nodes)
-                CollectFiles(childNode, ref extractFiles);
+                foreach (var file in CollectFiles(childNode))
+                    yield return file;
         }
 
         // File Context Strip
