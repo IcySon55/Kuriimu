@@ -679,6 +679,7 @@ namespace Karameru
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var extractFiles = CollectFiles(treDirectories.SelectedNode);
+            var t = treDirectories.SelectedNode;
 
             ExtractFiles(extractFiles.ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text));
         }
@@ -816,12 +817,13 @@ namespace Karameru
                     if (stream == null) continue;
 
                     var trimRoot = treDirectories.SelectedNode.Parent == null ? rootPath : string.Empty;
-                    var path = Path.Combine(fbd.SelectedPath, trimRoot, Path.GetDirectoryName(file.FileName));
+                    var fileDirec = Path.GetDirectoryName(file.FileName);
+                    var path = Path.Combine(fbd.SelectedPath, trimRoot, fileDirec.Substring(1, fileDirec.Length - 1));
 
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
 
-                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, trimRoot, file.FileName)))
+                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, trimRoot, file.FileName.Substring(1, file.FileName.Length - 1))))
                     {
                         if (stream.CanSeek)
                             stream.Position = 0;

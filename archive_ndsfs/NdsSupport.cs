@@ -171,7 +171,7 @@ namespace archive_ndsfs
         public static sFolder AddSystemFiles(Stream input, sFAT[] fatTable, int lastFileID, int lastFolderID, RomHeader header)
         {
             sFolder system = new sFolder();
-            system.name = "system/";
+            system.name = "fw_sys/";
             system.id = (ushort)lastFolderID;
             lastFolderID++;
             system.files = new List<sFile>();
