@@ -229,6 +229,7 @@
             // 
             // batchScanSubdirectoriesToolStripMenuItem
             // 
+            this.batchScanSubdirectoriesToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_scan_subdirectories_off;
             this.batchScanSubdirectoriesToolStripMenuItem.Name = "batchScanSubdirectoriesToolStripMenuItem";
             this.batchScanSubdirectoriesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchScanSubdirectoriesToolStripMenuItem.Text = "Scan Subdirectories";
@@ -386,6 +387,7 @@
             // tsbBatchScanSubdirectories
             // 
             this.tsbBatchScanSubdirectories.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchScanSubdirectories.Image = global::Kukkii.Properties.Resources.menu_scan_subdirectories_off;
             this.tsbBatchScanSubdirectories.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbBatchScanSubdirectories.Name = "tsbBatchScanSubdirectories";
             this.tsbBatchScanSubdirectories.Size = new System.Drawing.Size(23, 22);
