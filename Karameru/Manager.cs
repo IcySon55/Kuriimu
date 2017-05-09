@@ -818,12 +818,14 @@ namespace Karameru
 
                     var trimRoot = treDirectories.SelectedNode.Parent == null ? rootPath : string.Empty;
                     var fileDirec = Path.GetDirectoryName(file.FileName);
+                    fileDirec = (fileDirec[0] == '/') ? fileDirec.Substring(1, fileDirec.Length - 1) : fileDirec;
                     var path = Path.Combine(fbd.SelectedPath, trimRoot, fileDirec.Substring(1, fileDirec.Length - 1));
 
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
 
-                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, trimRoot, file.FileName.Substring(1, file.FileName.Length - 1))))
+                    var fileName = (file.FileName[0] == '/') ? file.FileName.Substring(1, file.FileName.Length - 1) : file.FileName;
+                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, trimRoot, fileName)))
                     {
                         if (stream.CanSeek)
                             stream.Position = 0;
