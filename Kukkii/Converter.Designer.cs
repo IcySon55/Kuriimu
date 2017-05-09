@@ -60,6 +60,9 @@
             this.tsbBatchImport = new System.Windows.Forms.ToolStripButton();
             this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbGridColor = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbGridColorAlternate = new System.Windows.Forms.ToolStripDropDownButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.imbPreview = new Cyotek.Windows.Forms.ImageBox();
@@ -68,9 +71,6 @@
             this.tslTool = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsbGridColor = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tsbGridColorAlternate = new System.Windows.Forms.ToolStripDropDownButton();
             this.clrDialog = new System.Windows.Forms.ColorDialog();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
@@ -393,6 +393,31 @@
             this.tsbKuriimu.ToolTipText = "Kuriimu";
             this.tsbKuriimu.Click += new System.EventHandler(this.tsbKuriimu_Click);
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tsbGridColor
+            // 
+            this.tsbGridColor.BackColor = System.Drawing.Color.Transparent;
+            this.tsbGridColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColor.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tsbGridColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColor.Name = "tsbGridColor";
+            this.tsbGridColor.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColor.Text = "Fore Color";
+            this.tsbGridColor.Click += new System.EventHandler(this.tsbGridColor_Click);
+            // 
+            // tsbGridColorAlternate
+            // 
+            this.tsbGridColorAlternate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColorAlternate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColorAlternate.Name = "tsbGridColorAlternate";
+            this.tsbGridColorAlternate.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColorAlternate.Text = "Back Color";
+            this.tsbGridColorAlternate.Click += new System.EventHandler(this.tsbGridColorAlternate_Click);
+            // 
             // pnlMain
             // 
             this.pnlMain.Controls.Add(this.splMain);
@@ -486,31 +511,6 @@
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
             this.propertyGrid1.TabIndex = 0;
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
-            // 
-            // tsbGridColor
-            // 
-            this.tsbGridColor.BackColor = System.Drawing.Color.Transparent;
-            this.tsbGridColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbGridColor.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tsbGridColor.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbGridColor.Name = "tsbGridColor";
-            this.tsbGridColor.Size = new System.Drawing.Size(13, 22);
-            this.tsbGridColor.Text = "Batch Import";
-            this.tsbGridColor.Click += new System.EventHandler(this.tsbGridColor_Click);
-            // 
-            // tsbGridColorAlternate
-            // 
-            this.tsbGridColorAlternate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbGridColorAlternate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbGridColorAlternate.Name = "tsbGridColorAlternate";
-            this.tsbGridColorAlternate.Size = new System.Drawing.Size(13, 22);
-            this.tsbGridColorAlternate.Text = "Batch Export";
-            this.tsbGridColorAlternate.Click += new System.EventHandler(this.tsbGridColorAlternate_Click);
             // 
             // Converter
             // 
