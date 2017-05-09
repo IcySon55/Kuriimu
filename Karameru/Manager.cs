@@ -27,7 +27,10 @@ namespace Karameru
 
         private List<ArchiveFileInfo> _files = null;
 
-        // Shared file booleans
+        // Shared Booleans
+        private bool _canExtractDirectories = false;
+        private bool _canReplaceDirectories = false;
+
         private bool _canAddFiles = false;
         private bool _canExtractFiles = false;
         private bool _canRenameFiles = false;
@@ -62,9 +65,9 @@ namespace Karameru
             _imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
             _archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
 
-            _textExtensions = new HashSet<string>(_textAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
-            _imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
-            _archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*')));
+            _textExtensions = new HashSet<string>(_textAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
+            _imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
+            _archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
 
             // Load passed in file
             if (args.Length > 0 && File.Exists(args[0]))
@@ -81,6 +84,8 @@ namespace Karameru
             detailsToolStripMenuItem.Tag = View.Details;
             tileToolStripMenuItem.Tag = View.Tile;
             detailsToolStripMenuItem.Checked = true; // Default for now TODO: Make this saved in user settings
+
+            treDirectories.NodeMouseClick += (sender2, e2) => treDirectories.SelectedNode = e2.Node;
 
             // Tools
             Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
@@ -177,21 +182,15 @@ namespace Karameru
 
         private void tsbKuriimu_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kuriimu.exe"));
-            start.WorkingDirectory = Application.StartupPath;
-
-            Process p = new Process();
-            p.StartInfo = start;
+            var start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kuriimu.exe")) { WorkingDirectory = Application.StartupPath };
+            var p = new Process { StartInfo = start };
             p.Start();
         }
 
         private void tsbKukkii_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kukkii.exe"));
-            start.WorkingDirectory = Application.StartupPath;
-
-            Process p = new Process();
-            p.StartInfo = start;
+            var start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kukkii.exe")) { WorkingDirectory = Application.StartupPath };
+            var p = new Process { StartInfo = start };
             p.Start();
         }
 
@@ -565,6 +564,8 @@ namespace Karameru
 
                 bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
 
+                _canExtractDirectories = nodeSelected;
+
                 bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
 
                 _canAddFiles = _fileOpen && _archiveManager.CanAddFiles;
@@ -611,13 +612,13 @@ namespace Karameru
         }
 
         // Directory Tree
-        private void treEntries_AfterSelect(object sender, TreeViewEventArgs e)
+        private void treDirectories_AfterSelect(object sender, TreeViewEventArgs e)
         {
             LoadFiles();
             UpdateForm();
         }
 
-        private void treEntries_AfterExpand(object sender, TreeViewEventArgs e)
+        private void treDirectories_AfterExpand(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Parent != null)
             {
@@ -626,7 +627,7 @@ namespace Karameru
             }
         }
 
-        private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
+        private void treDirectories_AfterCollapse(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Parent != null)
             {
@@ -646,7 +647,7 @@ namespace Karameru
         {
             var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
             var afi = selectedItem?.Tag as ArchiveFileInfo;
-            ExtractFiles(new List<ArchiveFileInfo>() { afi });
+            ExtractFiles(new List<ArchiveFileInfo> { afi });
         }
 
         private void tsbFileReplace_Click(object sender, EventArgs e)
@@ -665,12 +666,40 @@ namespace Karameru
             lstFiles.View = (View)menuItem.Tag;
         }
 
-        // Context Strip
+        // Directory Context Strip
+        private void mnuDirectories_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            extractDirectoryToolStripMenuItem.Enabled = _canExtractDirectories;
+            extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Extract is not supported";
+
+            replaceDirectoryToolStripMenuItem.Enabled = _canReplaceDirectories; //_canRenameFiles;
+            replaceDirectoryToolStripMenuItem.Text = "Replace is not supported yet"; //_canReplaceFiles ? "&Replace..." : "Replace is not supported";
+        }
+
+        private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var extractFiles = CollectFiles(treDirectories.SelectedNode);
+
+            ExtractFiles(extractFiles.ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text));
+        }
+
+        private static IEnumerable<ArchiveFileInfo> CollectFiles(TreeNode node)
+        {
+            if (node.Tag is IEnumerable<ArchiveFileInfo> files)
+                foreach (var file in files)
+                    yield return file;
+
+            foreach (TreeNode childNode in node.Nodes)
+                foreach (var file in CollectFiles(childNode))
+                    yield return file;
+        }
+
+        // File Context Strip
         private void mnuFiles_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
             var afi = selectedItem?.Tag as ArchiveFileInfo;
-            var ext = Path.GetExtension(afi?.FileName).ToLower();
+            var ext = Path.GetExtension(afi?.FileName);
 
             extractFileToolStripMenuItem.Enabled = _canExtractFiles;
             extractFileToolStripMenuItem.Text = _canExtractFiles ? "E&xtract..." : "Extract is not supported";
@@ -689,9 +718,9 @@ namespace Karameru
             deleteFileToolStripMenuItem.Tag = afi;
 
             // Generate supported application menu items
-            var kuriimuVisible = ext.Length > 0 && _textExtensions.Contains(ext);
-            var kukkiiVisible = ext.Length > 0 && _imageExtensions.Contains(ext);
-            var karameruVisible = ext.Length > 0 && _archiveExtensions.Contains(ext);
+            var kuriimuVisible = ext?.Length > 0 && _textExtensions.Contains(ext.ToLower());
+            var kukkiiVisible = ext?.Length > 0 && _imageExtensions.Contains(ext.ToLower());
+            var karameruVisible = ext?.Length > 0 && _archiveExtensions.Contains(ext.ToLower());
 
             editInKuriimuToolStripMenuItem.Tag = new List<object> { afi, Applications.Kuriimu };
             editInKukkiiToolStripMenuItem.Tag = new List<object> { afi, Applications.Kukkii };
@@ -709,7 +738,7 @@ namespace Karameru
             var menuItem = sender as ToolStripMenuItem;
             // TODO: Implement multi-selection of files
             var afi = menuItem.Tag as ArchiveFileInfo;
-            var files = new List<ArchiveFileInfo>() { afi };
+            var files = new List<ArchiveFileInfo> { afi };
             ExtractFiles(files);
         }
 
@@ -770,11 +799,46 @@ namespace Karameru
             }
         }
 
-        private void ExtractFiles(List<ArchiveFileInfo> files)
+        private void ExtractFiles(List<ArchiveFileInfo> files, string rootPath = "")
         {
             if (files?.Count > 1)
             {
-                MessageBox.Show("No soup for you. :(", "Multi-file Extraction Not Implemented", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var fbd = new FolderBrowserDialog
+                {
+                    SelectedPath = Settings.Default.LastDirectory,
+                    Description = $"Select where you want to extract {rootPath} to..."
+                };
+
+                if (fbd.ShowDialog() != DialogResult.OK) return;
+                foreach (var file in files)
+                {
+                    var stream = file.FileData;
+                    if (stream == null) continue;
+
+                    var trimRoot = treDirectories.SelectedNode.Parent == null ? rootPath : string.Empty;
+                    var path = Path.Combine(fbd.SelectedPath, trimRoot, Path.GetDirectoryName(file.FileName));
+
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+
+                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, trimRoot, file.FileName)))
+                    {
+                        if (stream.CanSeek)
+                            stream.Position = 0;
+
+                        try
+                        {
+                            if (file.FileSize > 0)
+                                stream.CopyTo(fs);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString(), "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+
+                MessageBox.Show($"\"{rootPath}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else if (files?.Count == 1)
             {
@@ -789,10 +853,12 @@ namespace Karameru
                 }
 
                 var extension = Path.GetExtension(filename).ToLower();
-                var sfd = new SaveFileDialog();
-                sfd.InitialDirectory = Settings.Default.LastDirectory;
-                sfd.FileName = filename;
-                sfd.Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension})|*{extension}";
+                var sfd = new SaveFileDialog
+                {
+                    InitialDirectory = Settings.Default.LastDirectory,
+                    FileName = filename,
+                    Filter = $"{extension.ToUpper().TrimStart('.')} File (*{extension})|*{extension}"
+                };
 
                 if (sfd.ShowDialog() != DialogResult.OK) return;
                 using (var fs = File.Create(sfd.FileName))

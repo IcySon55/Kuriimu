@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Manager));
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,6 +43,7 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,7 +63,7 @@
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.treDirectories = new System.Windows.Forms.TreeView();
-            this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip();
+            this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsFiles = new System.Windows.Forms.ToolStrip();
@@ -69,7 +71,7 @@
             this.lstFiles = new System.Windows.Forms.ListView();
             this.clmName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clmSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.mnuFiles = new System.Windows.Forms.ContextMenuStrip();
+            this.mnuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,9 +95,8 @@
             this.listToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.detailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imlFiles = new System.Windows.Forms.ImageList();
-            this.imlFilesLarge = new System.Windows.Forms.ImageList();
-            this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imlFiles = new System.Windows.Forms.ImageList(this.components);
+            this.imlFilesLarge = new System.Windows.Forms.ImageList(this.components);
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -230,6 +231,13 @@
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
             this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // compressionToolStripMenuItem
+            // 
+            this.compressionToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_compression;
+            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // aboutToolStripMenuItem
             // 
@@ -435,9 +443,9 @@
             this.treDirectories.ShowLines = false;
             this.treDirectories.Size = new System.Drawing.Size(320, 537);
             this.treDirectories.TabIndex = 4;
-            this.treDirectories.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
-            this.treDirectories.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterExpand);
-            this.treDirectories.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
+            this.treDirectories.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treDirectories_AfterCollapse);
+            this.treDirectories.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treDirectories_AfterExpand);
+            this.treDirectories.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treDirectories_AfterSelect);
             // 
             // mnuDirectories
             // 
@@ -445,19 +453,22 @@
             this.extractDirectoryToolStripMenuItem,
             this.replaceDirectoryToolStripMenuItem});
             this.mnuDirectories.Name = "mnuEntries";
-            this.mnuDirectories.Size = new System.Drawing.Size(125, 48);
+            this.mnuDirectories.Size = new System.Drawing.Size(153, 70);
+            this.mnuDirectories.Opening += new System.ComponentModel.CancelEventHandler(this.mnuDirectories_Opening);
             // 
             // extractDirectoryToolStripMenuItem
             // 
             this.extractDirectoryToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_export;
             this.extractDirectoryToolStripMenuItem.Name = "extractDirectoryToolStripMenuItem";
-            this.extractDirectoryToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.extractDirectoryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.extractDirectoryToolStripMenuItem.Text = "E&xtract...";
+            this.extractDirectoryToolStripMenuItem.Click += new System.EventHandler(this.extractDirectoryToolStripMenuItem_Click);
             // 
             // replaceDirectoryToolStripMenuItem
             // 
+            this.replaceDirectoryToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_import;
             this.replaceDirectoryToolStripMenuItem.Name = "replaceDirectoryToolStripMenuItem";
-            this.replaceDirectoryToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.replaceDirectoryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.replaceDirectoryToolStripMenuItem.Text = "&Replace...";
             // 
             // tlsFiles
@@ -754,13 +765,6 @@
             this.imlFilesLarge.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imlFilesLarge.ImageSize = new System.Drawing.Size(32, 32);
             this.imlFilesLarge.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // compressionToolStripMenuItem
-            // 
-            this.compressionToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_compression;
-            this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // Manager
             // 
