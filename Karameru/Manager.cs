@@ -825,7 +825,7 @@ namespace Karameru
                     var stream = file.FileData;
                     if (stream == null) continue;
 
-                    var path = Path.Combine(fbd.SelectedPath, Regex.Replace(Path.GetDirectoryName(file.FileName), selectedPathRegex, selectedNode + @"\"));
+                    var path = Path.Combine(fbd.SelectedPath, Regex.Replace(Path.GetDirectoryName(file.FileName).TrimEnd('\\') + "\\", selectedPathRegex, selectedNode + "\\"));
 
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
