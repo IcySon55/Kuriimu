@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Karameru.Properties;
 using Kuriimu.Contract;
@@ -678,10 +679,16 @@ namespace Karameru
 
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var extractFiles = CollectFiles(treDirectories.SelectedNode);
-            var t = treDirectories.SelectedNode;
+            var node = treDirectories.SelectedNode;
+            var selectedPath = string.Empty;
 
-            ExtractFiles(extractFiles.ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text));
+            while (node.Parent != null)
+            {
+                selectedPath = node.Text + "\\" + selectedPath;
+                node = node.Parent;
+            }
+
+            ExtractFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
         }
 
         private static IEnumerable<ArchiveFileInfo> CollectFiles(TreeNode node)
@@ -800,14 +807,16 @@ namespace Karameru
             }
         }
 
-        private void ExtractFiles(List<ArchiveFileInfo> files, string rootPath = "")
+        private void ExtractFiles(List<ArchiveFileInfo> files, string selectedNode = "", string selectedPath = "")
         {
+            var selectedPathRegex = "^" + selectedPath.Replace("\\", @"[\\/]") + @"[\\/]?";
+
             if (files?.Count > 1)
             {
                 var fbd = new FolderBrowserDialog
                 {
                     SelectedPath = Settings.Default.LastDirectory,
-                    Description = $"Select where you want to extract {rootPath} to..."
+                    Description = $"Select where you want to extract {selectedNode} to..."
                 };
 
                 if (fbd.ShowDialog() != DialogResult.OK) return;
@@ -816,16 +825,12 @@ namespace Karameru
                     var stream = file.FileData;
                     if (stream == null) continue;
 
-                    var trimRoot = treDirectories.SelectedNode.Parent == null ? rootPath : string.Empty;
-                    var fileDirec = Path.GetDirectoryName(file.FileName);
-                    fileDirec = (fileDirec[0] == '/') ? fileDirec.Substring(1, fileDirec.Length - 1) : fileDirec;
-                    var path = Path.Combine(fbd.SelectedPath, trimRoot, fileDirec.Substring(1, fileDirec.Length - 1));
+                    var path = Path.Combine(fbd.SelectedPath, Regex.Replace(Path.GetDirectoryName(file.FileName), selectedPathRegex, selectedNode + @"\"));
 
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
 
-                    var fileName = (file.FileName[0] == '/') ? file.FileName.Substring(1, file.FileName.Length - 1) : file.FileName;
-                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, trimRoot, fileName)))
+                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, path, Path.GetFileName(file.FileName))))
                     {
                         if (stream.CanSeek)
                             stream.Position = 0;
@@ -837,12 +842,12 @@ namespace Karameru
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.ToString(), "Extraction Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show(ex.ToString(), "Partial Extraction Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
 
-                MessageBox.Show($"\"{rootPath}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"\"{selectedNode}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else if (files?.Count == 1)
             {
