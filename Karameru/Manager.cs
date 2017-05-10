@@ -447,7 +447,7 @@ namespace Karameru
             treDirectories.BeginUpdate();
             treDirectories.Nodes.Clear();
 
-            var lookup = _files.OrderBy(f => f.FileName).ToLookup(f => Path.GetDirectoryName(f.FileName));
+            var lookup = _files.OrderBy(f => f.FileName.TrimStart('/', '\\')).ToLookup(f => Path.GetDirectoryName(f.FileName.TrimStart('/', '\\')));
 
             // Build directory tree
             var root = treDirectories.Nodes.Add("root", FileName(), "tree-archive-file", "tree-archive-file");
