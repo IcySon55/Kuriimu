@@ -168,7 +168,7 @@ namespace Kuriimu.Compression
         {
             using (var br=new BinaryReaderX(input, true))
             {
-                return br.ReadInt32() & 0xFFFFFF;
+                return br.ReadInt32() >> 8;
             }
         }
     }
