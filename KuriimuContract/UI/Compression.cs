@@ -79,8 +79,8 @@ namespace Kuriimu.UI
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[7];
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[0].Tag = Compression.RLE;
-            /*tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
-            tsb2.DropDownItems[1].Tag = Compression.RLE;*/
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[1].Tag = Compression.RLE;
 
             // ZLib
             tsb.DropDownItems.Add(new ToolStripMenuItem("ZLib", null));
@@ -222,9 +222,9 @@ namespace Kuriimu.UI
                         case Compression.RevLZ77:
                             outFs.Write(RevLZ77.Compress(openFile));
                             break;
-                        /*case Compression.RLE:
+                        case Compression.RLE:
                             outFs.Write(RLE.Compress(openFile));
-                            break;*/
+                            break;
                         case Compression.ZLib:
                             outFs.Write(ZLib.Compress(openFile));
                             break;
