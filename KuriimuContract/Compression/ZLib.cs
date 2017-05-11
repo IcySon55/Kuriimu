@@ -2,13 +2,15 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Kuriimu.IO;
 
 namespace Kuriimu.Compression
 {
     public class ZLib
     {
-        public static byte[] Compress(byte[] inData)
+        public static byte[] Compress(Stream instream)
         {
+            var inData = new BinaryReaderX(instream).ReadBytes((int)instream.Length);
             var ms = new MemoryStream();
             ms.Write(new byte[] { 0x78, 0xDA }, 0, 2);
             using (var ds = new DeflateStream(ms, CompressionLevel.Optimal, true))
@@ -20,14 +22,18 @@ namespace Kuriimu.Compression
             return ms.ToArray();
         }
 
-        public static byte[] Decompress(byte[] inData)
+        public static byte[] Decompress(Stream inData)
         {
-            var ms = new MemoryStream();
-            using (var ds = new DeflateStream(new MemoryStream(inData, 2, inData.Length - 6), CompressionMode.Decompress))
+            using (var br = new BinaryReaderX(inData, true))
             {
-                ds.CopyTo(ms);
+                var ms = new MemoryStream();
+                br.BaseStream.Position = 2;
+                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length - 6)), CompressionMode.Decompress))
+                {
+                    ds.CopyTo(ms);
+                }
+                return ms.ToArray();
             }
-            return ms.ToArray();
         }
     }
 }

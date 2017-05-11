@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
+using System.IO;
 
 namespace Kuriimu.Compression
 {
@@ -134,8 +135,10 @@ namespace Kuriimu.Compression
             }
         }
 
-        public static byte[] Decompress(byte[] input)
+        public static byte[] Decompress(Stream instream)
         {
+            byte[] input = instream.StructToArray();
+
             if (input == null) throw new ArgumentNullException(nameof(input));
 
             var compFooter = input.ToStruct<CompFooter>(input.Length - 8);
@@ -173,8 +176,10 @@ namespace Kuriimu.Compression
             }
         }
 
-        public static byte[] Compress(byte[] input)
+        public static byte[] Compress(Stream instream)
         {
+            byte[] input = instream.StructToArray();
+
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (input.Length <= 8) return null;
 

@@ -40,5 +40,10 @@ namespace Kuriimu.Compression
                 }
             }
         }
+
+        public static byte[] GetCompressedBytes(Stream stream, byte method)
+        {
+            return null;
+        }
     }
 }

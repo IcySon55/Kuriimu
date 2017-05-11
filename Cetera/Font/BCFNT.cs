@@ -15,7 +15,7 @@ namespace Cetera.Font
 {
     public class BCFNT
     {
-        static Lazy<BCFNT> StdFntLoader = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.cbf_std_bcfnt))));
+        static Lazy<BCFNT> StdFntLoader = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.cbf_std_bcfnt)))));
         public static BCFNT StandardFont => StdFntLoader.Value;
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]

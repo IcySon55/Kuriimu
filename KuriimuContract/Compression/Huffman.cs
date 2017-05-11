@@ -8,9 +8,9 @@ namespace Kuriimu.Compression
     public class Huffman
     {
         //supports 4bit & 8bit
-        public static byte[] Decompress(Stream instream, int num_bits, long decompressedLength)
+        public static byte[] Decompress(Stream input, int num_bits, long decompressedLength)
         {
-            using (var br = new BinaryReaderX(instream, true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 var result = new List<byte>();
 
@@ -41,6 +41,28 @@ namespace Kuriimu.Compression
                             Enumerable.Range(0, (int)decompressedLength).Select(j => (byte)(result[2 * j + 1] * 16 + result[2 * j])).ToArray();
                     }
                 }
+            }
+        }
+
+        public static long GetDecompressedSize(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                long result = -1;
+
+                var firstByte = br.ReadByte();
+                if (br.BaseStream.Length > 4 && (firstByte & 0xF0) == 0x20 && ((firstByte & 0x0F) == 4 || (firstByte & 0x0F) == 8))
+                {
+                    br.BaseStream.Position = 0;
+                    result = br.ReadInt32() >> 8 & 0xFFFFFF;
+                }
+                else
+                {
+                    result = -1;
+                }
+
+                br.BaseStream.Position = 0;
+                return result;
             }
         }
     }

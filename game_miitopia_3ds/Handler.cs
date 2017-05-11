@@ -38,8 +38,8 @@ namespace game_miitopia_3ds
     public class Handler : IGameHandler
     {
         static Lazy<BCFNT[]> fontInitializer = new Lazy<BCFNT[]>(() => new[] {
-                new BCFNT(new MemoryStream(GZip.Decompress(Resources.FontCaptionOutline_bcfnt))),
-                new BCFNT(new MemoryStream(GZip.Decompress(Resources.FontCaptionOutline_bcfnt)))
+                new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.FontCaptionOutline_bcfnt)))),
+                new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.FontCaptionOutline_bcfnt))))
             });
 
         BCFNT baseFont => fontInitializer.Value[0];

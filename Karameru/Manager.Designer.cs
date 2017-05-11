@@ -229,14 +229,14 @@
             this.tolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compressionToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
-            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
             // 
             // compressionToolStripMenuItem
             // 
             this.compressionToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_compression;
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // aboutToolStripMenuItem
@@ -254,7 +254,7 @@
             // 
             this.gBATempToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_gbatemp;
             this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.gBATempToolStripMenuItem.Text = "GBATemp";
             this.gBATempToolStripMenuItem.Click += new System.EventHandler(this.gBATempToolStripMenuItem_Click);
             // 
@@ -262,21 +262,21 @@
             // 
             this.gitHubToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_git;
             this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.gitHubToolStripMenuItem.Text = "GitHub";
             this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(123, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Image = global::Karameru.Properties.Resources.menu_about;
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
             this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
             this.aboutToolStripMenuItem1.Text = "&About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
@@ -453,14 +453,14 @@
             this.extractDirectoryToolStripMenuItem,
             this.replaceDirectoryToolStripMenuItem});
             this.mnuDirectories.Name = "mnuEntries";
-            this.mnuDirectories.Size = new System.Drawing.Size(153, 70);
+            this.mnuDirectories.Size = new System.Drawing.Size(125, 48);
             this.mnuDirectories.Opening += new System.ComponentModel.CancelEventHandler(this.mnuDirectories_Opening);
             // 
             // extractDirectoryToolStripMenuItem
             // 
             this.extractDirectoryToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_export;
             this.extractDirectoryToolStripMenuItem.Name = "extractDirectoryToolStripMenuItem";
-            this.extractDirectoryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.extractDirectoryToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.extractDirectoryToolStripMenuItem.Text = "E&xtract...";
             this.extractDirectoryToolStripMenuItem.Click += new System.EventHandler(this.extractDirectoryToolStripMenuItem_Click);
             // 
@@ -468,7 +468,7 @@
             // 
             this.replaceDirectoryToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_import;
             this.replaceDirectoryToolStripMenuItem.Name = "replaceDirectoryToolStripMenuItem";
-            this.replaceDirectoryToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.replaceDirectoryToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.replaceDirectoryToolStripMenuItem.Text = "&Replace...";
             // 
             // tlsFiles
@@ -487,7 +487,7 @@
             // tslDirectories
             // 
             this.tslDirectories.Name = "tslDirectories";
-            this.tslDirectories.Size = new System.Drawing.Size(84, 22);
+            this.tslDirectories.Size = new System.Drawing.Size(83, 22);
             this.tslDirectories.Text = "Directory Tree:";
             // 
             // lstFiles

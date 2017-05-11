@@ -12,7 +12,6 @@ namespace Kuriimu.Compression
         {
             using (BinaryReaderX br = new BinaryReaderX(instream, true))
             {
-                //throw new Exception(br.BaseStream.Position.ToString());
                 List<byte> result = new List<byte>();
 
                 for (int i = 0, flags = 0; ; i++)
@@ -41,6 +40,14 @@ namespace Kuriimu.Compression
                     }
                     flags <<= 1;
                 }
+            }
+        }
+
+        public static long GetDecompressedSize(Stream input)
+        {
+            using (BinaryReaderX br = new BinaryReaderX(input, true))
+            {
+                return 0;
             }
         }
     }

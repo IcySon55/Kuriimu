@@ -16,9 +16,9 @@ namespace game_daigasso_band_brothers_p
     class Handler : IGameHandler
     {
         static Lazy<BCFNT[]> fontInitializer = new Lazy<BCFNT[]>(() => new[] {
-                new BCFNT(new MemoryStream(GZip.Decompress(Resources.Basic_bcfnt))),
-                new BCFNT(new MemoryStream(GZip.Decompress(Resources.BasicRim_bcfnt))),
-                new BCFNT(new MemoryStream(GZip.Decompress(Resources.SisterSymbol_bcfnt))),
+                new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.Basic_bcfnt)))),
+                new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.BasicRim_bcfnt)))),
+                new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.SisterSymbol_bcfnt)))),
             });
         BCFNT fontBasic => fontInitializer.Value[0];
         BCFNT fontBasicRim => fontInitializer.Value[1];

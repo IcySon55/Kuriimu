@@ -27,7 +27,7 @@ namespace archive_nus3bank
             {
                 using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
                 {
-                    byte[] decomp = ZLib.Decompress(br.ReadBytes((int)br.BaseStream.Length));
+                    byte[] decomp = ZLib.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
                     File.OpenWrite(filename + ".decomp").Write(decomp, 0, decomp.Length);
                 }
 
@@ -242,7 +242,7 @@ namespace archive_nus3bank
                 FileStream origFile = File.OpenRead(filename);
                 byte[] decomp = new byte[(int)origFile.Length];
                 origFile.Read(decomp, 0, (int)origFile.Length);
-                byte[] comp = ZLib.Compress(decomp);
+                byte[] comp = ZLib.Compress(new MemoryStream(decomp));
 
                 origFile.Close();
                 File.Delete(filename);
