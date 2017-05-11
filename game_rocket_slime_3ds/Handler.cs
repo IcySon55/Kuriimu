@@ -73,7 +73,7 @@ namespace game_rocket_slime_3ds
             ["\x2021"] = "♥"
         };
 
-        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(Resources.MainFont_bcfnt))));
+        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
         BCFNT font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)

@@ -12,36 +12,40 @@ namespace Kuriimu.Compression
         public static int searchBufferSize = 250;
         public static int lookAheadBufferSize = 250;
 
-        public static byte[] Decompress(byte[] input)
+        public static byte[] Decompress(Stream input)
         {
-            List<byte> result = new List<byte>();
-            BitArray ba = new BitArray(input);
-            GetBigEndian(ba);
-
-            bool flag; byte symbol;
-            int pos = 0; byte offset; byte length;
-            while (ba.Length - pos >= 9)
+            using (var br = new BinaryReaderX(input, true))
             {
-                flag = ba[pos++];
-                if (flag == false)
+                List<byte> result = new List<byte>();
+                BitArray ba = new BitArray(br.ReadBytes((int)br.BaseStream.Length));
+                GetBigEndian(ba);
+                br.BaseStream.Position = 0;
+
+                bool flag; byte symbol;
+                int pos = 0; byte offset; byte length;
+                while (ba.Length - pos >= 9)
                 {
-                    symbol = GetByte(ba, pos);
-                    offset = 0;
-                    length = 0;
-                    pos += 8;
-                }
-                else
-                {
-                    offset = GetByte(ba, pos);
-                    length = GetByte(ba, pos + 8);
-                    symbol = GetByte(ba, pos + 16);
-                    pos += 24;
+                    flag = ba[pos++];
+                    if (flag == false)
+                    {
+                        symbol = GetByte(ba, pos);
+                        offset = 0;
+                        length = 0;
+                        pos += 8;
+                    }
+                    else
+                    {
+                        offset = GetByte(ba, pos);
+                        length = GetByte(ba, pos + 8);
+                        symbol = GetByte(ba, pos + 16);
+                        pos += 24;
+                    }
+
+                    result.AddRange(GetArray(offset, length, symbol, result));
                 }
 
-                result.AddRange(GetArray(offset, length, symbol, result));
+                return result.ToArray();
             }
-
-            return result.ToArray();
         }
 
         public static byte[] Compress(byte[] input)
@@ -122,7 +126,7 @@ namespace Kuriimu.Compression
                         }
                         catch
                         {
-                            int t = 0; //stub code; nothing should happen here;
+                            
                         }
                     }
 
@@ -156,7 +160,7 @@ namespace Kuriimu.Compression
 
             for (byte i = 1; i < searchBufferSize + 1; i++)
             {
-                byte l = 0; byte o = 0;
+                byte l = 0;
                 if (NonePlaceholder[searchBufferSize - i] == 0x00)
                 {
                     if (l >= length)

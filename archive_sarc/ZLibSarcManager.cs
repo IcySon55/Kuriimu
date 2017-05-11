@@ -65,7 +65,7 @@ namespace archive_sarc
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
                 br.ReadBytes(4);
-                _sarc = new SARC(new MemoryStream(ZLib.Decompress(br.ReadBytes((int)FileInfo.Length - 4))));
+                _sarc = new SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
             }
         }
 
@@ -83,7 +83,8 @@ namespace archive_sarc
                 using (var bw = new BinaryWriterX(FileInfo.Create()))
                 {
                     bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
-                    bw.Write(ZLib.Compress(ms.ToArray()));
+                    ms.Position = 0;
+                    bw.Write(ZLib.Compress(ms));
                 }
             }
             else
@@ -95,7 +96,8 @@ namespace archive_sarc
                 using (var bw = new BinaryWriterX(File.Create(FileInfo.FullName + ".tmp")))
                 {
                     bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
-                    bw.Write(ZLib.Compress(ms.ToArray()));
+                    ms.Position = 0;
+                    bw.Write(ZLib.Compress(ms));
                 }
                 // Delete the original
                 FileInfo.Delete();

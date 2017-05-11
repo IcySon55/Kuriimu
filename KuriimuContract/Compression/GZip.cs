@@ -6,20 +6,20 @@ namespace Kuriimu.Compression
 {
     public class GZip
     {
-        public static byte[] Compress(byte[] bytes)
+        public static byte[] Compress(Stream input)
         {
             var ms = new MemoryStream();
             using (var gz = new GZipStream(ms, CompressionLevel.Optimal))
             {
-                new MemoryStream(bytes).CopyTo(gz);
+                input.CopyTo(gz);
             }
             return ms.ToArray();
         }
 
-        public static byte[] Decompress(byte[] bytes)
+        public static byte[] Decompress(Stream input)
         {
             var ms = new MemoryStream();
-            using (var gz = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress))
+            using (var gz = new GZipStream(input, CompressionMode.Decompress))
             {
                 gz.CopyTo(ms);
             }
