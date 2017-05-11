@@ -43,6 +43,7 @@
             this.batchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchExportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchImportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchScanSubdirectoriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,8 +59,12 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbBatchExport = new System.Windows.Forms.ToolStripButton();
             this.tsbBatchImport = new System.Windows.Forms.ToolStripButton();
+            this.tsbBatchScanSubdirectories = new System.Windows.Forms.ToolStripButton();
             this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbGridColor = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbGridColorAlternate = new System.Windows.Forms.ToolStripDropDownButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.imbPreview = new Cyotek.Windows.Forms.ImageBox();
@@ -68,9 +73,6 @@
             this.tslTool = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsbGridColor = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tsbGridColorAlternate = new System.Windows.Forms.ToolStripDropDownButton();
             this.clrDialog = new System.Windows.Forms.ColorDialog();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
@@ -199,7 +201,8 @@
             // 
             this.batchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.batchExportPNGToolStripMenuItem,
-            this.batchImportPNGToolStripMenuItem});
+            this.batchImportPNGToolStripMenuItem,
+            this.batchScanSubdirectoriesToolStripMenuItem});
             this.batchToolStripMenuItem.Name = "batchToolStripMenuItem";
             this.batchToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.batchToolStripMenuItem.Text = "&Batch";
@@ -223,6 +226,14 @@
             this.batchImportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchImportPNGToolStripMenuItem.Text = "Batch &Import PNG";
             this.batchImportPNGToolStripMenuItem.Click += new System.EventHandler(this.batchImportPNGToolStripMenuItem_Click);
+            // 
+            // batchScanSubdirectoriesToolStripMenuItem
+            // 
+            this.batchScanSubdirectoriesToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_scan_subdirectories_off;
+            this.batchScanSubdirectoriesToolStripMenuItem.Name = "batchScanSubdirectoriesToolStripMenuItem";
+            this.batchScanSubdirectoriesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
+            this.batchScanSubdirectoriesToolStripMenuItem.Text = "Don\'t Scan Sub-directories";
+            this.batchScanSubdirectoriesToolStripMenuItem.Click += new System.EventHandler(this.batchScanSubdirectoriesToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -277,6 +288,7 @@
             this.toolStripSeparator3,
             this.tsbBatchExport,
             this.tsbBatchImport,
+            this.tsbBatchScanSubdirectories,
             this.tsbKarameru,
             this.tsbKuriimu,
             this.toolStripSeparator5,
@@ -359,7 +371,7 @@
             this.tsbBatchExport.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbBatchExport.Name = "tsbBatchExport";
             this.tsbBatchExport.Size = new System.Drawing.Size(23, 22);
-            this.tsbBatchExport.Text = "Batch Export";
+            this.tsbBatchExport.Text = "Batch Export PNG";
             this.tsbBatchExport.Click += new System.EventHandler(this.tsbBatchExport_Click);
             // 
             // tsbBatchImport
@@ -369,8 +381,18 @@
             this.tsbBatchImport.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbBatchImport.Name = "tsbBatchImport";
             this.tsbBatchImport.Size = new System.Drawing.Size(23, 22);
-            this.tsbBatchImport.Text = "Batch Import";
+            this.tsbBatchImport.Text = "Batch Import PNG";
             this.tsbBatchImport.Click += new System.EventHandler(this.tsbBatchImport_Click);
+            // 
+            // tsbBatchScanSubdirectories
+            // 
+            this.tsbBatchScanSubdirectories.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchScanSubdirectories.Image = global::Kukkii.Properties.Resources.menu_scan_subdirectories_off;
+            this.tsbBatchScanSubdirectories.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbBatchScanSubdirectories.Name = "tsbBatchScanSubdirectories";
+            this.tsbBatchScanSubdirectories.Size = new System.Drawing.Size(23, 22);
+            this.tsbBatchScanSubdirectories.Text = "Don\'t Scan Sub-directories";
+            this.tsbBatchScanSubdirectories.Click += new System.EventHandler(this.tsbBatchScanSubdirectories_Click);
             // 
             // tsbKarameru
             // 
@@ -392,6 +414,31 @@
             this.tsbKuriimu.Text = "Kuriimu";
             this.tsbKuriimu.ToolTipText = "Kuriimu";
             this.tsbKuriimu.Click += new System.EventHandler(this.tsbKuriimu_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tsbGridColor
+            // 
+            this.tsbGridColor.BackColor = System.Drawing.Color.Transparent;
+            this.tsbGridColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColor.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tsbGridColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColor.Name = "tsbGridColor";
+            this.tsbGridColor.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColor.Text = "Fore Color";
+            this.tsbGridColor.Click += new System.EventHandler(this.tsbGridColor_Click);
+            // 
+            // tsbGridColorAlternate
+            // 
+            this.tsbGridColorAlternate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColorAlternate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColorAlternate.Name = "tsbGridColorAlternate";
+            this.tsbGridColorAlternate.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColorAlternate.Text = "Back Color";
+            this.tsbGridColorAlternate.Click += new System.EventHandler(this.tsbGridColorAlternate_Click);
             // 
             // pnlMain
             // 
@@ -487,31 +534,6 @@
             this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
             this.propertyGrid1.TabIndex = 0;
             // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
-            // 
-            // tsbGridColor
-            // 
-            this.tsbGridColor.BackColor = System.Drawing.Color.Transparent;
-            this.tsbGridColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbGridColor.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tsbGridColor.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbGridColor.Name = "tsbGridColor";
-            this.tsbGridColor.Size = new System.Drawing.Size(13, 22);
-            this.tsbGridColor.Text = "Batch Import";
-            this.tsbGridColor.Click += new System.EventHandler(this.tsbGridColor_Click);
-            // 
-            // tsbGridColorAlternate
-            // 
-            this.tsbGridColorAlternate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbGridColorAlternate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbGridColorAlternate.Name = "tsbGridColorAlternate";
-            this.tsbGridColorAlternate.Size = new System.Drawing.Size(13, 22);
-            this.tsbGridColorAlternate.Text = "Batch Export";
-            this.tsbGridColorAlternate.Click += new System.EventHandler(this.tsbGridColorAlternate_Click);
-            // 
             // Converter
             // 
             this.AllowDrop = true;
@@ -588,6 +610,8 @@
         private System.Windows.Forms.ToolStripDropDownButton tsbGridColor;
         private System.Windows.Forms.ToolStripDropDownButton tsbGridColorAlternate;
         private System.Windows.Forms.ColorDialog clrDialog;
+        private System.Windows.Forms.ToolStripButton tsbBatchScanSubdirectories;
+        private System.Windows.Forms.ToolStripMenuItem batchScanSubdirectoriesToolStripMenuItem;
     }
 }
 

@@ -62,34 +62,23 @@ namespace archive_dpk
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => new List<ArchiveFileInfo>
+        public IEnumerable<ArchiveFileInfo> Files
         {
-            new ArchiveFileInfo
+            get
             {
-                FileName = "",
-                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
-            },
-            new ArchiveFileInfo
-            {
-                FileName = "archive_file.ctpk",
-                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
-            },
-            new ArchiveFileInfo
-            {
-                FileName = "image_file.bclim",
-                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
-            },
-            new ArchiveFileInfo
-            {
-                FileName = "text_file.msbt",
-                FileData = new MemoryStream(new byte[] {0x64, 0x64, 0x64, 0x64})
-            },
-            new ArchiveFileInfo {FileName = "dir1/subfile1.ext"},
-            new ArchiveFileInfo {FileName = "dir1/subfile2.ext"},
-            new ArchiveFileInfo {FileName = "dir1/subdir2/filez.xi"},
-            new ArchiveFileInfo {FileName = "dir2/zilla.ext"},
-            new ArchiveFileInfo {FileName = "dir2/somefile.ext"}
-        };
+                ArchiveFileInfo NewFile(string filename) => new ArchiveFileInfo { FileName = filename, FileData = new MemoryStream(new byte[] { 0x64, 0x64, 0x64, 0x64 }), State = ArchiveFileState.Archived };
+                yield return NewFile("archive_file.ctpk");
+                yield return NewFile("image_file.bclim");
+                yield return NewFile("text_file.msbt");
+                yield return NewFile("dir1/subfile1.ext");
+                yield return NewFile("dir1/subfile2.ext");
+                yield return NewFile("dir1/subdir2/filez.xi");
+                yield return NewFile("dir2/zilla.ext");
+                yield return NewFile("dir2/somefile.ext");
+                yield return NewFile("/scr/start.fsb");
+                yield return NewFile("/scr/start.dat");
+            }
+        }
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 
