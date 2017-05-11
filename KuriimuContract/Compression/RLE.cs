@@ -38,6 +38,7 @@ namespace Kuriimu.Compression
         public static byte[] Compress(Stream instream)
         {
             long inLength = instream.Length;
+
             var outstream = new MemoryStream();
 
             if (inLength > 0xFFFFFF)
@@ -54,10 +55,11 @@ namespace Kuriimu.Compression
 
             int readLength = 0;
             int nextByte;
-            int repCount = 1;
+            int repCount;
             while (readLength < inLength)
             {
                 bool foundRepetition = false;
+                repCount = 1;
 
                 while (currentBlockLength < dataBlock.Length && readLength < inLength)
                 {
