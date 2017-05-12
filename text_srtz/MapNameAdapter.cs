@@ -110,7 +110,7 @@ namespace text_srtz
                     _entries = new List<MapNameEntry>();
 
                     // Messages
-                    _entries.AddRange(_mapNameBackup == null ? _mapName.MapNames.Select(m => new MapNameEntry(m)) : _mapName.MapNames.Select(m => new MapNameEntry(m, _mapNameBackup.MapNames.Find(o => o.Text == m.Text))));
+                    _entries.AddRange(_mapNameBackup == null ? _mapName.MapNames.Select(m => new MapNameEntry(m)) : _mapName.MapNames.Select(m => new MapNameEntry(m, _mapNameBackup.MapNames.Find(o => o.Index == m.Index))));
                 }
 
                 if (SortEntries)
