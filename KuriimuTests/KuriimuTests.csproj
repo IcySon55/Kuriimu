@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TextTests.cs" />
     <Compile Include="FileAssert.cs" />
     <Compile Include="ArchiveTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +57,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\archive_999\archive_999.csproj">
+      <Project>{d88e4112-20ce-4c8d-9998-300bc7c01573}</Project>
+      <Name>archive_999</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive_afs\archive_afs.csproj">
+      <Project>{60a8fa6b-7829-45ce-8e0d-4999d1621b89}</Project>
+      <Name>archive_afs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive_arcv\archive_arcv.csproj">
+      <Project>{9a5dc415-ead9-4827-b9b9-ab9bd86f63c5}</Project>
+      <Name>archive_arcv</Name>
+    </ProjectReference>
     <ProjectReference Include="..\archive_cgrp\archive_cgrp.csproj">
       <Project>{00259e65-3f5b-48ac-bf33-5ac6ef770934}</Project>
       <Name>archive_cgrp</Name>
@@ -63,6 +76,10 @@
     <ProjectReference Include="..\archive_ctpk\archive_ctpk.csproj">
       <Project>{2d92596c-c00e-49e4-af88-57c3a2379cca}</Project>
       <Name>archive_ctpk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive_cwar\archive_cwar.csproj">
+      <Project>{5e06626a-aa19-4eca-9d5f-1d6f1abf0d41}</Project>
+      <Name>archive_cwar</Name>
     </ProjectReference>
     <ProjectReference Include="..\archive_darc\archive_darc.csproj">
       <Project>{186d9c0f-f977-4528-901f-1c186fcd79bb}</Project>
@@ -83,6 +100,10 @@
     <ProjectReference Include="..\archive_hpi_hpb\archive_hpi_hpb.csproj">
       <Project>{30be912f-6874-4f11-9094-ef9cf098d16a}</Project>
       <Name>archive_hpi_hpb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive_ndsfs\archive_ndsfs.csproj">
+      <Project>{0cba0bd8-6970-4e13-b3f9-3dd8091123af}</Project>
+      <Name>archive_ndsfs</Name>
     </ProjectReference>
     <ProjectReference Include="..\archive_nus3bank\archive_nus3bank.csproj">
       <Project>{e82fc9f0-ab78-40d3-b5b5-614b102c6706}</Project>
@@ -124,6 +145,14 @@
       <Project>{c741ab50-669d-406f-9d27-b5ef5bdd1294}</Project>
       <Name>image_ctxb</Name>
     </ProjectReference>
+    <ProjectReference Include="..\image_f3xt\image_f3xt.csproj">
+      <Project>{269d0f0d-ae95-447b-8403-41f28d8de00c}</Project>
+      <Name>image_f3xt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image_icn\image_icn.csproj">
+      <Project>{ead10a68-28a8-4e61-bec5-a807acf8ff63}</Project>
+      <Name>image_icn</Name>
+    </ProjectReference>
     <ProjectReference Include="..\image_jtex\image_jtex.csproj">
       <Project>{515d26a0-26dd-49de-a66d-bf4cad0029e8}</Project>
       <Name>image_jtex</Name>
@@ -135,6 +164,10 @@
     <ProjectReference Include="..\image_tex\image_tex.csproj">
       <Project>{9e078594-73ae-4ec1-aba2-bf8f338fccd4}</Project>
       <Name>image_tex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image_tm2\image_tm2.csproj">
+      <Project>{482a2b54-f27d-4095-8d91-16b9c03c3403}</Project>
+      <Name>image_tm2</Name>
     </ProjectReference>
     <ProjectReference Include="..\image_tmx\image_tmx.csproj">
       <Project>{7f679e7f-ea49-4eb9-8d6c-16dd131cb3aa}</Project>
@@ -151,6 +184,10 @@
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text_bmd\text_bmd.csproj">
+      <Project>{cc01bcbf-871a-48ac-9aa9-19507940cff3}</Project>
+      <Name>text_bmd</Name>
     </ProjectReference>
     <ProjectReference Include="..\text_btxt\text_btxt.csproj">
       <Project>{243cfa03-bb36-421b-9e64-f446c8d6e5b0}</Project>
@@ -183,6 +220,10 @@
     <ProjectReference Include="..\text_msbt\text_msbt.csproj">
       <Project>{af05447b-3cf5-4473-983b-7908f96c7128}</Project>
       <Name>text_msbt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text_srtz\text_srtz.csproj">
+      <Project>{9a0c08b2-c1ff-4de5-b9bb-7267d8fa0ee6}</Project>
+      <Name>text_srtz</Name>
     </ProjectReference>
     <ProjectReference Include="..\text_tdt\text_tdt.csproj">
       <Project>{7ff82162-f86f-411b-98c8-f646bb09a172}</Project>
