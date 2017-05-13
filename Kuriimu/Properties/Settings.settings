@@ -38,5 +38,17 @@
     <Setting Name="FontSize" Type="System.String" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
+    <Setting Name="SequenceSearchSubfolders" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SequenceSearchDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SequenceSearchEncoding" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Unicode</Value>
+    </Setting>
+    <Setting Name="SequenceSearchWhat" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
