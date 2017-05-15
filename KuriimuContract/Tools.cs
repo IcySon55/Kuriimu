@@ -12,7 +12,7 @@ namespace Kuriimu.Contract
     {
         public static string LoadFilters(IEnumerable<IPlugin> plugins)
         {
-            var alltypes = plugins.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).ToList();
+            var alltypes = plugins.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).OrderBy(o => o.Description).ToList();
 
             // Add two special cases at start and end
             if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension).Distinct()) });

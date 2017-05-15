@@ -15,17 +15,17 @@ namespace Kuriimu.UI
             tsb.DropDownItems.Clear();
 
             // CriWare
-            tsb.DropDownItems.Add(new ToolStripMenuItem("CriWare", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.CriWare.ToString(), null));
             tsb2=(ToolStripMenuItem)tsb.DropDownItems[0];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[0].Tag = Compression.CriWare;
 
             // GZip
-            tsb.DropDownItems.Add(new ToolStripMenuItem("GZip", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.GZip.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[1];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb2.DropDownItems[0].Tag = Compression.GZip;
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.GZip;
 
             // Huffman
@@ -35,64 +35,64 @@ namespace Kuriimu.UI
             tsb2.DropDownItems.Add(new ToolStripMenuItem("8bit", null));
 
             //tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             //tsb3.DropDownItems[0].Tag = Compression.Huff4;
-            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             //tsb3.DropDownItems[1].Tag = Compression.Huff4;
 
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.Huff8;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.Huff8;
 
             // LZ10
-            tsb.DropDownItems.Add(new ToolStripMenuItem("LZ10", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.LZ10.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[3];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb2.DropDownItems[0].Tag = Compression.LZ10;
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.LZ10;
 
             // LZ11
-            tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.LZ11.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[4];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb2.DropDownItems[0].Tag = Compression.LZ11;
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.LZ11;
 
             // LZ77
-            tsb.DropDownItems.Add(new ToolStripMenuItem("LZ77", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.LZ77.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[5];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[0].Tag = Compression.LZ77;
 
             // LZ77 Backwards
-            tsb.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.RevLZ77.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[6];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb2.DropDownItems[0].Tag = Compression.RevLZ77;
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.RevLZ77;
 
             // LZSS
             //tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11", null, LZ11_Compress));
 
             // RLE
-            tsb.DropDownItems.Add(new ToolStripMenuItem("RLE", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.RLE.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[7];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb2.DropDownItems[0].Tag = Compression.RLE;
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.RLE;
 
             // ZLib
-            tsb.DropDownItems.Add(new ToolStripMenuItem("ZLib", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.ZLib.ToString(), null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[8];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb2.DropDownItems[0].Tag = Compression.ZLib;
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.ZLib;
         }
 
@@ -140,7 +140,7 @@ namespace Kuriimu.UI
                     switch (tsi.Tag)
                     {
                         case Compression.CriWare:
-                            outFs.Write(CriWare.GetDecompressedBytes(openFile));
+                            outFs.Write(CriWare.Decompress(openFile));
                             break;
                         case Compression.GZip:
                             outFs.Write(GZip.Decompress(openFile));

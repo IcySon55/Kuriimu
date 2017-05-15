@@ -99,7 +99,7 @@ namespace text_ttbin
                     else
                     {
                         br.BaseStream.Position = 0;
-                        byte[] result = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
+                        byte[] result = CriWare.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
                         using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(result)))
                         {
                             if (br2.ReadString(4) == "XPCK")

@@ -83,7 +83,7 @@ namespace image_xi
         public static byte[] Decomp(BinaryReaderX br)
         {
             // above to be restored eventually with some changes to Cetera
-            return CriWare.GetDecompressedBytes(br.BaseStream);
+            return CriWare.Decompress(br.BaseStream);
         }
 
         private static Header header;
@@ -100,13 +100,13 @@ namespace image_xi
                 br.BaseStream.Position = header.tableDataOffset;
                 tableComp = (Compression)(br.ReadUInt32() % 8);
                 br.BaseStream.Position = header.tableDataOffset;
-                byte[] table = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes(header.tableSize1)));
+                byte[] table = CriWare.Decompress(new MemoryStream(br.ReadBytes(header.tableSize1)));
 
                 //get decompressed picture data
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
                 picComp = (Compression)(br.ReadUInt32() % 8);
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
-                byte[] tex = CriWare.GetDecompressedBytes(new MemoryStream(br.ReadBytes(header.imgDataSize)));
+                byte[] tex = CriWare.Decompress(new MemoryStream(br.ReadBytes(header.imgDataSize)));
 
                 //order pic blocks by table
                 byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.bitDepth);

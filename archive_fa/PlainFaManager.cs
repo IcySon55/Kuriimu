@@ -1,25 +1,23 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using Cetera.Hash;
-using Kuriimu.Compression;
+using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_xpck
+namespace archive_fa
 {
-    public class XpckManager : IArchiveManager
+    public class PlainFaManager : IArchiveManager
     {
-        private XPCK _xpck = null;
+        private PlainFA _fa = null;
 
         #region Properties
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Level 5 eXtractable PaCKage";
-        public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
-        public string About => "This is the XPCK archive manager for Karameru.";
+        public string Description => "Level 5 Plain File Archive";
+        public string Extension => "*.fa";
+        public string About => "This is the PlainFA archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -37,13 +35,8 @@ namespace archive_xpck
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 4) return false;
-                if (br.ReadString(4) == "XPCK") return true;
-
-                br.BaseStream.Position = 0;
-                byte[] decomp;
-                try { decomp = CriWare.Decompress(br.BaseStream); } catch { return false; }
-                return new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "XPCK";
+                if (br.BaseStream.Length < 8) return false;
+                return br.ReadBytes(4).SequenceEqual(new byte[] { 0xF7, 0x08, 0x0, 0x0 });
             }
         }
 
@@ -52,7 +45,7 @@ namespace archive_xpck
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _xpck = new XPCK(FileInfo.FullName);
+                _fa = new PlainFA(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -63,14 +56,14 @@ namespace archive_xpck
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _xpck.Save(FileInfo.Create());
-                _xpck.Close();
+                _fa.Save(FileInfo.Create());
+                _fa.Close();
             }
             else
             {
                 // Create the temp file
-                _xpck.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _xpck.Close();
+                _fa.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _fa.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -83,29 +76,13 @@ namespace archive_xpck
 
         public void Unload()
         {
-            _xpck?.Close();
+            _fa?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _xpck.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _fa.Files;
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            _xpck.Files.Add(new XPCKFileInfo()
-            {
-                Entry = new Entry()
-                {
-                    crc32 = Crc32.Create(Encoding.ASCII.GetBytes(afi.FileName)),
-                    ID = (ushort)(_xpck.Files.Count * 8),
-                    fileSize = (int)afi.FileData.Length
-                },
-                FileData = afi.FileData,
-                FileName = afi.FileName,
-                State = afi.State
-            });
-
-            return true;
-        }
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
         public bool DeleteFile(ArchiveFileInfo afi) => false;
 

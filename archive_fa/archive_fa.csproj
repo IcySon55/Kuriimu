@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PlainFaManager.cs" />
+    <Compile Include="PlainFaSupport.cs" />
+    <Compile Include="PlainFA.cs" />
     <Compile Include="FA.cs" />
     <Compile Include="FaManager.cs" />
     <Compile Include="FaSupport.cs" />

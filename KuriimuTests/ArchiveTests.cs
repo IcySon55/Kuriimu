@@ -59,7 +59,7 @@ namespace KuriimuTests
         [TestMethod]
         public void GarTest() => Test<archive_gar.GarManager>("Joker.Main.gar");
 
-        //ZAR
+        // ZAR
         [TestMethod]
         public void ZarTest() => Test<archive_zar.ZarManager>("God.zar");
 
@@ -118,6 +118,10 @@ namespace KuriimuTests
 
         //[TestMethod]
         public void FaTest2() => Test<archive_fa.FaManager>("yw2_lg_en.fa");
+
+        // PlainFA
+        [TestMethod]
+        public void PlainFATest() => Test<archive_fa.PlainFaManager>("plainFA.fa");
 
         // UMSBT
         [TestMethod]

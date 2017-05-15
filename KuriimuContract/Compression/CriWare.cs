@@ -15,7 +15,7 @@ namespace Kuriimu.Compression
             RLE
         }
 
-        public static byte[] GetDecompressedBytes(Stream stream)
+        public static byte[] Decompress(Stream stream)
         {
             using (var br = new BinaryReader(stream, Encoding.Default, true))
             {
@@ -41,7 +41,7 @@ namespace Kuriimu.Compression
             }
         }
 
-        public static byte[] GetCompressedBytes(Stream stream, byte method)
+        public static byte[] Compress(Stream stream, byte method)
         {
             return null;
         }
