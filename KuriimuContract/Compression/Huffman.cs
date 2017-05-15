@@ -116,7 +116,7 @@ namespace Kuriimu.Compression
 
             //Encode HuffTree
             List<byte> encTree = new List<byte>();
-            EncodeHuffTree(encTree, new List<Node> { huffTree.child0, huffTree.child1 }, (int)Math.Pow(2, num_bits));
+            EncodeHuffTree(encTree, new List<Node> { huffTree }, (int)Math.Pow(2, num_bits));
 
             //Write header + tree
             result.Add((byte)(0x20 | num_bits));
@@ -125,7 +125,6 @@ namespace Kuriimu.Compression
             result.Add((byte)(input.Length >> 8 & 0xFF));
             int treeSize = encTree.Count / 2;
             result.Add((byte)treeSize);
-            result.Add(0);
             result.AddRange(encTree);
 
             bool added = false;
@@ -196,26 +195,26 @@ namespace Kuriimu.Compression
 
         public static void EncodeHuffTree(List<byte> encTree, List<Node> stage, int pow, byte offset = 0)
         {
-            for (int i=0;i<stage.Count;i++)
-            {
-                if (stage[i] != null)
+                for (int i = 0; i < stage.Count; i++)
                 {
-                    byte data = 0;
-                    if (stage[i].child0 == null && stage[i].child1 == null)
+                    if (stage[i] != null)
                     {
-                        encTree.Add((byte)stage[i].code);
+                        byte data = 0;
+                        if (stage[i].child0 == null && stage[i].child1 == null)
+                        {
+                            encTree.Add((byte)stage[i].code);
+                        }
+                        else
+                        {
+                            if (stage[i].child0.code < pow) data |= 0x80;
+                            if (stage[i].child1.code < pow) data |= 0x40;
+                            data += offset;
+                            encTree.Add(data);
+                            offset++;
+                        }
+                        if (i % 2 == 1) offset--;
                     }
-                    else
-                    {
-                        if (stage[i].child0.code < pow) data |= 0x80;
-                        if (stage[i].child1.code < pow) data |= 0x40;
-                        data += offset;
-                        encTree.Add(data);
-                        offset++;
-                    }
-                    if (i % 2 == 1) offset--;
                 }
-            }
 
             var stageTmp = new List<Node>();
             for (int i = 0; i < stage.Count; i++)
