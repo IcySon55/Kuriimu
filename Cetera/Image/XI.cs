@@ -61,9 +61,9 @@ namespace Cetera.Image
                 if (CombineFormat != 1)
                     throw new Exception($"Unknown combine format {header.combineFormat}");
 
-                var buf1 = CriWare.GetDecompressedBytes(input);
+                var buf1 = CriWare.Decompress(input);
                 while (input.Position % 4 != 0) input.ReadByte();
-                var buf2 = CriWare.GetDecompressedBytes(input);
+                var buf2 = CriWare.Decompress(input);
 
                 var ms = new MemoryStream();
                 for (int i = 0; i < buf1.Length / 2; i++)
