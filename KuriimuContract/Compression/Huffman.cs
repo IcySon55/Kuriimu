@@ -42,6 +42,7 @@ namespace Kuriimu.Compression
                     next += (pos & 0x3F) * 2 + 2;
                     int direction = (code >> (31 - i)) % 2 == 0 ? 2 : 1;
                     var leaf = (pos >> 5 >> direction) % 2 != 0;
+
                     pos = tree_buffer[next - direction];
                     if (leaf)
                     {
@@ -210,7 +211,7 @@ namespace Kuriimu.Compression
                             if (stage[i].child1.code < pow) data |= 0x40;
                             data += offset;
                             encTree.Add(data);
-                            offset++;
+                            if (stage.Count > 1) offset++;
                         }
                         if (i % 2 == 1) offset--;
                     }

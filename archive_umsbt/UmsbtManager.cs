@@ -2,12 +2,14 @@
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace archive_umsbt
 {
     public class UmsbtManager : IArchiveManager
     {
         private UMSBT _umsbt = null;
+        bool plain = false;
 
         #region Properties
 
@@ -32,15 +34,51 @@ namespace archive_umsbt
         public bool Identify(string filename)
         {
             // TODO: Make this way more robust
-            return filename.EndsWith(".umsbt");
+            if (filename.EndsWith(".umsbt")) return true;
+
+            //PlainMSBT
+            using (var br=new BinaryReaderX(File.OpenRead(filename)))
+            {
+                br.BaseStream.Position = 0x38;
+                var dataOffset = br.ReadUInt32();
+                var size = br.ReadUInt32();
+                var totalSize = dataOffset;
+                while (size != 0 && br.BaseStream.Position < dataOffset)
+                {
+                    totalSize += size;
+                    while (totalSize % 0x80 != 0) totalSize++;
+                    br.BaseStream.Position += 0x3c;
+                    size = br.ReadUInt32();
+                }
+
+                return br.BaseStream.Length == totalSize;
+            }
         }
 
         public void Load(string filename)
         {
+            //determine plainMSBT
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            {
+                br.BaseStream.Position = 0x38;
+                var dataOffset = br.ReadUInt32();
+                var size = br.ReadUInt32();
+                var totalSize = dataOffset;
+                while (size != 0 && br.BaseStream.Position < dataOffset)
+                {
+                    totalSize += size;
+                    while (totalSize % 0x80 != 0) totalSize++;
+                    br.BaseStream.Position += 0x3c;
+                    size = br.ReadUInt32();
+                }
+
+                plain = (br.BaseStream.Length == totalSize);
+            }
+
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _umsbt = new UMSBT(FileInfo.OpenRead());
+                _umsbt = new UMSBT(FileInfo.OpenRead(), plain);
         }
 
         public void Save(string filename = "")
@@ -51,13 +89,13 @@ namespace archive_umsbt
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _umsbt.Save(FileInfo.Create());
+                _umsbt.Save(FileInfo.Create(), plain);
                 _umsbt.Close();
             }
             else
             {
                 // Create the temp file
-                _umsbt.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _umsbt.Save(File.Create(FileInfo.FullName + ".tmp"), plain);
                 _umsbt.Close();
                 // Delete the original
                 FileInfo.Delete();
