@@ -48,6 +48,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HuffmanTests.cs" />
     <Compile Include="TextTests.cs" />
     <Compile Include="FileAssert.cs" />
     <Compile Include="ArchiveTests.cs" />
