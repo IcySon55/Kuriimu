@@ -55,7 +55,7 @@ namespace KuriimuTests
         [TestMethod]
         public void GarTest() => Test<archive_gar.GarManager>("Joker.Main.gar");
 
-        //GAR
+        //ZAR
         [TestMethod]
         public void ZarTest() => Test<archive_zar.ZarManager>("God.zar");
 

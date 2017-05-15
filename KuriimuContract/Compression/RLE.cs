@@ -8,10 +8,20 @@ namespace Kuriimu.Compression
 {
     public class RLE
     {
-        public static byte[] Decompress(Stream instream, long decompressedLength)
+        public static byte[] Decompress(Stream instream, long decompressedLength=0)
         {
             using (var br = new BinaryReaderX(instream, true))
             {
+                var version = br.ReadByte();
+                if (version==0x30)
+                {
+                    br.BaseStream.Position--;
+                    decompressedLength = br.ReadUInt32() >> 8;
+                } else
+                {
+                    br.BaseStream.Position--;
+                }
+
                 var result = new List<byte>();
 
                 while (true)
@@ -164,14 +174,6 @@ namespace Kuriimu.Compression
             // the total compressed stream length is the compressed data length + the 4-byte header
             outstream.Position = 0;
             return new BinaryReaderX(outstream).ReadBytes((int)outstream.Length);
-        }
-
-        public static long GetDecompressedLength(Stream input)
-        {
-            using (var br=new BinaryReaderX(input, true))
-            {
-                return br.ReadInt32() >> 8;
-            }
         }
     }
 }
