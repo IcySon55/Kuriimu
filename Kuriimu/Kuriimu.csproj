@@ -123,6 +123,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SequenceSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SequenceSearch.Designer.cs">
+      <DependentUpon>SequenceSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +157,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SequenceSearch.resx">
+      <DependentUpon>SequenceSearch.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +235,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\menu-compression.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\search.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

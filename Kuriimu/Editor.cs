@@ -1025,5 +1025,11 @@ namespace Kuriimu
             if (e.Control & e.KeyCode == Keys.A)
                 txtEdit.SelectAll();
         }
+
+        private void sequenceSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ss = new SequenceSearch();
+            ss.Show();
+        }
     }
 }
