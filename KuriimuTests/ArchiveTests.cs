@@ -51,6 +51,10 @@ namespace KuriimuTests
         [TestMethod]
         public void HpiHpbTest3() => HpiHpbTest("mori5.hpi");
 
+        //PlainMSBT Archive
+        [TestMethod]
+        public void PlainMSBTTest() => Test<archive_umsbt.UmsbtManager>("EU_English.LZ.decomp");
+
         //GAR
         [TestMethod]
         public void GarTest() => Test<archive_gar.GarManager>("Joker.Main.gar");
