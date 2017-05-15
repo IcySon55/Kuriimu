@@ -51,6 +51,7 @@
     <Compile Include="Compression\CriWare.cs" />
     <Compile Include="Compression\GZip.cs" />
     <Compile Include="Compression\Huffman.cs" />
+    <Compile Include="Compression\HuffSupport.cs" />
     <Compile Include="Compression\LZ10.cs" />
     <Compile Include="Compression\LZ11.cs" />
     <Compile Include="Compression\LZ77.cs" />

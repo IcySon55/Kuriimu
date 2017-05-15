@@ -23,38 +23,43 @@ namespace Kuriimu.UI
             // GZip
             tsb.DropDownItems.Add(new ToolStripMenuItem("GZip", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[1];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.GZip;
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[0].Tag = Compression.GZip;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.GZip;
 
             // Huffman
             tsb.DropDownItems.Add(new ToolStripMenuItem("Huffman", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[2];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("4bit", null));
+            //tsb2.DropDownItems.Add(new ToolStripMenuItem("4bit", null));
             tsb2.DropDownItems.Add(new ToolStripMenuItem("8bit", null));
 
+            //tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            //tsb3.DropDownItems[0].Tag = Compression.Huff4;
+            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            //tsb3.DropDownItems[1].Tag = Compression.Huff4;
+
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb3.DropDownItems[0].Tag = Compression.Huff4;
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[1];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.Huff8;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.Huff8;
 
             // LZ10
             tsb.DropDownItems.Add(new ToolStripMenuItem("LZ10", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[3];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.LZ10;
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[0].Tag = Compression.LZ10;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.LZ10;
 
             // LZ11
             tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[4];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.LZ11;
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[0].Tag = Compression.LZ11;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.LZ11;
 
             // LZ77
@@ -66,9 +71,9 @@ namespace Kuriimu.UI
             // LZ77 Backwards
             tsb.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[6];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.RevLZ77;
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[0].Tag = Compression.RevLZ77;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.RevLZ77;
 
             // LZSS
@@ -77,17 +82,17 @@ namespace Kuriimu.UI
             // RLE
             tsb.DropDownItems.Add(new ToolStripMenuItem("RLE", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[7];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.RLE;
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[0].Tag = Compression.RLE;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.RLE;
 
             // ZLib
             tsb.DropDownItems.Add(new ToolStripMenuItem("ZLib", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[8];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.ZLib;
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Compression", null, Compress));
+            tsb2.DropDownItems[0].Tag = Compression.ZLib;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompression", null, Decompress));
             tsb2.DropDownItems[1].Tag = Compression.ZLib;
         }
 
@@ -141,10 +146,10 @@ namespace Kuriimu.UI
                             outFs.Write(GZip.Decompress(openFile));
                             break;
                         case Compression.Huff4:
-                            outFs.Write(Huffman.Decompress(openFile, 4, Huffman.GetDecompressedSize(openFile)));
+                            outFs.Write(Huffman.Decompress(openFile, 4));
                             break;
                         case Compression.Huff8:
-                            outFs.Write(Huffman.Decompress(openFile, 8, Huffman.GetDecompressedSize(openFile)));
+                            outFs.Write(Huffman.Decompress(openFile, 8));
                             break;
                         case Compression.LZ10:
                             outFs.Write(LZ10.Decompress(openFile));
@@ -162,7 +167,7 @@ namespace Kuriimu.UI
                             outFs.Write(RevLZ77.Decompress(openFile));
                             break;
                         case Compression.RLE:
-                            outFs.Write(RLE.Decompress(openFile, RLE.GetDecompressedLength(openFile)));
+                            outFs.Write(RLE.Decompress(openFile));
                             break;
                         case Compression.ZLib:
                             outFs.Write(ZLib.Decompress(openFile));
@@ -204,12 +209,12 @@ namespace Kuriimu.UI
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
                             break;
-                        /*case Compression.Huff4:
+                        case Compression.Huff4:
                             outFs.Write(Huffman.Compress(openFile, 4));
                             break;
                         case Compression.Huff8:
                             outFs.Write(Huffman.Compress(openFile, 8));
-                            break;*/
+                            break;
                         case Compression.LZ10:
                             outFs.Write(LZ10.Compress(openFile));
                             break;
