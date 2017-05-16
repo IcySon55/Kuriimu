@@ -19,8 +19,6 @@ namespace Kuriimu
 
         private void frmSearch_Load(object sender, EventArgs e)
         {
-            Icon = Resources.find;
-
             Selected = null;
             txtFindText.Text = Settings.Default.FindWhat;
             chkMatchCase.Checked = Settings.Default.FindMatchCase;
@@ -46,7 +44,6 @@ namespace Kuriimu
             lstResults.BeginUpdate();
 
             lstResults.Items.Clear();
-
             if (txtFindText.Text.Trim() != string.Empty && Entries != null)
             {
                 foreach (TextEntry entry in Entries)
