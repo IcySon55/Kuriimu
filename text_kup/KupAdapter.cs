@@ -10,50 +10,28 @@ namespace text_kup
 {
     public class KupAdatper : ITextAdapter
     {
-        private FileInfo _fileInfo = null;
         private KUP _kup = null;
 
         #region Properties
 
         // Information
         public string Name => "KUP";
-
         public string Description => "Kuriimu Archive";
-
         public string Extension => "*.kup";
-
         public string About => "This is the KUP file adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => true;
-
         public bool CanSave => true;
-
         public bool CanAddEntries => false;
-
         public bool CanRenameEntries => true;
-
         public bool CanDeleteEntries => false;
-
         public bool CanSortEntries => true;
-
         public bool EntriesHaveSubEntries => false;
-
         public bool EntriesHaveUniqueNames => false;
-
         public bool EntriesHaveExtendedProperties => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         public string LineEndings => "\n";
 
@@ -79,12 +57,12 @@ namespace text_kup
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
+            if (FileInfo.Exists)
             {
-                _kup = KUP.Load(_fileInfo.FullName);
-
+                _kup = KUP.Load(FileInfo.FullName);
+                
                 foreach (Entry entry in _kup.Entries)
                     entry.PointerCleanup();
             }
@@ -99,11 +77,11 @@ namespace text_kup
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                _kup.Save(_fileInfo.FullName);
+                _kup.Save(FileInfo.FullName);
             }
             catch (Exception)
             {
@@ -125,9 +103,7 @@ namespace text_kup
         }
 
         public IEnumerable<string> NameList => null;
-
         public string NameFilter => @".*";
-
         public int NameMaxLength => 0;
 
         // Features
@@ -198,7 +174,7 @@ namespace text_kup
         // Settings
         public bool SortEntries
         {
-            get { return Settings.Default.SortEntries; }
+            get => Settings.Default.SortEntries;
             set
             {
                 Settings.Default.SortEntries = value;
