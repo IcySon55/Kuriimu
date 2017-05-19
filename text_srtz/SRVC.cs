@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 
@@ -52,7 +51,34 @@ namespace text_srtz
         {
             using (var bw = new BinaryWriterX(output))
             {
-                ;
+                bw.WriteStruct(Header);
+                bw.Write(HashTable);
+                bw.Write(Block);
+
+                if (Metas.Count > 0)
+                {
+                    bw.WriteStruct(Metas[0]);
+
+                    uint runningTotal = 0;
+                    for (int i = 1; i < Metas.Count; i++)
+                    {
+                        var bytes = shift.GetBytes(Entries[i - 1].Text);
+                        Metas[i].Offset = runningTotal + (uint)bytes.Length + 1;
+                        runningTotal += (uint)bytes.Length + 1;
+                        bw.WriteStruct(Metas[i]);
+                    }
+                }
+
+                if (Entries.Count > 0)
+                {
+                    foreach(var entry in Entries)
+                    {
+                        bw.Write(shift.GetBytes(entry.Text));
+                        bw.Write((byte)0x0);
+                    }
+                }
+
+                bw.WritePadding();
             }
         }
     }

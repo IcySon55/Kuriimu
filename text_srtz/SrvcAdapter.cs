@@ -26,7 +26,7 @@ namespace text_srtz
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
         public bool CanAddEntries => false;
         public bool CanRenameEntries => false;
         public bool CanDeleteEntries => false;
@@ -86,7 +86,7 @@ namespace text_srtz
 
             try
             {
-                _srvc.Save(FileInfo.OpenWrite());
+                _srvc.Save(FileInfo.Create());
             }
             catch (Exception)
             {
