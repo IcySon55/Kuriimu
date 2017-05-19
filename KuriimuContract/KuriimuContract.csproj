@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
-    <Compile Include="Compression\CriWare.cs" />
+    <Compile Include="Compression\Level5.cs" />
     <Compile Include="Compression\GZip.cs" />
     <Compile Include="Compression\Huffman.cs" />
     <Compile Include="Compression\HuffSupport.cs" />

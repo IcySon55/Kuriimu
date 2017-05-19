@@ -24,7 +24,7 @@ namespace archive_xpck
                 else
                 {
                     xpckBr.BaseStream.Position = 0;
-                    byte[] decomp = CriWare.Decompress(xpckBr.BaseStream);
+                    byte[] decomp = Level5.Decompress(xpckBr.BaseStream);
                     _stream = new MemoryStream(decomp);
                 }
             }
@@ -41,7 +41,7 @@ namespace archive_xpck
 
                 //nameList
                 var nameList = new List<string>();
-                byte[] uncompressedNameList = CriWare.Decompress(new MemoryStream(xpckBr.ReadBytes(header.filenameTableSize)));
+                byte[] uncompressedNameList = Level5.Decompress(new MemoryStream(xpckBr.ReadBytes(header.filenameTableSize)));
                 using (BinaryReaderX nlBr = new BinaryReaderX(new MemoryStream(uncompressedNameList)))
                     for (int i = 0; i < fileCount; i++)
                         nameList.Add(nlBr.ReadCStringA());

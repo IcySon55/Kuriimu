@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Kuriimu.Compression
 {
-    public class CriWare
+    public class Level5
     {
         enum Method
         {
