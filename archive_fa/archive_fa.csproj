@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ARC0.cs" />
+    <Compile Include="Arc0Manager.cs" />
+    <Compile Include="Arc0Support.cs" />
     <Compile Include="PlainFaManager.cs" />
     <Compile Include="PlainFaSupport.cs" />
     <Compile Include="PlainFA.cs" />

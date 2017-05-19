@@ -76,22 +76,6 @@ namespace archive_arcv
             }
         }
 
-        /*public string ReadString(Stream input)
-        {
-            using (var br = new BinaryReaderX(input, true))
-            {
-                var result = new List<byte>();
-                var tmp = br.ReadByte();
-                while (tmp != 0x00)
-                {
-                    result.Add(tmp);
-                    tmp = br.ReadByte();
-                }
-
-                return Encoding.GetEncoding("SJIS").GetString(result.ToArray());
-            }
-        }*/
-
         public void Close()
         {
             _stream?.Close();

@@ -127,7 +127,7 @@ namespace text_ttbin
             else
             {
                 br.BaseStream.Position = 0;
-                byte[] result = CriWare.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
+                byte[] result = Level5.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
                 using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(result)))
                 {
                     if (br2.ReadString(4) == "XPCK")
@@ -173,7 +173,7 @@ namespace text_ttbin
 
             long bk = br.BaseStream.Position;
             br.BaseStream.Position = header.filenameTableOffset;
-            byte[] filenameTable = CriWare.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
+            byte[] filenameTable = Level5.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
             br.BaseStream.Position = bk;
             int count = 0;
             using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(filenameTable)))

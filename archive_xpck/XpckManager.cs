@@ -42,7 +42,7 @@ namespace archive_xpck
 
                 br.BaseStream.Position = 0;
                 byte[] decomp;
-                try { decomp = CriWare.Decompress(br.BaseStream); } catch { return false; }
+                try { decomp = Level5.Decompress(br.BaseStream); } catch { return false; }
                 return new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "XPCK";
             }
         }
