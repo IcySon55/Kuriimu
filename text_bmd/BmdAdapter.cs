@@ -91,7 +91,7 @@ namespace text_bmd
 
             try
             {
-                _bmd.Save(FileInfo.OpenWrite());
+                _bmd.Save(FileInfo.Create());
             }
             catch (Exception)
             {

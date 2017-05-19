@@ -78,7 +78,7 @@ namespace image_f3xt
 
             try
             {
-                _f3xt.Save(FileInfo.OpenWrite());
+                _f3xt.Save(FileInfo.Create());
             }
             catch (Exception)
             {

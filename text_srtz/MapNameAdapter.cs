@@ -86,7 +86,7 @@ namespace text_srtz
 
             try
             {
-                _mapName.Save(FileInfo.OpenWrite());
+                _mapName.Save(FileInfo.Create());
             }
             catch (Exception)
             {

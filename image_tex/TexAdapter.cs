@@ -59,7 +59,7 @@ namespace image_tex
 
             try
             {
-                //_tex.Save(FileInfo.OpenWrite());
+                //_tex.Save(FileInfo.Create());
                 result = SaveResult.Failure;
             }
             catch (Exception)
