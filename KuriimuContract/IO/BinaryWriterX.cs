@@ -105,5 +105,13 @@ namespace Kuriimu.IO
                 nibble = -1;
             }
         }
+
+        public void WritePadding(int alignment = 16, byte paddingByte = 0x0)
+        {
+            long remainder = BaseStream.Position % alignment;
+            if (remainder > 0)
+                for (int i = 0; i < alignment - remainder; i++)
+                    Write(paddingByte);
+        }
     }
 }

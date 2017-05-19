@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7ECF9A77-FAD8-4222-8AC7-A823D4E14DA7}</ProjectGuid>
+    <ProjectGuid>{665782EB-3D6E-4426-B052-5048334D31C0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>archive_umsbt</RootNamespace>
-    <AssemblyName>archive_umsbt</AssemblyName>
+    <RootNamespace>archive_seg</RootNamespace>
+    <AssemblyName>archive_seg</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,18 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlainUMSBT.cs" />
-    <Compile Include="UMSBT.cs" />
-    <Compile Include="PlainUmsbtManager.cs" />
-    <Compile Include="UmsbtManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="PlainUmsbtSupport.cs" />
-    <Compile Include="UmsbtSupport.cs" />
+    <Compile Include="SEG.cs" />
+    <Compile Include="SegManager.cs" />
+    <Compile Include="SegSupport.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -62,21 +59,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera.csproj">
-      <Project>{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}</Project>
-      <Name>Cetera</Name>
-    </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
-      <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
+      <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
