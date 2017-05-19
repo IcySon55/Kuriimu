@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.Compression;
@@ -7,17 +8,17 @@ using Kuriimu.IO;
 
 namespace archive_fa
 {
-    public class FaManager : IArchiveManager
+    public class Arc0Manager : IArchiveManager
     {
-        private FA _fa = null;
+        private ARC0 _arc0 = null;
 
         #region Properties
 
         // Information
         public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Level 5 File Archive";
+        public string Description => "Level 5 ARChive 0";
         public string Extension => "*.fa";
-        public string About => "This is the FA archive manager for Karameru.";
+        public string About => "This is the ARC0 archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -25,7 +26,7 @@ namespace archive_fa
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
@@ -36,7 +37,7 @@ namespace archive_fa
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "B123";
+                return br.ReadString(4) == "ARC0";
             }
         }
 
@@ -45,7 +46,7 @@ namespace archive_fa
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _fa = new FA(FileInfo.OpenRead());
+                _arc0 = new ARC0(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -56,14 +57,14 @@ namespace archive_fa
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _fa.Save(FileInfo.Create());
-                _fa.Close();
+                _arc0.Save(FileInfo.Create());
+                _arc0.Close();
             }
             else
             {
                 // Create the temp file
-                _fa.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _fa.Close();
+                _arc0.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _arc0.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -76,11 +77,11 @@ namespace archive_fa
 
         public void Unload()
         {
-            _fa?.Close();
+            _arc0?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _fa.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _arc0.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

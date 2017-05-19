@@ -15,10 +15,10 @@ namespace Kuriimu.UI
             tsb.DropDownItems.Clear();
 
             // CriWare
-            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.CriWare.ToString(), null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.Level5.ToString(), null));
             tsb2=(ToolStripMenuItem)tsb.DropDownItems[0];
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
-            tsb2.DropDownItems[0].Tag = Compression.CriWare;
+            tsb2.DropDownItems[0].Tag = Compression.Level5;
 
             // GZip
             tsb.DropDownItems.Add(new ToolStripMenuItem(Compression.GZip.ToString(), null));
@@ -139,8 +139,8 @@ namespace Kuriimu.UI
                 using (var outFs = new BinaryWriterX(saveFile))
                     switch (tsi.Tag)
                     {
-                        case Compression.CriWare:
-                            outFs.Write(CriWare.Decompress(openFile));
+                        case Compression.Level5:
+                            outFs.Write(Level5.Decompress(openFile));
                             break;
                         case Compression.GZip:
                             outFs.Write(GZip.Decompress(openFile));
@@ -194,17 +194,17 @@ namespace Kuriimu.UI
                 using (var outFs = new BinaryWriterX(saveFile))
                     switch (tsi.Tag)
                     {
-                        /*case Compression.CriLZSS:
-                            outFs.Write(CriWare.Compress(openFile, 1));
+                        /*case Compression.L5LZSS:
+                            outFs.Write(Level5.Compress(openFile, 1));
                             break;
-                        case Compression.CriHuff4:
-                            outFs.Write(CriWare.Compress(openFile, 2));
+                        case Compression.L5Huff4:
+                            outFs.Write(Level5.Compress(openFile, 2));
                             break;
-                        case Compression.CriHuff8:
-                            outFs.Write(CriWare.Compress(openFile, 3));
+                        case Compression.L5Huff8:
+                            outFs.Write(Level5.Compress(openFile, 3));
                             break;
-                        case Compression.CriRLE:
-                            outFs.Write(CriWare.Compress(openFile, 4));
+                        case Compression.L5RLE:
+                            outFs.Write(Level5.Compress(openFile, 4));
                             break;*/
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
@@ -245,11 +245,11 @@ namespace Kuriimu.UI
 
         public enum Compression : short
         {
-            CriWare,
-            CriHuff4,
-            CriHuff8,
-            CriLZSS,
-            CriRLE,
+            Level5,
+            L5Huff4,
+            L5Huff8,
+            L5LZSS,
+            L5RLE,
             GZip,
             Huff4,
             Huff8,
