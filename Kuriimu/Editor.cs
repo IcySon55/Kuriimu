@@ -690,7 +690,7 @@ namespace Kuriimu
 
         private void UpdateForm()
         {
-            Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_textAdapter != null ? " - " + _textAdapter.Name + " Adapter" : string.Empty);
+            Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_textAdapter != null ? " - " + _textAdapter.Description + " Adapter (" + _textAdapter.Name + ")" : string.Empty);
 
             TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
 
