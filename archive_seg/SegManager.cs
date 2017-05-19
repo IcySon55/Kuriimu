@@ -24,7 +24,7 @@ namespace archive_seg
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -47,7 +47,7 @@ namespace archive_seg
         public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            var binFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".bin");
+            var binFilename = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".bin");
 
             if (FileInfo.Exists)
                 _format = new SEG(FileInfo.OpenRead(), File.OpenRead(binFilename));
@@ -57,22 +57,25 @@ namespace archive_seg
         {
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
+            var binFilename = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".bin");
 
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _format.Save(FileInfo.Create());
+                _format.Save(FileInfo.Create(), File.Create(binFilename));
                 _format.Close();
             }
             else
             {
-                // Create the temp file
-                _format.Save(File.Create(FileInfo.FullName + ".tmp"));
+                // Create the temp file(s)
+                _format.Save(File.Create(FileInfo.FullName + ".tmp"), File.Create(binFilename + ".tmp"));
                 _format.Close();
-                // Delete the original
+                // Delete the original(s)
                 FileInfo.Delete();
-                // Rename the temporary file
+                File.Delete(binFilename);
+                // Rename the temporary file(s)
                 File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+                File.Move(binFilename + ".tmp", binFilename);
             }
 
             // Reload the new file to make sure everything is in order
