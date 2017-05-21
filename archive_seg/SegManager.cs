@@ -40,7 +40,14 @@ namespace archive_seg
             {
                 if (br.BaseStream.Length < 8) return false;
                 br.BaseStream.Seek(-4, SeekOrigin.End);
-                return br.ReadUInt32() == new FileInfo(binFilename).Length;
+                var tmp = br.ReadUInt32();
+                while (tmp==0 && br.BaseStream.Position>=0)
+                {
+                    br.BaseStream.Position -= 8;
+                    if (br.BaseStream.Position < 0) return false;
+                    tmp = br.ReadUInt32();
+                }
+                return tmp == new FileInfo(binFilename).Length;
             }
         }
 

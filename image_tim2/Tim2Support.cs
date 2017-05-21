@@ -1,34 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
 namespace image_tim2
 {
-    public class Tim2Support
+    public enum gatterType : byte
     {
+        TIM2_NONE,
+        TIM2_RGB16,
+        TIM2_RGB24,
+        TIM2_RGB32,
+        TIM2_IDTEX4,
+        TIM2_IDTEX8
+    }
+
+    public enum PSM : byte
+    {
+        SCE_GS_PSMCT16,
+        SCE_GS_PSMCT24,
+        SCE_GS_PSMCT32,
+        SCE_GS_PSMT4,
+        SCE_GS_PSMT8
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Header
+    public struct Header
     {
-        public Magic magic;
-        public short bitsPerPlane;
-        public short nrOfPlanes;
+        public Magic magic; //TIM2
+        public byte version;
+        public byte id;
+        public ushort picCount;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entry
+    public struct PicHeader
     {
-        public uint planeSize;
-        public long unk1;
-        public long unk2;
+        public uint totalSize;
+        public uint clutSize;
+        public uint imageSize;
+        public ushort headerSize;
+        public ushort clutColorCount;
+        public byte picFormat;
+        public byte mipMapTextureCount;
+        public byte clutType;
+        public byte imageType;
         public ushort width;
         public ushort height;
-        public long unk3;
-        public int unk4;
+
+        public ulong gsTex0;
+        public ulong gsTex1;
+        public uint gsTexaFbaPabe;
+        public uint gsTexClut;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ExtHeader
+    {
+        public Magic magic; //ext
+        public ushort userSpaceSize;
+        public ushort userDataSize;
+        public ushort reserved;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class GsTex
+    {
+        public PSM psm;
     }
 }
