@@ -27,6 +27,11 @@ namespace archive_seg
                     Entries.Add(entry);
 
                     if (Entries.IndexOf(entry) <= 0) continue;
+                    if (entry.Offset == 0) {
+                        Entries.Remove(Entries.Last());
+                        break;
+                    }
+
                     var prev = Entries[Entries.IndexOf(entry) - 1];
                     prev.Size = entry.Offset - prev.Offset;
                 }

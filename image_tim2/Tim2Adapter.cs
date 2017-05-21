@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using System.Collections.Generic;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Image;
+using System.Linq;
 
 namespace image_tim2
 {
@@ -14,8 +17,8 @@ namespace image_tim2
         #region Properties
 
         public string Name => "TIM2";
-        public string Description => "Texture IMage 2";
-        public string Extension => "*.tm2";
+        public string Description => "Default PS2 image format v2";
+        public string Extension => "*.tim2";
         public string About => "This is the TIM2 file adapter for Kukkii.";
 
         // Feature Support
@@ -34,14 +37,15 @@ namespace image_tim2
             }
         }
 
+        Bitmap tmp;
+
         #endregion
 
         public bool Identify(string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "TIM2";
+                return (br.ReadString(4) == "TIM2");
             }
         }
 
@@ -52,7 +56,7 @@ namespace image_tim2
             _fileInfo = new FileInfo(filename);
 
             if (_fileInfo.Exists)
-                _tim2 = new TIM2(_fileInfo.FullName);
+                _tim2 = new TIM2(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
             else
                 result = LoadResult.FileNotFound;
 
