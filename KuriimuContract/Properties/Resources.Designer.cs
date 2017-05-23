@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Cetera.Properties {
+namespace Kuriimu.Contract.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Cetera.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Cetera.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kuriimu.Contract.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,9 +63,29 @@ namespace Cetera.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
-        internal static byte[] cbf_std_bcfnt {
+        internal static byte[] boot9_prot {
             get {
-                object obj = ResourceManager.GetObject("cbf_std_bcfnt", resourceCulture);
+                object obj = ResourceManager.GetObject("boot9_prot", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] n3ds_keysector_dev {
+            get {
+                object obj = ResourceManager.GetObject("n3ds_keysector_dev", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] n3ds_keysector_retail {
+            get {
+                object obj = ResourceManager.GetObject("n3ds_keysector_retail", resourceCulture);
                 return ((byte[])(obj));
             }
         }

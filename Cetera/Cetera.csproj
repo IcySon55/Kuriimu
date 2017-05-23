@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Archive\SARC.cs" />
     <Compile Include="Archive\SimpleSARC.cs" />
+    <Compile Include="Common.cs" />
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Image\JTEX.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="Font\BCFNT.cs" />
     <Compile Include="Image\BXLIM.cs" />
     <Compile Include="Layout\BCLYT.cs" />
-    <Compile Include="Common.cs" />
     <Compile Include="Archive\DARC.cs" />
     <Compile Include="Image\Common.cs" />
     <Compile Include="Image\XI.cs" />
@@ -79,9 +79,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Resources\cbf_std.bcfnt.gz" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
