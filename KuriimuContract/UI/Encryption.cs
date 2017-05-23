@@ -22,10 +22,10 @@ namespace Kuriimu.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
             tsb3.DropDownItems[0].Tag = Types.normal;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
+            /*tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
             tsb3.DropDownItems[1].Tag = Types.CIA;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
-            tsb3.DropDownItems[2].Tag = Types.BOSS;
+            tsb3.DropDownItems[2].Tag = Types.BOSS;*/
         }
 
         public static void Decrypt(object sender, EventArgs e)
@@ -44,14 +44,17 @@ namespace Kuriimu.UI
                     switch (tsi.Tag)
                     {
                         case Types.normal:
-                            outFs.Write(engine.Decrypt(openBr.ReadBytes((int)openBr.BaseStream.Length)));
+                            openBr.BaseStream.CopyTo(outFs.BaseStream);
+                            openBr.BaseStream.Position = 0;
+                            outFs.BaseStream.Position = 0;
+                            engine.DecryptGameNCSD(openBr.BaseStream,outFs.BaseStream);
                             break;
-                        case Types.CIA:
+                        /*case Types.CIA:
                             engine.DecryptCIA(openBr.BaseStream,outFs.BaseStream);
                             break;
                         case Types.BOSS:
                             outFs.Write(engine.DecryptBOSS(openBr.ReadBytes((int)openBr.BaseStream.Length)));
-                            break;
+                            break;*/
                     }
                 }
             }
@@ -80,7 +83,7 @@ namespace Kuriimu.UI
             var sfd = new SaveFileDialog()
             {
                 Title = saveCaption,
-                FileName = Path.GetFileName(ofd.FileName) + saveExtension,
+                FileName = Path.GetFileNameWithoutExtension(ofd.FileName) + saveExtension,
                 Filter = "All Files (*.*)|*.*"
             };
 
