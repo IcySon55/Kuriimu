@@ -37,6 +37,7 @@ namespace Kukkii
 
             // Tools
             Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+            Kuriimu.UI.EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
 
             UpdateForm();
         }

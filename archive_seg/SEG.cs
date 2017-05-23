@@ -41,12 +41,18 @@ namespace archive_seg
             using (var br = new BinaryReaderX(binInput, true))
             {
                 for (int i = 0; i < Entries.Count - 1; i++)
+                {
+                    var substream = new SubStream(binInput, Entries[i].Offset, Entries[i].Size);
+                    string extension = (new BinaryReaderX(substream, true).ReadString(4) == "TIM2") ? ".tim2" : ".bin";
+                    substream.Position = 0;
+
                     Files.Add(new ArchiveFileInfo
                     {
-                        FileName = i.ToString("000000") + ".bin",
-                        FileData = new SubStream(binInput, Entries[i].Offset, Entries[i].Size),
+                        FileName = i.ToString("000000") + extension,
+                        FileData = substream,
                         State = ArchiveFileState.Archived
                     });
+                }
             }
         }
 

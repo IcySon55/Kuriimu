@@ -97,6 +97,7 @@
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imlFiles = new System.Windows.Forms.ImageList(this.components);
             this.imlFilesLarge = new System.Windows.Forms.ImageList(this.components);
+            this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -227,7 +228,8 @@
             // tolsToolStripMenuItem
             // 
             this.tolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.compressionToolStripMenuItem});
+            this.compressionToolStripMenuItem,
+            this.encryptionToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
             this.tolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
@@ -766,6 +768,12 @@
             this.imlFilesLarge.ImageSize = new System.Drawing.Size(32, 32);
             this.imlFilesLarge.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // encryptionToolStripMenuItem
+            // 
+            this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.encryptionToolStripMenuItem.Text = "&Encryption";
+            // 
             // Manager
             // 
             this.AllowDrop = true;
@@ -872,6 +880,7 @@
         private System.Windows.Forms.ToolStripMenuItem tileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
     }
 }
 
