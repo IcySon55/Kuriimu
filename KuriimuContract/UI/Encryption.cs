@@ -44,7 +44,7 @@ namespace Kuriimu.UI
                     switch (tsi.Tag)
                     {
                         case Types.normal:
-                            engine.DecryptGameNCSD(openBr.BaseStream,outFs.BaseStream);
+                            outFs.Write(engine.Decrypt(openBr.ReadBytes((int)openBr.BaseStream.Length)));
                             break;
                         case Types.CIA:
                             engine.DecryptCIA(openBr.BaseStream,outFs.BaseStream);
