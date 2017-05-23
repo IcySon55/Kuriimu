@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Image;
-using System.Linq;
 
 namespace image_tim2
 {
     public sealed class Tim2Adapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private TIM2 _tim2 = null;
 
         #region Properties
@@ -25,17 +21,7 @@ namespace image_tim2
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         Bitmap tmp;
 
@@ -53,10 +39,10 @@ namespace image_tim2
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                _tim2 = new TIM2(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+            if (FileInfo.Exists)
+                _tim2 = new TIM2(FileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -68,11 +54,11 @@ namespace image_tim2
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                //_tim2.Save(_fileInfo.FullName);
+                //_tim2.Save(FileInfo.FullName);
             }
             catch (Exception)
             {
@@ -85,14 +71,8 @@ namespace image_tim2
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _tim2.bmp;
-            }
-            set
-            {
-                _tim2.bmp = value;
-            }
+            get => _tim2.bmp;
+            set => _tim2.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Contract;
 using Cetera.Image;
+using Kuriimu.IO;
 
 namespace image_tim2
 {
