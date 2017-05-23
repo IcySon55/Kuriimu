@@ -90,6 +90,7 @@ namespace Karameru
 
             // Tools
             Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+            Kuriimu.UI.EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
 
             Tools.DoubleBuffer(treDirectories, true);
             Tools.DoubleBuffer(lstFiles, true);
