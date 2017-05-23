@@ -555,6 +555,7 @@ namespace Kuriimu
 
             // Tools
             UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+            UI.EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
 
             // Extensions
             if (_extensions.Count > 0)
