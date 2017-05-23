@@ -520,7 +520,7 @@ namespace Kuriimu.CTR
 
         public void LoadBootromKeys()
         {
-            LoadKeysFromBootromFile((byte[])Resources.boot9_prot.Clone());
+            //LoadKeysFromBootromFile((byte[])Resources.boot9_prot.Clone());
         }
 
         public void LoadKeysFromBootromFile(byte[] boot9)
@@ -680,8 +680,8 @@ namespace Kuriimu.CTR
             var otpkey = new byte[0x10];
             var otpiv = new byte[0x10];
             var OTP_dec = new byte[o.Length];
-            Array.Copy(Resources.boot9_prot, otpkey_ofs, otpkey, 0, 0x10);
-            Array.Copy(Resources.boot9_prot, otpkey_ofs + 0x10, otpiv, 0, 0x10);
+            //Array.Copy(Resources.boot9_prot, otpkey_ofs, otpkey, 0, 0x10);
+            //Array.Copy(Resources.boot9_prot, otpkey_ofs + 0x10, otpiv, 0, 0x10);
             using (var _aes = new AesManaged { Key = otpkey, IV = otpiv, Mode = CipherMode.CBC, Padding = PaddingMode.None })
             {
                 _aes.CreateDecryptor(_aes.Key, _aes.IV).TransformBlock(OTP, 0, OTP.Length, OTP_dec, 0);
@@ -702,7 +702,7 @@ namespace Kuriimu.CTR
             var otp_pos = (new SHA256Managed().ComputeHash(OTP_d, 0, 0xE0).SequenceEqual(OTP_d.Skip(0xE0))) ? 0x90 : 0x0;
             var hashdata = new byte[0x40];
             Array.Copy(OTP_d, otp_pos, hashdata, 0, 0x1C);
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0x1C, 0x24);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0x1C, 0x24);
             var hash = new SHA256Managed().ComputeHash(hashdata);
             SetMode(AesMode.CBC);
             SetKeyX(0x3F, hash.Take(0x10).ToArray());
@@ -712,9 +712,9 @@ namespace Kuriimu.CTR
             keyarea_ofs += 0x24;
 
             var aesiv = new byte[0x10];
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
             keyarea_ofs += 0x10;
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
             keyarea_ofs += 0x40;
             SetIV(aesiv);
             var keydata = Encrypt(hashdata);
@@ -726,9 +726,9 @@ namespace Kuriimu.CTR
             }
             SetKeyX(0x10, keydata.Skip(0x30).Take(0x10).ToArray());
 
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
             keyarea_ofs += 0x10;
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
             keyarea_ofs += 0x10;
             SetIV(aesiv);
             keydata = Encrypt(hashdata);
@@ -737,9 +737,9 @@ namespace Kuriimu.CTR
                 SetKeyX(0x14 + i, keydata.Skip(0x10 * i).Take(0x10).ToArray());
             }
 
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
             keyarea_ofs += 0x10;
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
             keyarea_ofs += 0x40;
             SetIV(aesiv);
             keydata = Encrypt(hashdata);
@@ -751,9 +751,9 @@ namespace Kuriimu.CTR
             }
             SetKeyX(0x24, keydata.Skip(0x30).Take(0x10).ToArray());
 
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, aesiv, 0, 0x10);
             keyarea_ofs += 0x10;
-            Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
+            //Array.Copy(Resources.boot9_prot, keyarea_ofs, hashdata, 0, 0x40);
             SetIV(aesiv);
             keydata = Encrypt(hashdata);
             for (var i = 0; i < 4; i++)
@@ -769,12 +769,12 @@ namespace Kuriimu.CTR
             // Buffers extracted from Process9 .data. 
             var buf1 = "A48DE4F10B3644AA903128FF4DCA76DF".ToByteArray();
             var buf2 = "DDDAA4C62CC450E9DAB69B0D9D2A2198".ToByteArray();
-            var keysector = (byte[])(IsDev ? Resources.n3ds_keysector_dev : Resources.n3ds_keysector_retail).Clone();
+            //var keysector = (byte[])(IsDev ? Resources.n3ds_keysector_dev : Resources.n3ds_keysector_retail).Clone();
 
             var first_key = new byte[0x10];
             var second_key = new byte[0x10];
-            Array.Copy(keysector, 0, first_key, 0, 0x10);
-            Array.Copy(keysector, 0x10, second_key, 0, 0x10);
+            //Array.Copy(keysector, 0, first_key, 0, 0x10);
+            //Array.Copy(keysector, 0x10, second_key, 0, 0x10);
 
             SetMode(AesMode.ECB);
 
@@ -848,7 +848,7 @@ namespace Kuriimu.CTR
 
         public byte[] DecryptFIRM(byte[] FIRM, bool debug = false)
         {
-            var keysector = (byte[])(IsDev ? Resources.n3ds_keysector_dev : Resources.n3ds_keysector_retail).Clone();
+            //var keysector = (byte[])(IsDev ? Resources.n3ds_keysector_dev : Resources.n3ds_keysector_retail).Clone();
 
             var dec_firm = (byte[])FIRM.Clone();
             if (Encoding.ASCII.GetString(FIRM, 0, 4) != "FIRM")
@@ -879,12 +879,12 @@ namespace Kuriimu.CTR
             Array.Copy(FIRM, header_ofs + 0x60, key_x_16, 0, 0x10);
 
             var secret_key = new byte[0x10];
-            Array.Copy(keysector, 0, secret_key, 0, 0x10);
+            //Array.Copy(keysector, 0, secret_key, 0, 0x10);
             SetNormalKey(0x11, secret_key);
             SetMode(AesMode.ECB);
             SelectKeyslot(0x11);
             key_x_15 = Decrypt(key_x_15);
-            Array.Copy(keysector, 0x10, secret_key, 0, 0x10);
+            //Array.Copy(keysector, 0x10, secret_key, 0, 0x10);
             SetNormalKey(0x11, secret_key);
             key_x_16 = Decrypt(key_x_16);
 
@@ -913,7 +913,7 @@ namespace Kuriimu.CTR
 
         public byte[] EncryptFIRM(byte[] FIRM, bool debug = false)
         {
-            var keysector = (byte[])(IsDev ? Resources.n3ds_keysector_dev : Resources.n3ds_keysector_retail).Clone();
+            //var keysector = (byte[])(IsDev ? Resources.n3ds_keysector_dev : Resources.n3ds_keysector_retail).Clone();
 
             var enc_firm = (byte[])FIRM.Clone();
             if (Encoding.ASCII.GetString(FIRM, 0, 4) != "FIRM")
@@ -944,12 +944,12 @@ namespace Kuriimu.CTR
             Array.Copy(FIRM, header_ofs + 0x60, key_x_16, 0, 0x10);
 
             var secret_key = new byte[0x10];
-            Array.Copy(keysector, 0, secret_key, 0, 0x10);
+            //Array.Copy(keysector, 0, secret_key, 0, 0x10);
             SetNormalKey(0x11, secret_key);
             SetMode(AesMode.ECB);
             SelectKeyslot(0x11);
             key_x_15 = Decrypt(key_x_15);
-            Array.Copy(keysector, 0x10, secret_key, 0, 0x10);
+            //Array.Copy(keysector, 0x10, secret_key, 0, 0x10);
             SetNormalKey(0x11, secret_key);
             key_x_16 = Decrypt(key_x_16);
 
