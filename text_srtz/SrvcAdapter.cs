@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using text_srtz.Properties;
 
 namespace text_srtz
 {
@@ -37,7 +36,7 @@ namespace text_srtz
 
         public FileInfo FileInfo { get; set; }
 
-        public string LineEndings => "\n";
+        public string LineEndings => @"\n";
 
         #endregion
 
