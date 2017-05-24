@@ -32,6 +32,8 @@ namespace Kuriimu.Compression
                     var copiesSize = GetNibbles(br.ReadByte());
                     var copies = copiesSize.Item1;
                     var size = copiesSize.Item2;
+                    if (copies == 0 && size == 0) break;
+
                     if (copies == 0) copies = ReadVLC() / 2;
                     if (size == 0) size = ReadVLC() / 2;
                     buffer.AddRange(br.ReadBytes(size));
