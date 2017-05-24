@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using text_srtz.Properties;
 
 namespace text_srtz
 {

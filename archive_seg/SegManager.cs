@@ -8,7 +8,8 @@ namespace archive_seg
 {
     public class SegManager : IArchiveManager
     {
-        private SEG _format = null;
+        private SEG _seg = null;
+        private bool _hasSize = false;
 
         #region Properties
 
@@ -35,13 +36,13 @@ namespace archive_seg
             var binFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".bin");
 
             if (!File.Exists(filename) || !File.Exists(binFilename)) return false;
-            
+
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 8) return false;
                 br.BaseStream.Seek(-4, SeekOrigin.End);
                 var tmp = br.ReadUInt32();
-                while (tmp==0 && br.BaseStream.Position>=0)
+                while (tmp == 0 && br.BaseStream.Position >= 0)
                 {
                     br.BaseStream.Position -= 8;
                     if (br.BaseStream.Position < 0) return false;
@@ -55,9 +56,11 @@ namespace archive_seg
         {
             FileInfo = new FileInfo(filename);
             var binFilename = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".bin");
+            var sizeFilename = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + "size.bin");
+            _hasSize = File.Exists(sizeFilename);
 
             if (FileInfo.Exists)
-                _format = new SEG(FileInfo.OpenRead(), File.OpenRead(binFilename));
+                _seg = new SEG(FileInfo.OpenRead(), File.OpenRead(binFilename), _hasSize ? File.OpenRead(sizeFilename) : null);
         }
 
         public void Save(string filename = "")
@@ -65,24 +68,42 @@ namespace archive_seg
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
             var binFilename = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".bin");
+            var sizeFilename = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + "size.bin");
 
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _format.Save(FileInfo.Create(), File.Create(binFilename));
-                _format.Close();
+                _seg.Save(FileInfo.Create(), File.Create(binFilename), _hasSize ? File.Create(sizeFilename) : null);
+                _seg.Close();
             }
             else
             {
-                // Create the temp file(s)
-                _format.Save(File.Create(FileInfo.FullName + ".tmp"), File.Create(binFilename + ".tmp"));
-                _format.Close();
-                // Delete the original(s)
-                FileInfo.Delete();
-                File.Delete(binFilename);
-                // Rename the temporary file(s)
-                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
-                File.Move(binFilename + ".tmp", binFilename);
+                if (!_hasSize)
+                {
+                    // Create the temp file(s)
+                    _seg.Save(File.Create(FileInfo.FullName + ".tmp"), File.Create(binFilename + ".tmp"));
+                    _seg.Close();
+                    // Delete the original(s)
+                    FileInfo.Delete();
+                    File.Delete(binFilename);
+                    // Rename the temporary file(s)
+                    File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+                    File.Move(binFilename + ".tmp", binFilename);
+                }
+                else
+                {
+                    // Create the temp file(s)
+                    _seg.Save(File.Create(FileInfo.FullName + ".tmp"), File.Create(binFilename + ".tmp"), File.Create(sizeFilename + ".tmp"));
+                    _seg.Close();
+                    // Delete the original(s)
+                    FileInfo.Delete();
+                    File.Delete(binFilename);
+                    File.Delete(sizeFilename);
+                    // Rename the temporary file(s)
+                    File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+                    File.Move(binFilename + ".tmp", binFilename);
+                    File.Move(sizeFilename + ".tmp", sizeFilename);
+                }
             }
 
             // Reload the new file to make sure everything is in order
@@ -91,11 +112,11 @@ namespace archive_seg
 
         public void Unload()
         {
-            _format?.Close();
+            _seg?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _format.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _seg.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

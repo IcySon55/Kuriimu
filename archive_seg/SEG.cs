@@ -8,80 +8,95 @@ namespace archive_seg
 {
     public class SEG
     {
-        public List<ArchiveFileInfo> Files = new List<ArchiveFileInfo>();
-        private List<SegFileEntry> Entries = new List<SegFileEntry>();
+        public List<SegArchiveFileInfo> Files = new List<SegArchiveFileInfo>();
+
         private Stream _segStream = null;
         private Stream _binStream = null;
+        private Stream _sizeStream = null;
 
-        public SEG(Stream segInput, Stream binInput)
+        private static Dictionary<string, string> _knownFiles = new Dictionary<string, string>
+        {
+            ["TIM2"] = ".tim2"
+        };
+
+        public SEG(Stream segInput, Stream binInput, Stream sizeInput = null)
         {
             _segStream = segInput;
             _binStream = binInput;
+            _sizeStream = sizeInput;
 
             // Offsets and Sizes
             using (var br = new BinaryReaderX(segInput, true))
             {
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    var entry = new SegFileEntry { Offset = br.ReadUInt32() };
-                    Entries.Add(entry);
+                    var afi = new SegArchiveFileInfo
+                    {
+                        Entry = new SegFileEntry { Offset = br.ReadUInt32() }
+                    };
+                    Files.Add(afi);
 
-                    if (Entries.IndexOf(entry) <= 0) continue;
-                    if (entry.Offset == 0) {
-                        Entries.Remove(Entries.Last());
-                        break;
-                    }
+                    if (Files.IndexOf(afi) == 0) continue;
+                    if (afi.Entry.Offset == 0) break;
 
-                    var prev = Entries[Entries.IndexOf(entry) - 1];
-                    prev.Size = entry.Offset - prev.Offset;
+                    var prev = Files[Files.IndexOf(afi) - 1];
+                    prev.Entry.Size = afi.Entry.Offset - prev.Entry.Offset;
                 }
+                Files.Remove(Files.Last());
             }
 
-            // Files
-            using (var br = new BinaryReaderX(binInput, true))
-            {
-                for (int i = 0; i < Entries.Count - 1; i++)
-                {
-                    var substream = new SubStream(binInput, Entries[i].Offset, Entries[i].Size);
-                    string extension = (new BinaryReaderX(substream, true).ReadString(4) == "TIM2") ? ".tim2" : ".bin";
-                    substream.Position = 0;
+            // Uncompressed Sizes
+            if (sizeInput != null)
+                using (var br = new BinaryReaderX(sizeInput, true))
+                    for (var i = 0; i < Files.Count; i++)
+                        Files[i].Entry.UncompressedSize = br.ReadUInt32();
 
-                    Files.Add(new ArchiveFileInfo
-                    {
-                        FileName = i.ToString("000000") + extension,
-                        FileData = substream,
-                        State = ArchiveFileState.Archived
-                    });
-                }
+            // Files
+            for (var i = 0; i < Files.Count; i++)
+            {
+                var substream = new SubStream(binInput, Files[i].Entry.Offset, Files[i].Entry.Size);
+                var matched = new BinaryReaderX(substream, true).ReadString(4);
+                var extension = _knownFiles.ContainsKey(matched) ? _knownFiles[matched] : ".bin";
+                substream.Position = 0;
+
+                var afi = Files[i];
+                afi.FileName = i.ToString("000000") + extension;
+                afi.FileData = substream;
+                afi.State = ArchiveFileState.Archived;
             }
         }
 
-        public void Save(Stream segOutput, Stream binOutput)
+        public void Save(Stream segOutput, Stream binOutput, Stream sizeOutput = null)
         {
             // Offsets and Sizes
             using (var bw = new BinaryWriterX(segOutput))
             {
-                bw.Write(Entries[0].Offset);
+                bw.Write(Files[0].Entry.Offset);
 
                 uint runningTotal = 0;
-                for (int i = 1; i < Entries.Count - 1; i++)
+                for (var i = 1; i < Files.Count; i++)
                 {
-                    Entries[i].Offset = runningTotal + (uint)Files[i - 1].FileSize;
-                    runningTotal += (uint)Files[i - 1].FileSize;
-                    bw.Write(Entries[i].Offset);
+                    Files[i].Entry.Offset = runningTotal + (uint)Files[i - 1].FileData.Length;
+                    runningTotal += (uint)Files[i - 1].FileData.Length;
+                    bw.Write(Files[i].Entry.Offset);
                 }
 
-                bw.Write(runningTotal + (uint)Files.Last().FileSize);
+                bw.Write(runningTotal + (uint)Files.Last().FileData.Length);
             }
+
+            // Size
+            if (sizeOutput != null)
+                using (var bw = new BinaryWriterX(sizeOutput))
+                {
+                    foreach (var afi in Files)
+                        bw.Write(afi.Entry.UncompressedSize);
+                    bw.Write((uint)0);
+                }
 
             // Files
             using (var bw = new BinaryWriterX(binOutput))
-            {
-                foreach (var file in Files)
-                {
-                    file.FileData.CopyTo(bw.BaseStream);
-                }
-            }
+                foreach (var afi in Files)
+                    afi.FileData.CopyTo(bw.BaseStream);
         }
 
         public void Close()
@@ -90,6 +105,8 @@ namespace archive_seg
             _segStream = null;
             _binStream?.Dispose();
             _binStream = null;
+            _sizeStream?.Dispose();
+            _sizeStream = null;
         }
     }
 }
