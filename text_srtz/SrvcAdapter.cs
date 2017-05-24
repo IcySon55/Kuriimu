@@ -37,7 +37,7 @@ namespace text_srtz
 
         public FileInfo FileInfo { get; set; }
 
-        public string LineEndings => "\x5c\x6e";
+        public string LineEndings => @"\n";
 
         #endregion
 
