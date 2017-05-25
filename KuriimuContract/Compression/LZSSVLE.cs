@@ -7,7 +7,7 @@ namespace Kuriimu.Compression
 {
     public class LZSSVLE
     {
-        public static byte[] Decompress(Stream instream)
+        public static byte[] Decompress(Stream instream, int decompressedSize=0)
         {
             using (var br = new BinaryReader(instream))
             {
@@ -16,6 +16,7 @@ namespace Kuriimu.Compression
                 {
                     while (true)
                     {
+                        if (br.BaseStream.Position == br.BaseStream.Length) return 0;
                         var b = br.ReadByte();
                         seed = (seed << 7) | b;
                         if (b % 2 != 0) return seed;
@@ -32,11 +33,14 @@ namespace Kuriimu.Compression
                     var copiesSize = GetNibbles(br.ReadByte());
                     var copies = copiesSize.Item1;
                     var size = copiesSize.Item2;
-                    if (copies == 0 && size == 0) break;
 
                     if (copies == 0) copies = ReadVLC() / 2;
                     if (size == 0) size = ReadVLC() / 2;
+
+                    if (copies == 0 && size == 0) break;
                     buffer.AddRange(br.ReadBytes(size));
+
+                    if (decompressedSize > 0) if (decompressedSize == buffer.Count) break;
 
                     // copy stuff
                     while (copies-- > 0)
@@ -48,6 +52,8 @@ namespace Kuriimu.Compression
                         if (length == 0) length = ReadVLC() / 2;
                         while (length-- >= 0) buffer.Add(buffer[buffer.Count - offset / 2 - 1]);
                     }
+
+                    if (decompressedSize > 0) if (decompressedSize == buffer.Count) break;
                 }
 
                 return buffer.ToArray();
