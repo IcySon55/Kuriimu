@@ -121,7 +121,7 @@ namespace KuriimuTests
 
         // PlainFA
         [TestMethod]
-        public void PlainFATest() => Test<archive_fa.PlainFaManager>("plainFA.fa");
+        public void PlainFATest() => Test<archive_plainfa.PlainFaManager>("plainFA.fa");
 
         // UMSBT
         [TestMethod]
