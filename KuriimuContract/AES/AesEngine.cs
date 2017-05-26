@@ -531,7 +531,7 @@ namespace Kuriimu.CTR
         {
             // Will use LoadKeysFromBootrom() implementation for those who
             // don't want to manually compile with bootrom as a resource.
-            var keyarea_ofs = (IsDev) ? 0xDC60 : 0xD860;
+            var keyarea_ofs = (boot9.Length == 0x10000) ? (IsDev) ? 0xDC60 : 0xD860 : (IsDev) ? 0x5C60 : 0x5860;
 
             var keyX = new byte[0x10];
             var keyY = new byte[0x10];
@@ -685,7 +685,7 @@ namespace Kuriimu.CTR
             tmp.Read(boot9, 0, (int)tmp.Length);
             tmp.Close();
 
-            var otpkey_ofs = (IsDev) ? 0xD710 : 0xD6E0;
+            var otpkey_ofs = (boot9.Length == 0x10000) ? (IsDev) ? 0xD710 : 0xD6E0 : (IsDev) ? 0x5710 : 0x56E0;
             var otpkey = new byte[0x10];
             var otpiv = new byte[0x10];
             var OTP_dec = new byte[o.Length];
