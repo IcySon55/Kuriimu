@@ -5,7 +5,7 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_fa
+namespace archive_level5.PlainFA
 {
     public class PlainFaManager : IArchiveManager
     {
@@ -14,7 +14,7 @@ namespace archive_fa
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "PlainFA";
         public string Description => "Level 5 Plain File Archive";
         public string Extension => "*.fa";
         public string About => "This is the PlainFA archive manager for Karameru.";

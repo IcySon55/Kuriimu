@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.IO;
 using Kuriimu.Contract;
-using Kuriimu.Compression;
 using Kuriimu.IO;
 
-namespace archive_fa
+namespace archive_level5.ARC0
 {
     public class Arc0Manager : IArchiveManager
     {
@@ -15,7 +13,7 @@ namespace archive_fa
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "ARC0";
         public string Description => "Level 5 ARChive 0";
         public string Extension => "*.fa";
         public string About => "This is the ARC0 archive manager for Karameru.";

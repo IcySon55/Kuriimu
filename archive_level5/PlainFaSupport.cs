@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace archive_fa
+namespace archive_level5.PlainFA
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class PlainFAHeader

@@ -66,33 +66,21 @@
       <Project>{60a8fa6b-7829-45ce-8e0d-4999d1621b89}</Project>
       <Name>archive_afs</Name>
     </ProjectReference>
-    <ProjectReference Include="..\archive_arcv\archive_arcv.csproj">
-      <Project>{9a5dc415-ead9-4827-b9b9-ab9bd86f63c5}</Project>
-      <Name>archive_arcv</Name>
-    </ProjectReference>
     <ProjectReference Include="..\archive_dpk\archive_dpk.csproj">
       <Project>{1bff38f5-1848-45b1-b84d-1270a25b7675}</Project>
       <Name>archive_dpk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_fa\archive_fa.csproj">
-      <Project>{44ed1984-768d-45bb-a548-f93c7d086876}</Project>
-      <Name>archive_fa</Name>
     </ProjectReference>
     <ProjectReference Include="..\archive_hpi_hpb\archive_hpi_hpb.csproj">
       <Project>{30be912f-6874-4f11-9094-ef9cf098d16a}</Project>
       <Name>archive_hpi_hpb</Name>
     </ProjectReference>
+    <ProjectReference Include="..\archive_level5\archive_level5.csproj">
+      <Project>{95f859b9-118c-4f39-aa04-76901412413e}</Project>
+      <Name>archive_level5</Name>
+    </ProjectReference>
     <ProjectReference Include="..\archive_nintendo\archive_nintendo.csproj">
       <Project>{efdc3079-b1ed-493d-b9dc-55658a84b1a4}</Project>
       <Name>archive_nintendo</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_pck\archive_pck.csproj">
-      <Project>{7360b4b4-a589-4c07-938c-badaae4c97d5}</Project>
-      <Name>archive_pck</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_xpck\archive_xpck.csproj">
-      <Project>{95f859b9-118c-4f39-aa04-76901412413e}</Project>
-      <Name>archive_xpck</Name>
     </ProjectReference>
     <ProjectReference Include="..\image_bclyt\image_bclyt.csproj">
       <Project>{508881f8-e128-4d4e-a38b-d3e60d8a668e}</Project>

@@ -4,7 +4,7 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_fa
+namespace archive_level5.PlainFA
 {
     public sealed class PlainFA
     {

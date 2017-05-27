@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System;
 using System.Linq;
-using System.Text;
-using Cetera.Hash;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_arcv
+namespace archive_level5.ARCV
 {
     public sealed class ARCV
     {
@@ -15,7 +12,7 @@ namespace archive_arcv
         Stream _stream = null;
 
         private Header header;
-        private List<FileEntry> entries;
+        private List<Entry> entries;
 
         public ARCV(Stream input)
         {
@@ -28,15 +25,16 @@ namespace archive_arcv
                 header = br.ReadStruct<Header>();
 
                 //FileEntries
-                entries = br.ReadMultiple<FileEntry>(header.fileCount);
+                entries = br.ReadMultiple<Entry>(header.fileCount);
 
-                for (int i=0;i<header.fileCount;i++)
+                for (int i = 0; i < header.fileCount; i++)
                 {
-                    Files.Add(new ARCVFileInfo {
-                        State=ArchiveFileState.Archived,
-                        FileName=$"0x{entries[i].hash:X08}",
-                        FileData=new SubStream(br.BaseStream,entries[i].offset,entries[i].size),
-                        hash=entries[i].hash
+                    Files.Add(new ARCVFileInfo
+                    {
+                        State = ArchiveFileState.Archived,
+                        FileName = $"0x{entries[i].hash:X08}",
+                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size),
+                        hash = entries[i].hash
                     });
                 }
             }

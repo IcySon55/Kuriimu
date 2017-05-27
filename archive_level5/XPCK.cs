@@ -5,7 +5,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_xpck
+namespace archive_level5.XPCK
 {
     public sealed class XPCK
     {

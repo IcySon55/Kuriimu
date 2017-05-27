@@ -3,9 +3,8 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Hash;
 
-namespace archive_arcv
+namespace archive_level5.ARCV
 {
     public class ArcvManager : IArchiveManager
     {
@@ -14,8 +13,8 @@ namespace archive_arcv
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Level 5 Archive V";
+        public string Name => "ARCV";
+        public string Description => "Level 5 ARChive V";
         public string Extension => "*.arc";
         public string About => "This is the ARCV archive manager for Karameru.";
 

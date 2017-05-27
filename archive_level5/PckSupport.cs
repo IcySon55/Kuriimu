@@ -2,16 +2,16 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_pck
+namespace archive_level5.PCK
 {
     public class PckFileInfo : ArchiveFileInfo
     {
-        public PCKEntry Entry;
+        public Entry Entry;
         public List<uint> Hashes;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class PCKEntry
+    public class Entry
     {
         public uint hash;
         public int fileOffset;

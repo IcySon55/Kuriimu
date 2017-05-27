@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_fa
+namespace archive_level5.B123
 {
-    public class FAFileInfo : ArchiveFileInfo
+    public class B123FileInfo : ArchiveFileInfo
     {
         public uint crc32;
     }

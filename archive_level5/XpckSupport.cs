@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_xpck
+namespace archive_level5.XPCK
 {
     public class XPCKFileInfo : ArchiveFileInfo
     {

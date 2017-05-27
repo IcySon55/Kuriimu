@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 
-namespace archive_pck
+namespace archive_level5.PCK
 {
     public class PckManager : IArchiveManager
     {
@@ -12,7 +12,7 @@ namespace archive_pck
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "PCK";
         public string Description => "Level 5 PaCKage";
         public string Extension => "*.pck";
         public string About => "This is the PCK archive manager for Karameru.";

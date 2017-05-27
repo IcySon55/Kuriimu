@@ -1,25 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System;
 using System.Linq;
 using System.Text;
 using Cetera.Hash;
-using Kuriimu.Contract;
 using Kuriimu.Compression;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_fa
+namespace archive_level5.ARC0
 {
     public sealed class ARC0
     {
         public List<ARC0FileInfo> Files = new List<ARC0FileInfo>();
         Stream _stream = null;
 
-        private ARC0Header header;
+        private Header header;
         byte[] unk1;
         byte[] unk2;
 
-        private List<ARC0Entry> entries= new List<ARC0Entry>();
+        private List<Entry> entries = new List<Entry>();
         private List<string> fileNames = new List<string>();
         private List<string> dirStruct = new List<string>();
         private List<int> folderCounts = new List<int>();
@@ -30,13 +30,13 @@ namespace archive_fa
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
                 //Header
-                header = br.ReadStruct<ARC0Header>();
+                header = br.ReadStruct<Header>();
 
                 unk1 = br.ReadBytes(header.offset1 - header.offset0);
                 unk2 = br.ReadBytes(header.offset2 - header.offset1);
 
                 //Entries
-                entries= new BinaryReaderX(new MemoryStream(Level5.Decompress(new MemoryStream(br.ReadBytes(header.nameOffset - header.offset2))))).ReadMultiple<ARC0Entry>(header.fileCount);
+                entries = new BinaryReaderX(new MemoryStream(Level5.Decompress(new MemoryStream(br.ReadBytes(header.nameOffset - header.offset2))))).ReadMultiple<Entry>(header.fileCount);
 
                 //Names
                 using (var nl = new BinaryReaderX(new MemoryStream(Level5.Decompress(new MemoryStream(br.ReadBytes(header.dataOffset - header.nameOffset))))))
@@ -76,9 +76,9 @@ namespace archive_fa
                 int pos = 0;
                 foreach (var folderCount in folderCounts)
                 {
-                    var tmpFiles = new List<ARC0NameEntry>();
+                    var tmpFiles = new List<NameEntry>();
                     for (int i = 0; i < folderCount; i++)
-                        tmpFiles.Add(new ARC0NameEntry
+                        tmpFiles.Add(new NameEntry
                         {
                             name = fileNames[pos + i],
                             crc32 = Crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(fileNames[pos + i].Split('/').Last().ToLower()))
@@ -268,11 +268,11 @@ namespace archive_fa
 
         public string ReadString(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 var result = new List<byte>();
                 var tmp = br.ReadByte();
-                while(tmp!=0x00)
+                while (tmp != 0x00)
                 {
                     result.Add(tmp);
                     tmp = br.ReadByte();

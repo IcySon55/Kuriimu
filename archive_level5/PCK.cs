@@ -4,7 +4,7 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_pck
+namespace archive_level5.PCK
 {
     public sealed class PCK
     {
@@ -16,7 +16,7 @@ namespace archive_pck
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
-                var entries = br.ReadMultiple<PCKEntry>(br.ReadInt32()).ToList();
+                var entries = br.ReadMultiple<Entry>(br.ReadInt32()).ToList();
 
                 Files = entries.Select(entry =>
                 {
@@ -49,7 +49,7 @@ namespace archive_pck
                 int dataPos = 4 + Files.Count * 0xc;
                 foreach (var afi in Files)
                 {
-                    var entry = new PCKEntry
+                    var entry = new Entry
                     {
                         hash = afi.Entry.hash,
                         fileOffset = dataPos,

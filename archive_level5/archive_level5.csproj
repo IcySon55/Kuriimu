@@ -7,8 +7,8 @@
     <ProjectGuid>{95F859B9-118C-4F39-AA04-76901412413E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>archive_xpck</RootNamespace>
-    <AssemblyName>archive_xpck</AssemblyName>
+    <RootNamespace>archive_level5</RootNamespace>
+    <AssemblyName>archive_level5</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,6 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ARC0.cs" />
+    <Compile Include="Arc0Manager.cs" />
+    <Compile Include="Arc0Support.cs" />
+    <Compile Include="ARCV.cs" />
+    <Compile Include="ArcvManager.cs" />
+    <Compile Include="ArcvSupport.cs" />
+    <Compile Include="B123.cs" />
+    <Compile Include="B123Manager.cs" />
+    <Compile Include="B123Support.cs" />
+    <Compile Include="PCK.cs" />
+    <Compile Include="PckManager.cs" />
+    <Compile Include="PckSupport.cs" />
+    <Compile Include="PlainFA.cs" />
+    <Compile Include="PlainFaManager.cs" />
+    <Compile Include="PlainFaSupport.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

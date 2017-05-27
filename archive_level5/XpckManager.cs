@@ -7,7 +7,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_xpck
+namespace archive_level5.XPCK
 {
     public class XpckManager : IArchiveManager
     {
@@ -16,7 +16,7 @@ namespace archive_xpck
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "XPCK";
         public string Description => "Level 5 eXtractable PaCKage";
         public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
         public string About => "This is the XPCK archive manager for Karameru.";

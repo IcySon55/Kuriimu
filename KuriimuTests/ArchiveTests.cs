@@ -51,10 +51,6 @@ namespace KuriimuTests
         [TestMethod]
         public void HpiHpbTest3() => HpiHpbTest("mori5.hpi");
 
-        //PlainMSBT Archive
-        [TestMethod]
-        public void PlainMSBTTest() => Test<archive_nintendo.PlainUMSBT.PlainUmsbtManager>("EU_English.LZ.decomp");
-
         //GAR
         [TestMethod]
         public void GarTest() => Test<archive_nintendo.GAR.GarManager>("Joker.Main.gar");
@@ -106,25 +102,29 @@ namespace KuriimuTests
 
         // PCK
         [TestMethod]
-        public void PckTest() => Test<archive_pck.PckManager>("A01.pck");
+        public void PckTest() => Test<archive_level5.PCK.PckManager>("A01.pck");
 
         // XPCK
         [TestMethod]
-        public void XpckTest() => Test<archive_xpck.XpckManager>("ef_etc_0000.xc");
+        public void XpckTest() => Test<archive_level5.XPCK.XpckManager>("ef_etc_0000.xc");
 
         // ARC0 - There is no plugin for these files
         //[TestMethod]
-        public void FaTest1() => Test<archive_fa.FaManager>("yw2_a.fa");
+        public void FaTest1() => Test<archive_level5.ARC0.Arc0Manager>("yw2_a.fa");
 
         //[TestMethod]
-        public void FaTest2() => Test<archive_fa.FaManager>("yw2_lg_en.fa");
+        public void FaTest2() => Test<archive_level5.ARC0.Arc0Manager>("yw2_lg_en.fa");
 
         // PlainFA
         [TestMethod]
-        public void PlainFATest() => Test<archive_fa.PlainFaManager>("plainFA.fa");
+        public void PlainFaTest() => Test<archive_level5.PlainFA.PlainFaManager>("plainFA.fa");
 
         // UMSBT
         [TestMethod]
         public void UmsbtTest() => Test<archive_nintendo.UMSBT.UmsbtManager>("AN_3P_An.umsbt");
+
+        //PlainMSBT Archive
+        [TestMethod]
+        public void PlainUmsbtTest() => Test<archive_nintendo.PlainUMSBT.PlainUmsbtManager>("EU_English.LZ.decomp");
     }
 }

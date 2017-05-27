@@ -2,20 +2,19 @@
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
-using Kuriimu.Compression;
 using Kuriimu.IO;
 
-namespace archive_fa
+namespace archive_level5.B123
 {
     public class FaManager : IArchiveManager
     {
-        private FA _fa = null;
+        private B123 _b123 = null;
 
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Level 5 File Archive";
+        public string Name => "B123";
+        public string Description => "Level 5 B123 Archive";
         public string Extension => "*.fa";
         public string About => "This is the FA archive manager for Karameru.";
 
@@ -45,7 +44,7 @@ namespace archive_fa
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _fa = new FA(FileInfo.OpenRead());
+                _b123 = new B123(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -56,14 +55,14 @@ namespace archive_fa
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _fa.Save(FileInfo.Create());
-                _fa.Close();
+                _b123.Save(FileInfo.Create());
+                _b123.Close();
             }
             else
             {
                 // Create the temp file
-                _fa.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _fa.Close();
+                _b123.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _b123.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -76,11 +75,11 @@ namespace archive_fa
 
         public void Unload()
         {
-            _fa?.Close();
+            _b123?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _fa.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _b123.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

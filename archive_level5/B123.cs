@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System;
 using System.Linq;
 using System.Text;
 using Cetera.Hash;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_fa
+namespace archive_level5.B123
 {
-    public sealed class FA
+    public sealed class B123
     {
-        public List<FAFileInfo> Files = new List<FAFileInfo>();
+        public List<B123FileInfo> Files = new List<B123FileInfo>();
         Stream _stream = null;
 
         private Header header;
@@ -23,7 +23,7 @@ namespace archive_fa
         private List<string> dirStruct = new List<string>();
         private List<int> folderCounts = new List<int>();
 
-        public FA(Stream input)
+        public B123(Stream input)
         {
             _stream = input;
             using (BinaryReaderX br = new BinaryReaderX(input, true))
@@ -48,7 +48,7 @@ namespace archive_fa
                 fileNames = new List<string>();
                 folderCounts.Add(0);
 
-                while (tmp !="" && br.BaseStream.Position < header.dataOffset)
+                while (tmp != "" && br.BaseStream.Position < header.dataOffset)
                 {
                     if (tmp.Last() == '/')
                     {
@@ -77,7 +77,8 @@ namespace archive_fa
                 {
                     var tmpFiles = new List<NameEntry>();
                     for (int i = 0; i < folderCount; i++)
-                        tmpFiles.Add(new NameEntry {
+                        tmpFiles.Add(new NameEntry
+                        {
                             name = fileNames[pos + i],
                             crc32 = Crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(fileNames[pos + i].Split('/').Last().ToLower()))
                         });
@@ -86,7 +87,7 @@ namespace archive_fa
                     foreach (var nameEntry in tmpFiles)
                     {
                         if (nameEntry.crc32 == entries[pos].crc32)
-                            Files.Add(new FAFileInfo
+                            Files.Add(new B123FileInfo
                             {
                                 State = ArchiveFileState.Archived,
                                 FileName = nameEntry.name,
@@ -109,7 +110,7 @@ namespace archive_fa
                 bw.Write(unk2);
 
                 //entryList and Data
-                uint dataOffset=0;
+                uint dataOffset = 0;
                 uint movDataOffset = (uint)(0x48 + unk1.Length + unk2.Length + Files.Count * 0x10);
                 foreach (var name in dirStruct) movDataOffset += 1 + (uint)Encoding.GetEncoding("SJIS").GetBytes((name.Last() != '/') ? name.Split('/').Last() : name).Length;
                 while (movDataOffset % 4 != 0) movDataOffset++;
@@ -163,10 +164,10 @@ namespace archive_fa
 
                     pos += folderCount;
                 }
-                
+
 
                 //nameList
-                foreach(var name in dirStruct)
+                foreach (var name in dirStruct)
                 {
                     bw.Write((byte)0);
                     if (name.Last() != '/')
@@ -185,11 +186,11 @@ namespace archive_fa
 
         public string ReadString(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 var result = new List<byte>();
                 var tmp = br.ReadByte();
-                while(tmp!=0x00)
+                while (tmp != 0x00)
                 {
                     result.Add(tmp);
                     tmp = br.ReadByte();

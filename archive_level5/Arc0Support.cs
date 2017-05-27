@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_fa
+namespace archive_level5.ARC0
 {
     public class ARC0FileInfo : ArchiveFileInfo
     {
@@ -9,7 +9,7 @@ namespace archive_fa
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class ARC0Header
+    public class Header
     {
         public Magic magic;
         public int offset0;
@@ -35,7 +35,7 @@ namespace archive_fa
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class ARC0Entry
+    public class Entry
     {
         public uint crc32; //only filename.ToLower()
         public uint nameOffsetInFolder;
@@ -44,7 +44,7 @@ namespace archive_fa
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class ARC0NameEntry
+    public class NameEntry
     {
         public uint crc32;
         public string name;

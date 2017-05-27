@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_arcv
+namespace archive_level5.ARCV
 {
     public class ARCVFileInfo : ArchiveFileInfo
     {
@@ -22,7 +17,7 @@ namespace archive_arcv
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class FileEntry
+    public class Entry
     {
         public uint offset;
         public int size;
