@@ -4,26 +4,25 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_tim2
+namespace image_nintendo.BXLIM
 {
-    public sealed class Tim2Adapter : IImageAdapter
+    public class BxlimAdapter : IImageAdapter
     {
-        private TIM2 _tim2 = null;
+        private Cetera.Image.BXLIM _bxlim = null;
 
         #region Properties
 
-        public string Name => "TIM2";
-        public string Description => "Default PS2 Image Format v2";
-        public string Extension => "*.tim2";
-        public string About => "This is the TIM2 image adapter for Kukkii.";
+        // Information
+        public string Name => "BXLIM";
+        public string Description => "Binary Layout Image";
+        public string Extension => "*.bclim;*.bflim";
+        public string About => "This is the BCLIM and BFLIM image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
-
-        Bitmap tmp;
 
         #endregion
 
@@ -31,7 +30,10 @@ namespace image_tim2
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return (br.ReadString(4) == "TIM2");
+                if (br.BaseStream.Length < 40) return false;
+                br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
+                string magic = br.ReadString(4);
+                return magic == "CLIM" || magic == "FLIM";
             }
         }
 
@@ -40,7 +42,7 @@ namespace image_tim2
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _tim2 = new TIM2(FileInfo.OpenRead());
+                _bxlim = new Cetera.Image.BXLIM(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -50,7 +52,7 @@ namespace image_tim2
 
             try
             {
-                //_tim2.Save(FileInfo.FullName);
+                _bxlim.Save(FileInfo.Create());
             }
             catch (Exception) { }
         }
@@ -58,8 +60,8 @@ namespace image_tim2
         // Bitmaps
         public Bitmap Bitmap
         {
-            get => _tim2.bmp;
-            set => _tim2.bmp = value;
+            get => _bxlim.Image;
+            set => _bxlim.Image = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

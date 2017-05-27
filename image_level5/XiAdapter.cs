@@ -4,26 +4,24 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_tim2
+namespace image_level5.XI
 {
-    public sealed class Tim2Adapter : IImageAdapter
+    public sealed class XiAdapter : IImageAdapter
     {
-        private TIM2 _tim2 = null;
+        private Bitmap _xi = null;
 
         #region Properties
 
-        public string Name => "TIM2";
-        public string Description => "Default PS2 Image Format v2";
-        public string Extension => "*.tim2";
-        public string About => "This is the TIM2 image adapter for Kukkii.";
+        public string Name => "XI";
+        public string Description => "Level 5 Compressed Image";
+        public string Extension => "*.xi";
+        public string About => "This is the XI image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
-
-        Bitmap tmp;
 
         #endregion
 
@@ -31,7 +29,8 @@ namespace image_tim2
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return (br.ReadString(4) == "TIM2");
+                if (br.BaseStream.Length < 4) return false;
+                return br.ReadString(4) == "IMGC";
             }
         }
 
@@ -40,7 +39,7 @@ namespace image_tim2
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _tim2 = new TIM2(FileInfo.OpenRead());
+                _xi = XI.Load(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -50,7 +49,7 @@ namespace image_tim2
 
             try
             {
-                //_tim2.Save(FileInfo.FullName);
+                XI.Save(FileInfo.FullName, _xi);
             }
             catch (Exception) { }
         }
@@ -58,8 +57,8 @@ namespace image_tim2
         // Bitmaps
         public Bitmap Bitmap
         {
-            get => _tim2.bmp;
-            set => _tim2.bmp = value;
+            get => _xi;
+            set => _xi = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

@@ -8,7 +8,6 @@ namespace image_tmx
 {
     public sealed class TmxAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private TMX _tmx = null;
 
         #region Properties
@@ -16,23 +15,13 @@ namespace image_tmx
         public string Name => "TMX";
         public string Description => "Atlus Texture Matrix";
         public string Extension => "*.tmx";
-        public string About => "This is the TMX file adapter for Kukkii.";
+        public string About => "This is the TMX image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -46,50 +35,31 @@ namespace image_tmx
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _tmx = new TMX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _tmx = new TMX(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                _tmx.Save(_fileInfo.FullName);
+                _tmx.Save(FileInfo.FullName);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _tmx.bmp;
-            }
-            set
-            {
-                _tmx.bmp = value;
-            }
+            get => _tmx.bmp;
+            set => _tmx.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

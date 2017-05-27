@@ -4,26 +4,24 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_tim2
+namespace image_nintendo.CTPK
 {
-    public sealed class Tim2Adapter : IImageAdapter
+    public sealed class CtpkAdapter : IImageAdapter
     {
-        private TIM2 _tim2 = null;
+        private CTPK _ctpk = null;
 
         #region Properties
 
-        public string Name => "TIM2";
-        public string Description => "Default PS2 Image Format v2";
-        public string Extension => "*.tim2";
-        public string About => "This is the TIM2 image adapter for Kukkii.";
+        public string Name => "CTPK";
+        public string Description => "CTR Texture PaCkage";
+        public string Extension => "*.ctpk";
+        public string About => "This is the CTPK image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
-
-        Bitmap tmp;
 
         #endregion
 
@@ -31,7 +29,8 @@ namespace image_tim2
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return (br.ReadString(4) == "TIM2");
+                if (br.BaseStream.Length < 4) return false;
+                return br.ReadString(4) == "CTPK" || Path.GetExtension(filename) == ".ctpk";
             }
         }
 
@@ -40,7 +39,11 @@ namespace image_tim2
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _tim2 = new TIM2(FileInfo.OpenRead());
+                using (var br = new BinaryReaderX(FileInfo.OpenRead()))
+                    if (br.ReadString(4) == "CTPK")
+                        _ctpk = new CTPK(FileInfo.FullName);
+                    else
+                        _ctpk = new CTPK(FileInfo.FullName, true);
         }
 
         public void Save(string filename = "")
@@ -50,7 +53,7 @@ namespace image_tim2
 
             try
             {
-                //_tim2.Save(FileInfo.FullName);
+                _ctpk.Save(FileInfo.FullName);
             }
             catch (Exception) { }
         }
@@ -58,8 +61,8 @@ namespace image_tim2
         // Bitmaps
         public Bitmap Bitmap
         {
-            get => _tim2.bmp;
-            set => _tim2.bmp = value;
+            get => _ctpk.bmp;
+            set => _ctpk.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

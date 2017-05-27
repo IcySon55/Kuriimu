@@ -8,7 +8,6 @@ namespace image_ctxb
 {
     public sealed class CtxbAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private CTXB _ctxb = null;
 
         #region Properties
@@ -16,23 +15,13 @@ namespace image_ctxb
         public string Name => "CTXB";
         public string Description => "Whatever CTXB should mean";
         public string Extension => "*.ctxb";
-        public string About => "This is the CTXB file adapter for Kukkii.";
+        public string About => "This is the CTXB image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -45,50 +34,31 @@ namespace image_ctxb
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _ctxb = new CTXB(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _ctxb = new CTXB(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                //_ctxb.Save(_fileInfo.FullName, _ctxb.bmp);
+                //_ctxb.Save(FileInfo.FullName, _ctxb.bmp);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _ctxb.bmp;
-            }
-            set
-            {
-                _ctxb.bmp = value;
-            }
+            get => _ctxb.bmp;
+            set => _ctxb.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

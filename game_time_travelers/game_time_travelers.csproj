@@ -64,9 +64,9 @@
       <Name>Cetera</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\image_xi\image_xi.csproj">
-      <Project>{1c9d7f75-2e04-441e-83d4-00a406809e09}</Project>
-      <Name>image_xi</Name>
+    <ProjectReference Include="..\image_level5\image_level5.csproj">
+      <Project>{1C9D7F75-2E04-441E-83D4-00A406809E09}</Project>
+      <Name>image_level5</Name>
     </ProjectReference>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>

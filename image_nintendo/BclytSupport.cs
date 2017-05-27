@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 
-namespace image_bclyt
+namespace image_nintendo.BCLYT
 {
     class BclytSupport
     {

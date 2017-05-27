@@ -5,11 +5,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using image_xi;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_xf
+namespace image_level5.XF
 {
     public class XF
     {
@@ -104,7 +103,7 @@ namespace image_xf
                 xi.BaseStream.Position = 0;
 
                 //convert xi image to bmp
-                bmp = XI.Load(xi.BaseStream);
+                bmp = XI.XI.Load(xi.BaseStream);
 
                 //get fnt.bin
                 BinaryWriterX fnt = new BinaryWriterX(new MemoryStream());
@@ -116,11 +115,11 @@ namespace image_xf
                 BinaryReaderX fntR = new BinaryReaderX(fnt.BaseStream);
                 fntR.BaseStream.Position = 0x28;
 
-                byte[] buf1 = XI.Decomp(fntR);
+                byte[] buf1 = XI.XI.Decomp(fntR);
                 while (fnt.BaseStream.Position % 4 != 0) fntR.ReadByte();
-                byte[] buf2 = XI.Decomp(fntR);
+                byte[] buf2 = XI.XI.Decomp(fntR);
                 while (fnt.BaseStream.Position % 4 != 0) fntR.ReadByte();
-                byte[] buf3 = XI.Decomp(fntR);
+                byte[] buf3 = XI.XI.Decomp(fntR);
 
                 using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(buf1)))
                     lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();

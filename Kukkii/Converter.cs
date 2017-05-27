@@ -119,7 +119,7 @@ namespace Kukkii
             DialogResult dr = DialogResult.No;
 
             if (_fileOpen && _hasChanges)
-                dr = MessageBox.Show("You have unsaved changes in " + FileName() + ". Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                dr = MessageBox.Show($"You have unsaved changes in {FileName()}. Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
             switch (dr)
             {
@@ -173,7 +173,7 @@ namespace Kukkii
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Name} - {tempAdapter.Description} Manager" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Name} - {tempAdapter.Description} Adapter" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
