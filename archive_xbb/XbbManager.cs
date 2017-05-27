@@ -3,6 +3,8 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using Cetera.Hash;
+using System.Text;
 
 namespace archive_xbb
 {

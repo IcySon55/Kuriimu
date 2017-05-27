@@ -249,4 +249,24 @@ namespace archive_3dsfs
         public uint headerSize;
         public uint res4;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Level3Header
+    {
+        public int headerLength;
+
+        public int dirHashTabOffset;
+        public int dirHashTabLength;
+
+        public int dirMetaTabOffset;
+        public int dirMetaTabLength;
+
+        public int fileHashTabOffset;
+        public int fileHashTabLength;
+
+        public int fileMetaTabOffset;
+        public int fileMetaTabLength;
+
+        public int fileDataOffset;
+    }
 }

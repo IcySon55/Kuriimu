@@ -67,7 +67,7 @@ namespace archive_3dsfs
                                     Files.Add(new DDSFSFileInfo
                                     {
                                         State = ArchiveFileState.Archived,
-                                        FileName = "plainRegion.bin",
+                                        FileName = "PlainRegion.bin",
                                         FileData = new SubStream(br.BaseStream, ncchOffset + ncchHeaders[i].plainRegOffset, ncchHeaders[i].plainRegSize)
                                     });
                                 }
@@ -103,8 +103,17 @@ namespace archive_3dsfs
                                 //RomFS
                                 if (ncchHeaders[i].romFsOffset != 0)
                                 {
+                                    //IVFC Header
                                     br.BaseStream.Position = ncchOffset + ncchHeaders[i].romFsOffset;
                                     ivfcHeader = new IVFCHeader(br.BaseStream);
+
+                                    while (br.BaseStream.Position % 0x10 != 0) br.BaseStream.Position++;
+                                    br.BaseStream.Position += ivfcHeader.masterHashSize;
+                                    var blockSize = 1 << (int)ivfcHeader.lv3BlockSize;
+                                    while (br.BaseStream.Position % blockSize != 0) br.BaseStream.Position++;
+
+                                    //Level 3
+
                                 }
 
                                 break;
