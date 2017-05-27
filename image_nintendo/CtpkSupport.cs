@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace image_ctpk
+namespace image_nintendo.CTPK
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header

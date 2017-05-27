@@ -6,7 +6,7 @@ using System.Linq;
 using Cetera.Image;
 using Kuriimu.IO;
 
-namespace image_ctpk
+namespace image_nintendo.CTPK
 {
     public sealed class CTPK
     {

@@ -9,7 +9,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_xi
+namespace image_level5.XI
 {
     public class XI
     {

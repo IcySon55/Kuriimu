@@ -4,11 +4,10 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_xf
+namespace image_level5.XF
 {
     public sealed class XfAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private Bitmap _xf = null;
 
         #region Properties
@@ -16,23 +15,13 @@ namespace image_xf
         public string Name => "XF";
         public string Description => "Level 5 Font";
         public string Extension => "*.xf";
-        public string About => "This is the XF file adapter for Kukkii.";
+        public string About => "This is the XF image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -49,10 +38,10 @@ namespace image_xf
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                _xf = new XF(File.OpenRead(_fileInfo.FullName)).bmp;
+            if (FileInfo.Exists)
+                _xf = new XF(File.OpenRead(FileInfo.FullName)).bmp;
             else
                 result = LoadResult.FileNotFound;
 
@@ -64,7 +53,7 @@ namespace image_xf
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {

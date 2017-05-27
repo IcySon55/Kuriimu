@@ -4,11 +4,10 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_bclyt
+namespace image_nintendo.BCLYT
 {
     public class BclytAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private Bitmap _bclyt = null;
 
         #region Properties
@@ -16,23 +15,13 @@ namespace image_bclyt
         public string Name => "BCLYT";
         public string Description => "Standard Nintendo Layout format";
         public string Extension => "*.bclyt";
-        public string About => "This is the BCLYT file adapter for Kukkii.";
+        public string About => "This is the BCLYT image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -52,10 +41,10 @@ namespace image_bclyt
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                _bclyt = BCLYT.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read), filename);
+            if (FileInfo.Exists)
+                _bclyt = BCLYT.Load(FileInfo.OpenRead(), filename);
             else
                 result = LoadResult.FileNotFound;
 
@@ -67,11 +56,11 @@ namespace image_bclyt
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                //_msbt.Save(_fileInfo.FullName);
+                //_bclyt.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {

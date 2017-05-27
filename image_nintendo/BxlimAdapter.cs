@@ -1,40 +1,28 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_bxlim
+namespace image_nintendo.BXLIM
 {
     public class BxlimAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
-        private BXLIM _bxlim = null;
+        private Cetera.Image.BXLIM _bxlim = null;
 
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "BXLIM";
         public string Description => "Binary Layout Image";
         public string Extension => "*.bclim;*.bflim";
-        public string About => "This is the BCLIM and BFLIM file adapter for Kukkii.";
+        public string About => "This is the BCLIM and BFLIM image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -53,10 +41,10 @@ namespace image_bxlim
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                _bxlim = new BXLIM(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+            if (FileInfo.Exists)
+                _bxlim = new Cetera.Image.BXLIM(FileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -68,11 +56,11 @@ namespace image_bxlim
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                _bxlim.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
+                _bxlim.Save(FileInfo.Create());
             }
             catch (Exception)
             {

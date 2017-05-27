@@ -4,11 +4,10 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_xi
+namespace image_level5.XI
 {
     public sealed class XiAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private Bitmap _xi = null;
 
         #region Properties
@@ -16,23 +15,13 @@ namespace image_xi
         public string Name => "XI";
         public string Description => "Level 5 Compressed Image";
         public string Extension => "*.xi";
-        public string About => "This is the XI file adapter for Kukkii.";
+        public string About => "This is the XI image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -49,10 +38,10 @@ namespace image_xi
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                _xi = XI.Load(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+            if (FileInfo.Exists)
+                _xi = XI.Load(FileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -64,11 +53,11 @@ namespace image_xi
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                XI.Save(_fileInfo.FullName, _xi);
+                XI.Save(FileInfo.FullName, _xi);
             }
             catch (Exception)
             {

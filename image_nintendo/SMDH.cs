@@ -1,13 +1,13 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
+using System.Text;
 using Cetera.Image;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_icn
+namespace image_nintendo.ICN
 {
     public class SMDH
     {
@@ -24,7 +24,7 @@ namespace image_icn
         {
             public AppSettings(Stream input)
             {
-                using (var br=new BinaryReaderX(input,true))
+                using (var br = new BinaryReaderX(input, true))
                 {
                     gameRating = br.ReadBytes(0x10);
                     regionLockout = br.ReadInt32();
@@ -66,7 +66,7 @@ namespace image_icn
                 header = br.ReadStruct<Header>();
 
                 //Application Titles
-                for (int i=0;i<0x10;i++)
+                for (int i = 0; i < 0x10; i++)
                 {
                     shortDesc.Add(Encoding.GetEncoding("UTF-16").GetString(br.ReadBytes(0x80)));
                     longDesc.Add(Encoding.GetEncoding("UTF-16").GetString(br.ReadBytes(0x100)));
@@ -82,7 +82,7 @@ namespace image_icn
                     Width = 24,
                     Height = 24,
                     Format = Format.RGB565,
-                    PadToPowerOf2=false
+                    PadToPowerOf2 = false
                 };
                 bmp = Common.Load(br.ReadBytes(0x480), settings);
             }

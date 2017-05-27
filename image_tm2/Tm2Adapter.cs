@@ -16,7 +16,7 @@ namespace image_tm2
         public string Name => "TM2";
         public string Description => "Texture Matrix 2";
         public string Extension => "*.bip";
-        public string About => "This is the TM2 file adapter for Kukkii.";
+        public string About => "This is the TM2 image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

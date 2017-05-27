@@ -16,7 +16,7 @@ namespace image_ctxb
         public string Name => "CTXB";
         public string Description => "Whatever CTXB should mean";
         public string Extension => "*.ctxb";
-        public string About => "This is the CTXB file adapter for Kukkii.";
+        public string About => "This is the CTXB image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

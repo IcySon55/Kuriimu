@@ -16,7 +16,7 @@ namespace image_stex
         public string Name => "STEX";
         public string Description => "Atlus Simple Texture";
         public string Extension => "*.stex";
-        public string About => "This is the STEX file adapter for Kukkii.";
+        public string About => "This is the STEX image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

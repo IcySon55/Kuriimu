@@ -16,7 +16,7 @@ namespace image_tmx
         public string Name => "TMX";
         public string Description => "Atlus Texture Matrix";
         public string Extension => "*.tmx";
-        public string About => "This is the TMX file adapter for Kukkii.";
+        public string About => "This is the TMX image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

@@ -20,7 +20,7 @@ namespace image_jtex
         public string Name => Properties.Settings.Default.PluginName;
         public string Description => "J Texture";
         public string Extension => "*.jtex";
-        public string About => "This is the JTEX file adapter for Kukkii.";
+        public string About => "This is the JTEX image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

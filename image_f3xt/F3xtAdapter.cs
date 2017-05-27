@@ -18,7 +18,7 @@ namespace image_f3xt
 
         public string Description => "F3XT Texture";
         public string Extension => "*.tex";
-        public string About => "This is the F3XT file adapter for Kukkii.";
+        public string About => "This is the F3XT image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

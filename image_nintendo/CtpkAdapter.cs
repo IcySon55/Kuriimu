@@ -4,11 +4,10 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_ctpk
+namespace image_nintendo.CTPK
 {
     public sealed class CtpkAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private CTPK _ctpk = null;
 
         #region Properties
@@ -16,23 +15,13 @@ namespace image_ctpk
         public string Name => "CTPK";
         public string Description => "CTR Texture PaCkage";
         public string Extension => "*.ctpk";
-        public string About => "This is the CTPK file adapter for Kukkii.";
+        public string About => "This is the CTPK image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -49,14 +38,14 @@ namespace image_ctpk
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                using (var br = new BinaryReaderX(File.OpenRead(_fileInfo.FullName)))
+            if (FileInfo.Exists)
+                using (var br = new BinaryReaderX(FileInfo.OpenRead()))
                     if (br.ReadString(4) == "CTPK")
-                        _ctpk = new CTPK(_fileInfo.FullName);
+                        _ctpk = new CTPK(FileInfo.FullName);
                     else
-                        _ctpk = new CTPK(_fileInfo.FullName, true);
+                        _ctpk = new CTPK(FileInfo.FullName, true);
             else
                 result = LoadResult.FileNotFound;
 
@@ -68,11 +57,11 @@ namespace image_ctpk
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                _ctpk.Save(_fileInfo.FullName);
+                _ctpk.Save(FileInfo.FullName);
             }
             catch (Exception)
             {

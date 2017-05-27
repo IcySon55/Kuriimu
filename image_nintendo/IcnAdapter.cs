@@ -4,35 +4,24 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_icn
+namespace image_nintendo.ICN
 {
     public sealed class IcnAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private SMDH _icn = null;
 
         #region Properties
 
-        public string Name => "SMDH Icon";
-        public string Description => "SMDH";
+        public string Name => "SMDH";
+        public string Description => "SMDH Icon";
         public string Extension => "*.icn";
-        public string About => "This is the SMDH Icon file adapter for Kukkii.";
+        public string About => "This is the SMDH Icon image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -41,7 +30,7 @@ namespace image_icn
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4)=="SMDH";
+                return br.ReadString(4) == "SMDH";
             }
         }
 
@@ -49,10 +38,10 @@ namespace image_icn
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
 
-            if (_fileInfo.Exists)
-                _icn = new SMDH(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
+            if (FileInfo.Exists)
+                _icn = new SMDH(FileInfo.OpenRead());
             else
                 result = LoadResult.FileNotFound;
 
@@ -64,11 +53,11 @@ namespace image_icn
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                //_tm2.Save(_fileInfo.FullName);
+                //_icn.Save(FileInfo.FullName);
             }
             catch (Exception)
             {

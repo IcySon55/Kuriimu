@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XF.cs" />
+    <Compile Include="XfAdapter.cs" />
     <Compile Include="XI.cs" />
     <Compile Include="XiAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

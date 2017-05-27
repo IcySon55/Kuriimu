@@ -7,8 +7,8 @@
     <ProjectGuid>{77A182C0-4E86-469D-986E-9FAFAABCD26E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>image_bxlim</RootNamespace>
-    <AssemblyName>image_bxlim</AssemblyName>
+    <RootNamespace>image_nintendo</RootNamespace>
+    <AssemblyName>image_nintendo</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,13 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BCLYT.cs" />
+    <Compile Include="BclytAdapter.cs" />
+    <Compile Include="BclytSupport.cs" />
     <Compile Include="BxlimAdapter.cs" />
+    <Compile Include="CTPK.cs" />
+    <Compile Include="CtpkAdapter.cs" />
+    <Compile Include="CtpkSupport.cs" />
+    <Compile Include="IcnAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
+    <Compile Include="SMDH.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera.csproj">
@@ -63,10 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
