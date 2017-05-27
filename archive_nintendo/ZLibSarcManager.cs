@@ -8,7 +8,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_nintendo.ZSARC
+namespace archive_nintendo.ZlibSARC
 {
     public class ZLibSarcManager : IArchiveManager
     {
