@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_cgrp
+namespace archive_nintendo.CGRP
 {
     public class CgrpManager : IArchiveManager
     {
@@ -13,7 +13,7 @@ namespace archive_cgrp
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "CGRP";
         public string Description => "CTR GRouP";
         public string Extension => "*.bcgrp";
         public string About => "This is the CGRP archive manager for Karameru.";

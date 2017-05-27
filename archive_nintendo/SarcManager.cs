@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Archive;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_sarc
+namespace archive_nintendo.SARC
 {
     public class SarcManager : IArchiveManager
     {
-        private SARC _sarc = null;
+        private Cetera.Archive.SARC _sarc = null;
 
         #region Properties
 
@@ -47,7 +46,7 @@ namespace archive_sarc
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _sarc = new SARC(FileInfo.OpenRead());
+                _sarc = new Cetera.Archive.SARC(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")

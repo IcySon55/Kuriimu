@@ -9,14 +9,14 @@ using System.Text;
 //source code adjusted from pleonex' github:
 //https://github.com/pleonex/tinke/blob/master/Tinke
 
-namespace archive_ndsfs
+namespace archive_nintendo.NDSFS
 {
     public class NDSFileInfo : ArchiveFileInfo
     {
         public sFile entry;
     }
 
-    public class NDSSupport
+    public class NdsfsSupport
     {
         private static ushort[] crc16tab =
         {

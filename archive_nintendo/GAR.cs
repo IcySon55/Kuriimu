@@ -4,7 +4,7 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_gar
+namespace archive_nintendo.GAR
 {
     public sealed class GAR
     {

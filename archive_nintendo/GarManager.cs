@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_gar
+namespace archive_nintendo.GAR
 {
     public class GarManager : IArchiveManager
     {
@@ -13,7 +13,7 @@ namespace archive_gar
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "GAR";
         public string Description => "Ganondorf ARchive";
         public string Extension => "*.gar";
         public string About => "This is the GAR archive manager for Karameru.";

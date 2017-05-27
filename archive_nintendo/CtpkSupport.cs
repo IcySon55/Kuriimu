@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_ctpk
+namespace archive_nintendo.CTPK
 {
     public class CTPKFileInfo : ArchiveFileInfo
     {

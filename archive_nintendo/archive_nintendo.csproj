@@ -7,8 +7,8 @@
     <ProjectGuid>{EFDC3079-B1ED-493D-B9DC-55658A84B1A4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>archive_sarc</RootNamespace>
-    <AssemblyName>archive_sarc</AssemblyName>
+    <RootNamespace>archive_nintendo</RootNamespace>
+    <AssemblyName>archive_nintendo</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,6 +41,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CGRP.cs" />
+    <Compile Include="CgrpManager.cs" />
+    <Compile Include="CgrpSupport.cs" />
+    <Compile Include="CTPK.cs" />
+    <Compile Include="CtpkManager.cs" />
+    <Compile Include="CtpkSupport.cs" />
+    <Compile Include="CWAR.cs" />
+    <Compile Include="CwarManager.cs" />
+    <Compile Include="CwarSupport.cs" />
+    <Compile Include="DarcManager.cs" />
+    <Compile Include="DDSFS.cs" />
+    <Compile Include="DdsfsManager.cs" />
+    <Compile Include="DdsfsSupport.cs" />
+    <Compile Include="GAR.cs" />
+    <Compile Include="GarManager.cs" />
+    <Compile Include="GarSupport.cs" />
+    <Compile Include="NDSFS.cs" />
+    <Compile Include="NdsfsManager.cs" />
+    <Compile Include="NdsfsSupport.cs" />
+    <Compile Include="NUS3.cs" />
+    <Compile Include="Nus3Manager.cs" />
+    <Compile Include="Nus3Support.cs" />
+    <Compile Include="PlainUMSBT.cs" />
+    <Compile Include="PlainUmsbtManager.cs" />
+    <Compile Include="PlainUmsbtSupport.cs" />
     <Compile Include="SarcManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -49,6 +74,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="SimpleSarcManager.cs" />
+    <Compile Include="UMSBT.cs" />
+    <Compile Include="UmsbtManager.cs" />
+    <Compile Include="UmsbtSupport.cs" />
+    <Compile Include="ZAR.cs" />
+    <Compile Include="ZarManager.cs" />
+    <Compile Include="ZarSupport.cs" />
     <Compile Include="ZLibSarcManager.cs" />
   </ItemGroup>
   <ItemGroup>

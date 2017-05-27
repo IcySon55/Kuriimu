@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 
-namespace archive_umsbt
+namespace archive_nintendo.UMSBT
 {
     public class UmsbtManager : IArchiveManager
     {
@@ -12,7 +12,7 @@ namespace archive_umsbt
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "UMSBT";
         public string Description => "UMSBT Archive";
         public string Extension => "*.umsbt";
         public string About => "This is the UMSBT archive manager for Karameru.";

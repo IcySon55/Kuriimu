@@ -4,16 +4,15 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Cetera.Archive;
 using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_sarc
+namespace archive_nintendo.ZSARC
 {
     public class ZLibSarcManager : IArchiveManager
     {
-        private SARC _sarc = null;
+        private Cetera.Archive.SARC _sarc = null;
 
         #region Properties
 
@@ -65,7 +64,7 @@ namespace archive_sarc
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
                 br.ReadBytes(4);
-                _sarc = new SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
+                _sarc = new Cetera.Archive.SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
             }
         }
 

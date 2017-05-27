@@ -5,7 +5,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_umsbt
+namespace archive_nintendo.PlainUMSBT
 {
     public class PlainUmsbtManager : IArchiveManager
     {
@@ -14,7 +14,7 @@ namespace archive_umsbt
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "PUMSBT";
         public string Description => "PlainUMSBT Archive";
         public string Extension => "*.umsbt";
         public string About => "This is the PlainUMSBT archive manager for Karameru.";

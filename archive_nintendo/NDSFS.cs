@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_ndsfs
+namespace archive_nintendo.NDSFS
 {
     public sealed class NDS
     {
@@ -28,13 +27,13 @@ namespace archive_ndsfs
                 banner = new Banner(br.BaseStream, header.bannerOffset);
 
                 //FAT
-                fat = NDSSupport.ReadFAT(br.BaseStream, header.FAToffset, header.FATsize);
+                fat = NdsfsSupport.ReadFAT(br.BaseStream, header.FAToffset, header.FATsize);
 
                 //FNT
-                fnt = NDSSupport.ReadFNT(br.BaseStream, header.fileNameTableOffset, header.fileNameTableSize, fat);
+                fnt = NdsfsSupport.ReadFNT(br.BaseStream, header.fileNameTableOffset, header.fileNameTableSize, fat);
 
                 //System files
-                fnt.folders.Add(NDSSupport.AddSystemFiles(br.BaseStream, fat, fat.Length, fnt.id + 0xF000, header));
+                fnt.folders.Add(NdsfsSupport.AddSystemFiles(br.BaseStream, fat, fat.Length, fnt.id + 0xF000, header));
 
                 //FileData
                 FetchFiles(br.BaseStream, fnt);

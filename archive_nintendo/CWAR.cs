@@ -3,7 +3,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_cwar
+namespace archive_nintendo.CWAR
 {
     public sealed class CWAR
     {

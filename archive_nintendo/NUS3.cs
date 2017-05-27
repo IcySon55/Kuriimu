@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Compression;
 using Kuriimu.IO;
 
-namespace archive_nus3bank
+namespace archive_nintendo.NUS3
 {
     public sealed class NUS3
     {

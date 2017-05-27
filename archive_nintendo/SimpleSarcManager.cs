@@ -5,16 +5,16 @@ using Cetera.Archive;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_sarc
+namespace archive_nintendo.SimpleSARC
 {
     public class SimpleSarcManager : IArchiveManager
     {
-        private SimpleSARC _sarc = null;
+        private Cetera.Archive.SimpleSARC _sarc = null;
 
         #region Properties
 
         // Information
-        public string Name => "Simple SARC";
+        public string Name => "SSARC";
         public string Description => "Simple ARChive";
         public string Extension => "*.sarc";
         public string About => "This is the Simple SARC archive manager for Karameru.";
@@ -47,7 +47,7 @@ namespace archive_sarc
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _sarc = new SimpleSARC(FileInfo.OpenRead());
+                _sarc = new Cetera.Archive.SimpleSARC(FileInfo.OpenRead());
         }
 
         public void Save(string filename)

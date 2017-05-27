@@ -2,20 +2,19 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Archive;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_darc
+namespace archive_nintendo.DARC
 {
     public class DarcManager : IArchiveManager
     {
-        private DARC _darc = null;
+        private Cetera.Archive.DARC _darc = null;
 
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "DARC";
         public string Description => "Default ARChive";
         public string Extension => "*.arc";
         public string About => "This is the DARC archive manager for Karameru.";
@@ -46,7 +45,7 @@ namespace archive_darc
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _darc = new DARC(FileInfo.OpenRead());
+                _darc = new Cetera.Archive.DARC(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")

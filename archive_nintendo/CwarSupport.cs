@@ -2,7 +2,7 @@
 using Cetera;
 using Kuriimu.Contract;
 
-namespace archive_cwar
+namespace archive_nintendo.CWAR
 {
     public class CWARFileInfo : ArchiveFileInfo
     {

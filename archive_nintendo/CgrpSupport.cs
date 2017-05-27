@@ -2,7 +2,7 @@
 using Cetera;
 using Kuriimu.Contract;
 
-namespace archive_cgrp
+namespace archive_nintendo.CGRP
 {
     public class CGRPFileInfo : ArchiveFileInfo
     {

@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_zar
+namespace archive_nintendo.ZAR
 {
     public class ZARFileInfo : ArchiveFileInfo
     {

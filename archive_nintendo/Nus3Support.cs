@@ -4,7 +4,7 @@ using System.Text;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_nus3bank
+namespace archive_nintendo.NUS3
 {
     public class NUS3FileInfo : ArchiveFileInfo
     {

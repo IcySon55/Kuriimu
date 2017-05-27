@@ -70,22 +70,6 @@
       <Project>{9a5dc415-ead9-4827-b9b9-ab9bd86f63c5}</Project>
       <Name>archive_arcv</Name>
     </ProjectReference>
-    <ProjectReference Include="..\archive_cgrp\archive_cgrp.csproj">
-      <Project>{00259e65-3f5b-48ac-bf33-5ac6ef770934}</Project>
-      <Name>archive_cgrp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_ctpk\archive_ctpk.csproj">
-      <Project>{2d92596c-c00e-49e4-af88-57c3a2379cca}</Project>
-      <Name>archive_ctpk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_cwar\archive_cwar.csproj">
-      <Project>{5e06626a-aa19-4eca-9d5f-1d6f1abf0d41}</Project>
-      <Name>archive_cwar</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_darc\archive_darc.csproj">
-      <Project>{186d9c0f-f977-4528-901f-1c186fcd79bb}</Project>
-      <Name>archive_darc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\archive_dpk\archive_dpk.csproj">
       <Project>{1bff38f5-1848-45b1-b84d-1270a25b7675}</Project>
       <Name>archive_dpk</Name>
@@ -94,41 +78,21 @@
       <Project>{44ed1984-768d-45bb-a548-f93c7d086876}</Project>
       <Name>archive_fa</Name>
     </ProjectReference>
-    <ProjectReference Include="..\archive_gar\archive_gar.csproj">
-      <Project>{0ed39fe6-f470-4791-a2ca-50e57e6f350c}</Project>
-      <Name>archive_gar</Name>
-    </ProjectReference>
     <ProjectReference Include="..\archive_hpi_hpb\archive_hpi_hpb.csproj">
       <Project>{30be912f-6874-4f11-9094-ef9cf098d16a}</Project>
       <Name>archive_hpi_hpb</Name>
     </ProjectReference>
-    <ProjectReference Include="..\archive_ndsfs\archive_ndsfs.csproj">
-      <Project>{0cba0bd8-6970-4e13-b3f9-3dd8091123af}</Project>
-      <Name>archive_ndsfs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_nus3bank\archive_nus3bank.csproj">
-      <Project>{e82fc9f0-ab78-40d3-b5b5-614b102c6706}</Project>
-      <Name>archive_nus3bank</Name>
+    <ProjectReference Include="..\archive_nintendo\archive_nintendo.csproj">
+      <Project>{efdc3079-b1ed-493d-b9dc-55658a84b1a4}</Project>
+      <Name>archive_nintendo</Name>
     </ProjectReference>
     <ProjectReference Include="..\archive_pck\archive_pck.csproj">
       <Project>{7360b4b4-a589-4c07-938c-badaae4c97d5}</Project>
       <Name>archive_pck</Name>
     </ProjectReference>
-    <ProjectReference Include="..\archive_sarc\archive_sarc.csproj">
-      <Project>{efdc3079-b1ed-493d-b9dc-55658a84b1a4}</Project>
-      <Name>archive_sarc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_umsbt\archive_umsbt.csproj">
-      <Project>{7ecf9a77-fad8-4222-8ac7-a823d4e14da7}</Project>
-      <Name>archive_umsbt</Name>
-    </ProjectReference>
     <ProjectReference Include="..\archive_xpck\archive_xpck.csproj">
       <Project>{95f859b9-118c-4f39-aa04-76901412413e}</Project>
       <Name>archive_xpck</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\archive_zar\archive_zar.csproj">
-      <Project>{2c31ddb6-3f96-41aa-8f0d-1830f8be68e8}</Project>
-      <Name>archive_zar</Name>
     </ProjectReference>
     <ProjectReference Include="..\image_bclyt\image_bclyt.csproj">
       <Project>{508881f8-e128-4d4e-a38b-d3e60d8a668e}</Project>

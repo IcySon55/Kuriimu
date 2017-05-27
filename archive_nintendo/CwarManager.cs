@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_cwar
+namespace archive_nintendo.CWAR
 {
     public class CwarManager : IArchiveManager
     {
@@ -13,7 +13,7 @@ namespace archive_cwar
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "CWAR";
         public string Description => "CTR Wave ARchive";
         public string Extension => "*.bcwar";
         public string About => "This is the CWAR archive manager for Karameru.";

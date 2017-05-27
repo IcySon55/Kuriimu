@@ -4,7 +4,7 @@ using System.Text;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_umsbt
+namespace archive_nintendo.PlainUMSBT
 {
     public class PlainUMSBT
     {

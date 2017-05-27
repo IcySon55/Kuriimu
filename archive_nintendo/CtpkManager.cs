@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_ctpk
+namespace archive_nintendo.CTPK
 {
     public class CtpkManager : IArchiveManager
     {
@@ -13,7 +13,7 @@ namespace archive_ctpk
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "CTPK";
         public string Description => "CTR Texture PacKage";
         public string Extension => "*.ctpk";
         public string About => "This is the CTPK archive manager for Karameru.";

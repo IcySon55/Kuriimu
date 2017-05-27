@@ -53,56 +53,56 @@ namespace KuriimuTests
 
         //PlainMSBT Archive
         [TestMethod]
-        public void PlainMSBTTest() => Test<archive_umsbt.UmsbtManager>("EU_English.LZ.decomp");
+        public void PlainMSBTTest() => Test<archive_nintendo.PlainUMSBT.PlainUmsbtManager>("EU_English.LZ.decomp");
 
         //GAR
         [TestMethod]
-        public void GarTest() => Test<archive_gar.GarManager>("Joker.Main.gar");
+        public void GarTest() => Test<archive_nintendo.GAR.GarManager>("Joker.Main.gar");
 
         // ZAR
         [TestMethod]
-        public void ZarTest() => Test<archive_zar.ZarManager>("God.zar");
+        public void ZarTest() => Test<archive_nintendo.ZAR.ZarManager>("God.zar");
 
         // SSARC
         [TestMethod]
-        public void SimpleSarcTest() => Test<archive_sarc.SimpleSarcManager>("fs2.sarc");
+        public void SimpleSarcTest() => Test<archive_nintendo.SimpleSARC.SimpleSarcManager>("fs2.sarc");
 
         // SARC
         [TestMethod]
-        public void SarcTest1() => Test<archive_sarc.SarcManager>("svn_font.sarc");
+        public void SarcTest1() => Test<archive_nintendo.SARC.SarcManager>("svn_font.sarc");
 
         [TestMethod]
-        public void SarcTest2() => Test<archive_sarc.SarcManager>("svn_message.sarc");
+        public void SarcTest2() => Test<archive_nintendo.SARC.SarcManager>("svn_message.sarc");
 
         [TestMethod]
-        public void SarcTest3() => Test<archive_sarc.SarcManager>("MainLang.arc");
+        public void SarcTest3() => Test<archive_nintendo.SARC.SarcManager>("MainLang.arc");
 
         [TestMethod]
-        public void SarcTest4() => Test<archive_sarc.SarcManager>("lovelevel.sarc");
+        public void SarcTest4() => Test<archive_nintendo.SARC.SarcManager>("lovelevel.sarc");
 
         // DARC
         [TestMethod]
-        public void DarcTest1() => Test<archive_darc.DarcManager>("Africa.arc");
+        public void DarcTest1() => Test<archive_nintendo.DARC.DarcManager>("Africa.arc");
 
         [TestMethod]
-        public void DarcTest2() => Test<archive_darc.DarcManager>("Australia.arc");
+        public void DarcTest2() => Test<archive_nintendo.DARC.DarcManager>("Australia.arc");
 
         [TestMethod]
-        public void DarcTest3() => Test<archive_darc.DarcManager>("WestAustralia.arc");
+        public void DarcTest3() => Test<archive_nintendo.DARC.DarcManager>("WestAustralia.arc");
 
         [TestMethod]
-        public void DarcTest4() => Test<archive_darc.DarcManager>("BgGtrA_L.arc");
+        public void DarcTest4() => Test<archive_nintendo.DARC.DarcManager>("BgGtrA_L.arc");
 
         // CGRP
         [TestMethod]
-        public void CgrpTest() => Test<archive_cgrp.CgrpManager>("GROUP_BADMINTON_EN.bcgrp");
+        public void CgrpTest() => Test<archive_nintendo.CGRP.CgrpManager>("GROUP_BADMINTON_EN.bcgrp");
 
         // CTPK
         [TestMethod]
-        public void CtpkTest1() => Test<archive_ctpk.CtpkManager>("bt_recipe.ctpk");
+        public void CtpkTest1() => Test<archive_nintendo.CTPK.CtpkManager>("bt_recipe.ctpk");
 
         [TestMethod]
-        public void CtpkTest2() => Test<archive_ctpk.CtpkManager>("Edit_Ptrn_Key3.ctpk");
+        public void CtpkTest2() => Test<archive_nintendo.CTPK.CtpkManager>("Edit_Ptrn_Key3.ctpk");
 
         // PCK
         [TestMethod]
@@ -125,6 +125,6 @@ namespace KuriimuTests
 
         // UMSBT
         [TestMethod]
-        public void UmsbtTest() => Test<archive_umsbt.UmsbtManager>("AN_3P_An.umsbt");
+        public void UmsbtTest() => Test<archive_nintendo.UMSBT.UmsbtManager>("AN_3P_An.umsbt");
     }
 }

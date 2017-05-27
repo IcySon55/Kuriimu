@@ -6,7 +6,7 @@ using Kuriimu.Compression;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_nus3bank
+namespace archive_nintendo.NUS3
 {
     public sealed class Nus3Manager : IArchiveManager
     {
@@ -16,7 +16,7 @@ namespace archive_nus3bank
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "NUS3";
         public string Description => "NUS3BANK Sound Archive";
         public string Extension => "*.nus3bank";
         public string About => "This is the NUS3BANK archive manager for Karameru.";

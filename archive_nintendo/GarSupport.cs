@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_gar
+namespace archive_nintendo.GAR
 {
     public class GARFileInfo : ArchiveFileInfo
     {

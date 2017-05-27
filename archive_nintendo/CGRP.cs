@@ -3,7 +3,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_cgrp
+namespace archive_nintendo.CGRP
 {
     public sealed class CGRP
     {

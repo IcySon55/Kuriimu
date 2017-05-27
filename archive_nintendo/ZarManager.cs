@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using archive_zar.Properties;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_zar
+namespace archive_nintendo.ZAR
 {
     public class ZarManager : IArchiveManager
     {
@@ -14,7 +13,7 @@ namespace archive_zar
         #region Properties
 
         // Information
-        public string Name => Settings.Default.PluginName;
+        public string Name => "ZAR";
         public string Description => "Zelda ARchive";
         public string Extension => "*.zar";
         public string About => "This is the ZAR archive manager for Karameru.";

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="archive_sarc" GeneratedClassName="Settings1">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="archive_nintendo.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="PluginName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">SARC</Value>
+      <Value Profile="(Default)">NINTENDO</Value>
     </Setting>
   </Settings>
 </SettingsFile>

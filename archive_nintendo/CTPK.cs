@@ -4,7 +4,7 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_ctpk
+namespace archive_nintendo.CTPK
 {
     public sealed class CTPK
     {

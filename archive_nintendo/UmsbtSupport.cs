@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kuriimu.Contract;
 
-namespace archive_umsbt
+namespace archive_nintendo.UMSBT
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class UmsbtFileEntry

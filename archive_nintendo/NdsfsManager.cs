@@ -5,7 +5,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_ndsfs
+namespace archive_nintendo.NDSFS
 {
     public class NdsfsManager : IArchiveManager
     {
@@ -14,7 +14,7 @@ namespace archive_ndsfs
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "NDSFS";
         public string Description => "Nintendo DS File System";
         public string Extension => "*.nds";
         public string About => "This is the NDS FS archive manager for Karameru.";
