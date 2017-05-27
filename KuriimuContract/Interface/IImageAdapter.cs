@@ -12,8 +12,8 @@ namespace Kuriimu.Contract
         // I/O
         FileInfo FileInfo { get; set; }
         bool Identify(string filename); // Determines if the given file is opened by the plugin.
-        LoadResult Load(string filename);
-        SaveResult Save(string filename = ""); // A non-blank filename is provided when using Save As...
+        void Load(string filename);
+        void Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
         // Images
         Bitmap Bitmap { get; set; }

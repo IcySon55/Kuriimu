@@ -9,7 +9,6 @@ namespace image_jtex
 {
     class JtexAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private JTEX _jtex = null;
         private RawJTEX _rawjtex = null;
         private bool raw = false;
@@ -17,7 +16,7 @@ namespace image_jtex
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "JTEX";
         public string Description => "J Texture";
         public string Extension => "*.jtex";
         public string About => "This is the JTEX image adapter for Kukkii.";
@@ -26,17 +25,7 @@ namespace image_jtex
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -54,74 +43,42 @@ namespace image_jtex
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
+            if (FileInfo.Exists)
                 if (raw)
-                {
-                    _rawjtex = new RawJTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-                }
+                    _rawjtex = new RawJTEX(FileInfo.OpenRead());
                 else
-                {
-                    _jtex = new JTEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-                }
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+                    _jtex = new JTEX(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
                 if (raw)
-                {
-                    _rawjtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
-                }
+                    _rawjtex.Save(FileInfo.Create());
                 else
-                {
-                    _jtex.Save(new FileStream(_fileInfo.FullName, FileMode.Create, FileAccess.Write));
-                }
+                    _jtex.Save(FileInfo.Create());
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                if (raw)
-                {
-                    return _rawjtex.Image;
-                }
-                return _jtex.Image;
-            }
+            get => raw ? _rawjtex.Image : _jtex.Image;
             set
             {
                 if (raw)
-                {
                     _rawjtex.Image = value;
-                }
                 else
-                {
                     _jtex.Image = value;
-                }
             }
         }
 

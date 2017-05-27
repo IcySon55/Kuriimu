@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Contract;
 using Cetera.Image;
+using Kuriimu.IO;
 
 namespace image_tm2
 {
@@ -20,7 +14,7 @@ namespace image_tm2
 
         public TM2(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 int count = br.ReadInt32();
                 br.BaseStream.Position = (count - 1) * 0x4;
@@ -29,7 +23,7 @@ namespace image_tm2
 
                 //get Images
                 bmpList = new List<Bitmap>();
-                while (br.BaseStream.Position<br.BaseStream.Length)
+                while (br.BaseStream.Position < br.BaseStream.Length)
                 {
                     var info = br.ReadStruct<FileHeader>();
                     br.BaseStream.Position += 0x60;

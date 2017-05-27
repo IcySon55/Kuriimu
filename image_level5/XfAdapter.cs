@@ -34,50 +34,31 @@ namespace image_level5.XF
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
                 _xf = new XF(File.OpenRead(FileInfo.FullName)).bmp;
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
             try
             {
-                //not implemented
+                //_xf.Save(FileInfo.Create());
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _xf;
-            }
-            set
-            {
-                _xf = value;
-            }
+            get => _xf;
+            set => _xf = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

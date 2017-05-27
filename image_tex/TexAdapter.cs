@@ -13,7 +13,7 @@ namespace image_tex
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "TEX";
         public string Description => "MT Framework Texture";
         public string Extension => "*.tex";
         public string About => "This is the MT Framework TEX image adapter for Kukkii.";
@@ -35,52 +35,31 @@ namespace image_tex
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                //_tex = new TEX(FileInfo.OpenRead());
-                result = LoadResult.Failure;
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+                _tex = new TEX(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
             try
             {
                 //_tex.Save(FileInfo.Create());
-                result = SaveResult.Failure;
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _tex.Image;
-            }
-            set
-            {
-                _tex.Image = value;
-            }
+            get => _tex.Image;
+            set => _tex.Image = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

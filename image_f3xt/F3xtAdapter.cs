@@ -14,8 +14,7 @@ namespace image_f3xt
         #region Properties
 
         // Information
-        public string Name => image_f3xt.Properties.Settings.Default.PluginName;
-
+        public string Name => "F3XT";
         public string Description => "F3XT Texture";
         public string Extension => "*.tex";
         public string About => "This is the F3XT image adapter for Kukkii.";
@@ -55,24 +54,16 @@ namespace image_f3xt
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
                 _f3xt = new F3XT(FileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
@@ -80,25 +71,14 @@ namespace image_f3xt
             {
                 _f3xt.Save(FileInfo.Create());
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _f3xt.Image;
-            }
-            set
-            {
-                _f3xt.Image = value;
-            }
+            get => _f3xt.Image;
+            set => _f3xt.Image = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

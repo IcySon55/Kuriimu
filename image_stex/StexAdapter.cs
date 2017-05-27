@@ -8,7 +8,6 @@ namespace image_stex
 {
     public sealed class StexAdapter : IImageAdapter
     {
-        private FileInfo _fileInfo = null;
         private STEX _stex = null;
 
         #region Properties
@@ -22,17 +21,7 @@ namespace image_stex
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         #endregion
 
@@ -45,50 +34,31 @@ namespace image_stex
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
+            FileInfo = new FileInfo(filename);
 
-            _fileInfo = new FileInfo(filename);
-
-            if (_fileInfo.Exists)
-                _stex = new STEX(new FileStream(_fileInfo.FullName, FileMode.Open, FileAccess.Read));
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
+            if (FileInfo.Exists)
+                _stex = new STEX(FileInfo.OpenRead());
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                _stex.Save(_fileInfo.FullName, _stex.bmp);
+                _stex.Save(FileInfo.FullName, _stex.bmp);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _stex.bmp;
-            }
-            set
-            {
-                _stex.bmp = value;
-            }
+            get => _stex.bmp;
+            set => _stex.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

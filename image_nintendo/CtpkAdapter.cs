@@ -34,10 +34,8 @@ namespace image_nintendo.CTPK
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
@@ -46,16 +44,10 @@ namespace image_nintendo.CTPK
                         _ctpk = new CTPK(FileInfo.FullName);
                     else
                         _ctpk = new CTPK(FileInfo.FullName, true);
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
@@ -63,25 +55,14 @@ namespace image_nintendo.CTPK
             {
                 _ctpk.Save(FileInfo.FullName);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _ctpk.bmp;
-            }
-            set
-            {
-                _ctpk.bmp = value;
-            }
+            get => _ctpk.bmp;
+            set => _ctpk.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

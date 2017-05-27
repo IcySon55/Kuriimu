@@ -34,24 +34,16 @@ namespace image_nintendo.ICN
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
                 _icn = new SMDH(FileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
@@ -59,25 +51,14 @@ namespace image_nintendo.ICN
             {
                 //_icn.Save(FileInfo.FullName);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _icn.bmp;
-            }
-            set
-            {
-                _icn.bmp = value;
-            }
+            get => _icn.bmp;
+            set => _icn.bmp = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

@@ -34,24 +34,16 @@ namespace image_level5.XI
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
                 _xi = XI.Load(FileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
@@ -59,25 +51,14 @@ namespace image_level5.XI
             {
                 XI.Save(FileInfo.FullName, _xi);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _xi;
-            }
-            set
-            {
-                _xi = value;
-            }
+            get => _xi;
+            set => _xi = value;
         }
 
         public bool ShowProperties(Icon icon) => false;

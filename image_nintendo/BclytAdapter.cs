@@ -29,60 +29,37 @@ namespace image_nintendo.BCLYT
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.ReadString(4) == "CLYT")
-                {
-                    return true;
-                }
-                return false;
+                return br.ReadString(4) == "CLYT";
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
                 _bclyt = BCLYT.Load(FileInfo.OpenRead(), filename);
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
             try
             {
-                //_bclyt.Save(_fileInfo.FullName);
+                //_bclyt.Save(FileInfo.FullName);
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _bclyt;
-            }
-            set
-            {
-                _bclyt = value;
-            }
+            get => _bclyt;
+            set => _bclyt = value;
         }
 
-        public bool ShowProperties(Icon icon) => throw new NotImplementedException();
+        public bool ShowProperties(Icon icon) => false;
     }
 }

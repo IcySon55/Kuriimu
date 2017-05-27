@@ -54,7 +54,7 @@ namespace image_ctxb
         {
             public Chunk(Stream input)
             {
-                using (var br = new BinaryReaderX(input,true))
+                using (var br = new BinaryReaderX(input, true))
                 {
                     magic = br.ReadStruct<Magic>(); //"tex "
                     chunkSize = br.ReadInt32();
@@ -82,7 +82,7 @@ namespace image_ctxb
         }
 
         public Header header;
-        List<Chunk> chunks=new List<Chunk>();
+        List<Chunk> chunks = new List<Chunk>();
 
         public Bitmap bmp;
         public ImageSettings settings;
@@ -95,14 +95,14 @@ namespace image_ctxb
                 header = br.ReadStruct<Header>();
 
                 //Chunks
-                for(int i=0;i<header.chunkCount;i++)
+                for (int i = 0; i < header.chunkCount; i++)
                     chunks.Add(new Chunk(br.BaseStream));
 
                 settings = new ImageSettings
                 {
                     Width = chunks[0].textures[0].width,
                     Height = chunks[0].textures[0].height,
-                    Format= (chunks[0].textures[0].dataType == DataTypes.UnsignedShort565)
+                    Format = (chunks[0].textures[0].dataType == DataTypes.UnsignedShort565)
                         ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
                         : (chunks[0].textures[0].dataType == DataTypes.UnsignedShort5551)
                             ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)

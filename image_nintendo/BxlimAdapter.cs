@@ -37,24 +37,16 @@ namespace image_nintendo.BXLIM
             }
         }
 
-        public LoadResult Load(string filename)
+        public void Load(string filename)
         {
-            LoadResult result = LoadResult.Success;
-
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
                 _bxlim = new Cetera.Image.BXLIM(FileInfo.OpenRead());
-            else
-                result = LoadResult.FileNotFound;
-
-            return result;
         }
 
-        public SaveResult Save(string filename = "")
+        public void Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
@@ -62,25 +54,14 @@ namespace image_nintendo.BXLIM
             {
                 _bxlim.Save(FileInfo.Create());
             }
-            catch (Exception)
-            {
-                result = SaveResult.Failure;
-            }
-
-            return result;
+            catch (Exception) { }
         }
 
         // Bitmaps
         public Bitmap Bitmap
         {
-            get
-            {
-                return _bxlim.Image;
-            }
-            set
-            {
-                _bxlim.Image = value;
-            }
+            get => _bxlim.Image;
+            set => _bxlim.Image = value;
         }
 
         public bool ShowProperties(Icon icon) => false;
