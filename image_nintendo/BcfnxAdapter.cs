@@ -1,9 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
+using Cetera.Font;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using Cetera.Font;
 
 namespace image_nintendo.BCFNX
 {
