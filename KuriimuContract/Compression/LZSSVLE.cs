@@ -1,46 +1,43 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 using Kuriimu.IO;
 
 namespace Kuriimu.Compression
 {
     public class LZSSVLE
     {
-        public static byte[] Decompress(Stream instream, int decompressedSize=0)
+        public static byte[] Decompress(Stream input, bool leaveOpen = false)
         {
-            using (var br = new BinaryReader(instream))
+            using (var br = new BinaryReader(input, Encoding.Default, leaveOpen))
             {
-                Tuple<int,int> GetNibbles(byte b) => new Tuple<int,int>(b >> 4, b & 0xF);
+                Tuple<int, int> GetNibbles(byte b) => new Tuple<int, int>(b >> 4, b & 0xF);
+
                 int ReadVLC(int seed = 0)
                 {
                     while (true)
                     {
-                        if (br.BaseStream.Position == br.BaseStream.Length) return 0;
                         var b = br.ReadByte();
-                        seed = (seed << 7) | b;
+                        seed = (seed << 7) | (b / 2);
                         if (b % 2 != 0) return seed;
                     }
                 }
 
-                br.ReadUInt32(); // hash = ????????
-                br.ReadByte(); // compression type = 1 (LZSS?)
+                var filesize = ReadVLC();
+                var unk1 = ReadVLC(); // filetype maybe???
+                var unk2 = ReadVLC(); // compression type = 1 (LZSS?)
 
                 var buffer = new List<byte>();
-                while (br.BaseStream.Position != br.BaseStream.Length)
+                while (buffer.Count < filesize)
                 {
                     // literal
                     var copiesSize = GetNibbles(br.ReadByte());
                     var copies = copiesSize.Item1;
                     var size = copiesSize.Item2;
-
-                    if (copies == 0) copies = ReadVLC() / 2;
-                    if (size == 0) size = ReadVLC() / 2;
-
-                    if (copies == 0 && size == 0) break;
+                    if (size == 0) size = ReadVLC();
+                    if (copies == 0) copies = ReadVLC();
                     buffer.AddRange(br.ReadBytes(size));
-
-                    if (decompressedSize > 0) if (decompressedSize == buffer.Count) break;
 
                     // copy stuff
                     while (copies-- > 0)
@@ -48,14 +45,11 @@ namespace Kuriimu.Compression
                         var lengthOffset = GetNibbles(br.ReadByte());
                         var length = lengthOffset.Item1;
                         var offset = lengthOffset.Item2;
-                        if (offset % 2 == 0) offset = ReadVLC(offset);
-                        if (length == 0) length = ReadVLC() / 2;
+                        if (offset % 2 == 0) offset = ReadVLC(offset / 2) * 2;
+                        if (length == 0) length = ReadVLC();
                         while (length-- >= 0) buffer.Add(buffer[buffer.Count - offset / 2 - 1]);
                     }
-
-                    if (decompressedSize > 0) if (decompressedSize == buffer.Count) break;
                 }
-
                 return buffer.ToArray();
             }
         }
