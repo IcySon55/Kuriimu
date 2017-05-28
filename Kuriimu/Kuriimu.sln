@@ -149,7 +149,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tex", "..\image_tex\i
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_srtz", "..\text_srtz\text_srtz.csproj", "{9A0C08B2-C1FF-4DE5-B9BB-7267D8FA0EE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_seg", "..\archive_seg\archive_seg.csproj", "{665782EB-3D6E-4426-B052-5048334D31C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_srtz", "..\archive_srtz\archive_srtz.csproj", "{665782EB-3D6E-4426-B052-5048334D31C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tim2", "..\image_tim2\image_tim2.csproj", "{22B0F441-5CF7-44CB-BA4F-0F1A25592614}"
 EndProject

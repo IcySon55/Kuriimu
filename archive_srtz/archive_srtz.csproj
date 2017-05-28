@@ -7,8 +7,8 @@
     <ProjectGuid>{665782EB-3D6E-4426-B052-5048334D31C0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>archive_seg</RootNamespace>
-    <AssemblyName>archive_seg</AssemblyName>
+    <RootNamespace>archive_srtz</RootNamespace>
+    <AssemblyName>archive_srtz</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
