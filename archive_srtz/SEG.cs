@@ -4,7 +4,7 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_seg
+namespace archive_srtz.SEG
 {
     public class SEG
     {
