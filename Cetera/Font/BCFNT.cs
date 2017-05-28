@@ -155,12 +155,43 @@ namespace Cetera.Font
             return text.TakeWhile(c => c != stopChar).Sum(c => GetWidthInfo(c).char_width) * scale;
         }
 
+        byte[] glgr;
+        bool usesGlgr = false;
+
+        public byte[] CheckTGLP(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                if (usesGlgr)
+                {
+                    var compSize = br.ReadInt32();
+                    var t =Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8);
+                    return t;
+                } else
+                {
+                    return br.ReadBytes(tglp.sheet_size);
+                }
+            }
+        }
+
         public BCFNT(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
                 // @todo: read as sections
                 br.ReadStruct<CFNT>();
+
+                if (br.ReadString(4)=="GLGR")
+                {
+                    usesGlgr = true;
+                    var glgrSize = br.ReadInt32();
+                    br.BaseStream.Position -= 8;
+                    glgr = br.ReadBytes(glgrSize);
+                } else
+                {
+                    br.BaseStream.Position -= 4;
+                }
+
                 finf = br.ReadStruct<FINF>();
 
                 // read TGLP
@@ -171,12 +202,30 @@ namespace Cetera.Font
                 br.BaseStream.Position = tglp.sheet_data_offset;
                 int width = tglp.sheet_width;
                 int height = tglp.sheet_height;
-                bmps = Enumerable.Range(0, tglp.num_sheets).Select(_ => Image.Common.Load(br.ReadBytes(tglp.sheet_size), new ImageSettings
+                if (usesGlgr)
                 {
-                    Width = width,
-                    Height = height,
-                    Format = ImageSettings.ConvertFormat(tglp.sheet_image_format)
-                })).ToArray();
+                    bmps = new Bitmap[tglp.num_sheets];
+                    for (int i = 0; i < tglp.num_sheets; i++)
+                    {
+                        var compSize = br.ReadInt32();
+                        var decomp = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8);
+                        bmps[i] = Image.Common.Load(decomp, new ImageSettings
+                        {
+                            Width = width,
+                            Height = height,
+                            Format = ImageSettings.ConvertFormat(tglp.sheet_image_format & 0x7fff)
+                        });
+                    }
+                }
+                else
+                {
+                    bmps = Enumerable.Range(0, tglp.num_sheets).Select(_ => Image.Common.Load(br.ReadBytes(tglp.sheet_size), new ImageSettings
+                    {
+                        Width = width,
+                        Height = height,
+                        Format = ImageSettings.ConvertFormat(tglp.sheet_image_format)
+                    })).ToArray();
+                }
 
                 // read CWDH
                 for (int offset = finf.cwdh_offset; offset != 0;)
