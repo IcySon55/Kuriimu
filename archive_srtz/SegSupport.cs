@@ -1,6 +1,6 @@
 ﻿using Kuriimu.Contract;
 
-namespace archive_seg
+namespace archive_srtz.SEG
 {
     public sealed class SegArchiveFileInfo : ArchiveFileInfo
     {

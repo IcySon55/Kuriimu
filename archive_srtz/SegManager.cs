@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_seg
+namespace archive_srtz.SEG
 {
     public class SegManager : IArchiveManager
     {
@@ -14,7 +14,7 @@ namespace archive_seg
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "SEG";
         public string Description => "Seg Archive";
         public string Extension => "*.seg";
         public string About => "This is the SEG archive manager for Karameru.";

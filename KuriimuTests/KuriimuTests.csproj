@@ -82,7 +82,7 @@
       <Project>{efdc3079-b1ed-493d-b9dc-55658a84b1a4}</Project>
       <Name>archive_nintendo</Name>
     </ProjectReference>
-    <ProjectReference Include="..\archive_seg\archive_seg.csproj">
+    <ProjectReference Include="..\archive_srtz\archive_srtz.csproj">
       <Project>{665782eb-3d6e-4426-b052-5048334d31c0}</Project>
       <Name>archive_seg</Name>
     </ProjectReference>

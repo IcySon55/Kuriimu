@@ -104,6 +104,8 @@ namespace Cetera.Font
         ImageAttributes attr = new ImageAttributes();
         List<CharWidthInfo> lstCWDH = new List<CharWidthInfo>();
         Dictionary<char, int> dicCMAP = new Dictionary<char, int>();
+        byte[] _glgr;
+        bool _usesGlgr;
 
         public CharWidthInfo GetWidthInfo(char c) => lstCWDH[GetIndex(c)];
         public int LineFeed => finf.line_feed;
@@ -155,22 +157,17 @@ namespace Cetera.Font
             return text.TakeWhile(c => c != stopChar).Sum(c => GetWidthInfo(c).char_width) * scale;
         }
 
-        byte[] glgr;
-        bool usesGlgr = false;
-
         public byte[] CheckTGLP(Stream input)
         {
             using (var br = new BinaryReaderX(input, true))
             {
-                if (usesGlgr)
+                if (_usesGlgr)
                 {
                     var compSize = br.ReadInt32();
-                    var t =Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8);
+                    var t = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8);
                     return t;
-                } else
-                {
-                    return br.ReadBytes(tglp.sheet_size);
                 }
+                return br.ReadBytes(tglp.sheet_size);
             }
         }
 
@@ -181,13 +178,14 @@ namespace Cetera.Font
                 // @todo: read as sections
                 br.ReadStruct<CFNT>();
 
-                if (br.ReadString(4)=="GLGR")
+                if (br.ReadString(4) == "GLGR")
                 {
-                    usesGlgr = true;
+                    _usesGlgr = true;
                     var glgrSize = br.ReadInt32();
                     br.BaseStream.Position -= 8;
-                    glgr = br.ReadBytes(glgrSize);
-                } else
+                    _glgr = br.ReadBytes(glgrSize);
+                }
+                else
                 {
                     br.BaseStream.Position -= 4;
                 }
@@ -202,7 +200,7 @@ namespace Cetera.Font
                 br.BaseStream.Position = tglp.sheet_data_offset;
                 int width = tglp.sheet_width;
                 int height = tglp.sheet_height;
-                if (usesGlgr)
+                if (_usesGlgr)
                 {
                     bmps = new Bitmap[tglp.num_sheets];
                     for (int i = 0; i < tglp.num_sheets; i++)
