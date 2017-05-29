@@ -597,10 +597,10 @@ namespace Kuriimu
 
             if (_page < 0)
                 _page = 0;
-            else if (_page > _gameHandlerPages.Count - 1)
+            else if (_gameHandlerPages != null && _page > _gameHandlerPages.Count - 1)
                 _page = _gameHandlerPages.Count - 1;
 
-            if (_gameHandlerPages.Count > 0)
+            if (_gameHandlerPages != null && _gameHandlerPages.Count > 0)
                 tslPage.Text = (_page + 1) + "/" + _gameHandlerPages.Count;
             else
                 tslPage.Text = "0/0";
@@ -683,7 +683,7 @@ namespace Kuriimu
             _gameHandlerPages = _gameHandler.GeneratePreviews(entry);
             SetPage(0);
 
-            if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled && _gameHandlerPages.Count > 0)
+            if (entry != null && _gameHandler.HandlerCanGeneratePreviews && Settings.Default.PreviewEnabled && _gameHandlerPages != null && _gameHandlerPages.Count > 0)
                 pbxPreview.Image = _gameHandlerPages[_page];
             else
                 pbxPreview.Image = null;
@@ -744,13 +744,13 @@ namespace Kuriimu
                 tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
                 tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
                 tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
-                tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled && _gameHandler.HandlerCanGeneratePreviews && _gameHandlerPages.Count > 0;
+                tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled && _gameHandler.HandlerCanGeneratePreviews && _gameHandlerPages != null && _gameHandlerPages.Count > 0;
                 tsbPreviewCopy.Enabled = tsbPreviewSave.Enabled;
 
                 // Paging
-                tsbPreviousPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0 && _page > 0;
-                tslPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0;
-                tsbNextPage.Enabled = _gameHandler != null && _gameHandlerPages.Count > 0 && _page < _gameHandlerPages.Count - 1;
+                tsbPreviousPage.Enabled = _gameHandler != null && _gameHandlerPages != null && _gameHandlerPages.Count > 0 && _page > 0;
+                tslPage.Enabled = _gameHandler != null && _gameHandlerPages != null && _gameHandlerPages.Count > 0;
+                tsbNextPage.Enabled = _gameHandler != null && _gameHandlerPages != null && _gameHandlerPages.Count > 0 && _page < _gameHandlerPages.Count - 1;
 
                 // Handler Settings
                 tsbHandlerSettings.Enabled = _gameHandler != null && _gameHandler.HandlerHasSettings;
