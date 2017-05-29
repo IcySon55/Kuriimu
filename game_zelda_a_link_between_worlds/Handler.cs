@@ -30,6 +30,9 @@ namespace game_zelda_a_link_between_worlds
             // Commands
             ["<sel>"] = "\xE\x1\x6\x2",
             ["<unkcmd1>"] = "\xE\x1\x10\x0",
+            ["<unkcmd2>"] = "\xE\x1\xC\x0",
+            ["<unkcmd3>"] = "\xE\x1\xD\x0",
+            ["<unkcmd4>"] = "\xE\x1\xE\x0",
             ["<shake>"] = "\xE\x1\xF\x0",
             ["<pause1>"] = "\xE\x1\x7\x2",
             ["<pause2>"] = "\xE\x1\x8\x2",
@@ -175,12 +178,15 @@ namespace game_zelda_a_link_between_worlds
                                     scale = (float)c / 100.0f;
                                     skip = 2;
                                     goto case "cleanup";
-                                case "\x1\x8\x2": // useless
+                                case "\x1\x8\x2": // pause (useless)
                                 case "\x1\x7\x2":
-                                case "\x1\xE":
-                                case "\x1\xF":
-                                case "\x1\x10":
                                     skip = 2;
+                                    goto case "cleanup";
+                                case "\x1\x10\x0": // textbox effects (useless)
+                                case "\x1\xC\x0":
+                                case "\x1\xD\x0":
+                                case "\x1\xE\x0":
+                                case "\x1\xF\x0":
                                     goto case "cleanup";
                                 case "\x1\x11\x4": // text padding
                                     x += c;
@@ -223,7 +229,9 @@ namespace game_zelda_a_link_between_worlds
 
                             j++;
 
-                            if (!cmd) switch (c)
+                            if (!cmd && skip == 0)
+                            {
+                                switch (c)
                                 {
                                     case '\n':
                                         x = rectText.X;
@@ -234,6 +242,7 @@ namespace game_zelda_a_link_between_worlds
                                         param = "";
                                         continue;
                                 }
+                            }
 
                             if (cmd)
                                 param += c;
