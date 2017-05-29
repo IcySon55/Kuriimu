@@ -16,7 +16,7 @@ namespace archive_srtz.SEG
 
         private static Dictionary<string, string> _knownFiles = new Dictionary<string, string>
         {
-            ["TIM2"] = ".tim2"
+            ["TIM2"] = ".tm2"
         };
 
         public SEG(Stream segInput, Stream binInput, Stream sizeInput = null)
@@ -37,10 +37,11 @@ namespace archive_srtz.SEG
                     Files.Add(afi);
 
                     if (Files.IndexOf(afi) == 0) continue;
-                    if (afi.Entry.Offset == 0) break;
 
                     var prev = Files[Files.IndexOf(afi) - 1];
                     prev.Entry.Size = afi.Entry.Offset - prev.Entry.Offset;
+
+                    if (afi.Entry.Offset == _binStream.Length) break;
                 }
                 Files.Remove(Files.Last());
             }
