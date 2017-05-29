@@ -34,8 +34,6 @@ namespace archive_xbb
 
         public bool Identify(string filename)
         {
-            string t = $"0x{XbbHash.Create("sbox.moparc"):x8}";
-
             using (var br=new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
