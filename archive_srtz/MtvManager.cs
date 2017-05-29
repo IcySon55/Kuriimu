@@ -31,20 +31,20 @@ namespace archive_srtz.MTV
         
         private static List<string> _supportedFiles = new List<string>
         {
+            "AIDData.bin",
             "compdata.bn",
             "HSFC.BIN",
-            "jtim.bin",
-            "list.txt",
+            "MtV_Item.BIN",
             "MtVZknKW.bin",
             "MtVZknPt.bin",
             "MtVZknRt.bin",
             "MtV_BGc.bin",
-            "MtV_Item.BIN",
             "MtV_ProP.BIN",
             "MtV_ProS.BIN",
             "NisVData.bin",
             "stage.bin",
-            "vt1.bin"
+            "veff2dx.bin",
+            "KvMData.bin"
         };
 
         public bool Identify(string filename)

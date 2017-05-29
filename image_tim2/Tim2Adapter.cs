@@ -14,7 +14,7 @@ namespace image_tim2
 
         public string Name => "TIM2";
         public string Description => "Default PS2 Image Format v2";
-        public string Extension => "*.tim2";
+        public string Extension => "*.tm2";
         public string About => "This is the TIM2 image adapter for Kukkii.";
 
         // Feature Support
