@@ -106,9 +106,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\boot9_prot.bin" />
-    <None Include="Resources\n3ds_keysector_dev.bin" />
-    <None Include="Resources\n3ds_keysector_retail.bin" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
