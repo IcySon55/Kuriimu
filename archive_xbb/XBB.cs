@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using System.Linq;
+using Cetera.Hash;
 
 namespace archive_xbb
 {
@@ -26,10 +28,12 @@ namespace archive_xbb
 
                 for (int i = 0; i < header.entryCount; i++) {
                     br.BaseStream.Position = entries[i].nameOffset;
+                    var hashEntry = hashes.Single(e => e.hash == entries[i].hash);
                     Files.Add(new XBBFileInfo {
                         State = ArchiveFileState.Archived,
                         FileName = br.ReadCStringA(),
-                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size)
+                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size),
+                        id= hashEntry.id
                     });
                 }
             }
@@ -39,7 +43,52 @@ namespace archive_xbb
         {
             using (var bw = new BinaryWriterX(output))
             {
-                // TODO: Write out your file format
+                //Header
+                bw.WriteASCII("XBB");
+                bw.Write((byte)1);
+                bw.Write(Files.Count());
+                bw.BaseStream.Position = 0x20;
+
+                var offset = 0x20 + Files.Sum(e => e.FileName.Length + 1 + 0x18);
+                offset = offset + 0x7f & ~0x7f;
+                var nameOffset = 0x20 + Files.Count() * 0x18;
+
+                //FileEntries
+                foreach (var file in Files) {
+                    bw.Write(offset);
+                    bw.Write((uint)file.FileSize);
+                    bw.Write(nameOffset);
+                    bw.Write(XbbHash.Create(file.FileName));
+
+                    offset += (int)file.FileSize;
+                    offset = offset + 0x7f & ~0x7f;
+
+                    nameOffset += file.FileName.Length + 1;
+                }
+
+                //Hash table
+                var files = Files.OrderBy(e => XbbHash.Create(e.FileName)).ToList();
+                foreach (var file in files)
+                {
+                    bw.Write(XbbHash.Create(file.FileName));
+                    bw.Write(file.id);
+                }
+
+                //nameList
+                foreach (var file in Files)
+                {
+                    bw.WriteASCII(file.FileName);
+                    bw.Write((byte)0);
+                }
+
+                //FileData
+                foreach (var file in Files)
+                {
+                    bw.WritePadding(0x80);
+                    file.FileData.CopyTo(bw.BaseStream);
+                }
+
+                bw.WritePadding(0x80);
             }
         }
 
