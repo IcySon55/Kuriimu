@@ -32,8 +32,7 @@ namespace archive_xbb
                     {
                         State = ArchiveFileState.Archived,
                         FileName = br.ReadCStringA(),
-                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size),
-                        id = i
+                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size)
                     });
                 }
             }
@@ -68,10 +67,10 @@ namespace archive_xbb
 
                 //Hash table
                 var files = Files.OrderBy(e => XbbHash.Create(e.FileName)).ToList();
-                foreach (var file in files)
-                {
-                    bw.Write(XbbHash.Create(file.FileName));
-                    bw.Write(file.id);
+                for (int i=0;i<files.Count();i++) {
+                    var hash = XbbHash.Create(files[i].FileName);
+                    bw.Write(hash);
+                    bw.Write(Files.FindIndex(e=> XbbHash.Create(e.FileName)==hash));
                 }
 
                 //nameList
