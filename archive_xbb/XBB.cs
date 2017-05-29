@@ -28,12 +28,12 @@ namespace archive_xbb
 
                 for (int i = 0; i < header.entryCount; i++) {
                     br.BaseStream.Position = entries[i].nameOffset;
-                    var hashEntry = hashes.Single(e => e.hash == entries[i].hash);
-                    Files.Add(new XBBFileInfo {
+                    Files.Add(new XBBFileInfo
+                    {
                         State = ArchiveFileState.Archived,
                         FileName = br.ReadCStringA(),
                         FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size),
-                        id= hashEntry.id
+                        id = i
                     });
                 }
             }

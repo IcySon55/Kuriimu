@@ -5,7 +5,7 @@ namespace archive_xbb
 {
     public class XBBFileInfo : ArchiveFileInfo
     {
-        public uint id;
+        public int id;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
