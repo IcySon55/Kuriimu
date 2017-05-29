@@ -45,9 +45,6 @@ namespace game_shin_megami_tensei_iv
 
         public string GetKuriimuString(string rawString)
         {
-            using (var br = new BinaryWriter(File.Create(@"D:\unicode.txt")))
-                br.Write(Encoding.Unicode.GetBytes(rawString));
-
             return _pairs.Aggregate(rawString, (str, pair) => str.Replace(pair.Key, pair.Value));
         }
 
