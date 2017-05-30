@@ -168,6 +168,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_shin_megami_tensei_iv"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_fnt", "..\archive_fnt\archive_fnt.csproj", "{FDD173FC-2234-4812-90D4-AAD6AB8E20AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_td3", "..\text_td3\text_td3.csproj", "{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -374,6 +376,10 @@ Global
 		{FDD173FC-2234-4812-90D4-AAD6AB8E20AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDD173FC-2234-4812-90D4-AAD6AB8E20AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDD173FC-2234-4812-90D4-AAD6AB8E20AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -422,5 +428,6 @@ Global
 		{1C9D7F75-2E04-441E-83D4-00A406809E09} = {FA7A6EB6-4E0C-4E59-B024-6E8E94A2117C}
 		{FBED47D0-6A0B-4668-9F10-22E86519CA2D} = {E9A3E23A-FF49-4F03-B801-36CDA9CCCF9C}
 		{FDD173FC-2234-4812-90D4-AAD6AB8E20AE} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
+		{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD} = {B509D23F-0D4E-42F9-87F5-50CF5E982A75}
 	EndGlobalSection
 EndGlobal
