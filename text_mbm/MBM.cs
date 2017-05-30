@@ -13,12 +13,12 @@ namespace text_mbm
         public List<Label> Labels = new List<Label>();
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
+        public class Header
         {
             public int zero0;
             public Magic magic;
             public int const0;
-            public int fileSize; //Not always correct?
+            public int fileSize; //without null stub entries
             public int entryCount;
             public int entryOffset;
             public int zero1;
@@ -44,7 +44,17 @@ namespace text_mbm
                 header = br.ReadStruct<Header>();
 
                 entries = new List<MBMEntry>();
-                entries.AddRange(br.ReadMultiple<MBMEntry>(header.entryCount).OrderBy(e => e.ID));
+                var count = 0;
+                while (count < header.entryCount)
+                {
+                    var entry = br.ReadStruct<MBMEntry>();
+                    if (entry.stringOffset != 0)
+                    {
+                        entries.Add(entry);
+                        count++;
+                    }
+                }
+                entries = entries.OrderBy(e => e.ID).ToList();
 
                 Encoding sjis = Encoding.GetEncoding("SJIS");
 
@@ -68,11 +78,12 @@ namespace text_mbm
             {
                 Encoding sjis = Encoding.GetEncoding("SJIS");
 
-                bw.WriteStruct(header);
+                bw.BaseStream.Position = 0x20;
 
                 int count = 0;
-                int offset = 0x20 + header.entryCount * 0x10;
-                for (int i = 0; i < header.entryCount; i++)
+                int entryCount = Labels.OrderBy(e => e.TextID).Last().TextID + 1;
+                int offset = 0x20 + entryCount * 0x10;
+                for (int i = 0; i < entryCount; i++)
                 {
                     if (count < Labels.Count)
                         if (Labels[count].TextID == i)
@@ -84,7 +95,8 @@ namespace text_mbm
 
                             long bk = bw.BaseStream.Position;
                             bw.BaseStream.Position = offset;
-                            bw.Write(sjis.GetBytes(Labels[count].Text));
+                            var byteText = ReplaceBytes(sjis.GetBytes(Labels[count].Text), new byte[] { 0x81, 0x45 }, new byte[] { 0xf8, 0x01 });
+                            bw.Write(byteText);
                             bw.Write((ushort)0xffff);
                             bw.BaseStream.Position = bk;
 
@@ -108,7 +120,41 @@ namespace text_mbm
                         bw.Write(0);
                     }
                 }
+
+                //update header
+                header.fileSize = (int)bw.BaseStream.Length - (entryCount * 0x10 - Labels.Count() * 0x10);
+                header.entryCount = Labels.Count();
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
             }
+        }
+
+        private byte[] ReplaceBytes(byte[] input, byte[] search, byte[] replace)
+        {
+            if (search.Length != replace.Length) return null;
+
+            for (int i = 0; i < input.Length - search.Length + 1; i++)
+            {
+                var found = true;
+                for (int j = 0; j < search.Length; j++)
+                {
+                    if (input[i + j] != search[j])
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    for (int j = 0; j < replace.Length; j++)
+                    {
+                        input[i + j] = replace[j];
+                    }
+                }
+            }
+
+            return input;
         }
     }
 }
