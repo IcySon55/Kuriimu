@@ -63,7 +63,7 @@ namespace game_etrian_odyssey_v
             Bitmap img = new Bitmap(textBox.Width, textBox.Height * boxes);
 
             Encoding unicode = Encoding.GetEncoding("unicode");
-            Encoding sjis=Encoding.GetEncoding("SJIS");
+            Encoding sjis = Encoding.GetEncoding("SJIS");
 
             using (Graphics gfx = Graphics.FromImage(img))
             {
@@ -92,8 +92,8 @@ namespace game_etrian_odyssey_v
                 {
                     var info = font.GetWidthInfo(kuriimuString[i]);
                     x += info.left;
-                    byte[] tmp = sjis.GetBytes(new char[] {kuriimuString[i]});
-                    if (tmp.Length < 2) tmp = new byte[] {0, tmp[0]};
+                    byte[] tmp = sjis.GetBytes(new char[] { kuriimuString[i] });
+                    if (tmp.Length < 2) tmp = new byte[] { 0, tmp[0] };
                     font.Draw(unicode.GetString(tmp.Reverse().ToArray())[0], gfx, x, y, scaleDefault, scaleDefault);
                     x += info.glyph_width - info.left;
 
