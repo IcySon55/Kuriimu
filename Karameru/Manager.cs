@@ -919,5 +919,44 @@ namespace Karameru
             _hasChanges = true;
             UpdateForm();
         }
+        
+        private void tsbFolderContentReplace_Click(object sender, EventArgs e)
+        {
+            var ofd = new FolderBrowserDialog();
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                DirectoryInfo di = new DirectoryInfo(ofd.SelectedPath);
+                var files = di.EnumerateFiles("*", SearchOption.TopDirectoryOnly);
+
+                for (int i = 0; i < lstFiles.Items.Count; i++)
+                {
+                    foreach (var file in files)
+                    {
+                        if (file.Name == lstFiles.Items[i].Text)
+                        {
+                            var afi = lstFiles.Items[i].Tag as ArchiveFileInfo;
+                            if (afi == null) return;
+
+                            try
+                            {
+                                afi.FileData = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.None);
+                                afi.State = ArchiveFileState.Replaced;
+                                lstFiles.Items[i].ForeColor = StateToColor(afi.State);
+                                MessageBox.Show($"{file.Name} has been replaced with {file.FullName}.", "File Replaced", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.ToString(), "Replace Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+
+                            _hasChanges = true;
+                            UpdateForm();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
