@@ -65,6 +65,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\MainFont.bcfna" />
+    <None Include="Resources\MainFont.bcfnt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera.csproj">
@@ -78,6 +80,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\namebox.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\textbox.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -153,16 +153,16 @@ namespace text_mbm
                         var part2 = br.ReadByte();
                         if (part2 <= 0x3e)
                         {
-                            result += unicode.GetString(new byte[] { part, part2 });
+                            result += unicode.GetString(new byte[] { part2, part });
                         }
                         else
                         {
-                            result += sjis.GetString(new byte[] { part, part2 });
+                            result += sjis.GetString(new byte[] { part2, part });
                         }
                     } else
                     {
                         br.BaseStream.Position--;
-                        result += unicode.GetString(br.ReadBytes(2));
+                        result += unicode.GetString(br.ReadBytes(2).Reverse().ToArray());
                     }
 
                     symbol = br.ReadUInt16();
