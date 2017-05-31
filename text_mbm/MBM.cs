@@ -65,7 +65,7 @@ namespace text_mbm
                         Labels.Add(new Label
                         {
                             Name = "Text " + (entry.ID + 1),
-                            Text = sjis.GetString(br.ReadBytes(entry.stringSize)).Split('')[0],
+                            Text = ReadString(br.ReadBytes(entry.stringSize)),//sjis.GetString(br.ReadBytes(entry.stringSize)).Split('')[0],
                             TextID = entry.ID
                         });
                 }
@@ -126,6 +126,49 @@ namespace text_mbm
                 header.entryCount = Labels.Count();
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);
+            }
+        }
+
+        private string ReadString(byte[] input)
+        {
+            using (var br = new BinaryReaderX(new MemoryStream(input), ByteOrder.BigEndian))
+            {
+                string result = "";
+                var sjis = Encoding.GetEncoding("sjis");
+                var unicode = Encoding.GetEncoding("unicode");
+
+                ushort symbol = br.ReadUInt16();
+                while (symbol != 0xffff)
+                {
+                    br.BaseStream.Position -= 2;
+
+                    var part = br.ReadByte();
+                    if (part >= 0x81 && part <= 0x9f)
+                    {
+                        br.BaseStream.Position--;
+                        result += sjis.GetString(br.ReadBytes(2));
+                    }
+                    else if (part > 0x9f)
+                    {
+                        var part2 = br.ReadByte();
+                        if (part2 <= 0x3e)
+                        {
+                            result += unicode.GetString(new byte[] { part, part2 });
+                        }
+                        else
+                        {
+                            result += sjis.GetString(new byte[] { part, part2 });
+                        }
+                    } else
+                    {
+                        br.BaseStream.Position--;
+                        result += unicode.GetString(br.ReadBytes(2));
+                    }
+
+                    symbol = br.ReadUInt16();
+                }
+
+                return result;
             }
         }
 
