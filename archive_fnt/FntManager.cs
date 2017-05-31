@@ -32,13 +32,19 @@ namespace archive_fnt
 
         public bool Identify(string filename)
         {
-            using (var br=new BinaryReaderX(File.OpenRead(filename)))
+            try
             {
-                if (br.BaseStream.Length < 4) return false;
-                var entrycount = br.ReadInt32();
-                if (br.BaseStream.Length < 4 + entrycount * 0x4) return false;
-                br.BaseStream.Position = 4 + entrycount * 0x4;
-                return (br.ReadInt32() == br.BaseStream.Length);
+                using (var br = new BinaryReaderX(File.OpenRead(filename)))
+                {
+                    if (br.BaseStream.Length < 4) return false;
+                    var entrycount = br.ReadInt32();
+                    if (br.BaseStream.Length < 4 + entrycount * 0x4) return false;
+                    br.BaseStream.Position = 4 + entrycount * 0x4;
+                    return (br.ReadInt32() == br.BaseStream.Length);
+                }
+            } catch
+            {
+                return false;
             }
         }
 
