@@ -157,7 +157,7 @@ namespace text_mbm
                         }
                         else
                         {
-                            result += sjis.GetString(new byte[] { part2, part });
+                            result += sjis.GetString(new byte[] { part, part2 });
                         }
                     } else
                     {
