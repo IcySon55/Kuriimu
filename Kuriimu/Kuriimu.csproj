@@ -92,7 +92,6 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common.cs" />
     <Compile Include="Editor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -129,7 +128,6 @@
     <Compile Include="SequenceSearch.Designer.cs">
       <DependentUpon>SequenceSearch.cs</DependentUpon>
     </Compile>
-    <Compile Include="Version.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -248,7 +246,8 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
