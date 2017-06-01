@@ -92,7 +92,6 @@
     <Compile Include="About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Common.cs" />
     <Compile Include="Editor.cs">
       <SubType>Form</SubType>
     </Compile>
