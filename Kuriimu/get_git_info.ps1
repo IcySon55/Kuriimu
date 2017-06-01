@@ -2,7 +2,7 @@
 
 Try
 {
-	$gitUser       = gitz config user.name;
+	$gitUser       = git config user.name;
 	$gitEmail      = git config user.email;
 	$gitStateUser  = git --no-pager log -1 --pretty=format:"%an";
 	$gitStateEmail = git --no-pager log -1 --pretty=format:"%ae";
