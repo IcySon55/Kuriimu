@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,21 +27,21 @@ namespace text_bmd
                 Header = br.ReadStruct<Header>();
                 TableEntries = br.ReadMultiple<TableEntry>(Header.NumberOfTableEntries);
 
-                var tableEntryTotal = TableEntries.Sum(te => te.GroupCount);
+                var totalGroups = TableEntries.Sum(te => te.GroupCount);
 
-                DialogGroups = br.ReadMultiple<DialogGroup>(tableEntryTotal);
+                DialogGroups = br.ReadMultiple<DialogGroup>(totalGroups);
 
                 for (var i = 0; i < SpeakerCount; i++)
                     Speakers.Add(new Speaker
                     {
-                        Name = (i + 1).ToString("00"),
+                        Name = (i + 1).ToString("0000"),
                         Text = br.ReadString(SpeakerLength, Encoding.Unicode)
                     });
 
-                for (var i = 0; i < tableEntryTotal; i++)
+                for (var i = 0; i < totalGroups; i++)
                     Messages.Add(new Message
                     {
-                        Name = (i + 1).ToString("00"),
+                        Name = (i + 1).ToString("0000"),
                         Text = br.ReadString(MessageLength, Encoding.Unicode)
                     });
             }
@@ -48,7 +49,32 @@ namespace text_bmd
 
         public void Save(Stream output)
         {
+            using (var bw = new BinaryWriterX(output))
+            {
+                bw.WriteStruct(Header);
 
+                foreach (var tableEntry in TableEntries)
+                    bw.WriteStruct(tableEntry);
+
+                foreach (var dialogGroup in DialogGroups)
+                    bw.WriteStruct(dialogGroup);
+
+                for (var i = 0; i < SpeakerCount; i++)
+                {
+                    var speakerName = Encoding.Unicode.GetBytes(Speakers[i].Text).Take(SpeakerLength - 2).ToArray();
+                    bw.Write(speakerName);
+                    for (var j = 0; j < SpeakerLength - speakerName.Length; j++)
+                        bw.Write((byte)0x0);
+                }
+
+                for (var i = 0; i < DialogGroups.Count; i++)
+                {
+                    var message = Encoding.Unicode.GetBytes(Messages[i].Text).Take(MessageLength - 2).ToArray();
+                    bw.Write(message);
+                    for (var j = 0; j < MessageLength - message.Length; j++)
+                        bw.Write((byte)0x0);
+                }
+            }
         }
     }
 }

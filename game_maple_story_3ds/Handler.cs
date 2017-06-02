@@ -67,7 +67,7 @@ namespace game_maple_story_3ds
         public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
-            if (entry == null) return pages;
+            if (entry?.EditedText == null) return pages;
 
             // Paging evety 3rd new line
             List<string> strings = new List<string>();

@@ -20,7 +20,7 @@ namespace archive_ara
         public uint FilenameOffset = 0;
         public string Filename = "";
         public uint Offset = 0;
-        public uint Filesize = 0;
+        public uint FileSize = 0;
         public uint Unk1 = 0;
         public uint Unk2 = 0;
     }

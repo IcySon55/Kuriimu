@@ -100,7 +100,7 @@ namespace game_zelda_a_link_between_worlds
         public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
-            if (entry == null) return pages;
+            if (entry?.EditedText == null) return pages;
 
             string rawString = GetKuriimuString(entry.EditedText);
             var pagestr = new List<string>();
