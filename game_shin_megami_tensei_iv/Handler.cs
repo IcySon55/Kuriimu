@@ -60,7 +60,7 @@ namespace game_shin_megami_tensei_iv
         public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
-            if (entry == null) return pages;
+            if (entry?.EditedText == null) return pages;
 
             string kuriimuString = GetKuriimuString(entry.EditedText);
             int boxes = kuriimuString.Count(c => c == (char)0x17) + 1;
