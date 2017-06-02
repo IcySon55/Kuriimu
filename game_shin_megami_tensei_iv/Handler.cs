@@ -8,6 +8,7 @@ using game_shin_megami_tensei_iv.Properties;
 using Kuriimu.Contract;
 using Cetera.Font;
 using System;
+using System.Diagnostics;
 
 namespace game_shin_megami_tensei_iv
 {
@@ -31,9 +32,9 @@ namespace game_shin_megami_tensei_iv
             ["\uD507"] = "<unk5[1]>",
 
             ["\uF801"] = "\n",
-            ["\uF812"] = "<unk1>",
+            ["\uF812"] = "<name>",
             ["\uF813"] = "<unk2[2]>",
-            ["\uF87A"] = "<unk3[1]>",
+            ["\uF87A"] = "</name>",
 
             ["\u0000"] = "<!>",
             ["\u7000"] = "<7000>"
@@ -63,24 +64,23 @@ namespace game_shin_megami_tensei_iv
             if (entry?.EditedText == null) return pages;
 
             string kuriimuString = GetKuriimuString(entry.EditedText);
-            int boxes = kuriimuString.Count(c => c == (char)0x17) + 1;
+            //int boxes = kuriimuString.Count(c => c == (char)0x17) + 1;
 
-            Bitmap img = new Bitmap(background.Width, background.Height * boxes);
+            Bitmap img = new Bitmap(background.Width, background.Height);
 
-            Encoding unicode = Encoding.GetEncoding("unicode");
             Encoding sjis = Encoding.GetEncoding("SJIS");
 
             using (Graphics gfx = Graphics.FromImage(img))
             {
                 gfx.DrawImage(background, 0, 0);
                 gfx.DrawImage(textBox, 15, 173);
-                gfx.DrawImage(nameBox, 15, 173);
+                gfx.DrawImage(nameBox, 50, 165);
 
                 gfx.SmoothingMode = SmoothingMode.HighQuality;
                 gfx.InterpolationMode = InterpolationMode.Bicubic;
                 gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                RectangleF rectText = new RectangleF(20, 10, 370, 125);
+                RectangleF rectText = new RectangleF(20, 183, 370, 125);
 
                 Color colorDefault = Color.FromArgb(255, 0, 0, 0);
 
@@ -91,44 +91,42 @@ namespace game_shin_megami_tensei_iv
                 float y = rectText.Y, pY = y;
                 //float yAdjust = 4;
                 //int box = 0;
-                var tag = " ";
                 for (int i = 0; i < kuriimuString.Length; i++)
                 {
                     var info = font.GetWidthInfo(kuriimuString[i]);
                     x += info.left;
-                    byte[] tmp = sjis.GetBytes(new char[] { kuriimuString[i] });
-                    if (tmp.Length < 2) tmp = new byte[] { 0, tmp[0] };
+                    //byte[] tmp = sjis.GetBytes(new char[] { kuriimuString[i] });
+                    //if (tmp.Length < 2) tmp = new byte[] { 0, tmp[0] };
                     x += info.glyph_width - info.left;
                     if (kuriimuString[i] == '<')
                     {
+                        var tag = "<";
                         while (tag.Last() != '>')
                         {
-                            tag += kuriimuString[(i++) + 1];
+                            tag += kuriimuString[++i];
                         }
-                        i -= 1;
-                        if (tag != "")
+                        //i -= 1;
+                        if (tag == "<name>") // Start Name
                         {
-                            if (tag == "<name>") // Start Name
-                            {
-                                font.SetColor(Color.FromArgb(255, 255, 255, 255)); //White
-                                continue;
-                            }
-                            else if (tag == "<text>") // Start Text
-                            {
-                                font.SetColor(Color.FromArgb(255, 80, 0, 0)); //Dark Red
-                                continue;
-                            }
+                            font.SetColor(Color.FromArgb(255, 255, 255, 255)); // White
+                            i++;
+                            continue;
                         }
-                        else
+                        if (tag == "</name>") // Start Name
                         {
-                            font.Draw(kuriimuString[i], gfx, x, y, scaleDefault, scaleDefault);
+                            font.SetColor(colorDefault); // Black
+                            i++;
+                            continue;
                         }
                     }
                     if (kuriimuString[i] == '\n')
                     {
                         x = rectText.X;
                         y += 17;
+                        continue;
                     }
+
+                    font.Draw(kuriimuString[i], gfx, x, y, scaleCurrent, scaleCurrent);
                 }
             }
 
