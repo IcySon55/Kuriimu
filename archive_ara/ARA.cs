@@ -15,6 +15,8 @@ namespace archive_ara
         private List<AraFileEntry> Entries = new List<AraFileEntry>();
         private Header Header;
 
+        private const uint ArcStartOffset = 0x10;
+
         public ARA(Stream binInput, Stream arcInput)
         {
             _binStream = binInput;
@@ -28,7 +30,7 @@ namespace archive_ara
                     var e = new AraFileEntry
                     {
                         FilenameOffset = br.ReadUInt32(),
-                        Filesize = br.ReadUInt32(),
+                        FileSize = br.ReadUInt32(),
                         Unk1 = br.ReadUInt32(),
                         Unk2 = br.ReadUInt32()
                     };
@@ -48,7 +50,7 @@ namespace archive_ara
                 {
                     Entry = o,
                     FileName = o.Filename,
-                    FileData = new SubStream(arcInput, o.Offset, o.Filesize),
+                    FileData = new SubStream(arcInput, o.Offset, o.FileSize),
                     State = ArchiveFileState.Archived
                 }).ToList();
             }
@@ -58,7 +60,50 @@ namespace archive_ara
         {
             using (var bw = new BinaryWriterX(binOutput))
             {
-                // TODO: Write out your file format
+                bw.WriteStruct(Header);
+
+                var filenameOffsets = bw.BaseStream.Position;
+                var fileOffsets = Header.FileCount * 0x10 + filenameOffsets;
+                var filenamesOffset = (Header.FileCount * 0x4 + fileOffsets + 15) & ~15;
+
+                // Files
+                using (var bw2 = new BinaryWriterX(arcOutput))
+                {
+                    bw2.BaseStream.Position = ArcStartOffset;
+                    for (var i = 0; i < Files.Count; i++)
+                    {
+                        Files[i].Entry.Offset = (uint)bw2.BaseStream.Position;
+                        Files[i].Entry.FileSize = (uint)Files[i].FileSize;
+                        Files[i].FileData.CopyTo(bw2.BaseStream);
+                        bw2.WritePadding();
+                    }
+                }
+
+                // Filenames
+                bw.BaseStream.Position = filenamesOffset;
+                for (var i = 0; i < Header.FileCount; i++)
+                {
+                    Entries[i].FilenameOffset = (uint)bw.BaseStream.Position;
+                    bw.WriteASCII(Entries[i].Filename);
+                    bw.Write((byte)0x0);
+                    bw.WritePadding();
+                }
+
+                // Filename Offsets
+                bw.BaseStream.Position = filenameOffsets;
+                for (var i = 0; i < Header.FileCount; i++)
+                {
+                    var entry = Entries[i];
+                    bw.Write(entry.FilenameOffset);
+                    bw.Write(entry.FileSize);
+                    bw.Write(entry.Unk1);
+                    bw.Write(entry.Unk2);
+                }
+
+                // File Offsets
+                bw.BaseStream.Position = fileOffsets;
+                for (var i = 0; i < Header.FileCount; i++)
+                    bw.Write(Entries[i].Offset);
             }
         }
 

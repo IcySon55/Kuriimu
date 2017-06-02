@@ -13,7 +13,7 @@ namespace archive_ara
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
+        public string Name => "ARA";
         public string Description => "Angelique Retour Archive";
         public string Extension => "*.bin";
         public string About => "This is the ARA archive manager for Karameru.";
@@ -24,7 +24,7 @@ namespace archive_ara
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
