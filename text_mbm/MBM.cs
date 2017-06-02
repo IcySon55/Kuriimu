@@ -151,7 +151,7 @@ namespace text_mbm
                     else if (part > 0x9f)
                     {
                         var part2 = br.ReadByte();
-                        if (part2 <= 0x3e)
+                        if (part2 <= 0x3e || (part2 > 0x70 && part2 < 0x80))
                         {
                             result += unicode.GetString(new byte[] { part2, part });
                         }
@@ -159,7 +159,8 @@ namespace text_mbm
                         {
                             result += sjis.GetString(new byte[] { part, part2 });
                         }
-                    } else
+                    }
+                    else
                     {
                         br.BaseStream.Position--;
                         result += unicode.GetString(br.ReadBytes(2).Reverse().ToArray());
