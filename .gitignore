@@ -3,14 +3,11 @@ bin
 obj
 *.suo
 *.user
-Publish.bat
 /sample_files
 /sample_images
-/Kuriimu/TempPublish.bat
+/Kuriimu/Publish.bat
 /.vs
-/Kuriimu/.vs/Kuriimu.sqlite
+/Kuriimu/Properties/AssemblyInfo.cs
 /Kuriimu/.vs/Kuriimu.sqlite
 *.sqlite
 /Kuriimu/packages
-/Kuriimu/Version.cs
-/Kuriimu/Properties/AssemblyInfo.cs

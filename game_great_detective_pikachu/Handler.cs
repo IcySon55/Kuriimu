@@ -58,7 +58,7 @@ namespace game_great_detective_pikachu
         public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
-            if (entry == null) return pages;
+            if (entry?.EditedText == null) return pages;
 
             string rawString = _pairs.Aggregate(entry.EditedText, (str, pair) => str.Replace(pair.Value, pair.Key));
 

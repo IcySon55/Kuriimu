@@ -19,7 +19,7 @@ namespace text_td3
 
         // Information
         public string Name => "TD3";
-        public string Description => "LUAC Scripts";
+        public string Description => "Compiled LUA 5.1 Scripts";
         public string Extension => "*.dat";
         public string About => "This is the TD3 text adapter for Kuriimu.";
 

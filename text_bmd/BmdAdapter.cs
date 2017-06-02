@@ -26,7 +26,7 @@ namespace text_bmd
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
         public bool CanAddEntries => false;
         public bool CanRenameEntries => false;
         public bool CanDeleteEntries => false;
@@ -63,18 +63,14 @@ namespace text_bmd
 
                 var backupFilePath = FileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
-                {
                     _bmdBackup = new BMD(File.OpenRead(backupFilePath));
-                }
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     File.Copy(FileInfo.FullName, backupFilePath);
                     _bmdBackup = new BMD(File.OpenRead(backupFilePath));
                 }
                 else
-                {
                     _bmdBackup = null;
-                }
             }
             else
                 result = LoadResult.FileNotFound;
@@ -113,12 +109,12 @@ namespace text_bmd
                     // Speakers
                     var speakerHeading = new Heading("Speakers");
                     _entries.Add(speakerHeading);
-                    speakerHeading.SubEntries.AddRange(_bmd.Speakers.Select(s => new SpeakerEntry(s)));
+                    speakerHeading.SubEntries.AddRange(_bmd.Speakers.Select(s => new SpeakerEntry(s, _bmdBackup?.Speakers.FirstOrDefault(sb => sb.Name == s.Name))));
 
                     // Messages
                     var messageHeading = new Heading("Messages");
                     _entries.Add(messageHeading);
-                    messageHeading.SubEntries.AddRange(_bmd.Messages.Select(m => new MessageEntry(m)));
+                    messageHeading.SubEntries.AddRange(_bmd.Messages.Select(m => new MessageEntry(m, _bmdBackup?.Messages.FirstOrDefault(mb => mb.Name == m.Name))));
                 }
 
                 if (SortEntries)

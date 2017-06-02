@@ -65,8 +65,8 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\MainFont.bcfna" />
-    <None Include="Resources\MainFont.bcfnt" />
+    <None Include="resources\MainFont.bcfna" />
+    <None Include="resources\MainFont.bcfnt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cetera\Cetera.csproj">
