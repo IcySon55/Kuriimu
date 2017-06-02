@@ -94,7 +94,7 @@ namespace game_rocket_slime_3ds
         public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
             var pages = new List<Bitmap>();
-            if (entry == null) return pages;
+            if (entry?.EditedText == null) return pages;
 
             foreach (string page in entry.EditedText.Split('\x17'))
             {

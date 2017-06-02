@@ -197,13 +197,15 @@ namespace game_miitopia_3ds
 
         public IList<Bitmap> GeneratePreviews(TextEntry entry)
         {
+            var pages = new List<Bitmap>();
+            if (entry?.EditedText == null) return pages;
+
             string labelString = GetKuriimuString(entry.EditedText);
             if (string.IsNullOrWhiteSpace(labelString))
             {
                 labelString = entry.OriginalText;
             }
 
-            List<Bitmap> bitmapList = new List<Bitmap>();
             Bitmap backgroundImg = new Bitmap(Resources.previewbg, 400, 120);
 
             // gold FromArgb(218, 165, 32)
@@ -248,8 +250,8 @@ namespace game_miitopia_3ds
                 }
             }
 
-            bitmapList.Add(backgroundImg);
-            return bitmapList;
+            pages.Add(backgroundImg);
+            return pages;
         }
 
         public Image Icon
