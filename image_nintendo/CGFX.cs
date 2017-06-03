@@ -32,7 +32,7 @@ namespace image_nintendo.CGFX
                     dictEntryList.Add(br.ReadStruct<DictEntry>());
                 }
 
-
+                
             }
         }
 
