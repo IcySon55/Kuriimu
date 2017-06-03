@@ -36,12 +36,12 @@ namespace archive_ddt_img
             }
         }
 
-        private void ReadEntries(DdtFileEntry header, BinaryReaderX br, string directory)
+        private void ReadEntries(DdtFileEntry parent, BinaryReaderX br, string directory)
         {
-            var subEntryCount = -header.SubEntryCountOrFileSize;
-            header.SubEntries = new List<DdtFileEntry>();
+            var subEntryCount = -parent.SubEntryCountOrFileSize;
+            parent.SubEntries = new List<DdtFileEntry>();
 
-            br.BaseStream.Position = header.NextEntryOffsetOrFileID;
+            br.BaseStream.Position = parent.NextEntryOffsetOrFileID;
 
             for (var i = 0; i < subEntryCount; i++)
             {
@@ -51,12 +51,12 @@ namespace archive_ddt_img
                     NextEntryOffsetOrFileID = br.ReadInt32(),
                     SubEntryCountOrFileSize = br.ReadInt32()
                 };
-                header.SubEntries.Add(entry);
+                parent.SubEntries.Add(entry);
             }
 
             for (var i = 0; i < subEntryCount; i++)
             {
-                br.BaseStream.Position = header.SubEntries[i].PathOffset;
+                br.BaseStream.Position = parent.SubEntries[i].PathOffset;
 
                 var c = br.ReadByte();
                 var name = new List<byte>();
@@ -65,13 +65,13 @@ namespace archive_ddt_img
                     name.Add(c);
                     c = br.ReadByte();
                 }
-                header.SubEntries[i].Name = Encoding.GetEncoding("EUC-JP").GetString(name.ToArray());
+                parent.SubEntries[i].Name = Encoding.GetEncoding("EUC-JP").GetString(name.ToArray());
             }
 
             for (var i = 0; i < subEntryCount; i++)
             {
                 var nextDirectory = directory;
-                var entry = header.SubEntries[i];
+                var entry = parent.SubEntries[i];
 
                 if (entry.SubEntryCountOrFileSize < 0)
                 {
@@ -93,9 +93,9 @@ namespace archive_ddt_img
             }
         }
 
-        private void ReadFiles(DdtFileEntry header, BinaryReaderX br)
+        private void ReadFiles(DdtFileEntry parent, BinaryReaderX br)
         {
-            foreach (var entry in header.SubEntries.Where(s => s.SubEntryCountOrFileSize >= 0))
+            foreach (var entry in parent.SubEntries.Where(s => s.SubEntryCountOrFileSize >= 0))
             {
                 var fileEntry = Files.FirstOrDefault(e => e.Entry == entry);
                 if (fileEntry != null) fileEntry.FileData = new SubStream(_imgStream, RunningPosition, entry.SubEntryCountOrFileSize);
@@ -112,7 +112,7 @@ namespace archive_ddt_img
                 br.BaseStream.Seek(-1, SeekOrigin.Current);
             }
 
-            foreach (var entry in header.SubEntries.Where(s => s.SubEntryCountOrFileSize < 0))
+            foreach (var entry in parent.SubEntries.Where(s => s.SubEntryCountOrFileSize < 0))
                 ReadFiles(entry, br);
         }
 
