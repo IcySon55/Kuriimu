@@ -46,6 +46,9 @@
     <Compile Include="BclytAdapter.cs" />
     <Compile Include="BclytSupport.cs" />
     <Compile Include="BxlimAdapter.cs" />
+    <Compile Include="CGFX.cs" />
+    <Compile Include="CgfxAdapter.cs" />
+    <Compile Include="CgfxSupport.cs" />
     <Compile Include="CTPK.cs" />
     <Compile Include="CtpkAdapter.cs" />
     <Compile Include="CtpkSupport.cs" />
