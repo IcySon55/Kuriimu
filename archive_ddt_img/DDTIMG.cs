@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Kuriimu.Contract;
 using Kuriimu.IO;
@@ -9,12 +8,13 @@ namespace archive_ddt_img
 {
     public class DDTIMG
     {
+        private const uint Alignment = 0x800;
+
         public List<DdtFileInfo> Files = new List<DdtFileInfo>();
         private Stream _ddtStream = null;
         private Stream _imgStream = null;
 
         private DdtFileEntry Header;
-        private long RunningPosition;
 
         public DDTIMG(Stream ddtInput, Stream imgInput)
         {
@@ -25,14 +25,11 @@ namespace archive_ddt_img
                 Header = new DdtFileEntry
                 {
                     PathOffset = br.ReadUInt32(),
-                    NextEntryOffsetOrFileID = br.ReadInt32(),
+                    NextDirectoryOffsetOrFileOffset = br.ReadInt32(),
                     SubEntryCountOrFileSize = br.ReadInt32()
                 };
-                RunningPosition = 0;
 
                 ReadEntries(Header, br, string.Empty);
-
-                ReadFiles(Header, new BinaryReaderX(imgInput));
             }
         }
 
@@ -41,14 +38,14 @@ namespace archive_ddt_img
             var subEntryCount = -parent.SubEntryCountOrFileSize;
             parent.SubEntries = new List<DdtFileEntry>();
 
-            br.BaseStream.Position = parent.NextEntryOffsetOrFileID;
+            br.BaseStream.Position = parent.NextDirectoryOffsetOrFileOffset;
 
             for (var i = 0; i < subEntryCount; i++)
             {
                 var entry = new DdtFileEntry()
                 {
                     PathOffset = br.ReadUInt32(),
-                    NextEntryOffsetOrFileID = br.ReadInt32(),
+                    NextDirectoryOffsetOrFileOffset = br.ReadInt32(),
                     SubEntryCountOrFileSize = br.ReadInt32()
                 };
                 parent.SubEntries.Add(entry);
@@ -86,34 +83,11 @@ namespace archive_ddt_img
                     {
                         Entry = entry,
                         FileName = entry.Name,
-                        //FileData = new SubStream(_imgStream, RunningPosition, entry.SubEntryCountOrFileSize), // Set below because reasons
+                        FileData = new SubStream(_imgStream, (uint)entry.NextDirectoryOffsetOrFileOffset * Alignment, entry.SubEntryCountOrFileSize), // Set below because reasons
                         State = ArchiveFileState.Archived
                     });
                 }
             }
-        }
-
-        private void ReadFiles(DdtFileEntry parent, BinaryReaderX br)
-        {
-            foreach (var entry in parent.SubEntries.Where(s => s.SubEntryCountOrFileSize >= 0))
-            {
-                var fileEntry = Files.FirstOrDefault(e => e.Entry == entry);
-                if (fileEntry != null) fileEntry.FileData = new SubStream(_imgStream, RunningPosition, entry.SubEntryCountOrFileSize);
-
-                // Move to the next file
-                br.BaseStream.Seek(entry.SubEntryCountOrFileSize, SeekOrigin.Current);
-                while (br.BaseStream.Position < br.BaseStream.Length)
-                {
-                    var b = br.ReadByte();
-                    if (b == 0x0) continue;
-                    RunningPosition = br.BaseStream.Position - 1;
-                    break;
-                }
-                br.BaseStream.Seek(-1, SeekOrigin.Current);
-            }
-
-            foreach (var entry in parent.SubEntries.Where(s => s.SubEntryCountOrFileSize < 0))
-                ReadFiles(entry, br);
         }
 
         public void Save(Stream ddtOutput, Stream imgOutput)

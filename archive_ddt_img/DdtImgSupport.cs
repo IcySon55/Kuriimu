@@ -6,7 +6,7 @@ namespace archive_ddt_img
     public class DdtFileEntry
     {
         public uint PathOffset;
-        public int NextEntryOffsetOrFileID;
+        public int NextDirectoryOffsetOrFileOffset;
         public int SubEntryCountOrFileSize;
 
         public string Name;
