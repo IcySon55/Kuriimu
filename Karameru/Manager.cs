@@ -821,25 +821,28 @@ namespace Karameru
                 };
 
                 if (fbd.ShowDialog() != DialogResult.OK) return;
-                foreach (var file in files)
+                foreach (var afi in files)
                 {
-                    var stream = file.FileData;
+                    var stream = afi.FileData;
                     if (stream == null) continue;
 
-                    var path = Path.Combine(fbd.SelectedPath, Regex.Replace(Path.GetDirectoryName(file.FileName).TrimStart('/', '\\').TrimEnd('\\') + "\\", selectedPathRegex, selectedNode + "\\"));
+                    var path = Path.Combine(fbd.SelectedPath, Regex.Replace(Path.GetDirectoryName(afi.FileName).TrimStart('/', '\\').TrimEnd('\\') + "\\", selectedPathRegex, selectedNode + "\\"));
 
                     if (!Directory.Exists(path))
                         Directory.CreateDirectory(path);
 
-                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, path, Path.GetFileName(file.FileName))))
+                    using (var fs = File.Create(Path.Combine(fbd.SelectedPath, path, Path.GetFileName(afi.FileName))))
                     {
                         if (stream.CanSeek)
                             stream.Position = 0;
 
                         try
                         {
-                            if (file.FileSize > 0)
+                            if (afi.FileSize > 0)
+                            {
                                 stream.CopyTo(fs);
+                                fs.Close();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -879,7 +882,10 @@ namespace Karameru
                     try
                     {
                         if (afi.FileSize > 0)
+                        {
                             stream.CopyTo(fs);
+                            fs.Close();
+                        }
 
                         MessageBox.Show($"\"{filename}\" extracted successfully.", "Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
