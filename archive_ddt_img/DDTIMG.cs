@@ -8,7 +8,7 @@ namespace archive_ddt_img
 {
     public class DDTIMG
     {
-        private const uint Alignment = 0x800;
+        private const long Alignment = 0x800;
 
         public List<DdtFileInfo> Files = new List<DdtFileInfo>();
         private Stream _ddtStream = null;
@@ -83,7 +83,7 @@ namespace archive_ddt_img
                     {
                         Entry = entry,
                         FileName = entry.Name,
-                        FileData = new SubStream(_imgStream, (uint)entry.NextDirectoryOffsetOrFileOffset * Alignment, entry.SubEntryCountOrFileSize), // Set below because reasons
+                        FileData = new SubStream(_imgStream, entry.NextDirectoryOffsetOrFileOffset * Alignment, entry.SubEntryCountOrFileSize),
                         State = ArchiveFileState.Archived
                     });
                 }
