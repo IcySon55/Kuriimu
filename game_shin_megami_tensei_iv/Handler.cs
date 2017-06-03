@@ -95,7 +95,7 @@ namespace game_shin_megami_tensei_iv
                 //int box = 0;
                 for (int i = 0; i < kuriimuString.Length; i++)
                 {
-                    var info = font.GetWidthInfo(sjis.GetString(Encoding.Unicode.GetBytes(new char[] { kuriimuString[i] }))[0]);
+                    var info = font.GetWidthInfo(kuriimuString[i].ToString().Normalize(NormalizationForm.FormKD)[0]);
                     x += info.left;
                     x += info.glyph_width - info.left;
                     if (kuriimuString[i] == '<')
@@ -131,7 +131,7 @@ namespace game_shin_megami_tensei_iv
                     }
                     else
                     {
-                        font.Draw(sjis.GetString(Encoding.Unicode.GetBytes(new char[] { kuriimuString[i] }))[0], gfx, x, y, scaleCurrent, scaleCurrent);
+                        font.Draw(kuriimuString[i].ToString().Normalize(NormalizationForm.FormKD)[0], gfx, x, y, scaleCurrent, scaleCurrent);
                     }
                 }
             }
