@@ -35,8 +35,8 @@ namespace game_shin_megami_tensei_iv
 
             ["\uF801"] = "\n",
             ["\uF812"] = "<name>",
-            ["\uF813"] = "<unk3>",
-            ["\uF87A"] = "</name>",
+            ["\uF813"] = "</name>",
+            ["\uF87A"] = "<unk3>",
 
             ["\u0000"] = "<0000>",
             ["\u7000"] = "<7000>",
@@ -110,21 +110,24 @@ namespace game_shin_megami_tensei_iv
                         if (tag == "<name>") // Start Name
                         {
                             font.SetColor(Color.FromArgb(255, 255, 255, 255)); // White
-                            i++;
-                            continue;
+                            y -= 15;
+                            x = rectText.X + 25;
                         }
                         if (tag == "</name>") // End Name
                         {
                             font.SetColor(colorDefault); // Black
-                            i++;
-                            continue;
+                            y += 15;
+                            x = 20;
                         }
                     }
                     else if (kuriimuString[i] == '\n')
                     {
                         x = rectText.X;
                         y += 17;
-                        continue;
+                    }
+                    else if (kuriimuString[i] == ' ')
+                    {
+                        x += 7;
                     }
                     else
                     {
