@@ -65,7 +65,7 @@ namespace text_mbm
                         Labels.Add(new Label
                         {
                             Name = "Text " + (entry.ID + 1),
-                            Text = ReadString(br.ReadBytes(entry.stringSize)),//sjis.GetString(br.ReadBytes(entry.stringSize)).Split('')[0],
+                            Text = ReadString(br.ReadBytes(entry.stringSize)),
                             TextID = entry.ID
                         });
                 }
@@ -88,20 +88,20 @@ namespace text_mbm
                     if (count < Labels.Count)
                         if (Labels[count].TextID == i)
                         {
-                            bw.Write(i);
-                            int stringSize = sjis.GetBytes(Labels[count].Text).Length + 2;
-                            bw.Write(stringSize);
-                            bw.Write(offset);
-
                             long bk = bw.BaseStream.Position;
+
                             bw.BaseStream.Position = offset;
-                            var byteText = ReplaceBytes(sjis.GetBytes(Labels[count].Text), new byte[] { 0x81, 0x45 }, new byte[] { 0xf8, 0x01 });
+                            var byteText = ConvString(Labels[count].Text);
                             bw.Write(byteText);
-                            bw.Write((ushort)0xffff);
+
                             bw.BaseStream.Position = bk;
 
-                            offset += stringSize;
+                            bw.Write(i);
+                            bw.Write(byteText.Count());
+                            bw.Write(offset);
                             bw.Write(0);
+
+                            offset += byteText.Count();
 
                             count++;
                         }
@@ -133,36 +133,26 @@ namespace text_mbm
         {
             using (var br = new BinaryReaderX(new MemoryStream(input), ByteOrder.BigEndian))
             {
-                string result = "";
                 var sjis = Encoding.GetEncoding("sjis");
                 var unicode = Encoding.GetEncoding("unicode");
+
+                string result = "";
 
                 ushort symbol = br.ReadUInt16();
                 while (symbol != 0xffff)
                 {
                     br.BaseStream.Position -= 2;
 
-                    var part = br.ReadByte();
-                    if (part >= 0x81 && part <= 0x9f)
+                    var bytes = br.ReadBytes(2);
+                    var conv = sjis.GetString(bytes);
+                    if (conv == "\u30fb")
                     {
-                        br.BaseStream.Position--;
-                        result += sjis.GetString(br.ReadBytes(2));
+                        result += unicode.GetString(bytes.Reverse().ToArray());
                     }
-                    else if (part > 0x9f)
+                    else
                     {
-                        var part2 = br.ReadByte();
-                        if (part2 <= 0x3e)
-                        {
-                            result += unicode.GetString(new byte[] { part2, part });
-                        }
-                        else
-                        {
-                            result += sjis.GetString(new byte[] { part, part2 });
-                        }
-                    } else
-                    {
-                        br.BaseStream.Position--;
-                        result += unicode.GetString(br.ReadBytes(2).Reverse().ToArray());
+                        result += conv;
+
                     }
 
                     symbol = br.ReadUInt16();
@@ -170,6 +160,39 @@ namespace text_mbm
 
                 return result;
             }
+        }
+
+        private byte[] ConvString(string text)
+        {
+            var sjis = Encoding.GetEncoding("SJIS");
+            var unicode = Encoding.Unicode;
+
+            List<byte> result = new List<byte>();
+
+            foreach (var letter in text)
+            {
+                var conv = sjis.GetBytes(new char[] { letter });
+
+                if (conv.Length < 2)
+                {
+                    if (conv[0] == 0x3f)
+                    {
+                        result.AddRange(unicode.GetBytes(new char[] { letter }).Reverse().ToArray());
+                    }
+                    else
+                    {
+                        result.Add(conv[0]);
+                    }
+                }
+                else
+                {
+                    result.AddRange(conv);
+                }
+            }
+
+            result.AddRange(new byte[] { 0xff, 0xff });
+
+            return result.ToArray();
         }
 
         private byte[] ReplaceBytes(byte[] input, byte[] search, byte[] replace)
