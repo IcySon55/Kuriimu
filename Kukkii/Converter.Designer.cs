@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,6 +41,7 @@
             this.importPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchExportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchImportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,9 +74,11 @@
             this.tslZoom = new System.Windows.Forms.ToolStripLabel();
             this.tslTool = new System.Windows.Forms.ToolStripLabel();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.splProperties = new System.Windows.Forms.SplitContainer();
+            this.treBitmaps = new System.Windows.Forms.TreeView();
+            this.imlBitmaps = new System.Windows.Forms.ImageList(this.components);
+            this.pptImageProperties = new System.Windows.Forms.PropertyGrid();
             this.clrDialog = new System.Windows.Forms.ColorDialog();
-            this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -83,6 +87,10 @@
             this.splMain.Panel2.SuspendLayout();
             this.splMain.SuspendLayout();
             this.tslTools.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splProperties)).BeginInit();
+            this.splProperties.Panel1.SuspendLayout();
+            this.splProperties.Panel2.SuspendLayout();
+            this.splProperties.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnuMain
@@ -169,7 +177,7 @@
             this.exportPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_export;
             this.exportPNGToolStripMenuItem.Name = "exportPNGToolStripMenuItem";
             this.exportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.exportPNGToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.exportPNGToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.exportPNGToolStripMenuItem.Text = "&Export PNG";
             this.exportPNGToolStripMenuItem.Click += new System.EventHandler(this.exportPNGToolStripMenuItem_Click);
             // 
@@ -179,7 +187,7 @@
             this.importPNGToolStripMenuItem.Image = global::Kukkii.Properties.Resources.import_import;
             this.importPNGToolStripMenuItem.Name = "importPNGToolStripMenuItem";
             this.importPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.importPNGToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.importPNGToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.importPNGToolStripMenuItem.Text = "&Import PNG";
             this.importPNGToolStripMenuItem.Click += new System.EventHandler(this.importPNGToolStripMenuItem_Click);
             // 
@@ -189,15 +197,21 @@
             this.compressionToolStripMenuItem,
             this.encryptionToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
             // 
             // compressionToolStripMenuItem
             // 
             this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
+            // 
+            // encryptionToolStripMenuItem
+            // 
+            this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.encryptionToolStripMenuItem.Text = "&Encryption";
             // 
             // batchToolStripMenuItem
             // 
@@ -215,7 +229,7 @@
             this.batchExportPNGToolStripMenuItem.Name = "batchExportPNGToolStripMenuItem";
             this.batchExportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.E)));
-            this.batchExportPNGToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
+            this.batchExportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchExportPNGToolStripMenuItem.Text = "Batch &Export PNG";
             this.batchExportPNGToolStripMenuItem.Click += new System.EventHandler(this.batchExportPNGToolStripMenuItem_Click);
             // 
@@ -225,7 +239,7 @@
             this.batchImportPNGToolStripMenuItem.Name = "batchImportPNGToolStripMenuItem";
             this.batchImportPNGToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.I)));
-            this.batchImportPNGToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
+            this.batchImportPNGToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchImportPNGToolStripMenuItem.Text = "Batch &Import PNG";
             this.batchImportPNGToolStripMenuItem.Click += new System.EventHandler(this.batchImportPNGToolStripMenuItem_Click);
             // 
@@ -233,7 +247,7 @@
             // 
             this.batchScanSubdirectoriesToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_scan_subdirectories_off;
             this.batchScanSubdirectoriesToolStripMenuItem.Name = "batchScanSubdirectoriesToolStripMenuItem";
-            this.batchScanSubdirectoriesToolStripMenuItem.Size = new System.Drawing.Size(292, 22);
+            this.batchScanSubdirectoriesToolStripMenuItem.Size = new System.Drawing.Size(239, 22);
             this.batchScanSubdirectoriesToolStripMenuItem.Text = "Don\'t Scan Sub-directories";
             this.batchScanSubdirectoriesToolStripMenuItem.Click += new System.EventHandler(this.batchScanSubdirectoriesToolStripMenuItem_Click);
             // 
@@ -252,27 +266,27 @@
             // 
             this.gBATempToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_gbatemp;
             this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.gBATempToolStripMenuItem.Text = "GBATemp";
             // 
             // gitHubToolStripMenuItem
             // 
             this.gitHubToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_git;
             this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.gitHubToolStripMenuItem.Text = "GitHub";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(123, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(125, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Image = global::Kukkii.Properties.Resources.menu_about;
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
             this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
             this.aboutToolStripMenuItem1.Text = "&About";
             // 
             // tlsMain
@@ -465,7 +479,7 @@
             // 
             // splMain.Panel2
             // 
-            this.splMain.Panel2.Controls.Add(this.propertyGrid1);
+            this.splMain.Panel2.Controls.Add(this.splProperties);
             this.splMain.Size = new System.Drawing.Size(972, 599);
             this.splMain.SplitterDistance = 740;
             this.splMain.TabIndex = 0;
@@ -515,7 +529,7 @@
             this.tslTool.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tslTool.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tslTool.Name = "tslTool";
-            this.tslTool.Size = new System.Drawing.Size(68, 22);
+            this.tslTool.Size = new System.Drawing.Size(69, 22);
             this.tslTool.Text = "Tool: Zoom";
             // 
             // toolStripButton2
@@ -528,19 +542,55 @@
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.Text = "Export PNG";
             // 
-            // propertyGrid1
+            // splProperties
             // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(228, 599);
-            this.propertyGrid1.TabIndex = 0;
+            this.splProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splProperties.Location = new System.Drawing.Point(0, 0);
+            this.splProperties.Name = "splProperties";
+            this.splProperties.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // encryptionToolStripMenuItem
+            // splProperties.Panel1
             // 
-            this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
-            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.encryptionToolStripMenuItem.Text = "&Encryption";
+            this.splProperties.Panel1.Controls.Add(this.treBitmaps);
+            // 
+            // splProperties.Panel2
+            // 
+            this.splProperties.Panel2.Controls.Add(this.pptImageProperties);
+            this.splProperties.Size = new System.Drawing.Size(228, 599);
+            this.splProperties.SplitterDistance = 300;
+            this.splProperties.TabIndex = 2;
+            // 
+            // treBitmaps
+            // 
+            this.treBitmaps.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treBitmaps.FullRowSelect = true;
+            this.treBitmaps.HideSelection = false;
+            this.treBitmaps.ImageIndex = 0;
+            this.treBitmaps.ImageList = this.imlBitmaps;
+            this.treBitmaps.Location = new System.Drawing.Point(0, 0);
+            this.treBitmaps.Name = "treBitmaps";
+            this.treBitmaps.SelectedImageIndex = 0;
+            this.treBitmaps.ShowLines = false;
+            this.treBitmaps.ShowPlusMinus = false;
+            this.treBitmaps.ShowRootLines = false;
+            this.treBitmaps.Size = new System.Drawing.Size(228, 300);
+            this.treBitmaps.TabIndex = 1;
+            this.treBitmaps.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treBitmaps_AfterSelect);
+            // 
+            // imlBitmaps
+            // 
+            this.imlBitmaps.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imlBitmaps.ImageSize = new System.Drawing.Size(96, 64);
+            this.imlBitmaps.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // pptImageProperties
+            // 
+            this.pptImageProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pptImageProperties.Location = new System.Drawing.Point(0, 0);
+            this.pptImageProperties.Name = "pptImageProperties";
+            this.pptImageProperties.Size = new System.Drawing.Size(228, 295);
+            this.pptImageProperties.TabIndex = 0;
+            this.pptImageProperties.ToolbarVisible = false;
             // 
             // Converter
             // 
@@ -567,6 +617,10 @@
             this.splMain.ResumeLayout(false);
             this.tslTools.ResumeLayout(false);
             this.tslTools.PerformLayout();
+            this.splProperties.Panel1.ResumeLayout(false);
+            this.splProperties.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splProperties)).EndInit();
+            this.splProperties.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -599,7 +653,7 @@
         private System.Windows.Forms.ToolStripLabel tslZoom;
         private System.Windows.Forms.ToolStripLabel tslTool;
         private System.Windows.Forms.ToolStripButton tsbBatchExport;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.PropertyGrid pptImageProperties;
         private System.Windows.Forms.ToolStripMenuItem batchToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton tsbExportPNG;
@@ -621,6 +675,9 @@
         private System.Windows.Forms.ToolStripButton tsbBatchScanSubdirectories;
         private System.Windows.Forms.ToolStripMenuItem batchScanSubdirectoriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
+        private System.Windows.Forms.TreeView treBitmaps;
+        private System.Windows.Forms.ImageList imlBitmaps;
+        private System.Windows.Forms.SplitContainer splProperties;
     }
 }
 

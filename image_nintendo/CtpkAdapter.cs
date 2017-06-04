@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -59,11 +60,7 @@ namespace image_nintendo.CTPK
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _ctpk.bmp;
-            set => _ctpk.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _ctpk.bmp } };
 
         public bool ShowProperties(Icon icon) => false;
     }

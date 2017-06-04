@@ -7,7 +7,6 @@ using System.Security.Cryptography;
 using System.Text;
 
 using Security.Cryptography;
-using Kuriimu.Contract.Properties;
 
 namespace Kuriimu.CTR
 {

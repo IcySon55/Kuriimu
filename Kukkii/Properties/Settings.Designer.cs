@@ -34,15 +34,6 @@ namespace Kukkii.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("v1.0.0")]
-        public string ApplicationVersion {
-            get {
-                return ((string)(this["ApplicationVersion"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
         public string PluginDirectory {
             get {
@@ -107,6 +98,30 @@ namespace Kukkii.Properties {
             }
             set {
                 this["BatchScanSubdirectories"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("96")]
+        public int ThumbnailWidth {
+            get {
+                return ((int)(this["ThumbnailWidth"]));
+            }
+            set {
+                this["ThumbnailWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("64")]
+        public int ThumbnailHeight {
+            get {
+                return ((int)(this["ThumbnailHeight"]));
+            }
+            set {
+                this["ThumbnailHeight"] = value;
             }
         }
     }

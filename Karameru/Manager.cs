@@ -1,42 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Karameru.Properties;
 using Kuriimu.Contract;
+using Kuriimu.UI;
 
 namespace Karameru
 {
     public partial class Manager : Form
     {
-        private IArchiveManager _archiveManager = null;
-        private bool _fileOpen = false;
-        private bool _hasChanges = false;
+        private IArchiveManager _archiveManager;
+        private bool _fileOpen;
+        private bool _hasChanges;
 
-        private List<ITextAdapter> _textAdapters = null;
-        private List<IImageAdapter> _imageAdapters = null;
-        private List<IArchiveManager> _archiveManagers = null;
-        private HashSet<string> _textExtensions = null;
-        private HashSet<string> _imageExtensions = null;
-        private HashSet<string> _archiveExtensions = null;
+        private List<ITextAdapter> _textAdapters;
+        private List<IImageAdapter> _imageAdapters;
+        private List<IArchiveManager> _archiveManagers;
+        private HashSet<string> _textExtensions;
+        private HashSet<string> _imageExtensions;
+        private HashSet<string> _archiveExtensions;
 
-        private List<ArchiveFileInfo> _files = null;
+        private List<ArchiveFileInfo> _files;
 
         // Shared Booleans
-        private bool _canExtractDirectories = false;
+        private bool _canExtractDirectories;
         private bool _canReplaceDirectories = false;
 
-        private bool _canAddFiles = false;
-        private bool _canExtractFiles = false;
-        private bool _canRenameFiles = false;
-        private bool _canReplaceFiles = false;
-        private bool _canDeleteFiles = false;
+        private bool _canAddFiles;
+        private bool _canExtractFiles;
+        private bool _canRenameFiles;
+        private bool _canReplaceFiles;
+        private bool _canDeleteFiles;
 
         public Manager(string[] args)
         {
@@ -89,8 +92,8 @@ namespace Karameru
             treDirectories.NodeMouseClick += (sender2, e2) => treDirectories.SelectedNode = e2.Node;
 
             // Tools
-            Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
-            Kuriimu.UI.EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
 
             Tools.DoubleBuffer(treDirectories, true);
             Tools.DoubleBuffer(lstFiles, true);
@@ -554,7 +557,7 @@ namespace Karameru
         // Utilities
         private void UpdateForm()
         {
-            Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Description + " Manager (" + _archiveManager.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Description + " Manager (" + _archiveManager.Name + ")" : string.Empty);
 
             openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
             tsbOpen.Enabled = _archiveManagers.Count > 0;
@@ -669,7 +672,7 @@ namespace Karameru
         }
 
         // Directory Context Strip
-        private void mnuDirectories_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void mnuDirectories_Opening(object sender, CancelEventArgs e)
         {
             extractDirectoryToolStripMenuItem.Enabled = _canExtractDirectories;
             extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Extract is not supported";
@@ -704,7 +707,7 @@ namespace Karameru
         }
 
         // File Context Strip
-        private void mnuFiles_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void mnuFiles_Opening(object sender, CancelEventArgs e)
         {
             var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
             var afi = selectedItem?.Tag as ArchiveFileInfo;

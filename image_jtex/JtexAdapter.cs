@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Cetera.Image;
@@ -70,17 +71,7 @@ namespace image_jtex
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => raw ? _rawjtex.Image : _jtex.Image;
-            set
-            {
-                if (raw)
-                    _rawjtex.Image = value;
-                else
-                    _jtex.Image = value;
-            }
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = raw ? _rawjtex.Image : _jtex.Image } };
 
         public bool ShowProperties(Icon icon) => false;
     }

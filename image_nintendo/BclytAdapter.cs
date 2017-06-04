@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -54,11 +55,7 @@ namespace image_nintendo.BCLYT
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _bclyt;
-            set => _bclyt = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _bclyt } };
 
         public bool ShowProperties(Icon icon) => false;
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -32,7 +33,7 @@ namespace image_nintendo.BXLIM
             {
                 if (br.BaseStream.Length < 40) return false;
                 br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
-                string magic = br.ReadString(4);
+                var magic = br.ReadString(4);
                 return magic == "CLIM" || magic == "FLIM";
             }
         }
@@ -58,11 +59,7 @@ namespace image_nintendo.BXLIM
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _bxlim.Image;
-            set => _bxlim.Image = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _bxlim.Image } };
 
         public bool ShowProperties(Icon icon) => false;
     }
