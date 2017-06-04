@@ -5,9 +5,6 @@
     <Setting Name="ApplicationName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Kukkii</Value>
     </Setting>
-    <Setting Name="ApplicationVersion" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">v1.0.0</Value>
-    </Setting>
     <Setting Name="PluginDirectory" Type="System.String" Scope="Application">
       <Value Profile="(Default)">plugins</Value>
     </Setting>

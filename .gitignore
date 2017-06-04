@@ -11,3 +11,7 @@ obj
 /Kuriimu/.vs/Kuriimu.sqlite
 *.sqlite
 /Kuriimu/packages
+/Karameru/Properties/AssemblyInfo.cs
+/Kukkii/Properties/AssemblyInfo.cs
+/KuriimuContract/Properties/AssemblyInfo.cs
+/runext/Properties/AssemblyInfo.cs
