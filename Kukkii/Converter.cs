@@ -311,7 +311,7 @@ namespace Kukkii
 
         private void UpdateImageList()
         {
-            if (_imageAdapter.Bitmaps?.Count <= 0) return;
+            if (_imageAdapter == null || _imageAdapter.Bitmaps?.Count <= 0) return;
 
             treBitmaps.BeginUpdate();
             treBitmaps.Nodes.Clear();
@@ -605,8 +605,8 @@ namespace Kukkii
         // Info Controls
         private void treBitmaps_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            _selectedImageIndex = treBitmaps.Nodes.IndexOf(treBitmaps.SelectedNode);
-            UpdatePreview();
+            _selectedImageIndex = treBitmaps.SelectedNode.Index;
+            UpdateImageList();
         }
     }
 }
