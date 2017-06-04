@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using System.Linq;
 
 namespace image_nintendo.CTPK
 {
@@ -14,7 +15,7 @@ namespace image_nintendo.CTPK
         #region Properties
 
         public string Name => "CTPK";
-        public string Description => "CTR Texture PaCkage";
+        public string Description => "CTR Texture PacKage";
         public string Extension => "*.ctpk";
         public string About => "This is the CTPK image adapter for Kukkii.";
 
@@ -60,7 +61,7 @@ namespace image_nintendo.CTPK
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _ctpk.bmp } };
+        public IList<BitmapInfo> Bitmaps => _ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
 
         public bool ShowProperties(Icon icon) => false;
     }

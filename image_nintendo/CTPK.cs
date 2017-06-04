@@ -18,7 +18,7 @@ namespace image_nintendo.CTPK
         private List<uint> texInfoList2;
         private byte[] rest;
 
-        public Bitmap bmp;
+        public List<Bitmap> bmps = new List<Bitmap>();
         bool isRaw = false;
 
         public CTPK(string filename, bool isRaw = false)
@@ -30,6 +30,7 @@ namespace image_nintendo.CTPK
                 {
                     //Header
                     header = br.ReadStruct<Header>();
+                    br.BaseStream.Position = br.BaseStream.Position + 0xf & ~0xf;
 
                     //TexEntries
                     entries = new List<Entry>();
@@ -54,14 +55,17 @@ namespace image_nintendo.CTPK
                     texInfoList2 = new List<uint>();
                     texInfoList2.AddRange(br.ReadMultiple<uint>(header.texCount));
 
-                    br.BaseStream.Position = entries[0].texOffset + header.texSecOffset;
-                    var settings = new ImageSettings
+                    for (int i = 0; i < entries.Count; i++)
                     {
-                        Width = entries[0].width,
-                        Height = entries[0].height,
-                        Format = ImageSettings.ConvertFormat(entries[0].imageFormat),
-                    };
-                    bmp = Common.Load(br.ReadBytes(entries[0].texDataSize), settings);
+                        br.BaseStream.Position = entries[i].texOffset + header.texSecOffset;
+                        var settings = new ImageSettings
+                        {
+                            Width = entries[i].width,
+                            Height = entries[i].height,
+                            Format = ImageSettings.ConvertFormat(entries[i].imageFormat),
+                        };
+                        bmps.Add(Common.Load(br.ReadBytes(entries[i].texDataSize), settings));
+                    }
 
                     if (br.BaseStream.Position < br.BaseStream.Length)
                         rest = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
@@ -95,7 +99,7 @@ namespace image_nintendo.CTPK
                         Format = Format.RGB565,
                         PadToPowerOf2 = false
                     };
-                    bmp = Common.Load(br.ReadBytes((int)br.BaseStream.Length), settings);
+                    bmps.Add(Common.Load(br.ReadBytes((int)br.BaseStream.Length), settings));
                 }
                 else
                 {
@@ -111,23 +115,31 @@ namespace image_nintendo.CTPK
             else
                 using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
                 {
-                    var settings = new ImageSettings
+                    var texOffset = 0;
+                    for (int i = 0; i < bmps.Count; i++)
                     {
-                        Width = bmp.Width,
-                        Height = bmp.Height,
-                        Format = ImageSettings.ConvertFormat(entries[0].imageFormat),
-                        PadToPowerOf2 = false
-                    };
-                    byte[] resBmp = Common.Save(bmp, settings);
+                        var settings = new ImageSettings
+                        {
+                            Width = bmps[i].Width,
+                            Height = bmps[i].Height,
+                            Format = ImageSettings.ConvertFormat(entries[i].imageFormat),
+                            PadToPowerOf2 = false
+                        };
+                        byte[] resBmp = Common.Save(bmps[i], settings);
 
-                    int diff = resBmp.Length - entries[0].texDataSize;
-                    entries[0].width = (short)bmp.Width;
-                    entries[0].height = (short)bmp.Height;
-                    entries[0].texDataSize = resBmp.Length;
-                    for (int i = 1; i < header.texCount; i++)
-                        entries[i].texOffset -= diff;
+                        int diff = resBmp.Length - entries[i].texDataSize;
+                        entries[i].width = (short)bmps[i].Width;
+                        entries[i].height = (short)bmps[i].Height;
+                        entries[i].texDataSize = resBmp.Length;
+                        entries[i].texOffset = texOffset;
 
-                    texSizeList[0] = resBmp.Length;
+                        texSizeList[i] = resBmp.Length;
+
+                        bw.BaseStream.Position = header.texSecOffset + texOffset;
+                        bw.Write(resBmp);
+
+                        texOffset += resBmp.Length;
+                    }
 
                     //write entries
                     bw.BaseStream.Position = 0x20;
@@ -156,11 +168,6 @@ namespace image_nintendo.CTPK
                     bw.BaseStream.Position = header.texInfoOffset;
                     for (int i = 0; i < header.texCount; i++) bw.Write(texInfoList2[i]);
 
-                    //write texData
-                    bw.BaseStream.Position = header.texSecOffset;
-                    bw.Write(resBmp);
-                    bw.Write(rest);
-
                     header.texSecSize = (int)bw.BaseStream.Length - header.texSecOffset;
                     bw.BaseStream.Position = 0;
                     bw.WriteStruct(header);
@@ -171,14 +178,17 @@ namespace image_nintendo.CTPK
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var settings = new ImageSettings
+                foreach (var bmp in bmps)
                 {
-                    Width = size,
-                    Height = size,
-                    Format = Format.RGB565,
-                    PadToPowerOf2 = false
-                };
-                bw.Write(Common.Save(bmp, settings));
+                    var settings = new ImageSettings
+                    {
+                        Width = size,
+                        Height = size,
+                        Format = Format.RGB565,
+                        PadToPowerOf2 = false
+                    };
+                    bw.Write(Common.Save(bmp, settings));
+                }
             }
         }
     }
