@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -56,11 +57,7 @@ namespace image_tim2
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _tim2.bmp;
-            set => _tim2.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _tim2.bmp } };
 
         public bool ShowProperties(Icon icon) => false;
     }

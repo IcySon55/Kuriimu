@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Compression;
@@ -75,11 +76,7 @@ namespace image_f3xt
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _f3xt.Image;
-            set => _f3xt.Image = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _f3xt.Image } };
 
         public bool ShowProperties(Icon icon) => false;
     }

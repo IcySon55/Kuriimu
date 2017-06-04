@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 
 namespace Kuriimu.Contract
@@ -16,9 +18,19 @@ namespace Kuriimu.Contract
         void Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
         // Images
-        Bitmap Bitmap { get; set; }
+        IList<BitmapInfo> Bitmaps { get; }
 
         // Features
         bool ShowProperties(Icon icon);
+    }
+
+    public class BitmapInfo
+    {
+        [Browsable(false)]
+        public Bitmap Bitmap { get; set; }
+
+        [Category("Properties"),
+        Description("The dimensions of the image.")]
+        public Size Size => Bitmap.Size;
     }
 }

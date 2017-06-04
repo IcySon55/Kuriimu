@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kuriimu.Contract;
-using System.IO;
-using Kuriimu.IO;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace image_nintendo.CGFX
 {
@@ -68,11 +66,7 @@ namespace image_nintendo.CGFX
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _cgfx.bmps[0];
-            set => _cgfx.bmps[0] = value;
-        }
+        public IList<BitmapInfo> Bitmaps => _cgfx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
 
         public bool ShowProperties(Icon icon) => false;
     }

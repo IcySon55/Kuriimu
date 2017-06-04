@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -55,11 +56,7 @@ namespace image_nintendo.ICN
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _icn.bmp;
-            set => _icn.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _icn.bmp } };
 
         public bool ShowProperties(Icon icon) => false;
     }

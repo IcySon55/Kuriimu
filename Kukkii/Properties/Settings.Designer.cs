@@ -109,5 +109,29 @@ namespace Kukkii.Properties {
                 this["BatchScanSubdirectories"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("96")]
+        public int ThumbnailWidth {
+            get {
+                return ((int)(this["ThumbnailWidth"]));
+            }
+            set {
+                this["ThumbnailWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("64")]
+        public int ThumbnailHeight {
+            get {
+                return ((int)(this["ThumbnailHeight"]));
+            }
+            set {
+                this["ThumbnailHeight"] = value;
+            }
+        }
     }
 }

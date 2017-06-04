@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -55,11 +56,7 @@ namespace image_level5.XI
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _xi;
-            set => _xi = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _xi } };
 
         public bool ShowProperties(Icon icon) => false;
     }

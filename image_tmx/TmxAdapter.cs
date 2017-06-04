@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -56,11 +57,7 @@ namespace image_tmx
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _tmx.bmp;
-            set => _tmx.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _tmx.bmp } };
 
         public bool ShowProperties(Icon icon) => false;
     }

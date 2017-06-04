@@ -2,22 +2,27 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
+using Cyotek.Windows.Forms;
 using Kukkii.Properties;
 using Kuriimu.Contract;
+using Kuriimu.UI;
 
 namespace Kukkii
 {
     public partial class Converter : Form
     {
-        private IImageAdapter _imageAdapter = null;
-        private bool _fileOpen = false;
-        private bool _hasChanges = false;
+        private IImageAdapter _imageAdapter;
+        private bool _fileOpen;
+        private bool _hasChanges;
 
-        private List<IImageAdapter> _imageAdapters = null;
+        private List<IImageAdapter> _imageAdapters;
+        private int _selectedImageIndex = 0;
 
         public Converter(string[] args)
         {
@@ -36,10 +41,11 @@ namespace Kukkii
             Icon = Resources.kukkii;
 
             // Tools
-            Kuriimu.UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
-            Kuriimu.UI.EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
 
             UpdateForm();
+            UpdatePreview();
         }
 
         // Menu/Toolbar
@@ -237,23 +243,27 @@ namespace Kukkii
 
         private void ExportPNG()
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Title = "Export PNG...";
-            sfd.InitialDirectory = Settings.Default.LastDirectory;
-            sfd.FileName = _imageAdapter.FileInfo.Name + ".png";
-            sfd.Filter = "Portable Network Graphics (*.png)|*.png";
-            sfd.AddExtension = true;
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Title = "Export PNG...",
+                InitialDirectory = Settings.Default.LastDirectory,
+                FileName = _imageAdapter.FileInfo.Name + ".png",
+                Filter = "Portable Network Graphics (*.png)|*.png",
+                AddExtension = true
+            };
 
             if (sfd.ShowDialog() == DialogResult.OK)
-                _imageAdapter.Bitmap.Save(sfd.FileName, ImageFormat.Png);
+                _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap.Save(sfd.FileName, ImageFormat.Png);
         }
 
         private void ImportPNG()
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Import PNG...";
-            ofd.InitialDirectory = Settings.Default.LastDirectory;
-            ofd.Filter = "Portable Network Graphics (*.png)|*.png";
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Title = "Import PNG...",
+                InitialDirectory = Settings.Default.LastDirectory,
+                Filter = "Portable Network Graphics (*.png)|*.png"
+            };
 
             if (ofd.ShowDialog() == DialogResult.OK)
                 Import(ofd.FileName);
@@ -264,7 +274,7 @@ namespace Kukkii
             try
             {
                 var bmp = (Bitmap)Image.FromFile(filename);
-                _imageAdapter.Bitmap = bmp;
+                _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap = bmp;
                 UpdatePreview();
                 MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -276,12 +286,89 @@ namespace Kukkii
 
         private void UpdatePreview()
         {
-            imbPreview.Image = _imageAdapter?.Bitmap;
+            imbPreview.Image = _imageAdapter?.Bitmaps[_selectedImageIndex].Bitmap;
+
+            imbPreview.GridColor = Settings.Default.GridColor;
+            var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            var gfx = Graphics.FromImage(gcBitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor), 0, 0, 16, 16);
+            tsbGridColor.Image = gcBitmap;
+
+            imbPreview.GridColorAlternate = Settings.Default.GridColorAlternate;
+            var gcaBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            gfx = Graphics.FromImage(gcaBitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), 0, 0, 16, 16);
+            tsbGridColorAlternate.Image = gcaBitmap;
+
+            UpdateImageList();
+        }
+
+        private void UpdateImageList()
+        {
+            treBitmaps.BeginUpdate();
+            treBitmaps.Nodes.Clear();
+            imlBitmaps.Images.Clear();
+            imlBitmaps.TransparentColor = Color.Transparent;
+            imlBitmaps.ImageSize = new Size(Settings.Default.ThumbnailWidth, Settings.Default.ThumbnailHeight);
+            treBitmaps.ItemHeight = Settings.Default.ThumbnailHeight + 6;
+
+            for (var i = 0; i < _imageAdapter?.Bitmaps.Count; i++)
+            {
+                var bitmapInfo = _imageAdapter.Bitmaps[i];
+                pptImageProperties.SelectedObject = bitmapInfo;
+                imlBitmaps.Images.Add(i.ToString(), GenerateThumbnail(bitmapInfo.Bitmap));
+                treBitmaps.Nodes.Add(new TreeNode
+                {
+                    Text = (i + 1).ToString("00"),
+                    Tag = i,
+                    ImageIndex = i
+                });
+            }
+
+            if (treBitmaps.Nodes.Count > 0)
+                treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
+
+            treBitmaps.EndUpdate();
+        }
+
+        private Bitmap GenerateThumbnail(Bitmap input)
+        {
+            var thumbWidth = Settings.Default.ThumbnailWidth;
+            var thumbHeight = Settings.Default.ThumbnailHeight;
+            var thumb = new Bitmap(thumbWidth, thumbHeight, PixelFormat.Format32bppArgb);
+            var gfx = Graphics.FromImage(thumb);
+
+            gfx.CompositingQuality = CompositingQuality.HighQuality;
+            gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            gfx.SmoothingMode = SmoothingMode.HighQuality;
+            gfx.InterpolationMode = InterpolationMode.Default;
+
+            var wRatio = (float)input.Width / thumbWidth;
+            var hRatio = (float)input.Height / thumbHeight;
+            var ratio = wRatio >= hRatio ? wRatio : hRatio;
+
+            if (input.Width <= thumbWidth && input.Height <= thumbHeight)
+                ratio = 1.0f;
+
+            var size = new SizeF(Math.Min(input.Width / ratio, thumbWidth), Math.Min(input.Height / ratio, thumbHeight));
+            var pos = new PointF((float)thumbWidth / 2 - size.Width / 2, (float)thumbHeight / 2 - size.Height / 2);
+
+            // Grid
+            var xCount = Settings.Default.ThumbnailWidth / 16 + 1;
+            var yCount = Settings.Default.ThumbnailHeight / 16 + 1;
+
+            for (var i = 0; i < xCount; i++)
+                for (var j = 0; j < yCount; j++)
+                    gfx.FillRectangle(new SolidBrush((i + j) % 2 == 1 ? Settings.Default.GridColor : Settings.Default.GridColorAlternate), i * 16, j * 16, 16, 16);
+
+            gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
+
+            return thumb;
         }
 
         private void UpdateForm()
         {
-            Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Description + " Adapter (" + _imageAdapter.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Description + " Adapter (" + _imageAdapter.Name + ")" : string.Empty);
 
             if (_imageAdapter != null)
             {
@@ -303,19 +390,6 @@ namespace Kukkii
             batchScanSubdirectoriesToolStripMenuItem.Image = Settings.Default.BatchScanSubdirectories ? Resources.menu_scan_subdirectories_on : Resources.menu_scan_subdirectories_off;
             tsbBatchScanSubdirectories.Text = batchScanSubdirectoriesToolStripMenuItem.Text;
             tsbBatchScanSubdirectories.Image = batchScanSubdirectoriesToolStripMenuItem.Image;
-
-            // Colors
-            imbPreview.GridColor = Settings.Default.GridColor;
-            var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
-            var gfx = Graphics.FromImage(gcBitmap);
-            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor), 0, 0, 16, 16);
-            tsbGridColor.Image = gcBitmap;
-
-            imbPreview.GridColorAlternate = Settings.Default.GridColorAlternate;
-            var gcaBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
-            gfx = Graphics.FromImage(gcaBitmap);
-            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), 0, 0, 16, 16);
-            tsbGridColorAlternate.Image = gcaBitmap;
         }
 
         private string FileName()
@@ -363,7 +437,7 @@ namespace Kukkii
                             if (currentAdapter != null)
                             {
                                 currentAdapter.Load(file);
-                                currentAdapter.Bitmap.Save(fi.FullName + ".png");
+                                currentAdapter.Bitmaps[_selectedImageIndex].Bitmap.Save(fi.FullName + ".png"); // TODO: Multi-Image support
                                 count++;
                             }
                         }
@@ -419,7 +493,7 @@ namespace Kukkii
                                 {
                                     var bmp = (Bitmap)Image.FromFile(fi.FullName + ".png");
                                     currentAdapter.Load(file);
-                                    currentAdapter.Bitmap = bmp;
+                                    currentAdapter.Bitmaps[_selectedImageIndex].Bitmap = bmp; // TODO: Multi-Image support
                                     currentAdapter.Save();
                                     importCount++;
                                 }
@@ -458,7 +532,7 @@ namespace Kukkii
             imbPreview.GridColor = clrDialog.Color;
             Settings.Default.GridColor = clrDialog.Color;
             Settings.Default.Save();
-            UpdateForm();
+            UpdatePreview();
         }
 
         private void tsbGridColorAlternate_Click(object sender, EventArgs e)
@@ -469,7 +543,7 @@ namespace Kukkii
             imbPreview.GridColorAlternate = clrDialog.Color;
             Settings.Default.GridColorAlternate = clrDialog.Color;
             Settings.Default.Save();
-            UpdateForm();
+            UpdatePreview();
         }
 
         // Apps
@@ -494,7 +568,7 @@ namespace Kukkii
         }
 
         // Image Box
-        private void imbPreview_Zoomed(object sender, Cyotek.Windows.Forms.ImageBoxZoomEventArgs e)
+        private void imbPreview_Zoomed(object sender, ImageBoxZoomEventArgs e)
         {
             tslZoom.Text = "Zoom: " + imbPreview.Zoom + "%";
         }
@@ -503,7 +577,7 @@ namespace Kukkii
         {
             if (e.KeyCode == Keys.Space)
             {
-                imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.None;
+                imbPreview.SelectionMode = ImageBoxSelectionMode.None;
                 imbPreview.Cursor = Cursors.SizeAll;
                 tslTool.Text = "Tool: Pan";
             }
@@ -513,10 +587,17 @@ namespace Kukkii
         {
             if (e.KeyCode == Keys.Space)
             {
-                imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
+                imbPreview.SelectionMode = ImageBoxSelectionMode.Zoom;
                 imbPreview.Cursor = Cursors.Default;
                 tslTool.Text = "Tool: Zoom";
             }
+        }
+
+        // Info Controls
+        private void treBitmaps_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            _selectedImageIndex = treBitmaps.Nodes.IndexOf(treBitmaps.SelectedNode);
+            UpdatePreview();
         }
     }
 }
