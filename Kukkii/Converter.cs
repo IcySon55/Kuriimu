@@ -171,6 +171,12 @@ namespace Kukkii
                     imbPreview.Zoom = 100;
 
                     UpdatePreview();
+                    if (treBitmaps.Nodes.Count == 0)
+                    {
+                        MessageBox.Show(this, $"{FileName()} was loaded by the \"{tempAdapter.Description}\" adapter but it provided no images.", "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        _imageAdapter = null;
+                        _fileOpen = false;
+                    }
                     UpdateForm();
                 }
 
@@ -305,6 +311,8 @@ namespace Kukkii
 
         private void UpdateImageList()
         {
+            if (_imageAdapter.Bitmaps?.Count <= 0) return;
+
             treBitmaps.BeginUpdate();
             treBitmaps.Nodes.Clear();
             imlBitmaps.Images.Clear();
@@ -312,9 +320,10 @@ namespace Kukkii
             imlBitmaps.ImageSize = new Size(Settings.Default.ThumbnailWidth, Settings.Default.ThumbnailHeight);
             treBitmaps.ItemHeight = Settings.Default.ThumbnailHeight + 6;
 
-            for (var i = 0; i < _imageAdapter?.Bitmaps.Count; i++)
+            for (var i = 0; i < _imageAdapter.Bitmaps.Count; i++)
             {
                 var bitmapInfo = _imageAdapter.Bitmaps[i];
+                if (bitmapInfo.Bitmap == null) continue;
                 pptImageProperties.SelectedObject = bitmapInfo;
                 imlBitmaps.Images.Add(i.ToString(), GenerateThumbnail(bitmapInfo.Bitmap));
                 treBitmaps.Nodes.Add(new TreeNode
