@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using System.Linq;
 
 namespace image_nintendo.ICN
 {
@@ -20,7 +21,7 @@ namespace image_nintendo.ICN
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -50,13 +51,13 @@ namespace image_nintendo.ICN
 
             try
             {
-                //_icn.Save(FileInfo.FullName);
+                _icn.Save(FileInfo.FullName);
             }
             catch (Exception) { }
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _icn.bmp } };
+        public IList<BitmapInfo> Bitmaps => _icn.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
 
         public bool ShowProperties(Icon icon) => false;
     }
