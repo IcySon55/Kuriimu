@@ -311,7 +311,7 @@ namespace Kukkii
 
         private void UpdateImageList()
         {
-            if (_imageAdapter.Bitmaps?.Count <= 0) return;
+            if (_imageAdapter==null || _imageAdapter.Bitmaps?.Count <= 0) return;
 
             treBitmaps.BeginUpdate();
             treBitmaps.Nodes.Clear();
