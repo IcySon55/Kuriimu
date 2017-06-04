@@ -171,6 +171,7 @@ namespace Kukkii
                     imbPreview.Zoom = 100;
 
                     UpdatePreview();
+                    UpdateImageList();
                     if (treBitmaps.Nodes.Count == 0)
                     {
                         MessageBox.Show(this, $"{FileName()} was loaded by the \"{tempAdapter.Description}\" adapter but it provided no images.", "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -293,6 +294,7 @@ namespace Kukkii
         private void UpdatePreview()
         {
             imbPreview.Image = _imageAdapter?.Bitmaps[_selectedImageIndex].Bitmap;
+            pptImageProperties.SelectedObject = _imageAdapter?.Bitmaps[_selectedImageIndex];
 
             imbPreview.GridColor = Settings.Default.GridColor;
             var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
@@ -305,8 +307,6 @@ namespace Kukkii
             gfx = Graphics.FromImage(gcaBitmap);
             gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), 0, 0, 16, 16);
             tsbGridColorAlternate.Image = gcaBitmap;
-
-            UpdateImageList();
         }
 
         private void UpdateImageList()
@@ -324,18 +324,14 @@ namespace Kukkii
             {
                 var bitmapInfo = _imageAdapter.Bitmaps[i];
                 if (bitmapInfo.Bitmap == null) continue;
-                pptImageProperties.SelectedObject = bitmapInfo;
                 imlBitmaps.Images.Add(i.ToString(), GenerateThumbnail(bitmapInfo.Bitmap));
                 treBitmaps.Nodes.Add(new TreeNode
                 {
                     Text = (i + 1).ToString("00"),
                     Tag = i,
-                    ImageIndex = i
+                    ImageKey = i.ToString()
                 });
             }
-
-            if (treBitmaps.Nodes.Count > 0)
-                treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
 
             treBitmaps.EndUpdate();
         }
@@ -606,7 +602,7 @@ namespace Kukkii
         private void treBitmaps_AfterSelect(object sender, TreeViewEventArgs e)
         {
             _selectedImageIndex = treBitmaps.SelectedNode.Index;
-            UpdateImageList();
+            UpdatePreview();
         }
     }
 }
