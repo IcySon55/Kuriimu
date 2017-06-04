@@ -36,7 +36,7 @@ namespace image_nintendo.CGFX
             {
                 using (var br = new BinaryReaderX(File.OpenRead(filename)))
                 {
-                    if (br.ReadString(4) == "CGFX") return false;
+                    if (br.ReadString(4) != "CGFX") return false;
                     br.BaseStream.Position = 0x24;
                     return br.ReadUInt32() > 0;
                 }
