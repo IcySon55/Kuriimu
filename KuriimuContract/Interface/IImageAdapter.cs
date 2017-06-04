@@ -31,6 +31,6 @@ namespace Kuriimu.Contract
 
         [Category("Properties"),
         Description("The dimensions of the image.")]
-        public Size Size => Bitmap.Size;
+        public Size Size => Bitmap?.Size ?? new Size();
     }
 }
