@@ -6,27 +6,29 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Kuriimu.Contract;
 using Kuriimu.Properties;
+using Kuriimu.UI;
 
 namespace Kuriimu
 {
     public partial class Editor : Form
     {
-        private ITextAdapter _textAdapter = null;
-        private IGameHandler _gameHandler = null;
+        private ITextAdapter _textAdapter;
+        private IGameHandler _gameHandler;
         private IList<Bitmap> _gameHandlerPages = new List<Bitmap>();
-        private bool _fileOpen = false;
-        private bool _hasChanges = false;
+        private bool _fileOpen;
+        private bool _hasChanges;
 
-        private List<ITextAdapter> _textAdapters = null;
-        private List<IGameHandler> _gameHandlers = null;
-        private List<IExtension> _extensions = null;
+        private List<ITextAdapter> _textAdapters;
+        private List<IGameHandler> _gameHandlers;
+        private List<IExtension> _extensions;
 
-        private List<TextEntry> _entries = null;
+        private List<TextEntry> _entries;
 
-        private int _page = 0;
+        private int _page;
 
         public Editor(string[] args)
         {
@@ -528,34 +530,34 @@ namespace Kuriimu
         private void LoadForm()
         {
             // Fonts
-            string[] fontSizes = new string[] { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "36", "48", "72" };
+            string[] fontSizes = { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "36", "48", "72" };
             FontFamily[] fontFamilies = new InstalledFontCollection().Families;
 
-            scbFontFamily.SelectedIndexChanged -= new EventHandler(scbFontFamily_SelectedIndexChanged);
-            scbFontFamily.TextChanged -= new EventHandler(scbFontFamily_TextChanged);
+            scbFontFamily.SelectedIndexChanged -= scbFontFamily_SelectedIndexChanged;
+            scbFontFamily.TextChanged -= scbFontFamily_TextChanged;
 
             scbFontFamily.Items.Clear();
             scbFontFamily.Items.AddRange(fontFamilies.Select(o => o.Name).ToArray());
             scbFontFamily.Text = Settings.Default.FontFamily;
 
-            scbFontFamily.SelectedIndexChanged += new EventHandler(scbFontFamily_SelectedIndexChanged);
-            scbFontFamily.TextChanged += new EventHandler(scbFontFamily_TextChanged);
+            scbFontFamily.SelectedIndexChanged += scbFontFamily_SelectedIndexChanged;
+            scbFontFamily.TextChanged += scbFontFamily_TextChanged;
 
-            scbFontSize.SelectedIndexChanged -= new EventHandler(scbFontSize_SelectedIndexChanged);
-            scbFontSize.TextChanged -= new EventHandler(scbFontSize_TextChanged);
+            scbFontSize.SelectedIndexChanged -= scbFontSize_SelectedIndexChanged;
+            scbFontSize.TextChanged -= scbFontSize_TextChanged;
 
             scbFontSize.Items.Clear();
             scbFontSize.Items.AddRange(fontSizes);
             scbFontSize.Text = Settings.Default.FontSize;
 
-            scbFontSize.SelectedIndexChanged += new EventHandler(scbFontSize_SelectedIndexChanged);
-            scbFontSize.TextChanged += new EventHandler(scbFontSize_TextChanged);
+            scbFontSize.SelectedIndexChanged += scbFontSize_SelectedIndexChanged;
+            scbFontSize.TextChanged += scbFontSize_TextChanged;
 
             SetFont();
 
             // Tools
-            UI.CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
-            UI.EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
+            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
 
             // Extensions
             if (_extensions.Count > 0)
@@ -625,7 +627,7 @@ namespace Kuriimu
                     node.Tag = entry;
                     if (!entry.HasText)
                     {
-                        node.ForeColor = System.Drawing.Color.Gray;
+                        node.ForeColor = Color.Gray;
                     }
                     treEntries.Nodes.Add(node);
 
@@ -691,7 +693,7 @@ namespace Kuriimu
 
         private void UpdateForm()
         {
-            Text = Settings.Default.ApplicationName + " " + Settings.Default.ApplicationVersion + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_textAdapter != null ? " - " + _textAdapter.Description + " Adapter (" + _textAdapter.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_textAdapter != null ? " - " + _textAdapter.Description + " Adapter (" + _textAdapter.Name + ")" : string.Empty);
 
             TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
 

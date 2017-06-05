@@ -13,8 +13,6 @@ namespace image_nintendo.CTPK
         public int texSecSize;
         public int crc32SecOffset;
         public int texInfoOffset;
-        public int zero0;
-        public int zero1;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

@@ -41,10 +41,10 @@ namespace image_ctxb
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
+        public class Header
         {
             public Magic magic; //ctxb
-            public int fileSize;
+            public uint fileSize;
             public long chunkCount;
             public int chunkOffset;
             public int texDataOffset;
@@ -56,21 +56,31 @@ namespace image_ctxb
             {
                 using (var br = new BinaryReaderX(input, true))
                 {
-                    magic = br.ReadStruct<Magic>(); //"tex "
+                    magic = br.ReadStruct<Magic>();
                     chunkSize = br.ReadInt32();
                     texCount = br.ReadInt32();
 
                     textures = br.ReadMultiple<TexEntry>(texCount);
                 }
             }
-            public Magic magic; //tex
+            public Magic magic; //"tex "
             public int chunkSize;
             public int texCount;
             public List<TexEntry> textures;
+
+            public void Write(Stream input)
+            {
+                using (var bw = new BinaryWriterX(input, true))
+                {
+                    bw.WriteASCII(magic);
+                    bw.Write(chunkSize);
+                    bw.Write(texCount);
+                }
+            }
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct TexEntry
+        public class TexEntry
         {
             public int dataLength;
             public short unk0;
@@ -84,8 +94,7 @@ namespace image_ctxb
         public Header header;
         List<Chunk> chunks = new List<Chunk>();
 
-        public Bitmap bmp;
-        public ImageSettings settings;
+        public List<Bitmap> bmps = new List<Bitmap>();
 
         public CTXB(Stream input)
         {
@@ -98,31 +107,81 @@ namespace image_ctxb
                 for (int i = 0; i < header.chunkCount; i++)
                     chunks.Add(new Chunk(br.BaseStream));
 
-                settings = new ImageSettings
-                {
-                    Width = chunks[0].textures[0].width,
-                    Height = chunks[0].textures[0].height,
-                    Format = (chunks[0].textures[0].dataType == DataTypes.UnsignedShort565)
-                        ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
-                        : (chunks[0].textures[0].dataType == DataTypes.UnsignedShort5551)
-                            ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)
-                            : (chunks[0].textures[0].dataType == DataTypes.UnsignedShort4444)
-                                ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA4444)
-                                : ImageSettings.ConvertFormat(chunks[0].textures[0].imageFormat)
-                };
                 br.BaseStream.Position = header.texDataOffset;
-                bmp = Common.Load(br.ReadBytes(chunks[0].textures[0].dataLength), settings);
+                for (int i = 0; i < header.chunkCount; i++)
+                {
+                    for (int j = 0; j < chunks[i].texCount; j++)
+                    {
+                        var settings = new ImageSettings
+                        {
+                            Width = chunks[i].textures[j].width,
+                            Height = chunks[i].textures[j].height,
+                            Format = (chunks[i].textures[j].dataType == DataTypes.UnsignedShort565)
+                                ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
+                                : (chunks[i].textures[j].dataType == DataTypes.UnsignedShort5551)
+                                    ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)
+                                    : (chunks[i].textures[j].dataType == DataTypes.UnsignedShort4444)
+                                        ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA4444)
+                                        : ImageSettings.ConvertFormat(chunks[i].textures[j].imageFormat),
+                            PadToPowerOf2 = false
+                        };
+
+                        bmps.Add(Common.Load(br.ReadBytes(chunks[i].textures[j].dataLength), settings));
+                    }
+                }
             }
         }
 
-        /*Save not supported until Bitmap[] is introduced*/
-
-        /*public void Save(String filename, Bitmap bitmap)
+        public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
+                bw.BaseStream.Position = header.texDataOffset;
+                var count = 0;
+                for (int i = 0; i < header.chunkCount; i++)
+                {
+                    for (int j = 0; j < chunks[i].texCount; j++)
+                    {
+                        var settings = new ImageSettings
+                        {
+                            Width = bmps[count].Width,
+                            Height = bmps[count].Height,
+                            Format = (chunks[i].textures[j].dataType == DataTypes.UnsignedShort565)
+                                ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
+                                : (chunks[i].textures[j].dataType == DataTypes.UnsignedShort5551)
+                                    ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)
+                                    : (chunks[i].textures[j].dataType == DataTypes.UnsignedShort4444)
+                                        ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA4444)
+                                        : ImageSettings.ConvertFormat(chunks[i].textures[j].imageFormat),
+                            PadToPowerOf2 = false
+                        };
 
+                        var resBmp = Common.Save(bmps[count], settings);
+                        bw.Write(resBmp);
+
+                        chunks[i].textures[j].dataLength = resBmp.Length;
+                        chunks[i].textures[j].height = (ushort)bmps[count].Height;
+                        chunks[i].textures[j].width = (ushort)bmps[count].Width;
+
+                        count++;
+                    }
+                }
+
+                //Ctxb Header
+                header.fileSize = (uint)bw.BaseStream.Length;
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
+
+                //Chunks
+                for (int i = 0; i < header.chunkCount; i++)
+                {
+                    chunks[i].Write(bw.BaseStream);
+                    for (int j = 0; j < chunks[i].texCount; j++)
+                    {
+                        bw.WriteStruct(chunks[i].textures[j]);
+                    }
+                }
             }
-        }*/
+        }
     }
 }

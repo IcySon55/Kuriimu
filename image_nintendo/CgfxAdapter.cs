@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kuriimu.Contract;
-using System.IO;
-using Kuriimu.IO;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using Kuriimu.Contract;
+using Kuriimu.IO;
 
 namespace image_nintendo.CGFX
 {
     public class BcfnxAdapter : IImageAdapter
     {
-        private CGFX _cgfx = null;
+        private CGFX _cgfx;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -36,7 +35,7 @@ namespace image_nintendo.CGFX
             {
                 using (var br = new BinaryReaderX(File.OpenRead(filename)))
                 {
-                    if (br.ReadString(4) == "CGFX") return false;
+                    if (br.ReadString(4) != "CGFX") return false;
                     br.BaseStream.Position = 0x24;
                     return br.ReadUInt32() > 0;
                 }
@@ -52,7 +51,10 @@ namespace image_nintendo.CGFX
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _cgfx = new CGFX(FileInfo.OpenRead());
+                _bitmaps = _cgfx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -68,11 +70,7 @@ namespace image_nintendo.CGFX
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _cgfx.bmps[0];
-            set => _cgfx.bmps[0] = value;
-        }
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

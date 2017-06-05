@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -8,12 +10,13 @@ namespace image_nintendo.CTPK
 {
     public sealed class CtpkAdapter : IImageAdapter
     {
-        private CTPK _ctpk = null;
+        private CTPK _ctpk;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
         public string Name => "CTPK";
-        public string Description => "CTR Texture PaCkage";
+        public string Description => "CTR Texture PacKage";
         public string Extension => "*.ctpk";
         public string About => "This is the CTPK image adapter for Kukkii.";
 
@@ -39,11 +42,14 @@ namespace image_nintendo.CTPK
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 using (var br = new BinaryReaderX(FileInfo.OpenRead()))
                     if (br.ReadString(4) == "CTPK")
                         _ctpk = new CTPK(FileInfo.FullName);
                     else
                         _ctpk = new CTPK(FileInfo.FullName, true);
+                _bitmaps = _ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -53,17 +59,14 @@ namespace image_nintendo.CTPK
 
             try
             {
+                _ctpk.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
                 _ctpk.Save(FileInfo.FullName);
             }
             catch (Exception) { }
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _ctpk.bmp;
-            set => _ctpk.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
@@ -55,11 +56,7 @@ namespace image_level5.XF
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _xf;
-            set => _xf = value;
-        }
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _xf } };
 
         public bool ShowProperties(Icon icon) => false;
     }

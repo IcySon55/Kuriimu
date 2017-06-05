@@ -1,5 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using Cetera.Font;
 using Kuriimu.Contract;
 using Kuriimu.IO;
@@ -57,11 +59,7 @@ namespace image_nintendo.BCFNX
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _bcfnx.bmps[0];
-            set => _bcfnx.bmps[0] = value;
-        }
+        public IList<BitmapInfo> Bitmaps => _bcfnx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
 
         public bool ShowProperties(Icon icon) => false;
     }

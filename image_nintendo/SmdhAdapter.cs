@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -8,18 +10,19 @@ namespace image_nintendo.ICN
 {
     public sealed class IcnAdapter : IImageAdapter
     {
-        private SMDH _icn = null;
+        private SMDH _icn;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
         public string Name => "SMDH";
         public string Description => "SMDH Icon";
-        public string Extension => "*.icn";
+        public string Extension => "*.icn;*.bin";
         public string About => "This is the SMDH Icon image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -39,7 +42,10 @@ namespace image_nintendo.ICN
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _icn = new SMDH(FileInfo.OpenRead());
+                _bitmaps = _icn.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -47,19 +53,22 @@ namespace image_nintendo.ICN
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
+            var stream = FileInfo.Create();
             try
             {
-                //_icn.Save(FileInfo.FullName);
+                _icn.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+                _icn.Save(stream);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                stream.Close();
+                FileInfo.Delete();
+                throw;
+            }
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _icn.bmp;
-            set => _icn.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

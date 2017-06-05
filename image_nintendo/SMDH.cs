@@ -47,6 +47,22 @@ namespace image_nintendo.ICN
             public short reserved;
             public int animDefaultFrame;
             public int streetPassID;
+
+            public void Write(Stream input)
+            {
+                using (var bw = new BinaryWriterX(input, true))
+                {
+                    bw.Write(gameRating);
+                    bw.Write(regionLockout);
+                    bw.Write(makerID);
+                    bw.Write(makerBITID);
+                    bw.Write(flags);
+                    bw.Write(eulaVer);
+                    bw.Write(reserved);
+                    bw.Write(animDefaultFrame);
+                    bw.Write(streetPassID);
+                }
+            }
         }
 
         public Header header;
@@ -55,8 +71,7 @@ namespace image_nintendo.ICN
         public List<string> publisher = new List<string>();
         public AppSettings appSettings;
 
-        public Bitmap bmp;
-        ImageSettings settings;
+        public List<Bitmap> bmps = new List<Bitmap>();
 
         public SMDH(Stream input)
         {
@@ -77,22 +92,66 @@ namespace image_nintendo.ICN
                 appSettings = new AppSettings(br.BaseStream);
                 br.BaseStream.Position += 0x8;
 
-                settings = new ImageSettings
+                var settings = new ImageSettings
                 {
                     Width = 24,
                     Height = 24,
                     Format = Format.RGB565,
                     PadToPowerOf2 = false
                 };
-                bmp = Common.Load(br.ReadBytes(0x480), settings);
+                bmps.Add(Common.Load(br.ReadBytes(0x480), settings));
+
+                settings = new ImageSettings
+                {
+                    Width = 48,
+                    Height = 48,
+                    Format = Format.RGB565,
+                    PadToPowerOf2 = false
+                };
+                bmps.Add(Common.Load(br.ReadBytes(0x1200), settings));
             }
         }
 
-        public void Save(string filename, Bitmap bitmap)
+        public void Save(Stream output)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
-            {
+            if (bmps[0].Width != 24 || bmps[0].Height != 24) throw new System.Exception("The size of the icons can't be changed");
+            if (bmps[1].Width != 48 || bmps[1].Height != 48) throw new System.Exception("The size of the icons can't be changed");
 
+            using (BinaryWriterX bw = new BinaryWriterX(output))
+            {
+                //Header
+                bw.WriteStruct(header);
+
+                //Application Titles
+                for (int i = 0; i < 0x10; i++)
+                {
+                    bw.Write(Encoding.GetEncoding("UTF-16").GetBytes(shortDesc[i]));
+                    bw.Write(Encoding.GetEncoding("UTF-16").GetBytes(longDesc[i]));
+                    bw.Write(Encoding.GetEncoding("UTF-16").GetBytes(publisher[i]));
+                }
+
+                //Application Settings
+                appSettings.Write(bw.BaseStream);
+                bw.BaseStream.Position = bw.BaseStream.Position + 0xf & ~0xf;
+
+                //Bitmap Data
+                var settings = new ImageSettings
+                {
+                    Width = 24,
+                    Height = 24,
+                    Format = Format.RGB565,
+                    PadToPowerOf2 = false
+                };
+                bw.Write(Common.Save(bmps[0], settings));
+
+                settings = new ImageSettings
+                {
+                    Width = 48,
+                    Height = 48,
+                    Format = Format.RGB565,
+                    PadToPowerOf2 = false
+                };
+                bw.Write(Common.Save(bmps[1], settings));
             }
         }
     }

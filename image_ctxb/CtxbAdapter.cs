@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
+using System.Linq;
 
 namespace image_ctxb
 {
@@ -13,13 +15,13 @@ namespace image_ctxb
         #region Properties
 
         public string Name => "CTXB";
-        public string Description => "Whatever CTXB should mean";
+        public string Description => "CTR TeXture Box";
         public string Extension => "*.ctxb";
         public string About => "This is the CTXB image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -49,17 +51,13 @@ namespace image_ctxb
 
             try
             {
-                //_ctxb.Save(FileInfo.FullName, _ctxb.bmp);
+                _ctxb.Save(FileInfo.FullName);
             }
             catch (Exception) { }
         }
 
         // Bitmaps
-        public Bitmap Bitmap
-        {
-            get => _ctxb.bmp;
-            set => _ctxb.bmp = value;
-        }
+        public IList<BitmapInfo> Bitmaps => _ctxb.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
 
         public bool ShowProperties(Icon icon) => false;
     }
