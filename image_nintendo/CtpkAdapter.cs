@@ -57,12 +57,8 @@ namespace image_nintendo.CTPK
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _ctpk.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-                _ctpk.Save(FileInfo.FullName);
-            }
-            catch (Exception) { }
+            _ctpk.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _ctpk.Save(FileInfo.FullName);
         }
 
         // Bitmaps

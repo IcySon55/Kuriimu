@@ -10,6 +10,7 @@ namespace image_tim2
     public sealed class Tim2Adapter : IImageAdapter
     {
         private TIM2 _tim2 = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -42,6 +43,8 @@ namespace image_tim2
 
             if (FileInfo.Exists)
                 _tim2 = new TIM2(FileInfo.OpenRead());
+
+            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tim2.bmp } };
         }
 
         public void Save(string filename = "")
@@ -49,15 +52,12 @@ namespace image_tim2
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                //_tim2.Save(FileInfo.FullName);
-            }
-            catch (Exception) { }
+            _tim2.bmp = _bitmaps[0].Bitmap;
+            //_tim2.Save(FileInfo.FullName);
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _tim2.bmp } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

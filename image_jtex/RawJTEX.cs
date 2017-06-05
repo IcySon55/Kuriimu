@@ -5,7 +5,7 @@ using Cetera.Image;
 using Kuriimu.Compression;
 using Kuriimu.IO;
 
-namespace image_jtex
+namespace image_rawJtex
 {
     public class RawJTEX
     {
@@ -14,8 +14,8 @@ namespace image_jtex
         {
             public uint dataStart;
             uint formTmp;
-            uint unk1;
-            uint unk2;
+            public int virWidth;
+            public int virHeight;
             public int width;
             public int height;
 
@@ -26,7 +26,6 @@ namespace image_jtex
 
         public RawHeader JTEXRawHeader;
         public Bitmap Image { get; set; }
-        public ImageSettings Settings { get; set; }
 
         public RawJTEX(Stream input)
         {
@@ -36,8 +35,6 @@ namespace image_jtex
 
                 if (br.ReadByte() == 0x11)
                 {
-                    br.BaseStream.Position = 0;
-                    uint size = br.ReadUInt32() >> 8;
                     br.BaseStream.Position = 0;
                     lz11_compressed = true;
                     byte[] decomp = LZ11.Decompress(br.BaseStream);
@@ -49,43 +46,51 @@ namespace image_jtex
                     stream = br.BaseStream;
                 }
 
-                //File.OpenWrite("test.decomp").Write(new BinaryReaderX(stream).ReadBytes((int)stream.Length), 0, (int)stream.Length);
-
                 using (BinaryReaderX br2 = new BinaryReaderX(stream))
                 {
                     JTEXRawHeader = br2.ReadStruct<RawHeader>();
                     br2.BaseStream.Position = JTEXRawHeader.dataStart;
-                    Settings = new ImageSettings { Width = JTEXRawHeader.width, Height = JTEXRawHeader.height, Format = JTEXRawHeader.format };
-                    Image = Common.Load(br2.ReadBytes((int)(br2.BaseStream.Length - br2.BaseStream.Position)), Settings);
+                    var settings = new ImageSettings
+                    {
+                        Width = JTEXRawHeader.width,
+                        Height = JTEXRawHeader.height,
+                        Format = JTEXRawHeader.format,
+                        PadToPowerOf2 = false
+                    };
+                    Image = Common.Load(br2.ReadBytes((int)(br2.BaseStream.Length - br2.BaseStream.Position)), settings);
                 }
             }
         }
 
         public void Save(Stream output)
         {
-            ImageSettings modSettings = Settings;
-            modSettings.Width = Image.Width;
-            modSettings.Height = Image.Height;
-
-            byte[] data = Common.Save(Image, modSettings);
-            using (BinaryWriterX br = new BinaryWriterX(new MemoryStream()))
+            var settings = new ImageSettings
             {
-                JTEXRawHeader.width = (ushort)Image.Width; JTEXRawHeader.height = (ushort)Image.Height;
-                br.WriteStruct<RawHeader>(JTEXRawHeader);
-                br.BaseStream.Position = JTEXRawHeader.dataStart;
-                br.Write(data);
-                br.BaseStream.Position = 0;
+                Width = Image.Width,
+                Height = Image.Height,
+            };
+            byte[] resBmp = Common.Save(Image, settings);
+
+            using (BinaryWriterX bw = new BinaryWriterX(output))
+            {
+                JTEXRawHeader.width = Image.Width;
+                JTEXRawHeader.height = Image.Height;
+                //JTEXRawHeader.virWidth = Image.Width;
+                //JTEXRawHeader.virHeight = Image.Height;
+                bw.WriteStruct(JTEXRawHeader);
+                bw.BaseStream.Position = JTEXRawHeader.dataStart;
+                bw.Write(resBmp);
+                bw.BaseStream.Position = 0;
 
                 if (lz11_compressed)
                 {
-                    byte[] comp = LZ11.Compress(br.BaseStream);
-                    output.Write(comp, 0, comp.Length);
+                    byte[] comp = LZ11.Compress(bw.BaseStream);
+                    bw.Write(comp);
                 }
                 else
                 {
-                    output.Write(new BinaryReaderX(br.BaseStream).ReadBytes((int)br.BaseStream.Length), 0, (int)br.BaseStream.Length);
+                    bw.Write(new BinaryReaderX(bw.BaseStream).ReadBytes((int)bw.BaseStream.Length), 0, (int)bw.BaseStream.Length);
                 }
-                output.Close();
             }
         }
     }
