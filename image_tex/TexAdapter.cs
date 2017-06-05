@@ -42,9 +42,11 @@ namespace image_tex
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tex = new TEX(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tex.Image } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tex.Image } };
+            }
         }
 
         public void Save(string filename = "")

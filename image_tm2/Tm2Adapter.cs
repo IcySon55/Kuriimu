@@ -54,9 +54,11 @@ namespace image_tm2
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tm2 = new TM2(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tm2.bmp } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tm2.bmp } };
+            }
         }
 
         public void Save(string filename = "")

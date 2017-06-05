@@ -41,9 +41,11 @@ namespace image_level5.XI
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _xi = XI.Load(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _xi } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _xi } };
+            }
         }
 
         public void Save(string filename = "")

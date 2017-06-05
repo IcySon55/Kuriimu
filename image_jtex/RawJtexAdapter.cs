@@ -38,9 +38,11 @@ namespace image_rawJtex
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _rawjtex = new RawJTEX(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _rawjtex.Image } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _rawjtex.Image } };
+            }
         }
 
         public void Save(string filename = "")

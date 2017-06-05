@@ -57,9 +57,11 @@ namespace image_f3xt
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _f3xt = new F3XT(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _f3xt.Image } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _f3xt.Image } };
+            }
         }
 
         public void Save(string filename = "")

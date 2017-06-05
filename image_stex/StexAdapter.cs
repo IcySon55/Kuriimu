@@ -41,9 +41,11 @@ namespace image_stex
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _stex = new STEX(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _stex.bmp } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _stex.bmp } };
+            }
         }
 
         public void Save(string filename = "")

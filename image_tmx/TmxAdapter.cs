@@ -42,9 +42,11 @@ namespace image_tmx
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tmx = new TMX(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tmx.bmp } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tmx.bmp } };
+            }
         }
 
         public void Save(string filename = "")

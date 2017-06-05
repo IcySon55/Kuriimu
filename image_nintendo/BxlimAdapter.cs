@@ -44,9 +44,11 @@ namespace image_nintendo.BXLIM
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _bxlim = new Cetera.Image.BXLIM(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _bxlim.Image } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _bxlim.Image } };
+            }
         }
 
         public void Save(string filename = "")

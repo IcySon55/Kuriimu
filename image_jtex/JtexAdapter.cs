@@ -42,9 +42,11 @@ namespace image_jtex
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _jtex = new JTEX(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _jtex.Image } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _jtex.Image } };
+            }
         }
 
         public void Save(string filename = "")
