@@ -10,6 +10,7 @@ namespace image_level5.XI
     public sealed class XiAdapter : IImageAdapter
     {
         private Bitmap _xi = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -41,6 +42,8 @@ namespace image_level5.XI
 
             if (FileInfo.Exists)
                 _xi = XI.Load(FileInfo.OpenRead());
+
+            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _xi } };
         }
 
         public void Save(string filename = "")
@@ -48,15 +51,12 @@ namespace image_level5.XI
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                XI.Save(FileInfo.FullName, _xi);
-            }
-            catch (Exception) { }
+            _xi = _bitmaps[0].Bitmap;
+            XI.Save(FileInfo.FullName, _xi);
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _xi } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

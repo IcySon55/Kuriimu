@@ -62,11 +62,7 @@ namespace image_nintendo.CGFX
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                //_cgfx.Save(FileInfo.Create());
-            }
-            catch (Exception) { }
+            //_cgfx.Save(FileInfo.Create());
         }
 
         // Bitmaps

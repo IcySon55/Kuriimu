@@ -10,6 +10,7 @@ namespace image_stex
     public sealed class StexAdapter : IImageAdapter
     {
         private STEX _stex = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -41,6 +42,8 @@ namespace image_stex
 
             if (FileInfo.Exists)
                 _stex = new STEX(FileInfo.OpenRead());
+
+            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _stex.bmp } };
         }
 
         public void Save(string filename = "")
@@ -48,15 +51,12 @@ namespace image_stex
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _stex.Save(FileInfo.FullName, _stex.bmp);
-            }
-            catch (Exception) { }
+            _stex.bmp = _bitmaps[0].Bitmap;
+            _stex.Save(FileInfo.FullName, _stex.bmp);
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _stex.bmp } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }
