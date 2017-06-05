@@ -498,6 +498,7 @@
             this.imbPreview.Zoomed += new System.EventHandler<Cyotek.Windows.Forms.ImageBoxZoomEventArgs>(this.imbPreview_Zoomed);
             this.imbPreview.KeyDown += new System.Windows.Forms.KeyEventHandler(this.imbPreview_KeyDown);
             this.imbPreview.KeyUp += new System.Windows.Forms.KeyEventHandler(this.imbPreview_KeyUp);
+            this.imbPreview.MouseEnter += new System.EventHandler(this.imbPreview_MouseEnter);
             // 
             // tslTools
             // 
@@ -576,6 +577,7 @@
             this.treBitmaps.Size = new System.Drawing.Size(228, 300);
             this.treBitmaps.TabIndex = 1;
             this.treBitmaps.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treBitmaps_AfterSelect);
+            this.treBitmaps.MouseEnter += new System.EventHandler(this.treBitmaps_MouseEnter);
             // 
             // imlBitmaps
             // 

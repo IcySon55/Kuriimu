@@ -1,10 +1,11 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using Cetera.Image;
 using Kuriimu.Compression;
 using Kuriimu.IO;
 
-namespace Cetera.Image
+namespace image_jtex
 {
     public class RawJTEX
     {

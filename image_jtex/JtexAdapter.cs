@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -10,9 +9,9 @@ namespace image_jtex
 {
     class JtexAdapter : IImageAdapter
     {
-        private JTEX _jtex = null;
-        private RawJTEX _rawjtex = null;
-        private bool raw = false;
+        private JTEX _jtex;
+        private RawJTEX _rawjtex;
+        private bool raw;
 
         #region Properties
 
