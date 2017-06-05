@@ -283,6 +283,8 @@ namespace Kukkii
                 var bmp = (Bitmap)Image.FromFile(filename);
                 _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap = bmp;
                 UpdatePreview();
+                UpdateImageList();
+                treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
                 MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -327,9 +329,10 @@ namespace Kukkii
                 imlBitmaps.Images.Add(i.ToString(), GenerateThumbnail(bitmapInfo.Bitmap));
                 treBitmaps.Nodes.Add(new TreeNode
                 {
-                    Text = (i + 1).ToString("00"),
+                    Text = bitmapInfo.Name != string.Empty ? bitmapInfo.Name : i.ToString("00"),
                     Tag = i,
-                    ImageKey = i.ToString()
+                    ImageKey = i.ToString(),
+                    SelectedImageKey = i.ToString()
                 });
             }
 
@@ -573,6 +576,11 @@ namespace Kukkii
         }
 
         // Image Box
+        private void imbPreview_MouseEnter(object sender, EventArgs e)
+        {
+            imbPreview.Focus();
+        }
+
         private void imbPreview_Zoomed(object sender, ImageBoxZoomEventArgs e)
         {
             tslZoom.Text = "Zoom: " + imbPreview.Zoom + "%";
@@ -596,6 +604,11 @@ namespace Kukkii
                 imbPreview.Cursor = Cursors.Default;
                 tslTool.Text = "Tool: Zoom";
             }
+        }
+
+        private void treBitmaps_MouseEnter(object sender, EventArgs e)
+        {
+            treBitmaps.Focus();
         }
 
         // Info Controls
