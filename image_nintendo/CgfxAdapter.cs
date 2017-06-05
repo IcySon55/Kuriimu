@@ -10,7 +10,8 @@ namespace image_nintendo.CGFX
 {
     public class BcfnxAdapter : IImageAdapter
     {
-        private CGFX _cgfx = null;
+        private CGFX _cgfx;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -50,7 +51,10 @@ namespace image_nintendo.CGFX
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _cgfx = new CGFX(FileInfo.OpenRead());
+                _bitmaps = _cgfx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -66,7 +70,7 @@ namespace image_nintendo.CGFX
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => _cgfx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }
