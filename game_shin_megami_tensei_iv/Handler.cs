@@ -37,8 +37,24 @@ namespace game_shin_megami_tensei_iv
             ["\uF812"] = "<name>",
             ["\uF813"] = "</name>",
             ["\uF87A"] = "<unk3>",
+            ["\uE5E3"] = "<playername>",
+            //Spanish localization
+            ["\u30F3"] = "ñ", //ン
+            ["\u30A1"] = "á", //ァ　
+            ["\u30A3"] = "í", //ィ
+            ["\u30A5"] = "ú", //ゥ
+            ["\u30A7"] = "é", //ェ
+            ["\u30A9"] = "ó", //ォ
+            ["\u30A2"] = "Á", //ア
+            ["\u30A4"] = "Í", //イ
+            ["\u30A6"] = "Ú", //ウ
+            ["\u30A8"] = "É", //エ
+            ["\u30AA"] = "Ó", //オ
+            ["\u30D1"] = "¡", //パ
+            ["\u30D7"] = "¿", //プ
+            //End of spanish localization
 
-            ["\u0000"] = "<0000>",
+            ["\u0000"] = "<?>",
             ["\u7000"] = "<7000>",
             ["\u1400"] = "<1400>"
         };
@@ -71,7 +87,7 @@ namespace game_shin_megami_tensei_iv
             Bitmap img = new Bitmap(background.Width, background.Height);
 
             Encoding sjis = Encoding.GetEncoding("SJIS");
-
+            
             using (Graphics gfx = Graphics.FromImage(img))
             {
                 gfx.DrawImage(background, 0, 0);
@@ -96,8 +112,7 @@ namespace game_shin_megami_tensei_iv
                 for (int i = 0; i < kuriimuString.Length; i++)
                 {
                     var info = font.GetWidthInfo(kuriimuString[i]);
-                    x += info.left;
-                    x += info.glyph_width - info.left;
+                    x += info.char_width;
                     if (kuriimuString[i] == '<')
                     {
                         var tag = "<";
@@ -115,7 +130,7 @@ namespace game_shin_megami_tensei_iv
                         }
                         if (tag == "</name>") // End Name
                         {
-                            font.SetColor(colorDefault); // Black
+                            font.SetColor(Color.FromArgb(255, 80, 0, 0)); // Dark Red
                             y += 15;
                             x = 20;
                         }
@@ -126,6 +141,10 @@ namespace game_shin_megami_tensei_iv
                         y += 17;
                     }
                     else if (kuriimuString[i] == ' ')
+                    {
+                        x += 7;
+                    }
+                    else if (kuriimuString[i] == '　')
                     {
                         x += 7;
                     }
