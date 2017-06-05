@@ -112,7 +112,6 @@ namespace game_shin_megami_tensei_iv
                 for (int i = 0; i < kuriimuString.Length; i++)
                 {
                     var info = font.GetWidthInfo(kuriimuString[i]);
-                    x += info.char_width;
                     if (kuriimuString[i] == '<')
                     {
                         var tag = "<";
@@ -152,6 +151,7 @@ namespace game_shin_megami_tensei_iv
                     {
                         font.Draw(kuriimuString[i], gfx, x, y, scaleCurrent, scaleCurrent);
                     }
+                    x += info.char_width;
                 }
             }
 
