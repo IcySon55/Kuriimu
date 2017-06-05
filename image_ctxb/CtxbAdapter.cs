@@ -42,9 +42,11 @@ namespace image_ctxb
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _ctxb = new CTXB(FileInfo.OpenRead());
 
-            _bitmaps = _ctxb.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _bitmaps = _ctxb.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")

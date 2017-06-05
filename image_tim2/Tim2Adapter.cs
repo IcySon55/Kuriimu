@@ -42,9 +42,11 @@ namespace image_tim2
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tim2 = new TIM2(FileInfo.OpenRead());
 
-            _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tim2.bmp } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tim2.bmp } };
+            }
         }
 
         public void Save(string filename = "")
