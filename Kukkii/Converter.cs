@@ -254,7 +254,7 @@ namespace Kukkii
             {
                 Title = "Export PNG...",
                 InitialDirectory = Settings.Default.LastDirectory,
-                FileName = _imageAdapter.FileInfo.Name + ".png",
+                FileName = _imageAdapter.FileInfo.Name + (_imageAdapter.Bitmaps.Count > 1 ? "." + _selectedImageIndex.ToString("00") : string.Empty) + ".png",
                 Filter = "Portable Network Graphics (*.png)|*.png",
                 AddExtension = true
             };
@@ -280,8 +280,7 @@ namespace Kukkii
         {
             try
             {
-                var bmp = (Bitmap)Image.FromFile(filename);
-                _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap = bmp;
+                _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap = new Bitmap(filename);
                 UpdatePreview();
                 UpdateImageList();
                 treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
@@ -432,7 +431,7 @@ namespace Kukkii
                     {
                         string[] subTypes = type.Split(';');
                         foreach (string subType in subTypes)
-                            files.AddRange(Directory.GetFiles(path, subType, (Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)));
+                            files.AddRange(Directory.GetFiles(path, subType, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
                     }
 
                     foreach (string file in files)
@@ -445,7 +444,8 @@ namespace Kukkii
                             if (currentAdapter != null)
                             {
                                 currentAdapter.Load(file);
-                                currentAdapter.Bitmaps[_selectedImageIndex].Bitmap.Save(fi.FullName + ".png"); // TODO: Multi-Image support
+                                for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                    currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
                                 count++;
                             }
                         }
@@ -486,7 +486,7 @@ namespace Kukkii
                     {
                         string[] subTypes = type.Split(';');
                         foreach (string subType in subTypes)
-                            files.AddRange(Directory.GetFiles(path, subType, (Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)));
+                            files.AddRange(Directory.GetFiles(path, subType, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
                     }
 
                     foreach (string file in files)
@@ -496,12 +496,16 @@ namespace Kukkii
                             FileInfo fi = new FileInfo(file);
                             IImageAdapter currentAdapter = SelectImageAdapter(file, true);
 
-                            if (currentAdapter != null && currentAdapter.CanSave && File.Exists(fi.FullName + ".png"))
+                            if (currentAdapter != null && currentAdapter.CanSave)
                                 try
                                 {
-                                    var bmp = (Bitmap)Image.FromFile(fi.FullName + ".png");
                                     currentAdapter.Load(file);
-                                    currentAdapter.Bitmaps[_selectedImageIndex].Bitmap = bmp; // TODO: Multi-Image support
+                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                    {
+                                        var targetName = fi.FullName + "." + i.ToString("00") + ".png";
+                                        if (!File.Exists(targetName)) continue;
+                                        currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
+                                    }
                                     currentAdapter.Save();
                                     importCount++;
                                 }

@@ -145,12 +145,6 @@
     <None Include="images\menu-compression.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="images\menu-scan-subdirectories.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\menu-scan-subdirectires-off.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="images\menu-scan-subdirectories-on.png" />
   </ItemGroup>
   <ItemGroup>

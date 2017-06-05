@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
-using System.Linq;
 
 namespace image_nintendo.CTPK
 {
     public sealed class CtpkAdapter : IImageAdapter
     {
-        private CTPK _ctpk = null;
+        private CTPK _ctpk;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -41,11 +42,14 @@ namespace image_nintendo.CTPK
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 using (var br = new BinaryReaderX(FileInfo.OpenRead()))
                     if (br.ReadString(4) == "CTPK")
                         _ctpk = new CTPK(FileInfo.FullName);
                     else
                         _ctpk = new CTPK(FileInfo.FullName, true);
+                _bitmaps = _ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -55,13 +59,14 @@ namespace image_nintendo.CTPK
 
             try
             {
+                _ctpk.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
                 _ctpk.Save(FileInfo.FullName);
             }
             catch (Exception) { }
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => _ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

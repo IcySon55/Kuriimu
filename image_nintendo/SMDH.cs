@@ -112,9 +112,12 @@ namespace image_nintendo.ICN
             }
         }
 
-        public void Save(string filename)
+        public void Save(Stream output)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
+            if (bmps[0].Width != 24 || bmps[0].Height != 24) throw new System.Exception("The size of the icons can't be changed");
+            if (bmps[1].Width != 48 || bmps[1].Height != 48) throw new System.Exception("The size of the icons can't be changed");
+
+            using (BinaryWriterX bw = new BinaryWriterX(output))
             {
                 //Header
                 bw.WriteStruct(header);
@@ -132,9 +135,6 @@ namespace image_nintendo.ICN
                 bw.BaseStream.Position = bw.BaseStream.Position + 0xf & ~0xf;
 
                 //Bitmap Data
-                if (bmps[0].Width!=24 || bmps[0].Height!=24) throw new System.Exception("The size of the icons can't be changed");
-                if (bmps[1].Width != 48 || bmps[1].Height != 48) throw new System.Exception("The size of the icons can't be changed");
-
                 var settings = new ImageSettings
                 {
                     Width = 24,
