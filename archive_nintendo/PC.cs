@@ -7,11 +7,11 @@ using System.IO;
 using Kuriimu.IO;
 using Kuriimu.Contract;
 
-namespace archive_nintendo.SB
+namespace archive_nintendo.PC
 {
-    public sealed class SB
+    public sealed class PC
     {
-        public List<SBFileInfo> Files = new List<SBFileInfo>();
+        public List<PCFileInfo> Files = new List<PCFileInfo>();
         Stream _stream = null;
 
         private static Dictionary<string, string> _knownFiles = new Dictionary<string, string>
@@ -23,7 +23,7 @@ namespace archive_nintendo.SB
         Header header;
         List<Entry> entries = new List<Entry>();
 
-        public SB(Stream input)
+        public PC(Stream input)
         {
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
@@ -44,7 +44,7 @@ namespace archive_nintendo.SB
                     var magS = br.ReadString(4);
                     var extension = _knownFiles.ContainsKey(magS) ? _knownFiles[magS] : ".bin";
 
-                    Files.Add(new SBFileInfo
+                    Files.Add(new PCFileInfo
                     {
                         State = ArchiveFileState.Archived,
                         FileName = $"{i:00000000}" + extension,

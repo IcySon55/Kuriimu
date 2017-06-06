@@ -66,6 +66,9 @@
     <Compile Include="NUS3.cs" />
     <Compile Include="Nus3Manager.cs" />
     <Compile Include="Nus3Support.cs" />
+    <Compile Include="PC.cs" />
+    <Compile Include="PcManager.cs" />
+    <Compile Include="PcSupport.cs" />
     <Compile Include="PlainUMSBT.cs" />
     <Compile Include="PlainUmsbtManager.cs" />
     <Compile Include="PlainUmsbtSupport.cs" />

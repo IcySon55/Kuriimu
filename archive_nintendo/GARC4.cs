@@ -14,6 +14,14 @@ namespace archive_nintendo.GARC4
         public List<GARC4FileInfo> Files = new List<GARC4FileInfo>();
         Stream _stream = null;
 
+        private static Dictionary<string, string> _knownFiles = new Dictionary<string, string>
+        {
+            ["BCH"] = ".bch",
+            ["PC"] = ".pc",
+            ["SB"] = ".sb",
+            ["CGFX"] = ".cgfx",
+        };
+
         Header header;
 
         FatoHeader fatoHeader;
@@ -44,12 +52,32 @@ namespace archive_nintendo.GARC4
                 //FIMB
                 fimbHeader = br.ReadStruct<FimbHeader>();
 
-                for (int i = 0; i < fatbHeader.entryCount; i++) Files.Add(new GARC4FileInfo
+                for (int i = 0; i < fatbHeader.entryCount; i++)
                 {
-                    State = ArchiveFileState.Archived,
-                    FileName = $"{i:00000000}.bin",
-                    FileData = new SubStream(br.BaseStream, fatbEntries[i].offset + header.dataOffset, fatbEntries[i].size)
-                });
+                    br.BaseStream.Position = fatbEntries[i].offset + header.dataOffset;
+                    var mag = br.ReadByte();
+                    var extension = (mag == 0x11) ? ".lz11" : "";
+                    if (extension == "")
+                    {
+                        br.BaseStream.Position--;
+                        var magS = br.ReadString(2);
+                        extension = _knownFiles.ContainsKey(magS) ? _knownFiles[magS] : ".bin";
+
+                        if (extension == ".bin")
+                        {
+                            br.BaseStream.Position -= 2;
+                            magS = br.ReadString(4);
+                            extension = _knownFiles.ContainsKey(magS) ? _knownFiles[magS] : ".bin";
+                        }
+                    }
+
+                    Files.Add(new GARC4FileInfo
+                    {
+                        State = ArchiveFileState.Archived,
+                        FileName = $"{i:00000000}" + extension,
+                        FileData = new SubStream(br.BaseStream, fatbEntries[i].offset + header.dataOffset, fatbEntries[i].size)
+                    });
+                }
             }
         }
 
