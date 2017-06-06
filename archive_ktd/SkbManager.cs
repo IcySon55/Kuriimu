@@ -4,19 +4,19 @@ using System.IO;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace archive_nintendo.SB
+namespace archive_skb
 {
-    public class SbManager : IArchiveManager
+    public class SKBManager : IArchiveManager
     {
-        private SB _sb = null;
+        private SKB _skb = null;
 
         #region Properties
 
         // Information
-        public string Name => "SB";
-        public string Description => "SB";
+        public string Name => "SKB";
+        public string Description => "Senran Kagura Burst Archive";
         public string Extension => "*.bin";
-        public string About => "This is the SB archive manager for Karameru.";
+        public string About => "This is the SKB archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -34,8 +34,8 @@ namespace archive_nintendo.SB
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 2) return false;
-                return br.ReadString(2) == "SB";
+                var t = br.ReadBytes(0x18);
+                return t[0] == 0xe && t[8] == 4 && t[12] == 4 && t[16] == 4 && t[20] == 0x80;
             }
         }
 
@@ -44,7 +44,7 @@ namespace archive_nintendo.SB
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _sb = new SB(FileInfo.OpenRead());
+                _skb = new SKB(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -55,14 +55,14 @@ namespace archive_nintendo.SB
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _sb.Save(FileInfo.Create());
-                _sb.Close();
+                _skb.Save(FileInfo.Create());
+                _skb.Close();
             }
             else
             {
                 // Create the temp file
-                _sb.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _sb.Close();
+                _skb.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _skb.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -75,11 +75,11 @@ namespace archive_nintendo.SB
 
         public void Unload()
         {
-            _sb?.Close();
+            _skb?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _sb.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _skb.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 
