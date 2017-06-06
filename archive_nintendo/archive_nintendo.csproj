@@ -76,6 +76,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SB.cs" />
+    <Compile Include="SbManager.cs" />
+    <Compile Include="SbSupport.cs" />
     <Compile Include="SimpleSarcManager.cs" />
     <Compile Include="UMSBT.cs" />
     <Compile Include="UmsbtManager.cs" />
