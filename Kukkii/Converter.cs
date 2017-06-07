@@ -328,7 +328,7 @@ namespace Kukkii
                 imlBitmaps.Images.Add(i.ToString(), GenerateThumbnail(bitmapInfo.Bitmap));
                 treBitmaps.Nodes.Add(new TreeNode
                 {
-                    Text = bitmapInfo.Name != string.Empty ? bitmapInfo.Name : i.ToString("00"),
+                    Text = !string.IsNullOrEmpty(bitmapInfo.Name) ? bitmapInfo.Name : i.ToString("00"),
                     Tag = i,
                     ImageKey = i.ToString(),
                     SelectedImageKey = i.ToString()
