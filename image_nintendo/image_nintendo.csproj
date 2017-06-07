@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BcfnxAdapter.cs" />
+    <Compile Include="BCH.cs" />
+    <Compile Include="BchAdapter.cs" />
+    <Compile Include="BchSupport.cs" />
     <Compile Include="BCLYT.cs" />
     <Compile Include="BclytAdapter.cs" />
     <Compile Include="BclytSupport.cs" />
