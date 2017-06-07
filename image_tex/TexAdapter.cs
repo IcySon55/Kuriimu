@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
@@ -18,11 +18,11 @@ namespace image_tex
         public string Name => "TEX";
         public string Description => "MT Framework Texture";
         public string Extension => "*.tex";
-        public string About => "This is the MT Framework TEX image adapter for Kukkii.";
+        public string About => "This is the MT Framework TEX image adapter for Kukkii. Many thanks to dasding for bootstrapping this plugin.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -44,8 +44,7 @@ namespace image_tex
             if (FileInfo.Exists)
             {
                 _tex = new TEX(FileInfo.OpenRead());
-
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tex.Image } };
+                _bitmaps = _tex.Bitmaps.Select(b => new TexBitmapInfo { Bitmap = b, Format = _tex.Header.Format }).ToList<BitmapInfo>();
             }
         }
 
@@ -54,8 +53,8 @@ namespace image_tex
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _tex.Image = _bitmaps[0].Bitmap;
-            //_tex.Save(FileInfo.Create());
+            _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
+            _tex.Save(FileInfo.Create());
         }
 
         // Bitmaps
