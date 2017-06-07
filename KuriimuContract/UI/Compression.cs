@@ -81,12 +81,18 @@ namespace Kuriimu.UI
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.RevLZ77;
 
+            //LZECD
+            tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.LZECD.ToString(), null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[7];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[0].Tag = Compression.LZECD;
+
             // LZSS
             //tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11", null, LZ11_Compress));
 
             // RLE
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.RLE.ToString(), null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[7];
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[8];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.RLE;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
@@ -94,7 +100,7 @@ namespace Kuriimu.UI
 
             // ZLib
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.ZLib.ToString(), null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[8];
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[9];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.ZLib;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
@@ -184,6 +190,9 @@ namespace Kuriimu.UI
                             break;
                         case Compression.RevLZ77:
                             outFs.Write(RevLZ77.Decompress(openFile));
+                            break;
+                        case Compression.LZECD:
+                            outFs.Write(LZECD.Decompress(openFile));
                             break;
                         case Compression.RLE:
                             outFs.Write(RLE.Decompress(openFile));
@@ -278,6 +287,7 @@ namespace Kuriimu.UI
             RevLZ77,
             LZSS,
             LZSSVLE,
+            LZECD,
             RLE,
             ZLib
         }
