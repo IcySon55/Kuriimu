@@ -169,6 +169,7 @@ namespace Kukkii
                     _fileOpen = true;
                     _hasChanges = false;
                     imbPreview.Zoom = 100;
+                    _selectedImageIndex = 0;
 
                     UpdatePreview();
                     UpdateImageList();
