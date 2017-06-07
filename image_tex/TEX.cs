@@ -29,7 +29,7 @@ namespace image_tex
                 for (int i = 0; i < mipMaps.Count; i++)
                 {
                     br.BaseStream.Position = HeaderLength + (Header.MipMapCount * 4) + mipMaps[i];
-                    var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : ((int)br.BaseStream.Length) - (int)br.BaseStream.Position);
+                    var texDataSize = (i + 1 < mipMaps.Count) ? mipMaps[i + 1] : ((int)br.BaseStream.Length - (int)br.BaseStream.Position);
                     Settings.Width = (Header.Width * WidthMultiplier) / Math.Max((int)Math.Pow(2, i), 1);
                     Settings.Height = Math.Max((Header.Height * HeightMultiplier) / Math.Max((int)Math.Pow(2, i), 1), MinHeight);
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));

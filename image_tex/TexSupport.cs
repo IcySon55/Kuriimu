@@ -16,7 +16,7 @@ namespace image_tex
         A4 = 0x0E,
         L4 = 0x0F,
         L8 = 0x10,
-        RGB8 = 0x11
+        RGB888 = 0x11
     }
 
     public enum AlphaChannelFlags : byte
