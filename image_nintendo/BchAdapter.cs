@@ -22,7 +22,7 @@ namespace image_nintendo.BCH
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 

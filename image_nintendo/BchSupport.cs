@@ -123,5 +123,6 @@ namespace image_nintendo.BCH
         public ushort width = 0;
         public ushort height = 0;
         public Format format = 0;
+        public uint entrySize = 0;
     }
 }
