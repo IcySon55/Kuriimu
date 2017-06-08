@@ -22,7 +22,8 @@ namespace Kukkii
         private bool _hasChanges;
 
         private List<IImageAdapter> _imageAdapters;
-        private int _selectedImageIndex = 0;
+        private int _selectedImageIndex;
+        private Bitmap _thumbnailBackground;
 
         public Converter(string[] args)
         {
@@ -346,12 +347,12 @@ namespace Kukkii
         {
             var thumbWidth = Settings.Default.ThumbnailWidth;
             var thumbHeight = Settings.Default.ThumbnailHeight;
-            var thumb = new Bitmap(thumbWidth, thumbHeight, PixelFormat.Format32bppArgb);
+            var thumb = new Bitmap(thumbWidth, thumbHeight, PixelFormat.Format24bppRgb);
             var gfx = Graphics.FromImage(thumb);
 
-            gfx.CompositingQuality = CompositingQuality.HighQuality;
-            gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            gfx.SmoothingMode = SmoothingMode.HighQuality;
+            gfx.CompositingQuality = CompositingQuality.HighSpeed;
+            gfx.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+            gfx.SmoothingMode = SmoothingMode.HighSpeed;
             gfx.InterpolationMode = InterpolationMode.Default;
 
             var wRatio = (float)input.Width / thumbWidth;
@@ -365,6 +366,23 @@ namespace Kukkii
             var pos = new PointF((float)thumbWidth / 2 - size.Width / 2, (float)thumbHeight / 2 - size.Height / 2);
 
             // Grid
+            if (_thumbnailBackground == null)
+                GenerateThumbnailBackground();
+
+            gfx.DrawImageUnscaled(_thumbnailBackground, 0, 0, _thumbnailBackground.Width, _thumbnailBackground.Height);
+            gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
+
+            return thumb;
+        }
+
+        private void GenerateThumbnailBackground()
+        {
+            var thumbWidth = Settings.Default.ThumbnailWidth;
+            var thumbHeight = Settings.Default.ThumbnailHeight;
+            var thumb = new Bitmap(thumbWidth, thumbHeight, PixelFormat.Format24bppRgb);
+            var gfx = Graphics.FromImage(thumb);
+
+            // Grid
             var xCount = Settings.Default.ThumbnailWidth / 16 + 1;
             var yCount = Settings.Default.ThumbnailHeight / 16 + 1;
 
@@ -372,9 +390,7 @@ namespace Kukkii
                 for (var j = 0; j < yCount; j++)
                     gfx.FillRectangle(new SolidBrush((i + j) % 2 == 1 ? Settings.Default.GridColor : Settings.Default.GridColorAlternate), i * 16, j * 16, 16, 16);
 
-            gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
-
-            return thumb;
+            _thumbnailBackground = thumb;
         }
 
         private void UpdateForm()
@@ -549,6 +565,9 @@ namespace Kukkii
             Settings.Default.GridColor = clrDialog.Color;
             Settings.Default.Save();
             UpdatePreview();
+            GenerateThumbnailBackground();
+            UpdateImageList();
+            treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
         }
 
         private void tsbGridColorAlternate_Click(object sender, EventArgs e)
@@ -560,6 +579,9 @@ namespace Kukkii
             Settings.Default.GridColorAlternate = clrDialog.Color;
             Settings.Default.Save();
             UpdatePreview();
+            GenerateThumbnailBackground();
+            UpdateImageList();
+            treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
         }
 
         // Apps
