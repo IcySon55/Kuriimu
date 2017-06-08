@@ -15,14 +15,16 @@ namespace image_nintendo.BCH
         public List<Bitmap> bmps = new List<Bitmap>();
 
         Header header;
-        MainHeader mainHeader;
-
         List<TexEntry> entries = new List<TexEntry>();
+
+        Stream _stream = null;
 
         public BCH(string filename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
             {
+                _stream = br.BaseStream;
+
                 //Header
                 header = new Header(br.BaseStream);
 
@@ -57,6 +59,10 @@ namespace image_nintendo.BCH
 
                         if (legit)
                         {
+                            entries.Add(new TexEntry
+                            {
+                                entrySize = entrySize
+                            });
                             entryCount++;
                             o += 3 * entrySize;
                         }
@@ -67,7 +73,7 @@ namespace image_nintendo.BCH
                     }
 
                     //Texture Entries
-                    for (uint o = header.gpuCommandsOffset, i = 0; i < entryCount; i++)
+                    for (int o = (int)header.gpuCommandsOffset, i = 0; i < entryCount; i++)
                     {
                         br.BaseStream.Position = o;
 
@@ -79,14 +85,11 @@ namespace image_nintendo.BCH
                         while (!check.SequenceEqual(new byte[] { 0x85, 0, 0xf, 0 }));
                         Format format = (Format)br.ReadByte();
 
-                        entries.Add(new TexEntry
-                        {
-                            width = width,
-                            height = height,
-                            format = format
-                        });
+                        entries[i].width = width;
+                        entries[i].height = height;
+                        entries[i].format = format;
 
-                        o += 3 * entrySize;
+                        o += 3 * (int)entrySize;
                     }
 
                     //Textures
@@ -140,24 +143,31 @@ namespace image_nintendo.BCH
             }
         }
 
-        private static uint peek(BinaryReaderX input)
-        {
-            uint value = input.ReadUInt32();
-            input.BaseStream.Seek(-4, SeekOrigin.Current);
-            return value;
-        }
-        private static string readString(BinaryReaderX input)
-        {
-            int offset = input.ReadInt32();
-            if (offset != 0) return input.ReadString(offset);
-            return null;
-        }
-
         public void Save(string filename)
         {
+            var count = 0;
+            foreach (var bmp in bmps)
+            {
+                if (entries[count].width != bmp.Width || entries[count].height != bmp.Height)
+                    throw new Exception("BCH textures have to be the same size");
+            }
+
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
+                _stream.CopyTo(bw.BaseStream);
 
+                bw.BaseStream.Position = header.dataOffset;
+                for (int i = 0; i < entries.Count(); i++)
+                {
+                    var settings = new ImageSettings
+                    {
+                        Width = entries[i].width,
+                        Height = entries[i].height,
+                        Format = entries[i].format,
+                        PadToPowerOf2 = false
+                    };
+                    bw.Write(Common.Save(bmps[i], settings));
+                }
             }
         }
     }
