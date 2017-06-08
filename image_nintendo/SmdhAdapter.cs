@@ -6,11 +6,11 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_nintendo.ICN
+namespace image_nintendo.SMDH
 {
     public sealed class IcnAdapter : IImageAdapter
     {
-        private SMDH _icn;
+        private SMDH _smdh;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
@@ -43,8 +43,8 @@ namespace image_nintendo.ICN
 
             if (FileInfo.Exists)
             {
-                _icn = new SMDH(FileInfo.OpenRead());
-                _bitmaps = _icn.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _smdh = new SMDH(FileInfo.OpenRead());
+                _bitmaps = _smdh.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
@@ -56,8 +56,8 @@ namespace image_nintendo.ICN
             var stream = FileInfo.Create();
             try
             {
-                _icn.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-                _icn.Save(stream);
+                _smdh.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+                _smdh.Save(stream);
             }
             catch (Exception)
             {

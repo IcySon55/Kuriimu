@@ -33,7 +33,7 @@ namespace Karameru
 
         // Shared Booleans
         private bool _canExtractDirectories;
-        private bool _canReplaceDirectories = false;
+        private bool _canReplaceDirectories;
 
         private bool _canAddFiles;
         private bool _canExtractFiles;
@@ -519,7 +519,7 @@ namespace Karameru
 
                     var sb = new StringBuilder(16);
                     Win32.StrFormatByteSize((long)file.FileSize, sb, 16);
-                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), sb.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
+                    lstFiles.Items.Add(new ListViewItem( new[] { Path.GetFileName(file.FileName), sb.ToString(), file.State.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
                 }
 
                 tslFileCount.Text = $"Files: {files.Count()}";
@@ -570,6 +570,7 @@ namespace Karameru
                 bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
 
                 _canExtractDirectories = nodeSelected;
+                _canReplaceDirectories = nodeSelected;
 
                 bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
 
@@ -659,7 +660,7 @@ namespace Karameru
         {
             var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
             var afi = selectedItem?.Tag as ArchiveFileInfo;
-            ReplaceFile(afi);
+            ReplaceFiles(new List<ArchiveFileInfo> { afi });
         }
 
         private void viewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -677,8 +678,8 @@ namespace Karameru
             extractDirectoryToolStripMenuItem.Enabled = _canExtractDirectories;
             extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Extract is not supported";
 
-            replaceDirectoryToolStripMenuItem.Enabled = _canReplaceDirectories; //_canRenameFiles;
-            replaceDirectoryToolStripMenuItem.Text = "Replace is not supported yet"; //_canReplaceFiles ? "&Replace..." : "Replace is not supported";
+            replaceDirectoryToolStripMenuItem.Enabled = _canReplaceDirectories;
+            replaceDirectoryToolStripMenuItem.Text = _canReplaceDirectories ? $"&Replace {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Replace is not supported";
         }
 
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -693,6 +694,20 @@ namespace Karameru
             }
 
             ExtractFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
+        }
+
+        private void replaceDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var node = treDirectories.SelectedNode;
+            var selectedPath = string.Empty;
+
+            while (node.Parent != null)
+            {
+                selectedPath = node.Text + "\\" + selectedPath;
+                node = node.Parent;
+            }
+
+            ReplaceFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
         }
 
         private static IEnumerable<ArchiveFileInfo> CollectFiles(TreeNode node)
@@ -758,7 +773,7 @@ namespace Karameru
         {
             var menuItem = sender as ToolStripMenuItem;
             var afi = menuItem.Tag as ArchiveFileInfo;
-            ReplaceFile(afi);
+            ReplaceFiles(new List<ArchiveFileInfo> { afi });
         }
 
         private void editFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -900,33 +915,73 @@ namespace Karameru
             }
         }
 
-        private void ReplaceFile(ArchiveFileInfo afi)
+        private void ReplaceFiles(List<ArchiveFileInfo> files, string selectedNode = "", string selectedPath = "")
         {
-            if (afi == null) return;
-            var filename = Path.GetFileName(afi.FileName);
+            var selectedPathRegex = "^" + selectedPath.Replace("\\", @"[\\/]") + @"[\\/]?";
 
-            var ofd = new OpenFileDialog();
-            ofd.Title = $"Select a file to replace {filename} with...";
-            ofd.InitialDirectory = Settings.Default.LastDirectory;
-
-            // TODO: Implement file type filtering if replacement filetype matters
-            ofd.Filter = "All Files (*.*)|*.*";
-
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-            try
+            if (files?.Count > 1)
             {
-                afi.FileData = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.None);
-                afi.State = ArchiveFileState.Replaced;
-                lstFiles.SelectedItems[0].ForeColor = StateToColor(afi.State);
-                MessageBox.Show($"{filename} has been replaced with {Path.GetFileName(ofd.FileName)}.", "File Replaced", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                var fbd = new FolderBrowserDialog
+                {
+                    SelectedPath = Settings.Default.LastDirectory,
+                    Description = $"Select where you want to replace {selectedNode} from..."
+                };
+
+                if (fbd.ShowDialog() != DialogResult.OK) return;
+                var replaceCount = 0;
+                foreach (var afi in files)
+                {
+                    var path = Path.Combine(fbd.SelectedPath, Regex.Replace(Path.GetDirectoryName(afi.FileName).TrimStart('/', '\\').TrimEnd('\\') + "\\", selectedPathRegex, string.Empty));
+                    var file = Path.Combine(fbd.SelectedPath, path, Path.GetFileName(afi.FileName));
+
+                    if (!File.Exists(file)) continue;
+
+                    if (afi.FileData is FileStream)
+                        afi.FileData.Close();
+
+                    try
+                    {
+                        afi.FileData = File.OpenRead(file);
+                        afi.State = ArchiveFileState.Replaced;
+                        replaceCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Partial Replacement Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+                MessageBox.Show($"Replaced {replaceCount} files in \"{selectedNode}\" successfully.", "Replacement Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception ex)
+            else if (files?.Count == 1)
             {
-                MessageBox.Show(ex.ToString(), "Replace Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var afi = files.First();
+                var filename = Path.GetFileName(afi.FileName);
+
+                var ofd = new OpenFileDialog();
+                ofd.Title = $"Select a file to replace {filename} with...";
+                ofd.InitialDirectory = Settings.Default.LastDirectory;
+
+                // TODO: Implement file type filtering if replacement filetype matters
+                ofd.Filter = "All Files (*.*)|*.*";
+
+                if (ofd.ShowDialog() != DialogResult.OK) return;
+                try
+                {
+                    afi.FileData = new FileStream(ofd.FileName, FileMode.Open, FileAccess.Read, FileShare.None);
+                    afi.State = ArchiveFileState.Replaced;
+                    lstFiles.SelectedItems[0].ForeColor = StateToColor(afi.State);
+                    MessageBox.Show($"{filename} has been replaced with {Path.GetFileName(ofd.FileName)}.", "File Replaced", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "Replace Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
             _hasChanges = true;
             UpdateForm();
+            LoadFiles();
         }
     }
 }

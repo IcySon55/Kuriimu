@@ -7,7 +7,7 @@ using Cetera.Image;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_nintendo.ICN
+namespace image_nintendo.SMDH
 {
     public class SMDH
     {
