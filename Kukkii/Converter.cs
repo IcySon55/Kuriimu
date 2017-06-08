@@ -295,8 +295,11 @@ namespace Kukkii
 
         private void UpdatePreview()
         {
-            imbPreview.Image = _imageAdapter?.Bitmaps[_selectedImageIndex].Bitmap;
-            pptImageProperties.SelectedObject = _imageAdapter?.Bitmaps[_selectedImageIndex];
+            if (_imageAdapter?.Bitmaps.Count > 0)
+            {
+                imbPreview.Image = _imageAdapter?.Bitmaps[_selectedImageIndex].Bitmap;
+                pptImageProperties.SelectedObject = _imageAdapter?.Bitmaps[_selectedImageIndex];
+            }
 
             imbPreview.GridColor = Settings.Default.GridColor;
             var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
