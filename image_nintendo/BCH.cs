@@ -154,6 +154,7 @@ namespace image_nintendo.BCH
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
+                _stream.Position = 0;
                 _stream.CopyTo(bw.BaseStream);
 
                 bw.BaseStream.Position = header.dataOffset;
