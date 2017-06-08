@@ -77,8 +77,8 @@ namespace image_nintendo.BCH
                     {
                         br.BaseStream.Position = o;
 
-                        var width = br.ReadUInt16();
                         var height = br.ReadUInt16();
+                        var width = br.ReadUInt16();
 
                         byte[] check;
                         do { check = br.ReadBytes(4); }
