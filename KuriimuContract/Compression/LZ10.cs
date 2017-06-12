@@ -129,12 +129,12 @@ namespace Kuriimu.Compression
                 outstream.Flush();
             }
 
-            if (readBytes < inLength)
+            /*if (readBytes < inLength)
             {
                 // the input may be 4-byte aligned.
                 if ((readBytes ^ (readBytes & 3)) + 4 < inLength)
                     throw new Exception("Too much input: " + readBytes.ToString() + ", " + inLength.ToString());
-            }
+            }*/
 
             outstream.Position = 0;
             return new BinaryReaderX(outstream).ReadBytes(decompressedSize);
