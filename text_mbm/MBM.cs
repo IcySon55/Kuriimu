@@ -145,14 +145,29 @@ namespace text_mbm
 
                     var bytes = br.ReadBytes(2);
                     var conv = sjis.GetString(bytes);
-                    if (conv == "\u30fb")
+
+                    if (bytes[1] == 0)
                     {
                         result += unicode.GetString(bytes.Reverse().ToArray());
                     }
                     else
                     {
-                        result += conv;
-
+                        if (conv == "\u30fb")
+                        {
+                            result += unicode.GetString(bytes.Reverse().ToArray());
+                        }
+                        else
+                        {
+                            if (bytes[0] < 0x81)
+                            {
+                                result += sjis.GetString(new byte[] { bytes[0] });
+                                br.BaseStream.Position--;
+                            }
+                            else
+                            {
+                                result += conv;
+                            }
+                        }
                     }
 
                     symbol = br.ReadUInt16();
@@ -181,7 +196,10 @@ namespace text_mbm
                     }
                     else
                     {
-                        result.Add(conv[0]);
+                        if (conv[0] == 0)
+                            result.AddRange(new byte[] { 0, 0 });
+                        else
+                            result.Add(conv[0]);
                     }
                 }
                 else
@@ -193,34 +211,6 @@ namespace text_mbm
             result.AddRange(new byte[] { 0xff, 0xff });
 
             return result.ToArray();
-        }
-
-        private byte[] ReplaceBytes(byte[] input, byte[] search, byte[] replace)
-        {
-            if (search.Length != replace.Length) return null;
-
-            for (int i = 0; i < input.Length - search.Length + 1; i++)
-            {
-                var found = true;
-                for (int j = 0; j < search.Length; j++)
-                {
-                    if (input[i + j] != search[j])
-                    {
-                        found = false;
-                        break;
-                    }
-                }
-
-                if (found)
-                {
-                    for (int j = 0; j < replace.Length; j++)
-                    {
-                        input[i + j] = replace[j];
-                    }
-                }
-            }
-
-            return input;
         }
     }
 }

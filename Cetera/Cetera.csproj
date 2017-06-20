@@ -54,6 +54,8 @@
     <Compile Include="Archive\SARC.cs" />
     <Compile Include="Archive\SimpleSARC.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Font\GZF.cs" />
+    <Compile Include="Font\QBF.cs" />
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Hash\XbbHash.cs" />
@@ -78,6 +80,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="Resources\cbf_std.bcfnt.gz" />
+    <None Include="Resources\ltn16.gzf" />
+    <None Include="Resources\sys8.qbf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">

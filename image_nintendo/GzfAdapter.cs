@@ -6,20 +6,19 @@ using System.Linq;
 using Kuriimu.Contract;
 using Kuriimu.IO;
 
-namespace image_nintendo.CGFX
+namespace image_nintendo.GZF
 {
-    public class BcfnxAdapter : IImageAdapter
+    public sealed class GzfAdapter : IImageAdapter
     {
-        private CGFX _cgfx;
+        private GZF _gzf;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
-        // Information
-        public string Name => "CGFX";
-        public string Description => "CTR GFX";
-        public string Extension => "*.bcres;*.bcmdl;*.bctex";
-        public string About => "This is the CGFX image adapter for Kukkii.";
+        public string Name => "GZF";
+        public string Description => "GZ Font";
+        public string Extension => "*.gzf";
+        public string About => "This is the GZF image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -31,18 +30,10 @@ namespace image_nintendo.CGFX
 
         public bool Identify(string filename)
         {
-            try
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                {
-                    if (br.ReadString(4) != "CGFX") return false;
-                    br.BaseStream.Position = 0x24;
-                    return br.ReadUInt32() > 0;
-                }
-            }
-            catch
-            {
-                return false;
+                if (br.BaseStream.Length < 4) return false;
+                return br.ReadString(4) == "GZFX";
             }
         }
 
@@ -52,8 +43,8 @@ namespace image_nintendo.CGFX
 
             if (FileInfo.Exists)
             {
-                _cgfx = new CGFX(FileInfo.OpenRead());
-                _bitmaps = _cgfx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _gzf = new GZF(FileInfo.FullName);
+                _bitmaps = _gzf.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
@@ -62,7 +53,8 @@ namespace image_nintendo.CGFX
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            //_cgfx.Save(FileInfo.Create());
+            _gzf.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _gzf.Save(FileInfo.FullName);
         }
 
         // Bitmaps

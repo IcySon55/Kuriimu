@@ -69,5 +69,25 @@ namespace Cetera.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] std_gzf {
+            get {
+                object obj = ResourceManager.GetObject("std_gzf", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] std_qbf {
+            get {
+                object obj = ResourceManager.GetObject("std_qbf", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
