@@ -6,7 +6,7 @@ using System.IO;
  * https://jamesmccaffrey.wordpress.com/2012/08/18/the-knuth-morris-pratt-string-search-algorithm-in-c/
  */
 
-namespace Kuriimu.Kontract.IO
+namespace Kuriimu.IO
 {
     public class KmpSearcher
     {
