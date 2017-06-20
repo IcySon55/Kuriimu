@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 using System.Linq;
 using Cetera.Hash;

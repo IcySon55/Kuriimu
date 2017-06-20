@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Karameru.Properties;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.UI;
 
 namespace Karameru

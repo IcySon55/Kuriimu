@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.Image;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace image_f3xt

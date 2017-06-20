@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace game_rocket_slime_3ds
 {

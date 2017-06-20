@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.Properties;
 
 namespace Kuriimu

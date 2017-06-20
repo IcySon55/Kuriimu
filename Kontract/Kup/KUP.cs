@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Kuriimu.Contract
+namespace Kuriimu.Kontract
 {
     [XmlRoot("kup")]
     public sealed class KUP

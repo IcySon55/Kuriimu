@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace Kuriimu.Contract
+namespace Kuriimu.Kontract
 {
     public interface IArchiveManager : IPlugin
     {

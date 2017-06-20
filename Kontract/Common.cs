@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Kuriimu.Contract
+namespace Kuriimu.Kontract
 {
     public enum LoadResult
     {

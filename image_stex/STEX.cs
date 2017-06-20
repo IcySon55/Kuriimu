@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.Image;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 /*Original image and data types by xdaniel and his tool Tharsis

@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using Cyotek.Windows.Forms;
 using Kukkii.Properties;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.UI;
 
 namespace Kukkii

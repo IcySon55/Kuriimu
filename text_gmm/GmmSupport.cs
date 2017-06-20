@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 using System.IO;
 

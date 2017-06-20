@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace image_tex
 {

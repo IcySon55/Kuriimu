@@ -10,7 +10,7 @@ using Cetera.Image;
 using Cetera.Properties;
 using Kuriimu.Compression;
 using Kuriimu.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using System.Text;
 
 namespace Cetera.Font

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace text_kup
 {

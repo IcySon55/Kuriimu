@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using System.IO;
 using Kuriimu.IO;
 using Cetera.Image;

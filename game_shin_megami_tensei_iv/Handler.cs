@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using game_shin_megami_tensei_iv.Properties;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Cetera.Font;
 using System;
 using System.Diagnostics;

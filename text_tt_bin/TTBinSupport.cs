@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace text_ttbin
 {

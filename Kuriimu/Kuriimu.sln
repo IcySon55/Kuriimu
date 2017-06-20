@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "Kuriimu.csproj",
 		{E51106FF-3D0B-499F-B9CA-A3A44F37FC13} = {E51106FF-3D0B-499F-B9CA-A3A44F37FC13}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuContract", "..\KuriimuContract\KuriimuContract.csproj", "{51E474F7-1497-4C30-BC18-C357C884B8B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuContract", "..\Kontract\KuriimuContract.csproj", "{51E474F7-1497-4C30-BC18-C357C884B8B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_kup", "..\text_kup\text_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
 EndProject

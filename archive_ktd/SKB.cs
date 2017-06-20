@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Kuriimu.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace archive_skb
 {

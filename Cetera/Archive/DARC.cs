@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using System.Text;
 
 namespace Cetera.Archive

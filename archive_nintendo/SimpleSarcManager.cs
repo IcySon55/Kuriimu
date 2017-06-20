@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using Cetera.Archive;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace archive_nintendo.SimpleSARC

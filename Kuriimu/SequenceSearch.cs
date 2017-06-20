@@ -3,11 +3,11 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Kuriimu.Properties;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 using System.Collections.Generic;
 using System.Linq;
-using Kuriimu.Contract.IO;
+using Kuriimu.Kontract.IO;
 
 namespace Kuriimu
 {

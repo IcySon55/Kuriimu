@@ -8,8 +8,8 @@
     <ProjectGuid>{51E474F7-1497-4C30-BC18-C357C884B8B2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kuriimu.Contract</RootNamespace>
-    <AssemblyName>KuriimuContract</AssemblyName>
+    <RootNamespace>Kuriimu.Kontract</RootNamespace>
+    <AssemblyName>Kontract</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Kuriimu.Contract
+namespace Kuriimu.Kontract
 {
     public static class Tools
     {

@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace archive_nintendo.CTPK
 {

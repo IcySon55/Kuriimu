@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using runext.Properties;
 
 namespace runext

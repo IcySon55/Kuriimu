@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.Properties;
 using Kuriimu.UI;
 

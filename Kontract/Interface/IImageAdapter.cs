@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 
-namespace Kuriimu.Contract
+namespace Kuriimu.Kontract
 {
     public interface IImageAdapter : IPlugin
     {
