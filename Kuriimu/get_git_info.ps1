@@ -45,7 +45,7 @@ $newAssemblyContent = Get-Content $templateAssemblyFile |
     %{$_ -replace '\$gitStateEmail\$', $gitStateEmail } |
     %{$_ -replace '\$gitHashShort\$', $gitHashShort } |
     %{$_ -replace '\$gitHashLong\$', $gitHashLong } |
-    %{$_ -replace '\$gitLastTag\$', $gitLastTag } |
+    %{$_ -replace '\$gitLastTag\$', $gitLastTag.TrimStart('v') } |
     %{$_ -replace '\$gitOwner\$', $gitOwner } |
     %{$_ -replace '\$gitRepo\$', $gitRepo } |
     %{$_ -replace '\$gitBranch\$', $gitBranch } |
