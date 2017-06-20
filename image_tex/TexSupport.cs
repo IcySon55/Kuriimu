@@ -32,7 +32,7 @@ namespace image_tex
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header
+    public class Header
     {
         public Magic Magic;
         public byte Version;
@@ -51,7 +51,6 @@ namespace image_tex
     public sealed class TexBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
-        [ReadOnly(true)]
         public Format Format { get; set; }
     }
 }

@@ -53,6 +53,8 @@ namespace image_tex
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
+            if (_bitmaps.Count >= 1)
+                _tex.Header.Format = ((TexBitmapInfo)_bitmaps[0]).Format;
             _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
         }

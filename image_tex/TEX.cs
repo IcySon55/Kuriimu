@@ -48,6 +48,7 @@ namespace image_tex
                 {
                     Settings.Width = (Header.Width * WidthMultiplier) / Math.Max((int)Math.Pow(2, i), 1);
                     Settings.Height = Math.Max((Header.Height * HeightMultiplier) / Math.Max((int)Math.Pow(2, i), 1), MinHeight);
+                    Settings.Format = ImageSettings.ConvertFormat(Header.Format);
                     bitmaps.Add(Common.Save(Bitmaps[i], Settings));
                 }
                 var mipMaps = new List<int>() { 0 };
