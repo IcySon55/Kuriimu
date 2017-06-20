@@ -8,5 +8,8 @@
     <Setting Name="PlayerName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Player</Value>
     </Setting>
+    <Setting Name="Scene" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TopScreen</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

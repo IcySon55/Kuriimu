@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
-using game_rocket_slime_3ds.Properties;
+using Kuriimu.Contract;
 
 namespace game_rocket_slime_3ds
 {
@@ -23,6 +24,10 @@ namespace game_rocket_slime_3ds
         private void Settings_Load(object sender, EventArgs e)
         {
             txtPlayerName.Text = Properties.Settings.Default.PlayerName;
+            cmbScene.DisplayMember = "Text";
+            cmbScene.ValueMember = "Value";
+            cmbScene.DataSource = Enum.GetNames(typeof(Scenes)).Select(o => new ListItem(o, o)).ToList();
+            cmbScene.SelectedValue = Properties.Settings.Default.Scene;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -30,9 +35,13 @@ namespace game_rocket_slime_3ds
             if (Properties.Settings.Default.PlayerName != txtPlayerName.Text)
                 HasChanges = true;
 
+            if (Properties.Settings.Default.Scene != cmbScene.SelectedValue.ToString())
+                HasChanges = true;
+
             if (HasChanges)
             {
                 Properties.Settings.Default.PlayerName = txtPlayerName.Text;
+                Properties.Settings.Default.Scene = cmbScene.SelectedValue.ToString();
                 Properties.Settings.Default.Save();
             }
 

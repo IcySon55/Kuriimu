@@ -11,6 +11,12 @@ using Kuriimu.Contract;
 
 namespace game_rocket_slime_3ds
 {
+    public enum Scenes
+    {
+        TopScreen,
+        BottomScreen
+    }
+
     public class Handler : IGameHandler
     {
         #region Properties
@@ -87,6 +93,7 @@ namespace game_rocket_slime_3ds
         }
 
         Bitmap background = new Bitmap(Resources.background);
+        Bitmap bottom = new Bitmap(Resources.bottom);
         Bitmap nameBox = new Bitmap(Resources.namebox_top);
         Bitmap textBox = new Bitmap(Resources.textbox_top);
 
@@ -100,7 +107,17 @@ namespace game_rocket_slime_3ds
             {
                 if (page.Trim() != string.Empty)
                 {
-                    Bitmap img = new Bitmap(background.Width, background.Height);
+                    Bitmap img = new Bitmap(1, 1);
+
+                    switch (Enum.Parse(typeof(Scenes), Properties.Settings.Default.Scene))
+                    {
+                        case Scenes.TopScreen:
+                            img = new Bitmap(background.Width, background.Height);
+                            break;
+                        case Scenes.BottomScreen:
+                            img = new Bitmap(bottom.Width, bottom.Height);
+                            break;
+                    }
 
                     using (Graphics gfx = Graphics.FromImage(img))
                     {
@@ -108,21 +125,33 @@ namespace game_rocket_slime_3ds
                         gfx.InterpolationMode = InterpolationMode.Bilinear;
                         gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                        gfx.DrawImage(background, 0, 0);
-
-                        gfx.DrawImage(textBox, 0, 0);
-                        gfx.DrawImage(nameBox, 0, 0);
-
-                        RectangleF rectName = new RectangleF(16, 2, 128, 17);
-                        RectangleF rectText = new RectangleF(30, 18, 340, 37);
-
-                        Color colorDefault = Color.FromArgb(255, 37, 66, 167);
-
                         float scaleDefaultX = 1.0f;
                         float scaleDefaultY = 1.05f;
                         float scaleName = 0.8f;
                         float scaleCurrentX = scaleDefaultX;
                         float scaleCurrentY = scaleDefaultY;
+
+                        var rectName = new RectangleF();
+                        var rectText = new RectangleF();
+
+                        Color colorDefault = Color.FromArgb(255, 37, 66, 167);
+
+                        switch (Enum.Parse(typeof(Scenes), Properties.Settings.Default.Scene))
+                        {
+                            case Scenes.TopScreen:
+                                gfx.DrawImage(background, 0, 0);
+                                gfx.DrawImage(textBox, 0, 0);
+                                gfx.DrawImage(nameBox, 0, 0);
+                                rectName = new RectangleF(16, 2, 128, 17);
+                                rectText = new RectangleF(30, 18, 340, 37);
+                                break;
+                            case Scenes.BottomScreen:
+                                gfx.DrawImage(bottom, 0, 0);
+                                rectName = new RectangleF(6, 2, 128, 17);
+                                rectText = new RectangleF(20, 18, 280, 37);
+                                break;
+                        }
+
                         float x = rectText.X, pX = x;
                         float y = rectText.Y, pY = y;
                         float lineSpacing = 4;
