@@ -26,7 +26,7 @@ namespace image_nintendo.CTPK
             if (isRaw)
                 GetRaw(filename);
             else
-                using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
+                using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
                 {
                     //Header
                     header = br.ReadStruct<Header>();
