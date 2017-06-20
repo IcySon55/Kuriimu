@@ -18,7 +18,7 @@ namespace image_nintendo.CGFX
         // Information
         public string Name => "CGFX";
         public string Description => "CTR GFX";
-        public string Extension => "*.bcres";
+        public string Extension => "*.bcres;*.bcmdl;*.bctex";
         public string About => "This is the CGFX image adapter for Kukkii.";
 
         // Feature Support
