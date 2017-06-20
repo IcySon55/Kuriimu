@@ -55,6 +55,10 @@
     <Compile Include="CTPK.cs" />
     <Compile Include="CtpkAdapter.cs" />
     <Compile Include="CtpkSupport.cs" />
+    <Compile Include="QBF.cs" />
+    <Compile Include="GZF.cs" />
+    <Compile Include="GzfAdapter.cs" />
+    <Compile Include="QbfAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SMDH.cs" />
     <Compile Include="SmdhAdapter.cs" />
