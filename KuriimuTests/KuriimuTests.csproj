@@ -130,7 +130,7 @@
       <Project>{7f679e7f-ea49-4eb9-8d6c-16dd131cb3aa}</Project>
       <Name>image_tmx</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kontract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>KuriimuContract</Name>
     </ProjectReference>

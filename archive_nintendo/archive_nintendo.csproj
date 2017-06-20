@@ -97,7 +97,7 @@
       <Name>Cetera</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Kontract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>KuriimuContract</Name>
       <Private>False</Private>
