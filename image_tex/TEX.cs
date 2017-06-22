@@ -42,17 +42,17 @@ namespace image_tex
             using (var bw = new BinaryWriterX(output))
             {
                 bw.WriteStruct(Header);
-
                 var bitmaps = new List<byte[]>();
+                Settings.Format = ImageSettings.ConvertFormat(Header.Format);
+
                 for (int i = 0; i < Bitmaps.Count; i++)
                 {
                     Settings.Width = (Header.Width * WidthMultiplier) / Math.Max((int)Math.Pow(2, i), 1);
                     Settings.Height = Math.Max((Header.Height * HeightMultiplier) / Math.Max((int)Math.Pow(2, i), 1), MinHeight);
-                    Settings.Format = ImageSettings.ConvertFormat(Header.Format);
                     bitmaps.Add(Common.Save(Bitmaps[i], Settings));
                 }
-                var mipMaps = new List<int>() { 0 };
 
+                var mipMaps = new List<int>() { 0 };
                 for (int i = 0; i < Bitmaps.Count - 1; i++)
                     mipMaps.Add(bitmaps[i].Length);
 
