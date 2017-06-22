@@ -424,7 +424,7 @@ namespace Karameru
             IArchiveManager result = null;
 
             // first look for managers whose extension matches that of our file name
-            List<IArchiveManager> matchingManagers = _archiveManagers.Where(manager => manager.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s))).ToList();
+            List<IArchiveManager> matchingManagers = _archiveManagers.Where(adapter => adapter.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
 
             result = matchingManagers.FirstOrDefault(manager => manager.Identify(filename));
 

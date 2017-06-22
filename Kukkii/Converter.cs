@@ -236,7 +236,7 @@ namespace Kukkii
             IImageAdapter result = null;
 
             // first look for adapters whose extension matches that of our filename
-            List<IImageAdapter> matchingAdapters = _imageAdapters.Where(adapter => adapter.Extension.Split(';').Any(s => filename.ToLower().EndsWith(s))).ToList();
+            List<IImageAdapter> matchingAdapters = _imageAdapters.Where(adapter => adapter.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
 
             result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
