@@ -19,8 +19,7 @@ namespace text_metal
     public sealed class Entry
     {
         public ArrEntry ArrEntry;
+        public int Index;
         public string Text;
-        public long Offset;
-        public int Length;
     }
 }

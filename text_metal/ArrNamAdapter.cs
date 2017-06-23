@@ -25,7 +25,7 @@ namespace text_metal
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
         public bool CanAddEntries => false;
         public bool CanRenameEntries => false;
         public bool CanDeleteEntries => false;
@@ -68,13 +68,16 @@ namespace text_metal
             {
                 _format = new ARRNAM(FileInfo.OpenRead(), File.OpenRead(arrFilename));
 
-                string backupFilePath = FileInfo.FullName + ".bak";
-                if (File.Exists(backupFilePath))
-                    _formatBackup = new ARRNAM(File.OpenRead(backupFilePath), File.OpenRead(arrFilename));
+                var arrFileInfo = new FileInfo(arrFilename);
+                var namBackupFilePath = FileInfo.FullName + ".bak";
+                var arrBackupFilePath = arrFileInfo.FullName + ".bak";
+                if (File.Exists(namBackupFilePath))
+                    _formatBackup = new ARRNAM(File.OpenRead(namBackupFilePath), File.OpenRead(arrBackupFilePath));
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    File.Copy(FileInfo.FullName, backupFilePath);
-                    _formatBackup = new ARRNAM(File.OpenRead(backupFilePath), File.OpenRead(arrFilename));
+                    File.Copy(FileInfo.FullName, namBackupFilePath);
+                    File.Copy(arrFileInfo.FullName, arrBackupFilePath);
+                    _formatBackup = new ARRNAM(File.OpenRead(namBackupFilePath), File.OpenRead(arrBackupFilePath));
                 }
                 else
                     _formatBackup = null;
@@ -88,13 +91,17 @@ namespace text_metal
         public SaveResult Save(string filename = "")
         {
             SaveResult result = SaveResult.Success;
+            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arr");
 
             if (filename.Trim() != string.Empty)
+            {
                 FileInfo = new FileInfo(filename);
+                arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".ARR");
+            }
 
             try
             {
-                //_format.Save(FileInfo.Create());
+                _format.Save(FileInfo.Create(), new FileInfo(arrFilename).Create());
             }
             catch (Exception)
             {
@@ -114,7 +121,7 @@ namespace text_metal
                     if (_formatBackup == null)
                         _entries = _format.Entries.Select(o => new ArrNamEntry(o)).ToList();
                     else
-                        _entries = _format.Entries.Select(o => new ArrNamEntry(o, _formatBackup.Entries.FirstOrDefault(b => b == o))).ToList();
+                        _entries = _format.Entries.Select(o => new ArrNamEntry(o, _formatBackup.Entries.FirstOrDefault(b => b.Index == o.Index))).ToList();
                 }
 
                 return _entries;
@@ -146,11 +153,11 @@ namespace text_metal
         // Interface
         public string Name
         {
-            get { return Message.ArrEntry.Unk3.ToString("00"); }
+            get { return Message.Index.ToString("0000"); }
             set { }
         }
 
-        public string OriginalText => OriginalMessage.Text ?? string.Empty;
+        public string OriginalText => OriginalMessage?.Text ?? string.Empty;
 
         public string EditedText
         {
