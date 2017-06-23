@@ -42,7 +42,7 @@ namespace text_metal
 
         public bool Identify(string filename)
         {
-            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arr");
+            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".ARR");
 
             if (!File.Exists(filename) || !File.Exists(arrFilename)) return false;
 
@@ -61,7 +61,7 @@ namespace text_metal
             LoadResult result = LoadResult.Success;
 
             FileInfo = new FileInfo(filename);
-            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arr");
+            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".ARR");
             _entries = null;
 
             if (FileInfo.Exists)
@@ -91,7 +91,7 @@ namespace text_metal
         public SaveResult Save(string filename = "")
         {
             SaveResult result = SaveResult.Success;
-            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arr");
+            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".ARR");
 
             if (filename.Trim() != string.Empty)
             {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,14 +21,11 @@ namespace text_metal
 
             using (var br = new BinaryReaderX(namInput, false))
             {
-                var lastOffset = -1;
-                
-                for (int i = 0; i < arrEntries.Count; i++)
+                for (var i = 0; i < arrEntries.Count; i++)
                 {
                     var arrEntry = arrEntries[i];
                     br.BaseStream.Position = arrEntry.Offset;
 
-                    var bad = false;
                     var chars = br.ReadBytes(2);
                     var text = Encoding.Unicode.GetString(chars);
                     while (!chars.SequenceEqual(new byte[] { 0, 0 }))
@@ -41,15 +37,10 @@ namespace text_metal
                             break;
                     }
 
-                    if (arrEntry.Offset > lastOffset)
-                        lastOffset = arrEntry.Offset;
-                    else
-                        bad = true;
-
                     var entry = new Entry
                     {
                         ArrEntry = arrEntry,
-                        Index = i + 1 + (bad ? 1000 : 0),
+                        Index = i + 1,
                         Text = text.TrimEnd('\0')
                     };
 
