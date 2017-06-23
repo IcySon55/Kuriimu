@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace image_nintendo.BXLIM
@@ -10,6 +11,7 @@ namespace image_nintendo.BXLIM
     public class BxlimAdapter : IImageAdapter
     {
         private Cetera.Image.BXLIM _bxlim = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -43,7 +45,10 @@ namespace image_nintendo.BXLIM
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _bxlim = new Cetera.Image.BXLIM(FileInfo.OpenRead());
+                _bitmaps = new List<BitmapInfo> { new BxlimBitmapInfo { Bitmap = _bxlim.Image, Format = _bxlim.Settings.Format } };
+            }
         }
 
         public void Save(string filename = "")
@@ -51,16 +56,22 @@ namespace image_nintendo.BXLIM
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _bxlim.Save(FileInfo.Create());
-            }
-            catch (Exception) { }
+            var info = _bitmaps[0] as BxlimBitmapInfo;
+            _bxlim.Image = info.Bitmap;
+            _bxlim.Settings.Format = info.Format;
+            _bxlim.Save(FileInfo.Create());
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _bxlim.Image } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+    }
+
+    public sealed class BxlimBitmapInfo : BitmapInfo
+    {
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public Cetera.Image.Format Format { get; set; }
     }
 }

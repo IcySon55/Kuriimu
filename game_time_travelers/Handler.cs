@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using game_time_travelers.Properties;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace game_time_travelers
 {

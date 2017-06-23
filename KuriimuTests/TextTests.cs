@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace KuriimuTests
 {

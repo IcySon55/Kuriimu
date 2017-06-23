@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Cetera.Hash;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace archive_level5.ARC0

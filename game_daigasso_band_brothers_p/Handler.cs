@@ -9,7 +9,7 @@ using Cetera.Font;
 using Cetera.Text;
 using game_daigasso_band_brothers_p.Properties;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace game_daigasso_band_brothers_p
 {

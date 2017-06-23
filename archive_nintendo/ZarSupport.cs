@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace archive_nintendo.ZAR

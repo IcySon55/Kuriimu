@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace archive_level5.XPCK

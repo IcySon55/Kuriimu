@@ -62,9 +62,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
-      <Name>KuriimuContract</Name>
+      <Name>Kontract</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

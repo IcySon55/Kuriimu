@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace archive_ddt_img
@@ -11,8 +11,8 @@ namespace archive_ddt_img
         private const long Alignment = 0x800;
 
         public List<DdtFileInfo> Files = new List<DdtFileInfo>();
-        private Stream _ddtStream = null;
-        private Stream _imgStream = null;
+        private Stream _ddtStream;
+        private Stream _imgStream;
 
         private DdtFileEntry Header;
 
@@ -42,7 +42,7 @@ namespace archive_ddt_img
 
             for (var i = 0; i < subEntryCount; i++)
             {
-                var entry = new DdtFileEntry()
+                var entry = new DdtFileEntry
                 {
                     PathOffset = br.ReadUInt32(),
                     NextDirectoryOffsetOrFileOffset = br.ReadInt32(),
@@ -67,6 +67,22 @@ namespace archive_ddt_img
 
             for (var i = 0; i < subEntryCount; i++)
             {
+                var entry = parent.SubEntries[i];
+
+                if (entry.SubEntryCountOrFileSize >= 0)
+                {
+                    Files.Add(new DdtFileInfo
+                    {
+                        Entry = entry,
+                        FileName = $"{directory}\\{entry.Name}".TrimStart('\\'),
+                        FileData = new SubStream(_imgStream, entry.NextDirectoryOffsetOrFileOffset * Alignment, entry.SubEntryCountOrFileSize),
+                        State = ArchiveFileState.Archived
+                    });
+                }
+            }
+
+            for (var i = 0; i < subEntryCount; i++)
+            {
                 var nextDirectory = directory;
                 var entry = parent.SubEntries[i];
 
@@ -75,26 +91,97 @@ namespace archive_ddt_img
                     nextDirectory += "\\" + entry.Name;
                     ReadEntries(entry, br, nextDirectory);
                 }
-                else
-                {
-                    entry.Name = $"{directory}\\{entry.Name}".TrimStart('\\');
-
-                    Files.Add(new DdtFileInfo
-                    {
-                        Entry = entry,
-                        FileName = entry.Name,
-                        FileData = new SubStream(_imgStream, entry.NextDirectoryOffsetOrFileOffset * Alignment, entry.SubEntryCountOrFileSize),
-                        State = ArchiveFileState.Archived
-                    });
-                }
             }
         }
 
         public void Save(Stream ddtOutput, Stream imgOutput)
         {
-            using (var bw = new BinaryWriterX(ddtOutput))
+            using (var bwDdt = new BinaryWriterX(ddtOutput))
             {
-                // TODO: Write out your file format
+                // Header
+                bwDdt.Write(Header.PathOffset);
+                bwDdt.Write(Header.NextDirectoryOffsetOrFileOffset);
+                bwDdt.Write(Header.SubEntryCountOrFileSize);
+
+                long runningOffset = 0;
+                int runningFileOffset = 0;
+                UpdateEntries(Header, ref runningOffset, ref runningFileOffset);
+
+                using (var bwImg = new BinaryWriterX(imgOutput))
+                {
+                    runningFileOffset = 0;
+                    WriteEntries(Header, bwDdt, bwImg, ref runningFileOffset);
+                }
+            }
+        }
+
+        private void UpdateEntries(DdtFileEntry parent, ref long runningOffset, ref int runningFileIndex)
+        {
+            var subEntryCount = -parent.SubEntryCountOrFileSize;
+
+            for (var i = 0; i < subEntryCount; i++)
+            {
+                var entry = parent.SubEntries[i];
+
+                if (entry.SubEntryCountOrFileSize >= 0)
+                {
+                    entry.NextDirectoryOffsetOrFileOffset = (int)(runningOffset / Alignment);
+                    runningOffset += (long)Files[runningFileIndex].FileSize;
+                    if (runningOffset % Alignment > 0)
+                        runningOffset += Alignment - runningOffset % Alignment;
+                    runningFileIndex++;
+                }
+            }
+            
+            for (var i = 0; i < subEntryCount; i++)
+            {
+                var entry = parent.SubEntries[i];
+
+                if (entry.SubEntryCountOrFileSize < 0)
+                    UpdateEntries(entry, ref runningOffset, ref runningFileIndex);
+            }
+        }
+
+        private void WriteEntries(DdtFileEntry parent, BinaryWriterX bwDdt, BinaryWriterX bwImg, ref int runningFileIndex)
+        {
+            var subEntryCount = -parent.SubEntryCountOrFileSize;
+
+            for (var i = 0; i < subEntryCount; i++)
+            {
+                var entry = parent.SubEntries[i];
+                bwDdt.Write(entry.PathOffset);
+                bwDdt.Write(entry.NextDirectoryOffsetOrFileOffset);
+                bwDdt.Write(entry.SubEntryCountOrFileSize);
+            }
+
+            for (var i = 0; i < subEntryCount; i++)
+            {
+                // TODO: Adjust parent.SubEntries[i].PathOffset if we ever allow changes to the directory tree
+                //bw.BaseStream.Position = parent.SubEntries[i].PathOffset;
+                bwDdt.Write(Encoding.GetEncoding("EUC-JP").GetBytes(parent.SubEntries[i].Name));
+                bwDdt.Write((byte)0x0);
+            }
+            bwDdt.WritePadding(4);
+
+            for (var i = 0; i < subEntryCount; i++)
+            {
+                var entry = parent.SubEntries[i];
+
+                if (entry.SubEntryCountOrFileSize >= 0)
+                {
+                    var fileInfo = Files[runningFileIndex];
+                    fileInfo.FileData.CopyTo(bwImg.BaseStream);
+                    bwImg.WritePadding((int)Alignment);
+                    runningFileIndex++;
+                }
+            }
+
+            for (var i = 0; i < subEntryCount; i++)
+            {
+                var entry = parent.SubEntries[i];
+
+                if (entry.SubEntryCountOrFileSize < 0)
+                    WriteEntries(entry, bwDdt, bwImg, ref runningFileIndex);
             }
         }
 

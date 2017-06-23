@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 using System.Linq;
 
@@ -11,6 +11,7 @@ namespace image_ctxb
     public sealed class CtxbAdapter : IImageAdapter
     {
         private CTXB _ctxb = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -41,7 +42,11 @@ namespace image_ctxb
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _ctxb = new CTXB(FileInfo.OpenRead());
+
+                _bitmaps = _ctxb.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -49,15 +54,12 @@ namespace image_ctxb
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _ctxb.Save(FileInfo.FullName);
-            }
-            catch (Exception) { }
+            _ctxb.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _ctxb.Save(FileInfo.FullName);
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => _ctxb.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

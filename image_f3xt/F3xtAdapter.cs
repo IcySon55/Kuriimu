@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
+using System.Linq;
 
 namespace image_f3xt
 {
     public class F3xtAdapter : IImageAdapter
     {
         private F3XT _f3xt = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -38,15 +40,10 @@ namespace image_f3xt
                 if (br.ReadByte() == 0x11)
                 {
                     br.BaseStream.Position = 0;
-                    uint size = br.ReadUInt32() >> 8;
-                    br.BaseStream.Position = 0;
                     byte[] decomp = LZ11.Decompress(br.BaseStream);
-                    if (decomp.Length == size)
+                    if (new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "F3XT")
                     {
-                        if (new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "F3XT")
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
                 br.BaseStream.Position = 0;
@@ -60,7 +57,11 @@ namespace image_f3xt
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _f3xt = new F3XT(FileInfo.OpenRead());
+
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _f3xt.Image } };
+            }
         }
 
         public void Save(string filename = "")
@@ -68,15 +69,13 @@ namespace image_f3xt
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _f3xt.Save(FileInfo.Create());
-            }
-            catch (Exception) { }
+
+            _f3xt.Image = _bitmaps[0].Bitmap;
+            _f3xt.Save(FileInfo.Create());
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _f3xt.Image } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

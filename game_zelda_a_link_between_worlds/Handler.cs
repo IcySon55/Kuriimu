@@ -7,7 +7,7 @@ using System.Linq;
 using Cetera.Font;
 using game_zelda_a_link_between_worlds.Properties;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace game_zelda_a_link_between_worlds
 {

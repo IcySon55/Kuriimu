@@ -70,9 +70,9 @@
       <Name>Cetera</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
-      <Name>KuriimuContract</Name>
+      <Name>Kontract</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -114,6 +114,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\textbox_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\bottom.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

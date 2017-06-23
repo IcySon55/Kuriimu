@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Contract;
+using System.Linq;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace image_tex
@@ -10,6 +10,7 @@ namespace image_tex
     public class TexAdapter : IImageAdapter
     {
         private TEX _tex = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -17,11 +18,11 @@ namespace image_tex
         public string Name => "TEX";
         public string Description => "MT Framework Texture";
         public string Extension => "*.tex";
-        public string About => "This is the MT Framework TEX image adapter for Kukkii.";
+        public string About => "This is the MT Framework TEX image adapter for Kukkii. Many thanks to dasding for bootstrapping this plugin.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -41,7 +42,10 @@ namespace image_tex
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tex = new TEX(FileInfo.OpenRead());
+                _bitmaps = _tex.Bitmaps.Select(b => new TexBitmapInfo { Bitmap = b, Format = _tex.Header.Format }).ToList<BitmapInfo>();
+            }
         }
 
         public void Save(string filename = "")
@@ -49,15 +53,14 @@ namespace image_tex
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                //_tex.Save(FileInfo.Create());
-            }
-            catch (Exception) { }
+            if (_bitmaps.Count >= 1)
+                _tex.Header.Format = ((TexBitmapInfo)_bitmaps[0]).Format;
+            _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
+            _tex.Save(FileInfo.Create());
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _tex.Image } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

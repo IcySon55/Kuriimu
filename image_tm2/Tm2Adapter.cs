@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace image_tm2
@@ -10,6 +10,7 @@ namespace image_tm2
     public sealed class Tm2Adapter : IImageAdapter
     {
         private TM2 _tm2 = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -53,7 +54,11 @@ namespace image_tm2
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tm2 = new TM2(FileInfo.OpenRead());
+
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tm2.bmp } };
+            }
         }
 
         public void Save(string filename = "")
@@ -61,15 +66,12 @@ namespace image_tm2
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                //_tm2.Save(FileInfo.FullName);
-            }
-            catch (Exception) { }
+            _tm2.bmp = _bitmaps[0].Bitmap;
+            //_tm2.Save(FileInfo.FullName);
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _tm2.bmp } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

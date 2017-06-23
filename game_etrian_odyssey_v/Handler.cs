@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Cetera.Font;
 using game_etrian_odyssey_v.Properties;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace game_etrian_odyssey_v
 {

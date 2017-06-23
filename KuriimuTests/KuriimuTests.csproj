@@ -84,7 +84,7 @@
     </ProjectReference>
     <ProjectReference Include="..\archive_srtz\archive_srtz.csproj">
       <Project>{665782eb-3d6e-4426-b052-5048334d31c0}</Project>
-      <Name>archive_seg</Name>
+      <Name>archive_srtz</Name>
     </ProjectReference>
     <ProjectReference Include="..\archive_xbb\archive_xbb.csproj">
       <Project>{d133a149-3196-4f2c-8b04-a943611f650a}</Project>
@@ -130,9 +130,9 @@
       <Project>{7f679e7f-ea49-4eb9-8d6c-16dd131cb3aa}</Project>
       <Name>image_tmx</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
-      <Name>KuriimuContract</Name>
+      <Name>Kontract</Name>
     </ProjectReference>
     <ProjectReference Include="..\text_bmd\text_bmd.csproj">
       <Project>{cc01bcbf-871a-48ac-9aa9-19507940cff3}</Project>

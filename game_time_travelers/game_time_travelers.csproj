@@ -68,9 +68,9 @@
       <Project>{1C9D7F75-2E04-441E-83D4-00A406809E09}</Project>
       <Name>image_level5</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
-      <Name>KuriimuContract</Name>
+      <Name>Kontract</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

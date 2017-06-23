@@ -7,7 +7,7 @@ using System.Linq;
 using Cetera.Font;
 using game_miitopia_3ds.Properties;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace game_miitopia_3ds
 {

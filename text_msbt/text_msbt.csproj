@@ -61,9 +61,9 @@
       <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KuriimuContract\KuriimuContract.csproj">
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
-      <Name>KuriimuContract</Name>
+      <Name>Kontract</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

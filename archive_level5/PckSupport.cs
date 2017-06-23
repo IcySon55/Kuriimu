@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 
 namespace archive_level5.PCK
 {

@@ -121,4 +121,10 @@
   <data name="cbf_std_bcfnt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cbf_std.bcfnt.gz;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="std_gzf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ltn16.gzf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="std_qbf" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sys8.qbf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace image_tmx
@@ -10,6 +10,7 @@ namespace image_tmx
     public sealed class TmxAdapter : IImageAdapter
     {
         private TMX _tmx = null;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -41,7 +42,11 @@ namespace image_tmx
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _tmx = new TMX(FileInfo.OpenRead());
+
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tmx.bmp } };
+            }
         }
 
         public void Save(string filename = "")
@@ -49,15 +54,12 @@ namespace image_tmx
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            try
-            {
-                _tmx.Save(FileInfo.FullName);
-            }
-            catch (Exception) { }
+            _tmx.bmp = _bitmaps[0].Bitmap;
+            _tmx.Save(FileInfo.FullName);
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _tmx.bmp } };
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }

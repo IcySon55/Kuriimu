@@ -4,10 +4,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Cetera.Image;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace image_nintendo.ICN
+namespace image_nintendo.SMDH
 {
     public class SMDH
     {

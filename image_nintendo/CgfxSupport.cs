@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Cetera.Image;
 using System.IO;
 using Kuriimu.IO;
@@ -90,7 +90,7 @@ namespace image_nintendo.CGFX
                 userDataEntries = br.ReadUInt32();
 
                 var tmp = br.ReadUInt32();
-                userDataOffset = (tmp > 0) ? tmp + +(uint)br.BaseStream.Position - 4 : 0;
+                userDataOffset = (tmp > 0) ? tmp + (uint)br.BaseStream.Position - 4 : 0;
 
                 height = br.ReadUInt32();
                 width = br.ReadUInt32();
@@ -100,8 +100,22 @@ namespace image_nintendo.CGFX
                 texObject = br.ReadUInt32();
                 locationFlags = br.ReadUInt32();
                 format = br.ReadUInt32();
-                skip1 = br.ReadInt64();
+                skip1 = br.ReadUInt32();
+
+                if (userDataOffset != 0)
+                {
+                    userDataHeader = br.ReadStruct<DictHeader>();
+                    for (int i = 0; i < userDataHeader.entryCount; i++)
+                    {
+                        dictEntries.Add(new DictEntry(br.BaseStream));
+                    }
+
+                    //this has to be hacky for now
+                    br.BaseStream.Position = dictEntries.Last().dataOffset + 0x20;
+                }
+
                 skip2 = br.ReadUInt32();
+                skip3 = br.ReadUInt32();
                 texDataSize = br.ReadUInt32();
                 texDataOffset = br.ReadUInt32() + (uint)br.BaseStream.Position - 4;
                 dynamicAllocator = br.ReadUInt32();
@@ -124,13 +138,17 @@ namespace image_nintendo.CGFX
         public uint texObject;
         public uint locationFlags;
         public uint format;
-        public long skip1;
+        public uint skip1;
         public uint skip2;
+        public uint skip3;
         public uint texDataSize;
         public uint texDataOffset;
         public uint dynamicAllocator;
         public uint bitDepth;
         public uint locAddress;
         public uint memAddress;
+
+        public DictHeader userDataHeader;
+        List<DictEntry> dictEntries = new List<DictEntry>();
     }
 }

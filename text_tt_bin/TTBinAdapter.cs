@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Kuriimu.Compression;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 using text_ttbin.Properties;
 
@@ -25,7 +25,7 @@ namespace text_ttbin
 
         public string Description => "Time Travelers Binary Text";
 
-        public string Extension => "*.cfg.bin;";
+        public string Extension => "*.cfg.bin";
 
         public string About => "This is the TTBin file adapter for Kuriimu.";
 

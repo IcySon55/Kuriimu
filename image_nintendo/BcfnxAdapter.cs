@@ -3,14 +3,15 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Cetera.Font;
-using Kuriimu.Contract;
+using Kuriimu.Kontract;
 using Kuriimu.IO;
 
 namespace image_nintendo.BCFNX
 {
     public class BcfnxAdapter : IImageAdapter
     {
-        private BCFNT _bcfnx = null;
+        private BCFNT _bcfnx;
+        private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
@@ -43,7 +44,10 @@ namespace image_nintendo.BCFNX
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
+            {
                 _bcfnx = new BCFNT(FileInfo.OpenRead());
+                _bitmaps = _bcfnx.bmps.Select(o => new BitmapInfo {Bitmap = o}).ToList();
+            }
         }
 
         public void Save(string filename = "")
@@ -59,7 +63,7 @@ namespace image_nintendo.BCFNX
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => _bcfnx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+        public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
     }
