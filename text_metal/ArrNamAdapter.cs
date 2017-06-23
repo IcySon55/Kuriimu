@@ -9,11 +9,11 @@ using Kuriimu.IO;
 
 namespace text_metal
 {
-    public sealed class NamAdapter : ITextAdapter
+    public sealed class ArrNamAdapter : ITextAdapter
     {
-        private NAM _nam = null;
-        private NAM _namBackup = null;
-        private List<NamEntry> _entries = null;
+        private ARRNAM _format = null;
+        private ARRNAM _formatBackup = null;
+        private List<ArrNamEntry> _entries = null;
 
         #region Properties
 
@@ -42,6 +42,10 @@ namespace text_metal
 
         public bool Identify(string filename)
         {
+            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arr");
+
+            if (!File.Exists(filename) || !File.Exists(arrFilename)) return false;
+
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
@@ -57,26 +61,23 @@ namespace text_metal
             LoadResult result = LoadResult.Success;
 
             FileInfo = new FileInfo(filename);
+            var arrFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arr");
             _entries = null;
 
             if (FileInfo.Exists)
             {
-                _nam = new NAM(FileInfo.OpenRead());
+                _format = new ARRNAM(FileInfo.OpenRead(), File.OpenRead(arrFilename));
 
                 string backupFilePath = FileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
-                {
-                    _namBackup = new NAM(File.OpenRead(backupFilePath));
-                }
+                    _formatBackup = new ARRNAM(File.OpenRead(backupFilePath), File.OpenRead(arrFilename));
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     File.Copy(FileInfo.FullName, backupFilePath);
-                    _namBackup = new NAM(File.OpenRead(backupFilePath));
+                    _formatBackup = new ARRNAM(File.OpenRead(backupFilePath), File.OpenRead(arrFilename));
                 }
                 else
-                {
-                    _namBackup = null;
-                }
+                    _formatBackup = null;
             }
             else
                 result = LoadResult.FileNotFound;
@@ -93,7 +94,7 @@ namespace text_metal
 
             try
             {
-                _nam.Save(FileInfo.Create());
+                //_format.Save(FileInfo.Create());
             }
             catch (Exception)
             {
@@ -110,10 +111,10 @@ namespace text_metal
             {
                 if (_entries == null)
                 {
-                    if (_namBackup == null)
-                        _entries = _nam.Entries.Select(o => new NamEntry(o)).ToList();
+                    if (_formatBackup == null)
+                        _entries = _format.Entries.Select(o => new ArrNamEntry(o)).ToList();
                     else
-                        _entries = _nam.Entries.Select(o => new NamEntry(o, _namBackup.Entries.FirstOrDefault(b => b == o))).ToList();
+                        _entries = _format.Entries.Select(o => new ArrNamEntry(o, _formatBackup.Entries.FirstOrDefault(b => b == o))).ToList();
                 }
 
                 return _entries;
@@ -140,21 +141,21 @@ namespace text_metal
         }
     }
 
-    public sealed class NamEntry : TextEntry
+    public sealed class ArrNamEntry : TextEntry
     {
         // Interface
         public string Name
         {
-            get { return Message; }
+            get { return Message.ArrEntry.Unk3.ToString("00"); }
             set { }
         }
 
-        public string OriginalText => OriginalMessage ?? string.Empty;
+        public string OriginalText => OriginalMessage.Text ?? string.Empty;
 
         public string EditedText
         {
-            get => Message;
-            set => Message = value;
+            get => Message.Text;
+            set => Message.Text = value;
         }
 
         public int MaxLength { get; }
@@ -164,22 +165,22 @@ namespace text_metal
         public List<TextEntry> SubEntries { get; set; }
 
         // Adapter
-        public string Message { get; set; }
-        public string OriginalMessage { get; }
+        public Entry Message { get; set; }
+        public Entry OriginalMessage { get; }
 
-        public NamEntry()
+        public ArrNamEntry()
         {
             Name = string.Empty;
             ParentEntry = null;
             HasText = true;
         }
 
-        public NamEntry(string message) : this()
+        public ArrNamEntry(Entry message) : this()
         {
             Message = message;
         }
 
-        public NamEntry(string message, string originalMessage) : this(message)
+        public ArrNamEntry(Entry message, Entry originalMessage) : this(message)
         {
             OriginalMessage = originalMessage;
         }

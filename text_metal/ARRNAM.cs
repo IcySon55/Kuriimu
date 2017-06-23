@@ -6,14 +6,25 @@ using Kuriimu.IO;
 
 namespace text_metal
 {
-    public sealed class NAM
+    public sealed class ARRNAM
     {
-        public List<string> Entries = new List<string>();
+        public List<Entry> Entries = new List<Entry>();
+        private List<ArrEntry> ArrEntries;
 
-        public NAM(Stream input)
+        public ARRNAM(Stream namInput, Stream arrInput)
         {
-            using (var br = new BinaryReaderX(input, false))
-            {   
+            using (var br = new BinaryReaderX(arrInput, false))
+            {
+                ArrEntries = br.ReadMultiple<ArrEntry>((int)br.BaseStream.Length / 12);
+            }
+
+            using (var br = new BinaryReaderX(namInput, false))
+            {
+                for (int i = 0; i < ArrEntries.Count; i++)
+                {
+
+                }
+
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
                     br.BaseStream.Position = 0x2;
@@ -24,7 +35,7 @@ namespace text_metal
                         var chars = br.ReadBytes(2);
                         if (chars[0] == 0x0 && chars[1] == 0x0)
                         {
-                            Entries.Add(temp);
+                            Entries.Add(new Entry());
                             temp = "";
                             continue;
                         }
@@ -34,9 +45,9 @@ namespace text_metal
             }
         }
 
-        public void Save(Stream output)
+        public void Save(Stream namOutput, Stream arrOutput)
         {
-            using (var bw = new BinaryWriterX(output))
+            using (var bw = new BinaryWriterX(namOutput))
                 foreach (var name in Entries)
                 {
                     //var delta = MessageLength - shift.GetBytes(name.Text).Length;

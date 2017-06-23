@@ -42,8 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NAM.cs" />
-    <Compile Include="NamAdapter.cs" />
+    <Compile Include="ARRNAM.cs" />
+    <Compile Include="ArrNamAdapter.cs" />
+    <Compile Include="ArrNamSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
