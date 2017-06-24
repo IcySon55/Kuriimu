@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using Cetera.Image;
 using Kuriimu.IO;
 
@@ -28,10 +29,9 @@ namespace image_tex
 
                 for (int i = 0; i < mipMaps.Count; i++)
                 {
-                    br.BaseStream.Position = HeaderLength + (Header.MipMapCount * 4) + mipMaps[i];
-                    var texDataSize = (i + 1 < mipMaps.Count) ? mipMaps[i + 1] : ((int)br.BaseStream.Length - (int)br.BaseStream.Position);
-                    Settings.Width = (Header.Width * WidthMultiplier) / Math.Max((int)Math.Pow(2, i), 1);
-                    Settings.Height = Math.Max((Header.Height * HeightMultiplier) / Math.Max((int)Math.Pow(2, i), 1), MinHeight);
+                    var texDataSize = ((i + 1 < mipMaps.Count) ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
+                    Settings.Width = (Header.Width * WidthMultiplier) >> i;
+                    Settings.Height = Math.Max((Header.Height * HeightMultiplier) >> i, MinHeight);
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
             }
@@ -42,22 +42,16 @@ namespace image_tex
             using (var bw = new BinaryWriterX(output))
             {
                 bw.WriteStruct(Header);
-                var bitmaps = new List<byte[]>();
+
                 Settings.Format = ImageSettings.ConvertFormat(Header.Format);
+                var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
-                for (int i = 0; i < Bitmaps.Count; i++)
+                int offset = 0;
+                foreach (var bitmap in bitmaps)
                 {
-                    Settings.Width = (Header.Width * WidthMultiplier) / Math.Max((int)Math.Pow(2, i), 1);
-                    Settings.Height = Math.Max((Header.Height * HeightMultiplier) / Math.Max((int)Math.Pow(2, i), 1), MinHeight);
-                    bitmaps.Add(Common.Save(Bitmaps[i], Settings));
+                    bw.Write(offset);
+                    offset += bitmap.Length;
                 }
-
-                var mipMaps = new List<int>() { 0 };
-                for (int i = 0; i < Bitmaps.Count - 1; i++)
-                    mipMaps.Add(bitmaps[i].Length);
-
-                foreach (var mipMap in mipMaps)
-                    bw.Write(mipMap);
 
                 foreach (var bitmap in bitmaps)
                     bw.Write(bitmap);
