@@ -38,8 +38,8 @@ namespace text_msbt
                     throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
 
                 // Byte Order
-                Header.ByteOrderMark = br.ReadBytes(2);
-                br.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+                Header.ByteOrder = (ByteOrder)br.ReadUInt16();
+                br.ByteOrder = Header.ByteOrder;
 
                 Header.Unknown1 = br.ReadUInt16();
 
@@ -96,12 +96,12 @@ namespace text_msbt
         // Tools
         public string GetString(byte[] bytes)
         {
-            StringBuilder sb = new StringBuilder();
-            using (BinaryReader br = new BinaryReader(new MemoryStream(bytes), FileEncoding))
+            var sb = new StringBuilder();
+            using (var br = new BinaryReaderX(new MemoryStream(bytes), FileEncoding, Header.ByteOrder))
             {
                 while (br.BaseStream.Length != br.BaseStream.Position)
                 {
-                    char c = br.ReadChar();
+                    var c = br.ReadChar();
                     sb.Append(c);
                     if (c == 0xE)
                     {
@@ -109,7 +109,7 @@ namespace text_msbt
                         sb.Append((char)br.ReadInt16());
                         int count = br.ReadInt16();
                         sb.Append((char)count);
-                        for (int i = 0; i < count; i++)
+                        for (var i = 0; i < count; i++)
                         {
                             sb.Append((char)br.ReadByte());
                         }
@@ -121,20 +121,20 @@ namespace text_msbt
 
         public byte[] GetBytes(string str)
         {
-            MemoryStream ms = new MemoryStream();
-            using (BinaryWriter bw = new BinaryWriter(ms, FileEncoding))
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms, FileEncoding, Header.ByteOrder))
             {
-                for (int i = 0; i < str.Length; i++)
+                for (var i = 0; i < str.Length; i++)
                 {
-                    char c = str[i];
+                    var c = str[i];
                     bw.Write(c);
-                    if (c == 0xE)
+                    if (c != 0xE)
                     {
                         bw.Write((short)str[++i]);
                         bw.Write((short)str[++i]);
                         int count = str[++i];
                         bw.Write((short)count);
-                        for (int j = 0; j < count; j++)
+                        for (var j = 0; j < count; j++)
                         {
                             bw.Write((byte)str[++i]);
                         }
@@ -348,11 +348,11 @@ namespace text_msbt
                     BinaryWriterX bw = new BinaryWriterX(fs);
 
                     // Byte Order
-                    bw.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+                    bw.ByteOrder = Header.ByteOrder;
 
                     // Header
                     bw.WriteASCII(Header.Identifier);
-                    bw.Write(Header.ByteOrderMark);
+                    bw.Write((ushort)Header.ByteOrder);
                     bw.Write(Header.Unknown1);
                     bw.Write((byte)Header.EncodingByte);
                     bw.Write(Header.Unknown2);
@@ -585,7 +585,7 @@ namespace text_msbt
                     }
                     else
                     {
-                        if (Header.ByteOrderMark[0] == 0xFF)
+                        if (Header.ByteOrder == ByteOrder.LittleEndian)
                             bw.Write(text);
                         else
                             for (int j = 0; j < text.Length; j += 2)

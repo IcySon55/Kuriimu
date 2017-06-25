@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Kuriimu.IO;
 
 namespace text_msbt
 {
@@ -12,7 +13,7 @@ namespace text_msbt
     public sealed class Header
     {
         public string Identifier; // MsgStdBn
-        public byte[] ByteOrderMark;
+        public ByteOrder ByteOrder;
         public ushort Unknown1; // Always 0x0000
         public EncodingByte EncodingByte;
         public byte Unknown2; // Always 0x03
@@ -20,7 +21,7 @@ namespace text_msbt
         public ushort Unknown3; // Always 0x0000
         public uint FileSize;
         public byte[] Unknown4; // Always 0x0000 0000 0000 0000 0000
-
+        
         public uint FileSizeOffset;
     }
 

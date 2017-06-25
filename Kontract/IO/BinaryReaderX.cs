@@ -9,16 +9,26 @@ namespace Kuriimu.IO
 {
     public class BinaryReaderX : BinaryReader
     {
-        static Encoding SJISEncoding = Encoding.GetEncoding("sjis");
-
-        int nibble = -1;
+        private int _nibble = -1;
 
         public ByteOrder ByteOrder { get; set; }
-
-        public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : this(input, false, byteOrder)
+        
+        public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode)
         {
+            ByteOrder = byteOrder;
         }
 
+        public BinaryReaderX(Stream input, Encoding encoding, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, encoding)
+        {
+            ByteOrder = byteOrder;
+        }
+
+        public BinaryReaderX(Stream input, Encoding encoding, bool leaveOpen, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, encoding, leaveOpen)
+        {
+            ByteOrder = byteOrder;
+        }
+
+        // Parameters out of order with a default encoding of Unicode
         public BinaryReaderX(Stream input, bool leaveOpen, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode, leaveOpen)
         {
             ByteOrder = byteOrder;
@@ -26,7 +36,7 @@ namespace Kuriimu.IO
 
         public string ReadCStringA() => string.Concat(Enumerable.Range(0, 999).Select(_ => (char)ReadByte()).TakeWhile(c => c != 0));
         public string ReadCStringW() => string.Concat(Enumerable.Range(0, 999).Select(_ => (char)ReadInt16()).TakeWhile(c => c != 0));
-        public string ReadCStringSJIS() => SJISEncoding.GetString(Enumerable.Range(0, 999).Select(_ => ReadByte()).TakeWhile(c => c != 0).ToArray());
+        public string ReadCStringSJIS() => Encoding.GetEncoding("Shift-JIS").GetString(Enumerable.Range(0, 999).Select(_ => ReadByte()).TakeWhile(c => c != 0).ToArray());
         public T ReadStruct<T>() => ReadBytes(Marshal.SizeOf<T>()).ToStruct<T>();
         public List<T> ReadMultiple<T>(int count, Func<int, T> func) => Enumerable.Range(0, count).Select(func).ToList();
         public List<T> ReadMultiple<T>(int count) => Enumerable.Range(0, count).Select(_ => ReadStruct<T>()).ToList();
@@ -35,48 +45,42 @@ namespace Kuriimu.IO
         {
             if (ByteOrder == ByteOrder.LittleEndian)
                 return base.ReadInt16();
-            else
-                return BitConverter.ToInt16(base.ReadBytes(2).Reverse().ToArray(), 0);
+            return BitConverter.ToInt16(ReadBytes(2).Reverse().ToArray(), 0);
         }
 
         public override int ReadInt32()
         {
             if (ByteOrder == ByteOrder.LittleEndian)
                 return base.ReadInt32();
-            else
-                return BitConverter.ToInt32(base.ReadBytes(4).Reverse().ToArray(), 0);
+            return BitConverter.ToInt32(ReadBytes(4).Reverse().ToArray(), 0);
         }
 
         public override long ReadInt64()
         {
             if (ByteOrder == ByteOrder.LittleEndian)
                 return base.ReadInt64();
-            else
-                return BitConverter.ToInt64(base.ReadBytes(8).Reverse().ToArray(), 0);
+            return BitConverter.ToInt64(ReadBytes(8).Reverse().ToArray(), 0);
         }
 
         public override ushort ReadUInt16()
         {
             if (ByteOrder == ByteOrder.LittleEndian)
                 return base.ReadUInt16();
-            else
-                return BitConverter.ToUInt16(base.ReadBytes(2).Reverse().ToArray(), 0);
+            return BitConverter.ToUInt16(ReadBytes(2).Reverse().ToArray(), 0);
         }
 
         public override uint ReadUInt32()
         {
             if (ByteOrder == ByteOrder.LittleEndian)
                 return base.ReadUInt32();
-            else
-                return BitConverter.ToUInt32(base.ReadBytes(4).Reverse().ToArray(), 0);
+            return BitConverter.ToUInt32(ReadBytes(4).Reverse().ToArray(), 0);
         }
 
         public override ulong ReadUInt64()
         {
             if (ByteOrder == ByteOrder.LittleEndian)
                 return base.ReadUInt64();
-            else
-                return BitConverter.ToUInt64(base.ReadBytes(8).Reverse().ToArray(), 0);
+            return BitConverter.ToUInt64(ReadBytes(8).Reverse().ToArray(), 0);
         }
 
         // Custom Methods
@@ -96,9 +100,9 @@ namespace Kuriimu.IO
 
         public string ReadASCIIStringUntil(byte stop)
         {
-            string result = string.Empty;
+            var result = string.Empty;
 
-            byte b = ReadByte();
+            var b = ReadByte();
             while (b != stop && BaseStream.Position < BaseStream.Length)
             {
                 result += (char)b;
@@ -120,10 +124,10 @@ namespace Kuriimu.IO
 
         public string PeekString(int length = 4)
         {
-            List<byte> bytes = new List<byte>();
-            long startOffset = BaseStream.Position;
+            var bytes = new List<byte>();
+            var startOffset = BaseStream.Position;
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
                 bytes.Add(ReadByte());
 
             BaseStream.Seek(startOffset, SeekOrigin.Begin);
@@ -133,10 +137,10 @@ namespace Kuriimu.IO
 
         public string PeekString(int length, Encoding encoding)
         {
-            List<byte> bytes = new List<byte>();
-            long startOffset = BaseStream.Position;
+            var bytes = new List<byte>();
+            var startOffset = BaseStream.Position;
 
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
                 bytes.Add(ReadByte());
 
             BaseStream.Seek(startOffset, SeekOrigin.Begin);
@@ -146,13 +150,13 @@ namespace Kuriimu.IO
 
         public int ReadNibble()
         {
-            if (nibble == -1)
+            if (_nibble == -1)
             {
-                nibble = ReadByte();
-                return nibble % 16;
+                _nibble = ReadByte();
+                return _nibble % 16;
             }
-            int val = nibble / 16;
-            nibble = -1;
+            var val = _nibble / 16;
+            _nibble = -1;
             return val;
         }
     }

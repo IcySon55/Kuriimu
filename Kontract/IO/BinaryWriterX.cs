@@ -8,14 +8,26 @@ namespace Kuriimu.IO
 {
     public class BinaryWriterX : BinaryWriter
     {
-        int nibble = -1;
+        private int _nibble = -1;
 
         public ByteOrder ByteOrder { get; set; }
 
-        public BinaryWriterX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : this(input, false, byteOrder)
+        public BinaryWriterX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode)
         {
+            ByteOrder = byteOrder;
         }
 
+        public BinaryWriterX(Stream input, Encoding encoding, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, encoding)
+        {
+            ByteOrder = byteOrder;
+        }
+
+        public BinaryWriterX(Stream input, Encoding encoding, bool leaveOpen, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, encoding, leaveOpen)
+        {
+            ByteOrder = byteOrder;
+        }
+
+        // Parameters out of order with a default encoding of Unicode
         public BinaryWriterX(Stream input, bool leaveOpen, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode, leaveOpen)
         {
             ByteOrder = byteOrder;
@@ -75,9 +87,9 @@ namespace Kuriimu.IO
             base.Write(Encoding.ASCII.GetBytes(value));
         }
 
-        public void WriteString(Encoding encoding, string str)
+        public void WriteString(Encoding encoding, string value)
         {
-            var bytes = encoding.GetBytes(str);
+            var bytes = encoding.GetBytes(value);
             Write((byte)bytes.Length);
             Write(bytes);
         }
@@ -95,23 +107,21 @@ namespace Kuriimu.IO
         public void WriteNibble(int val)
         {
             val &= 15;
-            if (nibble == -1)
-            {
-                nibble = val;
-            }
+            if (_nibble == -1)
+                _nibble = val;
             else
             {
-                Write((byte)(nibble + 16 * val));
-                nibble = -1;
+                Write((byte)(_nibble + 16 * val));
+                _nibble = -1;
             }
         }
 
         public void WritePadding(int alignment = 16, byte paddingByte = 0x0)
         {
-            long remainder = BaseStream.Position % alignment;
-            if (remainder > 0)
-                for (int i = 0; i < alignment - remainder; i++)
-                    Write(paddingByte);
+            var remainder = BaseStream.Position % alignment;
+            if (remainder <= 0) return;
+            for (var i = 0; i < alignment - remainder; i++)
+                Write(paddingByte);
         }
     }
 }
