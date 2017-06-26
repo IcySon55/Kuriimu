@@ -25,7 +25,7 @@ namespace text_msbt
         public ATR1 ATR1 = new ATR1();
         public TSY1 TSY1 = new TSY1();
         public TXT2 TXT2 = new TXT2();
-        public Encoding FileEncoding = Encoding.Unicode;
+        public Encoding Encoding = Encoding.Unicode;
         public List<string> SectionOrder = new List<string>();
         public bool HasLabels;
 
@@ -40,15 +40,13 @@ namespace text_msbt
 
                 // Header
                 Header = br.ReadStruct<Header>();
-                FileEncoding = Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Header.ByteOrder == ByteOrder.BigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
+                Encoding = Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Header.ByteOrder == ByteOrder.BigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
 
                 if (Header.Magic != "MsgStdBn")
                     throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
-
                 if (Header.FileSize != br.BaseStream.Length)
                     throw new InvalidMSBTException("The file provided is not a valid MSBT file. Filesize mismtach.");
 
-                SectionOrder.Clear();
                 for (var i = 0; i < Header.NumberOfSections; i++)
                 {
                     switch (br.PeekString())
@@ -86,7 +84,7 @@ namespace text_msbt
         public string GetString(byte[] bytes)
         {
             var sb = new StringBuilder();
-            using (var br = new BinaryReaderX(new MemoryStream(bytes), FileEncoding, Header.ByteOrder))
+            using (var br = new BinaryReaderX(new MemoryStream(bytes), Encoding, Header.ByteOrder))
             {
                 while (br.BaseStream.Length != br.BaseStream.Position)
                 {
@@ -111,7 +109,7 @@ namespace text_msbt
         public byte[] GetBytes(string str)
         {
             var ms = new MemoryStream();
-            using (var bw = new BinaryWriterX(ms, FileEncoding, Header.ByteOrder))
+            using (var bw = new BinaryWriterX(ms, Encoding, Header.ByteOrder))
             {
                 for (var i = 0; i < str.Length; i++)
                 {
@@ -208,16 +206,11 @@ namespace text_msbt
             var offsets = br.ReadMultiple<uint>((int)TXT2.NumberOfStrings);
 
             for (var i = 0; i < TXT2.NumberOfStrings; i++)
-            {
-                var length = (i + 1 < offsets.Count ? startOfStrings + (int)offsets[i + 1] : startOfStrings + (int)TXT2.Section.Size) - (startOfStrings + (int)offsets[i]);
-
-                var str = new String
+                TXT2.Strings.Add(new String
                 {
-                    Text = GetString(br.ReadBytes(length)),
+                    Text = GetString(br.ReadBytes((i + 1 < offsets.Count ? startOfStrings + (int)offsets[i + 1] : startOfStrings + (int)TXT2.Section.Size) - (startOfStrings + (int)offsets[i]))),
                     Index = (uint)i
-                };
-                TXT2.Strings.Add(str);
-            }
+                });
 
             // Tie in LBL1 labels
             foreach (var lbl in LBL1.Labels)
@@ -231,6 +224,7 @@ namespace text_msbt
         {
             var newString = new String();
             TXT2.Strings.Add(newString);
+            TXT2.NumberOfStrings += 1;
 
             var newLabel = new Label
             {
@@ -240,10 +234,8 @@ namespace text_msbt
                 String = newString
             };
             LBL1.Labels.Add(newLabel);
-
             LBL1.Groups[(int)newLabel.Checksum].NumberOfLabels += 1;
             //ATR1.NumberOfAttributes += 1;
-            TXT2.NumberOfStrings += 1;
 
             return newLabel;
         }
