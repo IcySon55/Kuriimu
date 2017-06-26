@@ -32,7 +32,7 @@ namespace Kuriimu.IO
             ByteOrder = byteOrder;
         }
 
-        public void WriteStruct<T>(T item) => item.StructToBytes(ByteOrder);
+        public void WriteStruct<T>(T item) => Write(item.StructToBytes(ByteOrder));
         
         public override void Write(short value)
         {
@@ -120,5 +120,7 @@ namespace Kuriimu.IO
             for (var i = 0; i < alignment - remainder; i++)
                 Write(alignmentByte);
         }
+
+        public void WriteAlignment(byte alignmentByte) => WriteAlignment(16, alignmentByte);
     }
 }

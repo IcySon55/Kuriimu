@@ -159,5 +159,18 @@ namespace Kuriimu.IO
             _nibble = -1;
             return val;
         }
+
+        public byte SeekAlignment(int alignment = 16, byte alignmentByte = 0x0)
+        {
+            var remainder = BaseStream.Position % alignment;
+            if (remainder <= 0) return alignmentByte;
+            alignmentByte = ReadByte();
+            BaseStream.Seek(-1, SeekOrigin.Current);
+            BaseStream.Seek(16 - remainder, SeekOrigin.Current);
+            
+            return alignmentByte;
+        }
+
+        public byte SeekAlignment(byte alignmentByte, int alignment = 16) => SeekAlignment(alignment, alignmentByte);
     }
 }

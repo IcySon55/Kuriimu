@@ -33,9 +33,20 @@ namespace Kuriimu.IO
         }
 
         // BigEndian Support
-        private static void AdjustByteOrder(Type type, byte[] data, ByteOrder byteOrder, int startOffset = 0)
+        private static void AdjustByteOrder(Type type, byte[] buffer, ByteOrder byteOrder, int startOffset = 0)
         {
             if (BitConverter.IsLittleEndian == (byteOrder == ByteOrder.LittleEndian)) return;
+
+            if (type.IsPrimitive)
+            {
+                if (type == typeof(short) || type == typeof(ushort) ||
+                    type == typeof(int) || type == typeof(uint) ||
+                    type == typeof(long) || type == typeof(ulong))
+                {
+                    Array.Reverse(buffer);
+                    return;
+                }
+            }
 
             foreach (var field in type.GetFields())
             {
@@ -60,9 +71,9 @@ namespace Kuriimu.IO
                     var effectiveOffset = startOffset + offset;
 
                     if (subFields.Length == 0)
-                        Array.Reverse(data, effectiveOffset, Marshal.SizeOf(fieldType));
+                        Array.Reverse(buffer, effectiveOffset, Marshal.SizeOf(fieldType));
                     else
-                        AdjustByteOrder(fieldType, data, byteOrder, effectiveOffset);
+                        AdjustByteOrder(fieldType, buffer, byteOrder, effectiveOffset);
                 }
             }
         }
