@@ -10,7 +10,6 @@ namespace image_tex
 {
     class TEX
     {
-        private const int HeaderLength = 0x10;
         private const int WidthMultiplier = 4;
         private const int HeightMultiplier = 32;
         private const int MinHeight = 8;
@@ -27,9 +26,9 @@ namespace image_tex
                 var mipMaps = br.ReadMultiple<int>(Header.MipMapCount);
                 Settings.Format = ImageSettings.ConvertFormat(Header.Format);
 
-                for (int i = 0; i < mipMaps.Count; i++)
+                for (var i = 0; i < mipMaps.Count; i++)
                 {
-                    var texDataSize = ((i + 1 < mipMaps.Count) ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
+                    var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     Settings.Width = (Header.Width * WidthMultiplier) >> i;
                     Settings.Height = Math.Max((Header.Height * HeightMultiplier) >> i, MinHeight);
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
@@ -46,7 +45,7 @@ namespace image_tex
                 Settings.Format = ImageSettings.ConvertFormat(Header.Format);
                 var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
-                int offset = 0;
+                var offset = 0;
                 foreach (var bitmap in bitmaps)
                 {
                     bw.Write(offset);
