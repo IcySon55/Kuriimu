@@ -24,6 +24,7 @@ namespace text_metal
                 for (var i = 0; i < arrEntries.Count; i++)
                 {
                     var arrEntry = arrEntries[i];
+                    if (arrEntry.Offset >= br.BaseStream.Length || arrEntry.Offset % 2 != 0 || arrEntry.Offset < 0) continue;
                     br.BaseStream.Position = arrEntry.Offset;
 
                     var chars = br.ReadBytes(2);
