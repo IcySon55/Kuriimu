@@ -103,7 +103,7 @@ namespace text_msbt
                     }
                 }
             }
-            return new string(sb.ToString().Take(sb.Length - 1).ToArray());
+            return sb.Remove(sb.Length - 1, 1).ToString();
         }
 
         public byte[] GetBytes(string str)
