@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 using Cetera.Hash;
@@ -13,6 +14,10 @@ namespace text_msbt
         public const uint LabelHashMagic = 0x492;
         public const int LabelMaxLength = 64;
 
+        private const long _byteOrderOffset = 0x8;
+        private const long _headerSize = 0x20;
+        private byte _paddingChar = 0xAB;
+
         public Header Header = new Header();
         public LBL1 LBL1 = new LBL1();
         public NLI1 NLI1 = new NLI1();
@@ -22,43 +27,29 @@ namespace text_msbt
         public TXT2 TXT2 = new TXT2();
         public Encoding FileEncoding = Encoding.Unicode;
         public List<string> SectionOrder = new List<string>();
-        public bool HasLabels = false;
+        public bool HasLabels;
 
-        private byte paddingChar = 0xAB;
-
-        public MSBT(string filename)
+        public MSBT(Stream input)
         {
-            using (FileStream fs = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var br = new BinaryReaderX(input))
             {
-                BinaryReaderX br = new BinaryReaderX(fs);
+                // Get ByteOrder
+                br.BaseStream.Position = _byteOrderOffset;
+                br.ByteOrder = (ByteOrder)br.ReadUInt16();
+                br.BaseStream.Position = 0;
 
                 // Header
-                Header.Identifier = br.ReadString(8);
-                if (Header.Identifier != "MsgStdBn")
+                Header = br.ReadStruct<Header>();
+                FileEncoding = Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Header.ByteOrder == ByteOrder.BigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
+
+                if (Header.Magic != "MsgStdBn")
                     throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
-
-                // Byte Order
-                Header.ByteOrder = (ByteOrder)br.ReadUInt16();
-                br.ByteOrder = Header.ByteOrder;
-
-                Header.Unknown1 = br.ReadUInt16();
-
-                // Encoding
-                Header.EncodingByte = (EncodingByte)br.ReadByte();
-                FileEncoding = (Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Encoding.Unicode);
-
-                Header.Unknown2 = br.ReadByte();
-                Header.NumberOfSections = br.ReadUInt16();
-                Header.Unknown3 = br.ReadUInt16();
-                Header.FileSizeOffset = (uint)br.BaseStream.Position; // Record offset for future use
-                Header.FileSize = br.ReadUInt32();
-                Header.Unknown4 = br.ReadBytes(10);
 
                 if (Header.FileSize != br.BaseStream.Length)
                     throw new InvalidMSBTException("The file provided is not a valid MSBT file. Filesize mismtach.");
 
                 SectionOrder.Clear();
-                for (int i = 0; i < Header.NumberOfSections; i++)
+                for (var i = 0; i < Header.NumberOfSections; i++)
                 {
                     switch (br.PeekString())
                     {
@@ -88,8 +79,6 @@ namespace text_msbt
                             break;
                     }
                 }
-
-                br.Close();
             }
         }
 
@@ -116,7 +105,7 @@ namespace text_msbt
                     }
                 }
             }
-            return sb.ToString();
+            return new string(sb.ToString().Take(sb.Length - 1).ToArray());
         }
 
         public byte[] GetBytes(string str)
@@ -128,7 +117,7 @@ namespace text_msbt
                 {
                     var c = str[i];
                     bw.Write(c);
-                    if (c != 0xE)
+                    if (c == 0xE)
                     {
                         bw.Write((short)str[++i]);
                         bw.Write((short)str[++i]);
@@ -140,6 +129,7 @@ namespace text_msbt
                         }
                     }
                 }
+                bw.Write('\0');
             }
             return ms.ToArray();
         }
@@ -147,474 +137,280 @@ namespace text_msbt
         // Reading
         private void ReadLBL1(BinaryReaderX br)
         {
-            LBL1.Identifier = br.ReadString(4);
-            LBL1.SectionSize = br.ReadUInt32();
-            LBL1.Padding1 = br.ReadBytes(8);
-            long startOfLabels = br.BaseStream.Position;
+            LBL1.Section = br.ReadStruct<Section>();
             LBL1.NumberOfGroups = br.ReadUInt32();
 
-            for (int i = 0; i < LBL1.NumberOfGroups; i++)
-            {
-                Group grp = new Group();
-                grp.NumberOfLabels = br.ReadUInt32();
-                grp.Offset = br.ReadUInt32();
-                LBL1.Groups.Add(grp);
-            }
+            LBL1.Groups = br.ReadMultiple<Group>((int)LBL1.NumberOfGroups).ToList();
 
             foreach (Group grp in LBL1.Groups)
-            {
-                br.BaseStream.Seek(startOfLabels + grp.Offset, SeekOrigin.Begin);
+                for (var i = 0; i < grp.NumberOfLabels; i++)
+                    LBL1.Labels.Add(new Label
+                    {
+                        Name = br.ReadString(Convert.ToInt32(br.ReadByte())),
+                        Index = br.ReadUInt32(),
+                        Checksum = (uint)LBL1.Groups.IndexOf(grp)
+                    });
 
-                for (int i = 0; i < grp.NumberOfLabels; i++)
-                {
-                    Label lbl = new Label();
-                    lbl.Length = Convert.ToUInt32(br.ReadByte());
-                    lbl.Name = br.ReadString((int)lbl.Length);
-                    lbl.Index = br.ReadUInt32();
-                    lbl.Checksum = (uint)LBL1.Groups.IndexOf(grp);
-                    LBL1.Labels.Add(lbl);
-                }
-            }
+            //// Old rename correction
+            //foreach (var lbl in LBL1.Labels)
+            //{
+            //    var previousChecksum = lbl.Checksum;
+            //    lbl.Checksum = SimpleHash.Create(lbl.Name, LabelHashMagic, LBL1.NumberOfGroups);
 
-            // Old rename correction
-            foreach (Label lbl in LBL1.Labels)
-            {
-                uint previousChecksum = lbl.Checksum;
-                lbl.Checksum = SimpleHash.Create(lbl.Name, LabelHashMagic, LBL1.NumberOfGroups);
+            //    if (previousChecksum == lbl.Checksum) continue;
+            //    LBL1.Groups[(int)previousChecksum].NumberOfLabels -= 1;
+            //    LBL1.Groups[(int)lbl.Checksum].NumberOfLabels += 1;
+            //}
 
-                if (previousChecksum != lbl.Checksum)
-                {
-                    LBL1.Groups[(int)previousChecksum].NumberOfLabels -= 1;
-                    LBL1.Groups[(int)lbl.Checksum].NumberOfLabels += 1;
-                }
-            }
+            HasLabels = LBL1.Labels.Count > 0;
 
-            if (LBL1.Labels.Count > 0)
-                HasLabels = true;
-
-            PaddingSeek(br);
+            _paddingChar = br.SeekAlignment(_paddingChar);
         }
 
         private void ReadNLI1(BinaryReaderX br)
         {
-            NLI1.Identifier = br.ReadString(4);
-            NLI1.SectionSize = br.ReadUInt32();
-            NLI1.Padding1 = br.ReadBytes(8);
-            NLI1.Unknown2 = br.ReadBytes((int)NLI1.SectionSize); // Read in the entire section at once since we don't know what it's for
+            NLI1.Section = br.ReadStruct<Section>();
+            NLI1.Unknown = br.ReadBytes((int)NLI1.Section.Size); // Read in the entire section at once since we don't know what it's for
 
-            PaddingSeek(br);
+            _paddingChar = br.SeekAlignment(_paddingChar);
         }
 
         private void ReadATO1(BinaryReaderX br)
         {
-            ATO1.Identifier = br.ReadString(4);
-            ATO1.SectionSize = br.ReadUInt32();
-            ATO1.Padding1 = br.ReadBytes(8);
-            ATO1.Unknown2 = br.ReadBytes((int)ATO1.SectionSize); // Read in the entire section at once since we don't know what it's for
+            ATO1.Section = br.ReadStruct<Section>();
+            ATO1.Unknown = br.ReadBytes((int)ATO1.Section.Size); // Read in the entire section at once since we don't know what it's for
+
+            _paddingChar = br.SeekAlignment(_paddingChar); // TODO: Determine why this line was missing before
         }
 
         private void ReadATR1(BinaryReaderX br)
         {
-            ATR1.Identifier = br.ReadString(4);
-            ATR1.SectionSize = br.ReadUInt32();
-            ATR1.Padding1 = br.ReadBytes(8);
-            ATR1.NumberOfAttributes = br.ReadUInt32();
-            ATR1.Unknown2 = br.ReadBytes((int)ATR1.SectionSize - sizeof(uint)); // Read in the entire section at once since we don't know what it's for
+            ATR1.Section = br.ReadStruct<Section>();
+            ATR1.Unknown = br.ReadBytes((int)ATR1.Section.Size); // Read in the entire section at once since we don't know what it's for
 
-            PaddingSeek(br);
+            _paddingChar = br.SeekAlignment(_paddingChar);
         }
 
         private void ReadTSY1(BinaryReaderX br)
         {
-            TSY1.Identifier = br.ReadString(4);
-            TSY1.SectionSize = br.ReadUInt32();
-            TSY1.Padding1 = br.ReadBytes(8);
-            TSY1.Unknown2 = br.ReadBytes((int)TSY1.SectionSize); // Read in the entire section at once since we don't know what it's for
+            TSY1.Section = br.ReadStruct<Section>();
+            TSY1.Unknown = br.ReadBytes((int)TSY1.Section.Size); // Read in the entire section at once since we don't know what it's for
 
-            PaddingSeek(br);
+            _paddingChar = br.SeekAlignment(_paddingChar);
         }
 
         private void ReadTXT2(BinaryReaderX br)
         {
-            TXT2.Identifier = br.ReadString(4);
-            TXT2.SectionSize = br.ReadUInt32();
-            TXT2.Padding1 = br.ReadBytes(8);
-            long startOfStrings = br.BaseStream.Position;
+            TXT2.Section = br.ReadStruct<Section>();
+            var startOfStrings = (int)br.BaseStream.Position;
             TXT2.NumberOfStrings = br.ReadUInt32();
 
-            List<uint> offsets = new List<uint>();
-            for (int i = 0; i < TXT2.NumberOfStrings; i++)
-                offsets.Add(br.ReadUInt32());
-            for (int i = 0; i < TXT2.NumberOfStrings; i++)
+            var offsets = br.ReadMultiple<uint>((int)TXT2.NumberOfStrings);
+
+            for (var i = 0; i < TXT2.NumberOfStrings; i++)
             {
-                String str = new String();
-                uint nextOffset = (i + 1 < offsets.Count) ? ((uint)startOfStrings + offsets[i + 1]) : ((uint)startOfStrings + TXT2.SectionSize);
+                var length = (i + 1 < offsets.Count ? startOfStrings + (int)offsets[i + 1] : startOfStrings + (int)TXT2.Section.Size) - (startOfStrings + (int)offsets[i]);
 
-                br.BaseStream.Seek(startOfStrings + offsets[i], SeekOrigin.Begin);
-
-                List<byte> result = new List<byte>();
-                while (br.BaseStream.Position < nextOffset - (FileEncoding == Encoding.UTF8 ? 1 : 2) && br.BaseStream.Position < Header.FileSize)
+                var str = new String
                 {
-                    if (Header.EncodingByte == EncodingByte.UTF8)
-                        result.Add(br.ReadByte());
-                    else
-                    {
-                        byte[] unichar = br.ReadBytes(2);
-
-                        if (br.ByteOrder == ByteOrder.BigEndian)
-                            Array.Reverse(unichar);
-
-                        result.AddRange(unichar);
-                    }
-                }
-                str.Text = GetString(result.ToArray());
-                str.Index = (uint)i;
+                    Text = GetString(br.ReadBytes(length)),
+                    Index = (uint)i
+                };
                 TXT2.Strings.Add(str);
             }
 
-            br.BaseStream.Seek((FileEncoding == Encoding.UTF8 ? 1 : 2), SeekOrigin.Current);
-
             // Tie in LBL1 labels
-            foreach (Label lbl in LBL1.Labels)
+            foreach (var lbl in LBL1.Labels)
                 lbl.String = TXT2.Strings[(int)lbl.Index];
 
-            PaddingSeek(br);
-        }
-
-        private void PaddingSeek(BinaryReaderX br)
-        {
-            long remainder = br.BaseStream.Position % 16;
-            if (remainder > 0)
-            {
-                paddingChar = br.ReadByte();
-                br.BaseStream.Seek(-1, SeekOrigin.Current);
-                br.BaseStream.Seek(16 - remainder, SeekOrigin.Current);
-            }
+            _paddingChar = br.SeekAlignment(_paddingChar);
         }
 
         // Manipulation
-        public Label AddLabel(string name)
+        public Label AddLabel(string labelName)
         {
-            String nstr = new String();
-            TXT2.Strings.Add(nstr);
+            var newString = new String();
+            TXT2.Strings.Add(newString);
 
-            Label nlbl = new Label();
-            nlbl.Length = (uint)name.Trim().Length;
-            nlbl.Name = name.Trim();
-            nlbl.Index = (uint)TXT2.Strings.IndexOf(nstr);
-            nlbl.Checksum = SimpleHash.Create(name.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
-            nlbl.String = nstr;
-            LBL1.Labels.Add(nlbl);
+            var newLabel = new Label
+            {
+                Name = labelName.Trim(),
+                Index = (uint)TXT2.Strings.IndexOf(newString),
+                Checksum = SimpleHash.Create(labelName.Trim(), LabelHashMagic, LBL1.NumberOfGroups),
+                String = newString
+            };
+            LBL1.Labels.Add(newLabel);
 
-            LBL1.Groups[(int)nlbl.Checksum].NumberOfLabels += 1;
-            ATR1.NumberOfAttributes += 1;
+            LBL1.Groups[(int)newLabel.Checksum].NumberOfLabels += 1;
+            //ATR1.NumberOfAttributes += 1;
             TXT2.NumberOfStrings += 1;
 
-            return nlbl;
+            return newLabel;
         }
 
-        public void RenameLabel(Label label, string newName)
+        public void RenameLabel(Label label, string labelName)
         {
-            label.Length = (uint)Encoding.ASCII.GetBytes(newName.Trim()).Length;
-            label.Name = newName.Trim();
+            label.Name = labelName.Trim();
             LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
-            label.Checksum = SimpleHash.Create(newName.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
+            label.Checksum = SimpleHash.Create(labelName.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
             LBL1.Groups[(int)label.Checksum].NumberOfLabels += 1;
         }
 
         public void RemoveLabel(Label label)
         {
-            int textIndex = TXT2.Strings.IndexOf(label.String);
-            for (int i = 0; i < TXT2.NumberOfStrings; i++)
+            var textIndex = TXT2.Strings.IndexOf(label.String);
+            for (var i = 0; i < TXT2.NumberOfStrings; i++)
                 if (LBL1.Labels[i].Index > textIndex)
                     LBL1.Labels[i].Index -= 1;
 
             LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
             LBL1.Labels.Remove(label);
-            ATR1.NumberOfAttributes -= 1;
+            //ATR1.NumberOfAttributes -= 1;
             TXT2.Strings.RemoveAt((int)label.Index);
             TXT2.NumberOfStrings -= 1;
         }
 
         // Saving
-        public bool Save(string filename)
+        public void Save(Stream output)
         {
-            bool result = false;
-
-            try
+            using (var bw = new BinaryWriterX(output, Header.ByteOrder))
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None))
+                bw.BaseStream.Position = _headerSize;
+
+                foreach (var section in SectionOrder)
                 {
-                    BinaryWriterX bw = new BinaryWriterX(fs);
-
-                    // Byte Order
-                    bw.ByteOrder = Header.ByteOrder;
-
-                    // Header
-                    bw.WriteASCII(Header.Identifier);
-                    bw.Write((ushort)Header.ByteOrder);
-                    bw.Write(Header.Unknown1);
-                    bw.Write((byte)Header.EncodingByte);
-                    bw.Write(Header.Unknown2);
-                    bw.Write(Header.NumberOfSections);
-                    bw.Write(Header.Unknown3);
-                    bw.Write(Header.FileSize);
-                    bw.Write(Header.Unknown4);
-
-                    foreach (string section in SectionOrder)
+                    switch (section)
                     {
-                        if (section == "LBL1")
+                        case "LBL1":
                             WriteLBL1(bw);
-                        else if (section == "NLI1")
+                            break;
+                        case "NLI1":
                             WriteNLI1(bw);
-                        else if (section == "ATO1")
+                            break;
+                        case "ATO1":
                             WriteATO1(bw);
-                        else if (section == "ATR1")
+                            break;
+                        case "ATR1":
                             WriteATR1(bw);
-                        else if (section == "TSY1")
+                            break;
+                        case "TSY1":
                             WriteTSY1(bw);
-                        else if (section == "TXT2")
+                            break;
+                        case "TXT2":
                             WriteTXT2(bw);
+                            break;
                     }
-
-                    // Update FileSize
-                    long fileSize = bw.BaseStream.Position;
-                    bw.BaseStream.Seek(Header.FileSizeOffset, SeekOrigin.Begin);
-                    bw.Write((uint)fileSize);
-
-                    bw.Close();
-
-                    result = true;
                 }
-            }
-            catch (Exception)
-            { }
 
-            return result;
+                // Header
+                Header.FileSize = (uint)bw.BaseStream.Position;
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(Header);
+            }
         }
 
-        private bool WriteLBL1(BinaryWriterX bw)
+        private void WriteLBL1(BinaryWriterX bw)
         {
-            bool result = false;
+            // Calculate Section Size
+            uint newSize = sizeof(uint); // Number of Groups
+            newSize = LBL1.Groups.Aggregate(newSize, (current, grp) => current + sizeof(uint) + sizeof(uint));
+            newSize = LBL1.Labels.Aggregate(newSize, (current, lbl) => current + (uint)(sizeof(byte) + lbl.Name.Length + sizeof(uint)));
+            LBL1.Section.Size = newSize;
 
-            try
+            // Calculate Group Offsets
+            uint runningTotal = 0;
+            for (var i = 0; i < LBL1.Groups.Count; i++)
             {
-                // Calculate Section Size
-                uint newSize = sizeof(uint);
+                LBL1.Groups[i].Offset = LBL1.NumberOfGroups * sizeof(uint) * 2 + sizeof(uint) + runningTotal;
+                runningTotal = LBL1.Labels.Where(lbl => lbl.Checksum == i).Aggregate(runningTotal, (current, lbl) => current + (uint)(sizeof(byte) + lbl.Name.Length + sizeof(uint)));
+            }
 
-                foreach (Group grp in LBL1.Groups)
-                    newSize += (uint)(sizeof(uint) + sizeof(uint));
+            // Section
+            bw.WriteStruct(LBL1.Section);
+            bw.Write(LBL1.NumberOfGroups);
 
-                foreach (Label lbl in LBL1.Labels)
-                    newSize += (uint)(sizeof(byte) + lbl.Name.Length + sizeof(uint));
+            // Groups
+            foreach (var group in LBL1.Groups)
+                bw.WriteStruct(group);
 
-                // Calculate Group Offsets
-                uint offsetsLength = LBL1.NumberOfGroups * sizeof(uint) * 2 + sizeof(uint);
-                uint runningTotal = 0;
-                for (int i = 0; i < LBL1.Groups.Count; i++)
-                {
-                    LBL1.Groups[i].Offset = offsetsLength + runningTotal;
-                    foreach (Label lbl in LBL1.Labels)
-                        if (lbl.Checksum == i)
-                            runningTotal += (uint)(sizeof(byte) + lbl.Name.Length + sizeof(uint));
-                }
-
-                // Write
-                bw.WriteASCII(LBL1.Identifier);
-                bw.Write(newSize);
-                bw.Write(LBL1.Padding1);
-                bw.Write(LBL1.NumberOfGroups);
-
-                foreach (Group grp in LBL1.Groups)
-                {
-                    bw.Write(grp.NumberOfLabels);
-                    bw.Write(grp.Offset);
-                }
-
-                foreach (Group grp in LBL1.Groups)
-                {
-                    foreach (Label lbl in LBL1.Labels)
+            // Labels
+            foreach (var group in LBL1.Groups)
+                foreach (var label in LBL1.Labels)
+                    if (label.Checksum == LBL1.Groups.IndexOf(group))
                     {
-                        if (lbl.Checksum == LBL1.Groups.IndexOf(grp))
-                        {
-                            bw.Write(Convert.ToByte(lbl.Length));
-                            bw.WriteASCII(lbl.Name);
-                            bw.Write(lbl.Index);
-                        }
+                        bw.Write(Convert.ToByte(Encoding.ASCII.GetBytes(label.Name).Length));
+                        bw.WriteASCII(label.Name);
+                        bw.Write(label.Index);
                     }
-                }
 
-                PaddingWrite(bw);
-
-                result = true;
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-
-            return result;
+            bw.WriteAlignment(_paddingChar);
         }
 
-        private bool WriteNLI1(BinaryWriterX bw)
+        private void WriteNLI1(BinaryWriterX bw)
         {
-            bool result = false;
+            bw.WriteStruct(NLI1.Section);
+            bw.Write(NLI1.Unknown);
 
-            try
-            {
-                bw.WriteASCII(NLI1.Identifier);
-                bw.Write(NLI1.SectionSize);
-                bw.Write(NLI1.Padding1);
-                bw.Write(NLI1.Unknown2);
-
-                PaddingWrite(bw);
-
-                result = true;
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-
-            return result;
+            bw.WriteAlignment(_paddingChar);
         }
 
-        private bool WriteATO1(BinaryWriterX bw)
+        private void WriteATO1(BinaryWriterX bw)
         {
-            bool result = false;
+            bw.WriteStruct(ATO1.Section);
+            bw.Write(ATO1.Unknown);
 
-            try
-            {
-                bw.WriteASCII(ATO1.Identifier);
-                bw.Write(ATO1.SectionSize);
-                bw.Write(ATO1.Padding1);
-                bw.Write(ATO1.Unknown2);
-
-                result = true;
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-
-            return result;
+            bw.WriteAlignment(_paddingChar);
         }
 
-        private bool WriteATR1(BinaryWriterX bw)
+        private void WriteATR1(BinaryWriterX bw)
         {
-            bool result = false;
+            bw.WriteStruct(ATR1.Section);
+            //bw.Write(ATR1.NumberOfAttributes);
+            bw.Write(ATR1.Unknown);
 
-            try
-            {
-                bw.WriteASCII(ATR1.Identifier);
-                bw.Write(ATR1.SectionSize);
-                bw.Write(ATR1.Padding1);
-                bw.Write(ATR1.NumberOfAttributes);
-                bw.Write(ATR1.Unknown2);
-
-                PaddingWrite(bw);
-
-                result = true;
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-
-            return result;
+            bw.WriteAlignment(_paddingChar);
         }
 
-        private bool WriteTSY1(BinaryWriterX bw)
+        private void WriteTSY1(BinaryWriterX bw)
         {
-            bool result = false;
+            bw.WriteStruct(TSY1.Section);
+            bw.Write(TSY1.Unknown);
 
-            try
-            {
-                bw.WriteASCII(TSY1.Identifier);
-                bw.Write(TSY1.SectionSize);
-                bw.Write(TSY1.Padding1);
-                bw.Write(TSY1.Unknown2);
-
-                PaddingWrite(bw);
-
-                result = true;
-            }
-            catch (Exception)
-            {
-                result = false;
-            }
-
-            return result;
+            bw.WriteAlignment(_paddingChar);
         }
 
-        private bool WriteTXT2(BinaryWriterX bw)
+        private void WriteTXT2(BinaryWriterX bw)
         {
-            bool result = false;
+            // Optimization
+            var stringBytes = TXT2.Strings.Select(str => GetBytes(str.Text)).ToList();
 
-            try
+            // Calculate Section Size
+            var newSize = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
+            newSize = stringBytes.Aggregate(newSize, (current, str) => current + (uint)str.Length);
+            TXT2.Section.Size = newSize;
+
+            // Calculate String Offsets
+            var offsets = new List<uint>();
+            uint runningTotal = 0;
+            for (var i = 0; i < TXT2.NumberOfStrings; i++)
             {
-                // Calculate Section Size
-                uint newSize = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
-
-                for (int i = 0; i < TXT2.NumberOfStrings; i++)
-                    newSize += (uint)GetBytes(TXT2.Strings[i].Text).Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
-
-                bw.WriteASCII(TXT2.Identifier);
-                bw.Write(newSize);
-                bw.Write(TXT2.Padding1);
-                long startOfStrings = bw.BaseStream.Position;
-                bw.Write(TXT2.NumberOfStrings);
-
-                List<uint> offsets = new List<uint>();
-                uint offsetsLength = TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint);
-                uint runningTotal = 0;
-                for (int i = 0; i < TXT2.NumberOfStrings; i++)
-                {
-                    offsets.Add(offsetsLength + runningTotal);
-                    runningTotal += (uint)GetBytes(TXT2.Strings[i].Text).Length + (uint)(Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2);
-                }
-                for (int i = 0; i < TXT2.NumberOfStrings; i++)
-                    bw.Write(offsets[i]);
-                for (int i = 0; i < TXT2.NumberOfStrings; i++)
-                {
-                    byte[] text = GetBytes(TXT2.Strings[i].Text);
-                    if (Header.EncodingByte == EncodingByte.UTF8)
-                    {
-                        bw.Write(text);
-                        bw.Write((byte)0x0);
-                    }
-                    else
-                    {
-                        if (Header.ByteOrder == ByteOrder.LittleEndian)
-                            bw.Write(text);
-                        else
-                            for (int j = 0; j < text.Length; j += 2)
-                            {
-                                bw.Write(text[j + 1]);
-                                bw.Write(text[j]);
-                            }
-                        bw.Write(new byte[] { 0x0, 0x0 });
-                    }
-                }
-
-                PaddingWrite(bw);
-
-                result = true;
-            }
-            catch (Exception)
-            {
-                result = false;
+                offsets.Add(TXT2.NumberOfStrings * sizeof(uint) + sizeof(uint) + runningTotal);
+                runningTotal += (uint)stringBytes[i].Length;
             }
 
-            return result;
-        }
+            // Section
+            bw.WriteStruct(TXT2.Section);
+            bw.Write(TXT2.NumberOfStrings);
 
-        private void PaddingWrite(BinaryWriterX bw)
-        {
-            long remainder = bw.BaseStream.Position % 16;
-            if (remainder > 0)
-                for (int i = 0; i < 16 - remainder; i++)
-                    bw.Write(paddingChar);
+            // Offsets
+            foreach (var offset in offsets)
+                bw.Write(offset);
+
+            // Strings
+            foreach (var str in stringBytes)
+                bw.Write(str);
+
+            bw.WriteAlignment(_paddingChar);
         }
     }
 }

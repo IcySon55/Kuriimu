@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace text_msbt
 {
@@ -10,9 +12,10 @@ namespace text_msbt
         Unicode = 0x01
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public sealed class Header
     {
-        public string Identifier; // MsgStdBn
+        public Magic8 Magic; // MsgStdBn
         public ByteOrder ByteOrder;
         public ushort Unknown1; // Always 0x0000
         public EncodingByte EncodingByte;
@@ -20,32 +23,29 @@ namespace text_msbt
         public ushort NumberOfSections;
         public ushort Unknown3; // Always 0x0000
         public uint FileSize;
-        public byte[] Unknown4; // Always 0x0000 0000 0000 0000 0000
-        
-        public uint FileSizeOffset;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xA)]
+        public byte[] Padding;
     }
 
-    public abstract class Section
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public sealed class Section
     {
-        public string Identifier;
-        public uint SectionSize; // Begins after Unknown1
-        public byte[] Padding1; // Always 0x0000 0000
+        public Magic Magic;
+        public uint Size;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x8)]
+        public byte[] Padding;
     }
 
-    public sealed class LBL1 : Section
+    public sealed class LBL1
     {
+        public Section Section;
         public uint NumberOfGroups;
 
-        public List<Group> Groups;
-        public List<Label> Labels;
-
-        public LBL1()
-        {
-            Groups = new List<Group>();
-            Labels = new List<Label>();
-        }
+        public List<Group> Groups = new List<Group>();
+        public List<Label> Labels = new List<Label>();
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public sealed class Group
     {
         public uint NumberOfLabels;
@@ -54,7 +54,6 @@ namespace text_msbt
 
     public sealed class Label
     {
-        public uint Length { get; set; }
         public string Name { get; set; }
         public uint Index { get; set; }
 
@@ -63,19 +62,12 @@ namespace text_msbt
 
         public string Text
         {
-            get
-            {
-                return String.Text;
-            }
-            set
-            {
-                String.Text = value;
-            }
+            get => String.Text;
+            set => String.Text = value;
         }
 
         public Label()
         {
-            Length = 0;
             Name = string.Empty;
             Index = 0;
             Checksum = 0;
@@ -83,37 +75,36 @@ namespace text_msbt
         }
     }
 
-    public sealed class NLI1 : Section
+    public sealed class NLI1
     {
-        public byte[] Unknown2; // Tons of unknown data
+        public Section Section;
+        public byte[] Unknown; // Tons of unknown data
     }
 
-    public sealed class ATO1 : Section
+    public sealed class ATO1
     {
-        public byte[] Unknown2; // Large collection of 0xFF
+        public Section Section;
+        public byte[] Unknown; // Large collection of 0xFF
     }
 
-    public sealed class ATR1 : Section
+    public sealed class ATR1
     {
-        public uint NumberOfAttributes;
-        public byte[] Unknown2; // Tons of unknown data
+        public Section Section;
+        public byte[] Unknown; // Tons of unknown data
     }
 
-    public sealed class TSY1 : Section
+    public sealed class TSY1
     {
-        public byte[] Unknown2; // Tons of unknown data
+        public Section Section;
+        public byte[] Unknown; // Tons of unknown data
     }
 
-    public sealed class TXT2 : Section
+    public sealed class TXT2
     {
+        public Section Section;
         public uint NumberOfStrings;
 
-        public List<String> Strings;
-
-        public TXT2()
-        {
-            Strings = new List<String>();
-        }
+        public List<String> Strings = new List<String>();
     }
 
     public sealed class String

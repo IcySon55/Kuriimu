@@ -12,52 +12,30 @@ namespace text_msbt
 {
     public sealed class MsbtAdapter : ITextAdapter
     {
-        private FileInfo _fileInfo = null;
-        private MSBT _msbt = null;
-        private MSBT _msbtBackup = null;
-        private List<MsbtEntry> _entries = null;
+        private MSBT _msbt;
+        private MSBT _msbtBackup;
+        private List<MsbtEntry> _entries;
 
         #region Properties
 
         // Information
         public string Name => "MSBT";
-
         public string Description => "Message Binary Text";
-
         public string Extension => "*.msbt";
-
         public string About => "This is the MSBT file adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
-
         public bool CanAddEntries => true;
-
         public bool CanRenameEntries => true;
-
         public bool CanDeleteEntries => true;
-
         public bool CanSortEntries => true;
-
         public bool EntriesHaveSubEntries => false;
-
         public bool EntriesHaveUniqueNames => true;
-
         public bool EntriesHaveExtendedProperties => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
         public string LineEndings => "\n";
 
@@ -76,27 +54,23 @@ namespace text_msbt
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
             _entries = null;
 
-            if (_fileInfo.Exists)
+            if (FileInfo.Exists)
             {
-                _msbt = new MSBT(_fileInfo.FullName);
+                _msbt = new MSBT(FileInfo.OpenRead());
 
-                string backupFilePath = _fileInfo.FullName + ".bak";
+                string backupFilePath = FileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
+                    _msbtBackup = new MSBT(File.OpenRead(backupFilePath));
+                else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    _msbtBackup = new MSBT(backupFilePath);
-                }
-                else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    File.Copy(_fileInfo.FullName, backupFilePath);
-                    _msbtBackup = new MSBT(backupFilePath);
+                    File.Copy(FileInfo.FullName, backupFilePath);
+                    _msbtBackup = new MSBT(File.OpenRead(backupFilePath));
                 }
                 else
-                {
                     _msbtBackup = null;
-                }
             }
             else
                 result = LoadResult.FileNotFound;
@@ -109,11 +83,11 @@ namespace text_msbt
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
+                _msbt.Save(FileInfo.Create());
             try
             {
-                _msbt.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {
@@ -144,9 +118,7 @@ namespace text_msbt
         }
 
         public IEnumerable<string> NameList => Entries?.Select(o => o.Name);
-
         public string NameFilter => MSBT.LabelFilter;
-
         public int NameMaxLength => MSBT.LabelMaxLength;
 
         // Features
