@@ -75,7 +75,7 @@ namespace archive_ara
                         Files[i].Entry.Offset = (uint)bw2.BaseStream.Position;
                         Files[i].Entry.FileSize = (uint)Files[i].FileSize;
                         Files[i].FileData.CopyTo(bw2.BaseStream);
-                        bw2.WritePadding();
+                        bw2.WriteAlignment();
                     }
                 }
 
@@ -86,7 +86,7 @@ namespace archive_ara
                     Entries[i].FilenameOffset = (uint)bw.BaseStream.Position;
                     bw.WriteASCII(Entries[i].Filename);
                     bw.Write((byte)0x0);
-                    bw.WritePadding();
+                    bw.WriteAlignment();
                 }
 
                 // Filename Offsets

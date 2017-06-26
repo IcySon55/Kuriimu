@@ -124,7 +124,7 @@ namespace text_gmsg
                     var bk = bw.BaseStream.Position;
                     bw.BaseStream.Position = entries[i].stringOffset;
                     bw.Write(bytes);
-                    bw.WritePadding(4);
+                    bw.WriteAlignment(4);
                     bw.BaseStream.Position = bk;
 
                     while (dataOffset % 4 != 0) dataOffset++;

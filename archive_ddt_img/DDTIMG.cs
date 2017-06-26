@@ -161,7 +161,7 @@ namespace archive_ddt_img
                 bwDdt.Write(Encoding.GetEncoding("EUC-JP").GetBytes(parent.SubEntries[i].Name));
                 bwDdt.Write((byte)0x0);
             }
-            bwDdt.WritePadding(4);
+            bwDdt.WriteAlignment(4);
 
             for (var i = 0; i < subEntryCount; i++)
             {
@@ -171,7 +171,7 @@ namespace archive_ddt_img
                 {
                     var fileInfo = Files[runningFileIndex];
                     fileInfo.FileData.CopyTo(bwImg.BaseStream);
-                    bwImg.WritePadding((int)Alignment);
+                    bwImg.WriteAlignment((int)Alignment);
                     runningFileIndex++;
                 }
             }

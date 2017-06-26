@@ -83,11 +83,11 @@ namespace archive_xbb
                 //FileData
                 foreach (var file in Files)
                 {
-                    bw.WritePadding(0x80);
+                    bw.WriteAlignment(0x80);
                     file.FileData.CopyTo(bw.BaseStream);
                 }
 
-                bw.WritePadding(0x80);
+                bw.WriteAlignment(0x80);
             }
         }
 

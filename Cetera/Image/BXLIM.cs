@@ -53,13 +53,13 @@ namespace Cetera.Image
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
-                        BCLIMHeader = sections[0].Data.ToStruct<BCLIMImageHeader>();
+                        BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>();
                         Settings = new ImageSettings { Width = BCLIMHeader.width, Height = BCLIMHeader.height, Orientation = BCLIMHeader.orientation };
                         Settings.SetFormat(BCLIMHeader.format);
                         UnknownShort = BCLIMHeader.unknown;
                         break;
                     case "FLIM":
-                        BFLIMHeader = sections[0].Data.ToStruct<BFLIMImageHeader>();
+                        BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>();
                         Settings = new ImageSettings { Width = BFLIMHeader.width, Height = BFLIMHeader.height, Orientation = BFLIMHeader.orientation };
                         Settings.SetFormat(BFLIMHeader.format);
                         UnknownShort = BFLIMHeader.unknown;
@@ -93,7 +93,7 @@ namespace Cetera.Image
                         modifiedBCLIMHeader.width = (short)Image.Width;
                         modifiedBCLIMHeader.height = (short)Image.Height;
                         BCLIMHeader = modifiedBCLIMHeader;
-                        sections[0].Data = BCLIMHeader.StructToArray();
+                        sections[0].Data = BCLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
                         bw.WriteSections(sections);
                         bw.Write(texture.Length);
@@ -111,7 +111,7 @@ namespace Cetera.Image
                         modifiedBFLIMHeader.width = (short)Image.Width;
                         modifiedBFLIMHeader.height = (short)Image.Height;
                         BFLIMHeader = modifiedBFLIMHeader;
-                        sections[0].Data = BFLIMHeader.StructToArray();
+                        sections[0].Data = BFLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
                         bw.WriteSections(sections);
                         bw.Write(texture.Length);

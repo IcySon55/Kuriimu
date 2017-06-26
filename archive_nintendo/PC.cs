@@ -68,7 +68,7 @@ namespace archive_nintendo.PC
                 for (int i = 0; i < Files.Count; i++)
                 {
                     Files[i].FileData.CopyTo(bw.BaseStream);
-                    bw.WritePadding(0x80);
+                    bw.WriteAlignment(0x80);
                 }
 
                 //Offsetlist

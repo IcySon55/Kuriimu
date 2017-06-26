@@ -78,7 +78,7 @@ namespace text_srtz
                     }
                 }
 
-                bw.WritePadding();
+                bw.WriteAlignment();
             }
         }
     }

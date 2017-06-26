@@ -118,7 +118,7 @@ namespace archive_nintendo.GARC4
                 {
                     if (Files[i].FileSize > largestFileSize) largestFileSize = (uint)Files[i].FileSize;
                     Files[i].FileData.CopyTo(bw.BaseStream);
-                    bw.WritePadding(4, 0xff);
+                    bw.WriteAlignment(4, 0xff);
                 }
 
                 //FIMB

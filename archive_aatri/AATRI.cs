@@ -57,7 +57,7 @@ namespace archive_aatri
                 {
                     Files[i].Entry.offset = (uint)bwd.BaseStream.Position;
                     Files[i].Write(bwd.BaseStream);
-                    bwd.WritePadding(4);
+                    bwd.WriteAlignment(4);
                     bw.WriteStruct(Files[i].Entry);
                 }
             }

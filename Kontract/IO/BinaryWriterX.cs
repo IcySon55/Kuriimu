@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Kuriimu.IO
@@ -33,6 +32,8 @@ namespace Kuriimu.IO
             ByteOrder = byteOrder;
         }
 
+        public void WriteStruct<T>(T item) => item.StructToBytes(ByteOrder);
+        
         public override void Write(short value)
         {
             if (ByteOrder == ByteOrder.LittleEndian)
@@ -94,16 +95,6 @@ namespace Kuriimu.IO
             Write(bytes);
         }
 
-        public unsafe void WriteStruct<T>(T item)
-        {
-            var buffer = new byte[Marshal.SizeOf(typeof(T))];
-            fixed (byte* pBuffer = buffer)
-            {
-                Marshal.StructureToPtr(item, (IntPtr)pBuffer, false);
-            }
-            Write(buffer);
-        }
-
         public void WriteNibble(int val)
         {
             val &= 15;
@@ -116,12 +107,18 @@ namespace Kuriimu.IO
             }
         }
 
-        public void WritePadding(int alignment = 16, byte paddingByte = 0x0)
+        public void WritePadding(int count, byte paddingByte = 0x0)
+        {
+            for (var i = 0; i < count; i++)
+                Write(paddingByte);
+        }
+
+        public void WriteAlignment(int alignment = 16, byte alignmentByte = 0x0)
         {
             var remainder = BaseStream.Position % alignment;
             if (remainder <= 0) return;
             for (var i = 0; i < alignment - remainder; i++)
-                Write(paddingByte);
+                Write(alignmentByte);
         }
     }
 }

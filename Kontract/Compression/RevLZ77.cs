@@ -137,11 +137,11 @@ namespace Kuriimu.Compression
 
         public static byte[] Decompress(Stream instream)
         {
-            byte[] input = instream.StructToArray();
+            byte[] input = instream.StructToBytes();
 
             if (input == null) throw new ArgumentNullException(nameof(input));
 
-            var compFooter = input.ToStruct<CompFooter>(input.Length - 8);
+            var compFooter = input.BytesToStruct<CompFooter>(input.Length - 8);
             int dest = input.Length + compFooter.originalBottom;
             int src = input.Length - (compFooter.bufferTopAndBottom >> 24 & 0xFF);
             int end = input.Length - (compFooter.bufferTopAndBottom & 0xFFFFFF);
@@ -178,7 +178,7 @@ namespace Kuriimu.Compression
 
         public static byte[] Compress(Stream instream)
         {
-            byte[] input = instream.StructToArray();
+            byte[] input = instream.StructToBytes();
 
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (input.Length <= 8) return null;
@@ -249,7 +249,7 @@ namespace Kuriimu.Compression
                 return input.Take(origSize)
                     .Concat(new ArraySegment<byte>(result, input.Length - compressedRegion, compressedRegion))
                     .Concat(Enumerable.Repeat((byte)0xFF, -padOffset & 3))
-                    .Concat(compFooter.StructToArray())
+                    .Concat(compFooter.StructToBytes())
                     .ToArray();
             };
 
