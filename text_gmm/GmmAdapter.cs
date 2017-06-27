@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using text_gmm.Properties;
-using Kuriimu.Kontract;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 
 namespace text_gmm
@@ -22,7 +22,7 @@ namespace text_gmm
         // Information
         public string Name => "GMM";
 
-        public string Description => "Game Message Matrix";
+        public string Description => "Game Message Markup";
 
         public string Extension => "*.gmm";
 

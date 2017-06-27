@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 
 namespace image_rawJtex
@@ -30,7 +30,10 @@ namespace image_rawJtex
 
         public bool Identify(string filename)
         {
-            return Path.GetExtension(filename) == ".jtex";
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            {
+                return Path.GetExtension(filename) == ".jtex" && br.ReadString(4) != "jIMG";
+            }
         }
 
         public void Load(string filename)

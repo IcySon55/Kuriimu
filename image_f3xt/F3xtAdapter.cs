@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Compression;
-using Kuriimu.Kontract;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 using System.Linq;
 
@@ -35,19 +35,6 @@ namespace image_f3xt
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-
-                //check for compression
-                if (br.ReadByte() == 0x11)
-                {
-                    br.BaseStream.Position = 0;
-                    byte[] decomp = LZ11.Decompress(br.BaseStream);
-                    if (new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "F3XT")
-                    {
-                        return true;
-                    }
-                }
-                br.BaseStream.Position = 0;
-
                 return br.ReadString(4) == "F3XT";
             }
         }
