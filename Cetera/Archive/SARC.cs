@@ -102,7 +102,7 @@ namespace Cetera.Archive
             using (var bw = new BinaryWriterX(output, leaveOpen))
             {
                 //SARCHeader
-                var header = new SARCHeader { dataOffset = Pad(40 + Files.Sum(afi => usesSFNT ? afi.FileName.Length / 4 * 4 + 20 : 16), Files[0].FileName) };
+                var header = new SARCHeader { dataOffset = Files.Aggregate(40 + Files.Sum(afi => usesSFNT ? afi.FileName.Length / 4 * 4 + 20 : 16), (n, afi) => Pad(n, afi.FileName)) };
                 bw.WriteStruct(header); // filesize is added later
 
                 //SFATHeader
@@ -137,6 +137,7 @@ namespace Cetera.Archive
                     }
                 }
 
+                bw.WriteAlignment(header.dataOffset);
                 foreach (var afi in Files)
                 {
                     bw.Write(new byte[Pad((int)bw.BaseStream.Length, afi.FileName) - (int)bw.BaseStream.Length]); // padding

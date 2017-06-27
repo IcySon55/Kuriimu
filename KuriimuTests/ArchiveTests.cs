@@ -76,6 +76,9 @@ namespace KuriimuTests
         [TestMethod]
         public void SarcTest4() => Test<archive_nintendo.SARC.SarcManager>("lovelevel.sarc");
 
+        [TestMethod]
+        public void SarcTest5() => Test<archive_nintendo.SARC.SarcManager>("common.arc");
+
         // DARC
         [TestMethod]
         public void DarcTest1() => Test<archive_nintendo.DARC.DarcManager>("Africa.arc");
