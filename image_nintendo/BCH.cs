@@ -136,10 +136,6 @@ namespace image_nintendo.BCH
                         bmps.Add(Common.Load(br.ReadBytes(((entries[i].width * entries[i].height) * bitDepth) / 8), settings));
                     }
                 }
-                else
-                {
-                    throw new Exception("BCH doesn't contain textures");
-                }
             }
         }
 
