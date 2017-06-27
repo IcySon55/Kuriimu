@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Kuriimu.Kontract;
+using Kuriimu.Contract;
 using Kuriimu.IO;
 using System.Text;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace text_gmm
