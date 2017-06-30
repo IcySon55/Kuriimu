@@ -29,5 +29,14 @@
     <Setting Name="ThumbnailHeight" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">64</Value>
     </Setting>
+    <Setting Name="OpenRawWidth" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="OpenRawHeight" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">16</Value>
+    </Setting>
+    <Setting Name="OpenRawFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">RGBA8888</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -124,5 +124,41 @@ namespace Kukkii.Properties {
                 this["ThumbnailHeight"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public decimal OpenRawWidth {
+            get {
+                return ((decimal)(this["OpenRawWidth"]));
+            }
+            set {
+                this["OpenRawWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public decimal OpenRawHeight {
+            get {
+                return ((decimal)(this["OpenRawHeight"]));
+            }
+            set {
+                this["OpenRawHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RGBA8888")]
+        public string OpenRawFormat {
+            get {
+                return ((string)(this["OpenRawFormat"]));
+            }
+            set {
+                this["OpenRawFormat"] = value;
+            }
+        }
     }
 }

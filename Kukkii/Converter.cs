@@ -100,6 +100,18 @@ namespace Kukkii
             ImportPNG();
         }
 
+        private void openRawToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Settings.Default.LastDirectory;
+            
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                var openRaw = new OpenRaw(ofd.FileName);
+                openRaw.ShowDialog();
+            }
+        }
+
         // File Handling
         private void frmConverter_DragEnter(object sender, DragEventArgs e)
         {

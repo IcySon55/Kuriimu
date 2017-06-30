@@ -42,6 +42,7 @@
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openRawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchExportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchImportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -195,7 +196,8 @@
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compressionToolStripMenuItem,
-            this.encryptionToolStripMenuItem});
+            this.encryptionToolStripMenuItem,
+            this.openRawToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "&Tools";
@@ -204,14 +206,22 @@
             // 
             this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // encryptionToolStripMenuItem
             // 
             this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
-            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.encryptionToolStripMenuItem.Text = "&Encryption";
+            // 
+            // openRawToolStripMenuItem
+            // 
+            this.openRawToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_open;
+            this.openRawToolStripMenuItem.Name = "openRawToolStripMenuItem";
+            this.openRawToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.openRawToolStripMenuItem.Text = "Open Raw Image";
+            this.openRawToolStripMenuItem.Click += new System.EventHandler(this.openRawToolStripMenuItem_Click);
             // 
             // batchToolStripMenuItem
             // 
@@ -588,6 +598,7 @@
             // pptImageProperties
             // 
             this.pptImageProperties.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pptImageProperties.LineColor = System.Drawing.SystemColors.ControlDark;
             this.pptImageProperties.Location = new System.Drawing.Point(0, 0);
             this.pptImageProperties.Name = "pptImageProperties";
             this.pptImageProperties.Size = new System.Drawing.Size(228, 295);
@@ -680,6 +691,7 @@
         private System.Windows.Forms.TreeView treBitmaps;
         private System.Windows.Forms.ImageList imlBitmaps;
         private System.Windows.Forms.SplitContainer splProperties;
+        private System.Windows.Forms.ToolStripMenuItem openRawToolStripMenuItem;
     }
 }
 
