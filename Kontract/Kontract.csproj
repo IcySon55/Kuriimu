@@ -91,6 +91,7 @@
     <Compile Include="UI\Compression.cs" />
     <Compile Include="UI\Encryption.cs" />
     <Compile Include="UI\Win32.cs" />
+    <Compile Include="ValueTuple.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
