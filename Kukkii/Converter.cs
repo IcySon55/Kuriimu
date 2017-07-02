@@ -382,6 +382,7 @@ namespace Kukkii
                 GenerateThumbnailBackground();
 
             gfx.DrawImageUnscaled(_thumbnailBackground, 0, 0, _thumbnailBackground.Width, _thumbnailBackground.Height);
+            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
             gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
 
             return thumb;
@@ -398,9 +399,11 @@ namespace Kukkii
             var xCount = Settings.Default.ThumbnailWidth / 16 + 1;
             var yCount = Settings.Default.ThumbnailHeight / 16 + 1;
 
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor), 0, 0, thumbWidth, thumbHeight);
             for (var i = 0; i < xCount; i++)
                 for (var j = 0; j < yCount; j++)
-                    gfx.FillRectangle(new SolidBrush((i + j) % 2 == 1 ? Settings.Default.GridColor : Settings.Default.GridColorAlternate), i * 16, j * 16, 16, 16);
+                    if ((i + j) % 2 != 1)
+                        gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), i * 16, j * 16, 16, 16);
 
             _thumbnailBackground = thumb;
         }
