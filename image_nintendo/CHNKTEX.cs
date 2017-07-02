@@ -1,121 +1,71 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using Kuriimu.Compression;
 using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace image_nintendo
 {
     class CHNKTEX
     {
-        private const int WidthMultiplier = 4;
-        private const int HeightMultiplier = 32;
-        private const int MinHeight = 8;
-
-        public TXIF Txif { get; set; }
-        public List<Color> Palette = new List<Color>();
-        public List<byte> Map;
-        public List<byte> Tiles;
+        private Dictionary<Magic, Section> Sections;
 
         public List<Bitmap> Bitmaps = new List<Bitmap>();
 
         public CHNKTEX(Stream input)
         {
-            using (var br = new BinaryReaderX(input))
+            Sections = GetSections(input).ToDictionary(o => o.Magic, o => o);
+
+            var txif = new BinaryReaderX(new MemoryStream(Sections["TXIF"].Data)).ReadStruct<TXIF>();
+            var txim = Sections["TXIM"];
+            var txpl = Sections["TXPL"];
+            Section tx4i;
+            var hasMap = Sections.TryGetValue("TX4I", out tx4i);
+
+            int width = txif.Width, height = txif.Height;
+            var bmp = new Bitmap(width, height);
+            var pal = Enumerable.Range(0, txpl.Data.Length / 2).Select(w => ToBGR555(BitConverter.ToInt16(txpl.Data, 2 * w))).ToList();
+
+            for (var i = 0; i < width * height; i++)
             {
+                var (x, y, z) = (i % width, i / width, hasMap ? -1 : txim.Data[i]);
+                if (hasMap)
+                {
+                    var (a, b, c, d) = (i & -(4 * width), i & (3 * width), i & (width - 4), i & 3);
+                    var bits = (txim.Data[a / 4 + b / width + c] >> 2 * d) & 3;
+                    var entry = BitConverter.ToInt16(tx4i.Data, x / 4 * 2 + y / 4 * (width / 2));
+                    if (entry < 0 || bits < 3) z = 2 * (entry & 0x3FFF) + bits;
+                }
+                bmp.SetPixel(x, y, z == -1 ? Color.Transparent : pal[z]); // use magenta for transparency?
+            }
+
+            Bitmaps.Add(bmp);
+        }
+
+        private Color ToBGR555(short s) => Color.FromArgb(s % 32 * 33 / 4, (s >> 5) % 32 * 33 / 4, (s >> 10) * 33 / 4);
+
+        private IEnumerable<Section> GetSections(Stream stream)
+        {
+            using (var br = new BinaryReaderX(stream))
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
                     var chunk = br.ReadStruct<CHNK>();
-                    var section = br.ReadString(4);
+                    var section = new Section
+                    {
+                        Chunk = chunk,
+                        Magic = br.ReadString(4),
+                        Size = br.ReadInt32()
+                    };
+                    section.Data = br.ReadBytes(section.Size);
 
-                    if (section == "TXIF")
-                        Txif = br.ReadStruct<TXIF>();
-                    else if (section == "TXIM")
-                        ReadTXIM(chunk, br);
-                    else if (section == "TX4I")
-                        ReadTX4I(chunk, br);
-                    else if (section == "TXPL")
-                        ReadTXPL(chunk, br);
+                    if (chunk.DecompressedSize != 0)
+                        section.Data = LZ11.Decompress(new MemoryStream(section.Data));
+
+                    yield return section;
                 }
-
-                Bitmaps.Add(BuildBitmap());
-            }
-        }
-
-        public void ReadTXIM(CHNK chunk, BinaryReaderX br)
-        {
-            if (chunk.DecompressedSize > 0)
-                Map = Kuriimu.Compression.LZ11.Decompress(new MemoryStream(br.ReadBytes(br.ReadInt32()))).ToList();
-            else
-                Map = br.ReadBytes(br.ReadInt32()).ToList();
-        }
-
-        public void ReadTX4I(CHNK chunk, BinaryReaderX br)
-        {
-            if (chunk.DecompressedSize > 0)
-                Tiles = Kuriimu.Compression.LZ11.Decompress(new MemoryStream(br.ReadBytes(br.ReadInt32()))).ToList();
-            else
-                Tiles = br.ReadBytes(br.ReadInt32()).ToList();
-        }
-
-        public void ReadTXPL(CHNK chunk, BinaryReaderX br)
-        {
-            byte[] paletteBytes;
-            if (chunk.DecompressedSize > 0)
-                paletteBytes = Kuriimu.Compression.LZ11.Decompress(new MemoryStream(br.ReadBytes(br.ReadInt32())));
-            else
-                paletteBytes = br.ReadBytes(br.ReadInt32());
-
-            var brp = new BinaryReader(new MemoryStream(paletteBytes));
-
-            //var palette = new Bitmap(160, 260, PixelFormat.Format32bppRgb);
-            //var gfx = Graphics.FromImage(palette);
-
-            //int x = 0, y = 0;
-            int a = 255, r = 255, g = 255, b = 255;
-            while (brp.BaseStream.Position < brp.BaseStream.Length)
-            {
-                var s = brp.ReadUInt16();
-
-                b = (s >> 10) * 33 / 4;
-                g = ((s & 0x3FF) >> 5) * 33 / 4;
-                r = (s & 0x1F) * 33 / 4;
-
-                var color = Color.FromArgb(a, r, g, b);
-                Palette.Add(color);
-
-                // Draw to the palette
-                //gfx.FillRectangle(new SolidBrush(color), x, y, 10, 10);
-                //x += 10;
-                //if (x % palette.Width == 0)
-                //{
-                //    x = 0;
-                //    y += 10;
-                //}
-            }
-        }
-
-        public Bitmap BuildBitmap()
-        {
-            var image = new Bitmap(Txif.Width, Txif.Height, PixelFormat.Format32bppRgb);
-            var gfxI = Graphics.FromImage(image);
-
-            int x = 0, y = 0;
-            for (var i = 0; i < image.Width * image.Height; i++)
-            {
-                if ((y * image.Width + x) < Map.Count && Map[y * image.Width + x] < Palette.Count)
-                    image.SetPixel(x, y, Palette[Map[y * image.Width + x]]);
-
-                x++;
-                if (x % image.Width == 0)
-                {
-                    x = 0;
-                    y++;
-                }
-            }
-
-            return image;
         }
 
         public void Save(Stream output)

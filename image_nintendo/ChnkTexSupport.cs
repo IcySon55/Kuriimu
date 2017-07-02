@@ -10,7 +10,7 @@ namespace image_nintendo
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    class CHNK
+    public class CHNK
     {
         public Magic Magic;
         public int DecompressedSize;
@@ -19,7 +19,6 @@ namespace image_nintendo
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class TXIF
     {
-        public int ChunkSize;
         public int Unk1;
         public int ImageSize;
         public int MapSize;
@@ -27,6 +26,14 @@ namespace image_nintendo
         public short Width;
         public short Height;
         public int Unk5;
+    }
+
+    public class Section
+    {
+        public CHNK Chunk;
+        public Magic Magic;
+        public int Size;
+        public byte[] Data;
     }
 
     public sealed class ChnkTexBitmapInfo : BitmapInfo
