@@ -44,7 +44,7 @@ namespace image_nintendo
             if (FileInfo.Exists)
             {
                 _tex = new CHNKTEX(FileInfo.OpenRead());
-                _bitmaps = _tex.Bitmaps.Select(b => new ChnkTexBitmapInfo { Bitmap = b, Format= ChnkTexFormat.BGR555 }).ToList<BitmapInfo>();
+                _bitmaps = _tex.Bitmaps.Select(b => new ChnkTexBitmapInfo { Bitmap = b, Format= ChnkTexFormat.BGR555, BitDepth = _tex.TXIF.ImageDepth, HasTX4I = _tex.HasMap }).ToList<BitmapInfo>();
             }
         }
 

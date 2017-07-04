@@ -48,6 +48,15 @@ namespace image_nintendo
     public sealed class ChnkTexBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
+        [ReadOnly(true)]
         public ChnkTexFormat Format { get; set; }
+
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public TXIMBitDepth BitDepth { get; set; }
+
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public bool HasTX4I { get; set; }
     }
 }

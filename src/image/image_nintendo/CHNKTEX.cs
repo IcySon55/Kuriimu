@@ -14,23 +14,24 @@ namespace image_nintendo
         private Dictionary<Magic, Section> Sections;
 
         public List<Bitmap> Bitmaps = new List<Bitmap>();
+        public TXIF TXIF { get; }
         public bool HasMap { get; } = false;
 
         public CHNKTEX(Stream input)
         {
             Sections = GetSections(input).ToDictionary(o => o.Magic, o => o);
 
-            var txif = new BinaryReaderX(new MemoryStream(Sections["TXIF"].Data)).ReadStruct<TXIF>();
+            TXIF = new BinaryReaderX(new MemoryStream(Sections["TXIF"].Data)).ReadStruct<TXIF>();
             var txim = Sections["TXIM"];
             var txpl = Sections["TXPL"];
             Section tx4i;
             HasMap = Sections.TryGetValue("TX4I", out tx4i);
 
-            int width = txif.Width, height = txif.Height;
+            int width = TXIF.Width, height = TXIF.Height;
             var bmp = new Bitmap(width, height);
             var pal = Enumerable.Range(0, txpl.Data.Length / 2).Select(w => ToBGR555(BitConverter.ToInt16(txpl.Data, 2 * w))).ToList();
 
-            if (txif.ImageDepth == TXIMBitDepth.BPP8 || HasMap)
+            if (TXIF.ImageDepth == TXIMBitDepth.BPP8 || HasMap)
             {
                 for (var i = 0; i < width * height; i++)
                 {
@@ -47,7 +48,7 @@ namespace image_nintendo
 
                 Bitmaps.Add(bmp);
             }
-            else if (txif.ImageDepth == TXIMBitDepth.BPP4)
+            else if (TXIF.ImageDepth == TXIMBitDepth.BPP4)
             {
                 var accumulator = 0;
                 for (var i = 0; i < width * height / 2; i++)
@@ -61,13 +62,13 @@ namespace image_nintendo
 
                 Bitmaps.Add(bmp);
             }
-            else if (txif.ImageDepth == TXIMBitDepth.BPP2)
+            else if (TXIF.ImageDepth == TXIMBitDepth.BPP2)
             {
                 var offset = 0;
-                for (var i = 0; i < txif.ImageCount; i++)
+                for (var i = 0; i < TXIF.ImageCount; i++)
                 {
-                    var accumulator = 0;
                     bmp = new Bitmap(width, height);
+                    var accumulator = 0;
                     for (var j = 0; j < (width * height) / 4; j++)
                     {
                         var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] & 0x3);
