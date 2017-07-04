@@ -15,6 +15,7 @@ namespace image_nintendo
 
         public List<Bitmap> Bitmaps = new List<Bitmap>();
         public TXIF TXIF { get; }
+        public TXIMBitDepth BitDepth { get; }
         public bool HasMap { get; } = false;
 
         public CHNKTEX(Stream input)
@@ -27,15 +28,19 @@ namespace image_nintendo
             Section tx4i;
             HasMap = Sections.TryGetValue("TX4I", out tx4i);
 
-            int width = TXIF.Width, height = TXIF.Height;
+            int width = 2 << (int)Math.Log(TXIF.Width - 1, 2), height = TXIF.Height;
+            BitDepth = (TXIMBitDepth)(width * height * Math.Max(TXIF.ImageCount, 1) / txim.Data.Length);
             var bmp = new Bitmap(width, height);
             var pal = Enumerable.Range(0, txpl.Data.Length / 2).Select(w => ToBGR555(BitConverter.ToInt16(txpl.Data, 2 * w))).ToList();
+            //if (BitDepth == TXIMBitDepth.BPP8 && )
+            for (var k = 0; k < 256 - txpl.Data.Length / 2; k++)
+                pal.Add(Color.White);
 
-            if (TXIF.ImageDepth == TXIMBitDepth.BPP8 || HasMap)
+            if (BitDepth == TXIMBitDepth.BPP8 || HasMap)
             {
                 for (var i = 0; i < width * height; i++)
                 {
-                    var (x, y, z) = (i % width, i / width, HasMap ? -1 : txim.Data[i]);
+                    var (x, y, z) = (i % width, i / width, HasMap ? 0 : txim.Data[i]);
                     if (HasMap)
                     {
                         var (a, b, c, d) = (i & -(4 * width), i & (3 * width), i & (width - 4), i & 3);
@@ -43,45 +48,50 @@ namespace image_nintendo
                         var entry = BitConverter.ToInt16(tx4i.Data, x / 4 * 2 + y / 4 * (width / 2));
                         if (entry < 0 || bits < 3) z = 2 * (entry & 0x3FFF) + bits;
                     }
-                    bmp.SetPixel(x, y, z == -1 ? Color.Transparent : pal[z]);
+                    bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                 }
 
                 Bitmaps.Add(bmp);
             }
-            else if (TXIF.ImageDepth == TXIMBitDepth.BPP4)
-            {
-                var accumulator = 0;
-                for (var i = 0; i < width * height / 2; i++)
-                {
-                    var (x, y, z) = ((i + accumulator) % width, (i + accumulator) / width, txim.Data[i] & 0xF);
-                    bmp.SetPixel(x, y, pal[z]);
-                    accumulator++;
-                    (x, y, z) = ((i + accumulator) % width, (i + accumulator) / width, txim.Data[i] >> 4);
-                    bmp.SetPixel(x, y, pal[z]);
-                }
-
-                Bitmaps.Add(bmp);
-            }
-            else if (TXIF.ImageDepth == TXIMBitDepth.BPP2)
+            else if (BitDepth == TXIMBitDepth.BPP4)
             {
                 var offset = 0;
-                for (var i = 0; i < TXIF.ImageCount; i++)
+                for (var i = 0; i < Math.Max(TXIF.ImageCount, 1); i++)
+                {
+                    bmp = new Bitmap(width, height);
+                    var accumulator = 0;
+                    for (var j = 0; j < width * height / 2; j++)
+                    {
+                        var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] & 0xF);
+                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
+                        accumulator++;
+                        (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] >> 4);
+                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
+                    }
+                    offset += (width * height) / 2;
+                    Bitmaps.Add(bmp);
+                }
+            }
+            else if (BitDepth == TXIMBitDepth.BPP2)
+            {
+                var offset = 0;
+                for (var i = 0; i < Math.Max(TXIF.ImageCount, 1); i++)
                 {
                     bmp = new Bitmap(width, height);
                     var accumulator = 0;
                     for (var j = 0; j < (width * height) / 4; j++)
                     {
                         var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] & 0x3);
-                        bmp.SetPixel(x, y, pal[z]);
+                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                         accumulator++;
                         (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, (txim.Data[j + offset] & 0xF) >> 2);
-                        bmp.SetPixel(x, y, pal[z]);
+                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                         accumulator++;
                         (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, (txim.Data[j + offset] & 0x3F) >> 4);
-                        bmp.SetPixel(x, y, pal[z]);
+                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                         accumulator++;
                         (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] >> 6);
-                        bmp.SetPixel(x, y, pal[z]);
+                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                     }
                     offset += (width * height) / 4;
                     Bitmaps.Add(bmp);
