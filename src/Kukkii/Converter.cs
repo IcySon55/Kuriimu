@@ -25,6 +25,22 @@ namespace Kukkii
         private int _selectedImageIndex;
         private Bitmap _thumbnailBackground;
 
+        Dictionary<string, string> _stylesText = new Dictionary<string, string>
+        {
+            ["None"] = "None",
+            ["FixedSingle"] = "Simple",
+            ["FixedSingleDropShadow"] = "Drop Shadow",
+            ["FixedSingleGlowShadow"] = "Glow Shadow"
+        };
+
+        Dictionary<string, string> _stylesImages = new Dictionary<string, string>
+        {
+            ["None"] = "menu_border_none",
+            ["FixedSingle"] = "menu_border_simple",
+            ["FixedSingleDropShadow"] = "menu_border_drop_shadow",
+            ["FixedSingleGlowShadow"] = "menu_border_glow_shadow"
+        };
+
         public Converter(string[] args)
         {
             InitializeComponent();
@@ -44,6 +60,11 @@ namespace Kukkii
             // Tools
             CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
             EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+
+            // Image Border Styles
+            tsbImageBorderStyle.DropDownItems.AddRange(Enum.GetNames(typeof(ImageBoxBorderStyle)).Select(s => new ToolStripMenuItem { Image = (Image)Resources.ResourceManager.GetObject(_stylesImages[s]), Text = _stylesText[s], Tag = s }).ToArray());
+            foreach (var tsb in tsbImageBorderStyle.DropDownItems)
+                ((ToolStripMenuItem)tsb).Click += tsbImageBorderStyle_Click;
 
             UpdateForm();
             UpdatePreview();
@@ -104,7 +125,7 @@ namespace Kukkii
         {
             var ofd = new OpenFileDialog();
             ofd.InitialDirectory = Settings.Default.LastDirectory;
-            
+
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 var openRaw = new OpenRaw(ofd.FileName);
@@ -186,7 +207,7 @@ namespace Kukkii
 
                     UpdatePreview();
                     UpdateImageList();
-                    if (treBitmaps.Nodes.Count == 0)
+                    if (_imageAdapter.Bitmaps?.Count <= 0)
                     {
                         MessageBox.Show(this, $"{FileName()} was loaded by the \"{tempAdapter.Description}\" adapter but it provided no images.", "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         _imageAdapter = null;
@@ -314,17 +335,31 @@ namespace Kukkii
                 pptImageProperties.SelectedObject = _imageAdapter?.Bitmaps[_selectedImageIndex];
             }
 
-            imbPreview.GridColor = Settings.Default.GridColor;
-            var gcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
-            var gfx = Graphics.FromImage(gcBitmap);
-            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor), 0, 0, 16, 16);
-            tsbGridColor.Image = gcBitmap;
+            // Grid Color 1
+            imbPreview.GridColor = Settings.Default.GridColor1;
+            var gc1Bitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            var gfx = Graphics.FromImage(gc1Bitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor1), 0, 0, 16, 16);
+            tsbGridColor1.Image = gc1Bitmap;
 
-            imbPreview.GridColorAlternate = Settings.Default.GridColorAlternate;
-            var gcaBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
-            gfx = Graphics.FromImage(gcaBitmap);
-            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), 0, 0, 16, 16);
-            tsbGridColorAlternate.Image = gcaBitmap;
+            // Grid Color 2
+            imbPreview.GridColorAlternate = Settings.Default.GridColor2;
+            var gc2Bitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            gfx = Graphics.FromImage(gc2Bitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor2), 0, 0, 16, 16);
+            tsbGridColor2.Image = gc2Bitmap;
+
+            // Image Border Style
+            imbPreview.ImageBorderStyle = Settings.Default.ImageBorderStyle;
+            tsbImageBorderStyle.Image = (Image) Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
+            tsbImageBorderStyle.Text = _stylesText[Settings.Default.ImageBorderStyle.ToString()];
+
+            // Image Border Color
+            imbPreview.ImageBorderColor = Settings.Default.ImageBorderColor;
+            var ibcBitmap = new Bitmap(16, 16, PixelFormat.Format24bppRgb);
+            gfx = Graphics.FromImage(ibcBitmap);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.ImageBorderColor), 0, 0, 16, 16);
+            tsbImageBorderColor.Image = ibcBitmap;
         }
 
         private void UpdateImageList()
@@ -399,11 +434,11 @@ namespace Kukkii
             var xCount = Settings.Default.ThumbnailWidth / 16 + 1;
             var yCount = Settings.Default.ThumbnailHeight / 16 + 1;
 
-            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor), 0, 0, thumbWidth, thumbHeight);
+            gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor1), 0, 0, thumbWidth, thumbHeight);
             for (var i = 0; i < xCount; i++)
                 for (var j = 0; j < yCount; j++)
                     if ((i + j) % 2 != 1)
-                        gfx.FillRectangle(new SolidBrush(Settings.Default.GridColorAlternate), i * 16, j * 16, 16, 16);
+                        gfx.FillRectangle(new SolidBrush(Settings.Default.GridColor2), i * 16, j * 16, 16, 16);
 
             _thumbnailBackground = thumb;
         }
@@ -432,6 +467,9 @@ namespace Kukkii
             batchScanSubdirectoriesToolStripMenuItem.Image = Settings.Default.BatchScanSubdirectories ? Resources.menu_scan_subdirectories_on : Resources.menu_scan_subdirectories_off;
             tsbBatchScanSubdirectories.Text = batchScanSubdirectoriesToolStripMenuItem.Text;
             tsbBatchScanSubdirectories.Image = batchScanSubdirectoriesToolStripMenuItem.Image;
+
+            tsbImageBorderStyle.Enabled = _fileOpen;
+            tsbImageBorderColor.Enabled = _fileOpen;
         }
 
         private string FileName()
@@ -570,33 +608,57 @@ namespace Kukkii
             UpdateForm();
         }
 
-        // Grid Colors
-        private void tsbGridColor_Click(object sender, EventArgs e)
+        // Image Box Colors
+        private void tsbGridColor1_Click(object sender, EventArgs e)
         {
             clrDialog.Color = imbPreview.GridColor;
             if (clrDialog.ShowDialog() != DialogResult.OK) return;
 
             imbPreview.GridColor = clrDialog.Color;
-            Settings.Default.GridColor = clrDialog.Color;
+            Settings.Default.GridColor1 = clrDialog.Color;
             Settings.Default.Save();
             UpdatePreview();
             GenerateThumbnailBackground();
             UpdateImageList();
-            treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
+            if (_fileOpen)
+                treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
         }
 
-        private void tsbGridColorAlternate_Click(object sender, EventArgs e)
+        private void tsbGridColor2_Click(object sender, EventArgs e)
         {
             clrDialog.Color = imbPreview.GridColorAlternate;
             if (clrDialog.ShowDialog() != DialogResult.OK) return;
 
             imbPreview.GridColorAlternate = clrDialog.Color;
-            Settings.Default.GridColorAlternate = clrDialog.Color;
+            Settings.Default.GridColor2 = clrDialog.Color;
             Settings.Default.Save();
             UpdatePreview();
             GenerateThumbnailBackground();
             UpdateImageList();
-            treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
+            if (_fileOpen)
+                treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
+        }
+
+        private void tsbImageBorderStyle_Click(object sender, EventArgs e)
+        {
+            var tsb = (ToolStripMenuItem)sender;
+            var style = (ImageBoxBorderStyle)Enum.Parse(typeof(ImageBoxBorderStyle), tsb.Tag.ToString());
+
+            imbPreview.ImageBorderStyle = style;
+            Settings.Default.ImageBorderStyle = style;
+            Settings.Default.Save();
+            UpdatePreview();
+        }
+
+        private void tsbImageBorderColor_Click(object sender, EventArgs e)
+        {
+            clrDialog.Color = imbPreview.ImageBorderColor;
+            if (clrDialog.ShowDialog() != DialogResult.OK) return;
+
+            imbPreview.ImageBorderColor = clrDialog.Color;
+            Settings.Default.ImageBorderColor = clrDialog.Color;
+            Settings.Default.Save();
+            UpdatePreview();
         }
 
         // Apps

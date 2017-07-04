@@ -163,6 +163,18 @@
   <ItemGroup>
     <None Include="images\menu-scan-subdirectories-off.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-border-drop-shadow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-border-glow-shadow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-border-none.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-border-simple.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>

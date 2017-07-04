@@ -14,10 +14,10 @@
     <Setting Name="LastBatchDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="GridColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="GridColor1" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Silver</Value>
     </Setting>
-    <Setting Name="GridColorAlternate" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="GridColor2" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">White</Value>
     </Setting>
     <Setting Name="BatchScanSubdirectories" Type="System.Boolean" Scope="User">
@@ -37,6 +37,12 @@
     </Setting>
     <Setting Name="OpenRawFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">RGBA8888</Value>
+    </Setting>
+    <Setting Name="ImageBorderStyle" Type="Cyotek.Windows.Forms.ImageBoxBorderStyle" Scope="User">
+      <Value Profile="(Default)">None</Value>
+    </Setting>
+    <Setting Name="ImageBorderColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Black</Value>
     </Setting>
   </Settings>
 </SettingsFile>

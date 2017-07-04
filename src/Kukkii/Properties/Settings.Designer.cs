@@ -68,24 +68,24 @@ namespace Kukkii.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Silver")]
-        public global::System.Drawing.Color GridColor {
+        public global::System.Drawing.Color GridColor1 {
             get {
-                return ((global::System.Drawing.Color)(this["GridColor"]));
+                return ((global::System.Drawing.Color)(this["GridColor1"]));
             }
             set {
-                this["GridColor"] = value;
+                this["GridColor1"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("White")]
-        public global::System.Drawing.Color GridColorAlternate {
+        public global::System.Drawing.Color GridColor2 {
             get {
-                return ((global::System.Drawing.Color)(this["GridColorAlternate"]));
+                return ((global::System.Drawing.Color)(this["GridColor2"]));
             }
             set {
-                this["GridColorAlternate"] = value;
+                this["GridColor2"] = value;
             }
         }
         
@@ -158,6 +158,30 @@ namespace Kukkii.Properties {
             }
             set {
                 this["OpenRawFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("None")]
+        public global::Cyotek.Windows.Forms.ImageBoxBorderStyle ImageBorderStyle {
+            get {
+                return ((global::Cyotek.Windows.Forms.ImageBoxBorderStyle)(this["ImageBorderStyle"]));
+            }
+            set {
+                this["ImageBorderStyle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color ImageBorderColor {
+            get {
+                return ((global::System.Drawing.Color)(this["ImageBorderColor"]));
+            }
+            set {
+                this["ImageBorderColor"] = value;
             }
         }
     }

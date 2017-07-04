@@ -66,8 +66,10 @@
             this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.tsbGridColor = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tsbGridColorAlternate = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbGridColor1 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbGridColor2 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbImageBorderStyle = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbImageBorderColor = new System.Windows.Forms.ToolStripDropDownButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.imbPreview = new Cyotek.Windows.Forms.ImageBox();
@@ -206,13 +208,13 @@
             // 
             this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // encryptionToolStripMenuItem
             // 
             this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
-            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.encryptionToolStripMenuItem.Text = "&Encryption";
             // 
             // openRawToolStripMenuItem
@@ -318,8 +320,10 @@
             this.tsbKarameru,
             this.tsbKuriimu,
             this.toolStripSeparator5,
-            this.tsbGridColor,
-            this.tsbGridColorAlternate});
+            this.tsbGridColor1,
+            this.tsbGridColor2,
+            this.tsbImageBorderStyle,
+            this.tsbImageBorderColor});
             this.tlsMain.Location = new System.Drawing.Point(0, 24);
             this.tlsMain.Name = "tlsMain";
             this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -446,25 +450,42 @@
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
             // 
-            // tsbGridColor
+            // tsbGridColor1
             // 
-            this.tsbGridColor.BackColor = System.Drawing.Color.Transparent;
-            this.tsbGridColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbGridColor.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.tsbGridColor.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbGridColor.Name = "tsbGridColor";
-            this.tsbGridColor.Size = new System.Drawing.Size(13, 22);
-            this.tsbGridColor.Text = "Fore Color";
-            this.tsbGridColor.Click += new System.EventHandler(this.tsbGridColor_Click);
+            this.tsbGridColor1.BackColor = System.Drawing.Color.Transparent;
+            this.tsbGridColor1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColor1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.tsbGridColor1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColor1.Name = "tsbGridColor1";
+            this.tsbGridColor1.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColor1.Text = "Grid Color 1";
+            this.tsbGridColor1.Click += new System.EventHandler(this.tsbGridColor1_Click);
             // 
-            // tsbGridColorAlternate
+            // tsbGridColor2
             // 
-            this.tsbGridColorAlternate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbGridColorAlternate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbGridColorAlternate.Name = "tsbGridColorAlternate";
-            this.tsbGridColorAlternate.Size = new System.Drawing.Size(13, 22);
-            this.tsbGridColorAlternate.Text = "Back Color";
-            this.tsbGridColorAlternate.Click += new System.EventHandler(this.tsbGridColorAlternate_Click);
+            this.tsbGridColor2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbGridColor2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbGridColor2.Name = "tsbGridColor2";
+            this.tsbGridColor2.Size = new System.Drawing.Size(13, 22);
+            this.tsbGridColor2.Text = "Grid Color 2";
+            this.tsbGridColor2.Click += new System.EventHandler(this.tsbGridColor2_Click);
+            // 
+            // tsbImageBorderStyle
+            // 
+            this.tsbImageBorderStyle.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbImageBorderStyle.Name = "tsbImageBorderStyle";
+            this.tsbImageBorderStyle.Size = new System.Drawing.Size(49, 22);
+            this.tsbImageBorderStyle.Text = "None";
+            this.tsbImageBorderStyle.ToolTipText = "Image Border Style";
+            // 
+            // tsbImageBorderColor
+            // 
+            this.tsbImageBorderColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbImageBorderColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbImageBorderColor.Name = "tsbImageBorderColor";
+            this.tsbImageBorderColor.Size = new System.Drawing.Size(13, 22);
+            this.tsbImageBorderColor.Text = "Image Border Color";
+            this.tsbImageBorderColor.Click += new System.EventHandler(this.tsbImageBorderColor_Click);
             // 
             // pnlMain
             // 
@@ -500,6 +521,8 @@
             this.imbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imbPreview.GridCellSize = 16;
             this.imbPreview.GridColor = System.Drawing.Color.Silver;
+            this.imbPreview.ImageBorderColor = System.Drawing.Color.Black;
+            this.imbPreview.ImageBorderStyle = Cyotek.Windows.Forms.ImageBoxBorderStyle.FixedSingleDropShadow;
             this.imbPreview.Location = new System.Drawing.Point(0, 0);
             this.imbPreview.Name = "imbPreview";
             this.imbPreview.SelectionMode = Cyotek.Windows.Forms.ImageBoxSelectionMode.Zoom;
@@ -682,8 +705,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripDropDownButton tsbGridColor;
-        private System.Windows.Forms.ToolStripDropDownButton tsbGridColorAlternate;
+        private System.Windows.Forms.ToolStripDropDownButton tsbGridColor1;
+        private System.Windows.Forms.ToolStripDropDownButton tsbGridColor2;
         private System.Windows.Forms.ColorDialog clrDialog;
         private System.Windows.Forms.ToolStripButton tsbBatchScanSubdirectories;
         private System.Windows.Forms.ToolStripMenuItem batchScanSubdirectoriesToolStripMenuItem;
@@ -692,6 +715,8 @@
         private System.Windows.Forms.ImageList imlBitmaps;
         private System.Windows.Forms.SplitContainer splProperties;
         private System.Windows.Forms.ToolStripMenuItem openRawToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton tsbImageBorderColor;
+        private System.Windows.Forms.ToolStripDropDownButton tsbImageBorderStyle;
     }
 }
 
