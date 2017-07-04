@@ -9,6 +9,13 @@ namespace image_nintendo
         BGR555
     }
 
+    public enum TXIMBitDepth : byte
+    {
+        BPP8 = 220,
+        BPP4 = 219,
+        BPP2 = 154
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class CHNK
     {
@@ -19,13 +26,15 @@ namespace image_nintendo
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class TXIF
     {
-        public int Unk1;
+        public TXIMBitDepth ImageDepth;
+        public byte Unk1;
+        public short Unk2;
         public int ImageSize;
         public int MapSize;
         public int PaletteSize;
         public short Width;
         public short Height;
-        public int Unk5;
+        public int ImageCount;
     }
 
     public class Section
