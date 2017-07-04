@@ -10,7 +10,7 @@ obj
 /.vs
 /src/Kuriimu/Properties/AssemblyInfo.cs
 *.sqlite
-/src/Kuriimu/packages
+/packages
 /src/Karameru/Properties/AssemblyInfo.cs
 /src/Kukkii/Properties/AssemblyInfo.cs
 /src/Kontract/Properties/AssemblyInfo.cs
