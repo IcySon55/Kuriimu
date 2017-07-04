@@ -34,7 +34,7 @@ namespace image_stex
             RGB888 = 0x6754,
             A8 = 0x6756,
             L8 = 0x6757,
-            LA44 = 0x6758,
+            LA88 = 0x6758,
             ETC1 = 0x675A,
             ETC1A4 = 0x675B
         };
