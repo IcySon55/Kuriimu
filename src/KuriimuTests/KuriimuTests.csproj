@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0105C7BE-5D1C-446A-B121-E84C9F659DAB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KuriimuTests</RootNamespace>
+    <AssemblyName>KuriimuTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\MSTest.TestFramework.1.1.18\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\MSTest.TestFramework.1.1.18\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HuffmanTests.cs" />
+    <Compile Include="TextTests.cs" />
+    <Compile Include="FileAssert.cs" />
+    <Compile Include="ArchiveTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\archive\archive_999\archive_999.csproj">
+      <Project>{d88e4112-20ce-4c8d-9998-300bc7c01573}</Project>
+      <Name>archive_999</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_afs\archive_afs.csproj">
+      <Project>{60a8fa6b-7829-45ce-8e0d-4999d1621b89}</Project>
+      <Name>archive_afs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_dpk\archive_dpk.csproj">
+      <Project>{1bff38f5-1848-45b1-b84d-1270a25b7675}</Project>
+      <Name>archive_dpk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_hpi_hpb\archive_hpi_hpb.csproj">
+      <Project>{30be912f-6874-4f11-9094-ef9cf098d16a}</Project>
+      <Name>archive_hpi_hpb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_level5\archive_level5.csproj">
+      <Project>{95f859b9-118c-4f39-aa04-76901412413e}</Project>
+      <Name>archive_level5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_nintendo\archive_nintendo.csproj">
+      <Project>{efdc3079-b1ed-493d-b9dc-55658a84b1a4}</Project>
+      <Name>archive_nintendo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_srtz\archive_srtz.csproj">
+      <Project>{665782eb-3d6e-4426-b052-5048334d31c0}</Project>
+      <Name>archive_srtz</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\archive\archive_xbb\archive_xbb.csproj">
+      <Project>{d133a149-3196-4f2c-8b04-a943611f650a}</Project>
+      <Name>archive_xbb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_ctxb\image_ctxb.csproj">
+      <Project>{c741ab50-669d-406f-9d27-b5ef5bdd1294}</Project>
+      <Name>image_ctxb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_f3xt\image_f3xt.csproj">
+      <Project>{269d0f0d-ae95-447b-8403-41f28d8de00c}</Project>
+      <Name>image_f3xt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_jtex\image_jtex.csproj">
+      <Project>{515d26a0-26dd-49de-a66d-bf4cad0029e8}</Project>
+      <Name>image_jtex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_level5\image_level5.csproj">
+      <Project>{1c9d7f75-2e04-441e-83d4-00a406809e09}</Project>
+      <Name>image_level5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_nintendo\image_nintendo.csproj">
+      <Project>{77a182c0-4e86-469d-986e-9fafaabcd26e}</Project>
+      <Name>image_nintendo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_stex\image_stex.csproj">
+      <Project>{6dd11d33-6cd9-4445-8c36-68b8d63ba6da}</Project>
+      <Name>image_stex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tex\image_tex.csproj">
+      <Project>{9e078594-73ae-4ec1-aba2-bf8f338fccd4}</Project>
+      <Name>image_tex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tim2\image_tim2.csproj">
+      <Project>{22b0f441-5cf7-44cb-ba4f-0f1a25592614}</Project>
+      <Name>image_tim2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tm2\image_tm2.csproj">
+      <Project>{482a2b54-f27d-4095-8d91-16b9c03c3403}</Project>
+      <Name>image_tm2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tmx\image_tmx.csproj">
+      <Project>{7f679e7f-ea49-4eb9-8d6c-16dd131cb3aa}</Project>
+      <Name>image_tmx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
+      <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
+      <Name>Kontract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_bmd\text_bmd.csproj">
+      <Project>{cc01bcbf-871a-48ac-9aa9-19507940cff3}</Project>
+      <Name>text_bmd</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_btxt\text_btxt.csproj">
+      <Project>{243cfa03-bb36-421b-9e64-f446c8d6e5b0}</Project>
+      <Name>text_btxt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_gmd\text_gmd.csproj">
+      <Project>{e51106ff-3d0b-499f-b9ca-a3a44f37fc13}</Project>
+      <Name>text_gmd</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_gmml\text_gmml.csproj">
+      <Project>{9665286a-f74f-4180-a73c-f427fdf29b2e}</Project>
+      <Name>text_gmml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_jmsg\text_jmsg.csproj">
+      <Project>{ad39d297-4420-4044-acb4-21b22076b213}</Project>
+      <Name>text_jmsg</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_kup\text_kup.csproj">
+      <Project>{9d6acb4c-721b-4eb6-9a6c-2a9b9f9e1fd8}</Project>
+      <Name>text_kup</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_mbm\text_mbm.csproj">
+      <Project>{a19343ad-292b-4951-94b4-63a329cbd21b}</Project>
+      <Name>text_mbm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_mdt\text_mdt.csproj">
+      <Project>{df200faa-0808-44af-b2d6-66dcb041151e}</Project>
+      <Name>text_mdt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_msbt\text_msbt.csproj">
+      <Project>{af05447b-3cf5-4473-983b-7908f96c7128}</Project>
+      <Name>text_msbt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_srtz\text_srtz.csproj">
+      <Project>{9a0c08b2-c1ff-4de5-b9bb-7267d8fa0ee6}</Project>
+      <Name>text_srtz</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_tdt\text_tdt.csproj">
+      <Project>{7ff82162-f86f-411b-98c8-f646bb09a172}</Project>
+      <Name>text_tdt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\text\text_tt_bin\text_ttbin.csproj">
+      <Project>{3e3b6b95-b073-44b9-bf3a-54a7fe172a50}</Project>
+      <Name>text_ttbin</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.props'))" />
+    <Error Condition="!Exists('..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.targets'))" />
+  </Target>
+  <Import Project="..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\..\packages\MSTest.TestAdapter.1.1.18\build\net45\MSTest.TestAdapter.targets')" />
+</Project>

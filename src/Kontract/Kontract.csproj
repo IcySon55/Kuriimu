@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{51E474F7-1497-4C30-BC18-C357C884B8B2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kuriimu.Kontract</RootNamespace>
+    <AssemblyName>Kontract</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Security.Cryptography">
+      <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AES\AesCTR.cs" />
+    <Compile Include="AES\AesEngine.cs" />
+    <Compile Include="AES\BigEndian.cs" />
+    <Compile Include="AES\CTRKeyScrambler.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="Compression\Level5.cs" />
+    <Compile Include="Compression\GZip.cs" />
+    <Compile Include="Compression\Huffman.cs" />
+    <Compile Include="Compression\HuffSupport.cs" />
+    <Compile Include="Compression\LZ10.cs" />
+    <Compile Include="Compression\LZ11.cs" />
+    <Compile Include="Compression\LZ77.cs" />
+    <Compile Include="Compression\LZECD.cs" />
+    <Compile Include="Compression\LZSS.cs" />
+    <Compile Include="Compression\LZSSVLE.cs" />
+    <Compile Include="Compression\RevLZ77.cs" />
+    <Compile Include="Compression\RLE.cs" />
+    <Compile Include="Compression\ZLib.cs" />
+    <Compile Include="Interface\IArchiveManager.cs" />
+    <Compile Include="Interface\IImageAdapter.cs" />
+    <Compile Include="Interface\IGameHandler.cs" />
+    <Compile Include="Interface\IExtension.cs" />
+    <Compile Include="Interface\IPlugin.cs" />
+    <Compile Include="Interface\ITextAdapter.cs" />
+    <Compile Include="IO\BinaryReaderX.cs" />
+    <Compile Include="IO\BinaryWriterX.cs" />
+    <Compile Include="IO\KmpSearcher.cs" />
+    <Compile Include="IO\Shared.cs" />
+    <Compile Include="IO\Extensions.cs" />
+    <Compile Include="IO\SubStream.cs" />
+    <Compile Include="Kup\KUP.cs" />
+    <Compile Include="Kup\KupUser.cs" />
+    <Compile Include="ListItem.cs" />
+    <Compile Include="PluginLoader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="UI\Compression.cs" />
+    <Compile Include="UI\Encryption.cs" />
+    <Compile Include="UI\Win32.cs" />
+    <Compile Include="ValueTuple.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

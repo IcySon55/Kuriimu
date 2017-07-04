@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F069B9AB-356C-4ED6-AF84-2EAB83B5D55F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Karameru</RootNamespace>
+    <AssemblyName>Karameru</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Kuriimu\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Kuriimu\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>images\karameru.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Manager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Manager.Designer.cs">
+      <DependentUpon>Manager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Manager.resx">
+      <DependentUpon>Manager.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\find.ico" />
+    <None Include="images\karameru.ico" />
+    <None Include="images\kukkii.png" />
+    <None Include="images\tree-text-file.png" />
+    <None Include="images\tree-archive-file.png" />
+    <None Include="images\tree-image-file.png" />
+    <None Include="images\tree-directory-open.png" />
+    <None Include="images\tree-directory.png" />
+    <None Include="images\kuriimu.png" />
+    <None Include="images\menu-about.png" />
+    <None Include="images\menu-add.png" />
+    <None Include="images\menu-batch-export.png" />
+    <None Include="images\menu-batch-import.png" />
+    <None Include="images\menu-delete.png" />
+    <None Include="images\menu-edit.png" />
+    <None Include="images\menu-exit.png" />
+    <None Include="images\menu-export.png" />
+    <None Include="images\menu-field-properties.png" />
+    <None Include="images\menu-find.png" />
+    <None Include="images\menu-gbatemp.png" />
+    <None Include="images\menu-git.png" />
+    <None Include="images\menu-import.png" />
+    <None Include="images\menu-manage.png" />
+    <None Include="images\menu-new.png" />
+    <None Include="images\menu-open.png" />
+    <None Include="images\menu-preview-copy.png" />
+    <None Include="images\menu-preview-invisible.png" />
+    <None Include="images\menu-preview-save.png" />
+    <None Include="images\menu-preview-visible.png" />
+    <None Include="images\menu-properties.png" />
+    <None Include="images\menu-save-as.png" />
+    <None Include="images\menu-save.png" />
+    <None Include="images\preview-background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kontract\Kontract.csproj">
+      <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
+      <Name>Kontract</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-archive-file-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-directory-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-image-file-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\tree-text-file-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-details.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\view-tiles.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\karameru.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-compression.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
