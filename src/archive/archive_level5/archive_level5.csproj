@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Kuriimu\bin\Debug\plugins\</OutputPath>
+    <OutputPath>..\..\Kuriimu\bin\Debug\plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Kuriimu\bin\Release\plugins\</OutputPath>
+    <OutputPath>..\..\Kuriimu\bin\Release\plugins\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,12 +67,12 @@
     <Compile Include="XpckSupport.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera.csproj">
+    <ProjectReference Include="..\..\Cetera\Cetera.csproj">
       <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Kontract\Kontract.csproj">
+    <ProjectReference Include="..\..\Kontract\Kontract.csproj">
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>Kontract</Name>
       <Private>False</Private>

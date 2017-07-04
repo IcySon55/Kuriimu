@@ -39,32 +39,32 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "src\Kuriimu\Kuri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kontract", "src\Kontract\Kontract.csproj", "{51E474F7-1497-4C30-BC18-C357C884B8B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_kup", "src\text_kup\text_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_kup", "src\text\text_kup\text_kup.csproj", "{9D6ACB4C-721B-4EB6-9A6C-2A9B9F9E1FD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_msbt", "src\text_msbt\text_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_msbt", "src\text\text_msbt\text_msbt.csproj", "{AF05447B-3CF5-4473-983B-7908F96C7128}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmml", "src\text_gmml\text_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmml", "src\text\text_gmml\text_gmml.csproj", "{9665286A-F74F-4180-A73C-F427FDF29B2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmd", "src\text_gmd\text_gmd.csproj", "{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmd", "src\text\text_gmd\text_gmd.csproj", "{E51106FF-3D0B-499F-B9CA-A3A44F37FC13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_jmsg", "src\text_jmsg\text_jmsg.csproj", "{AD39D297-4420-4044-ACB4-21B22076B213}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_jmsg", "src\text\text_jmsg\text_jmsg.csproj", "{AD39D297-4420-4044-ACB4-21B22076B213}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_btxt", "src\text_btxt\text_btxt.csproj", "{243CFA03-BB36-421B-9E64-F446C8D6E5B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_btxt", "src\text\text_btxt\text_btxt.csproj", "{243CFA03-BB36-421B-9E64-F446C8D6E5B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_director", "src\ext_director\ext_director.csproj", "{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_director", "src\ext\ext_director\ext_director.csproj", "{12CD0EA7-C30F-4C90-ADB6-DDA567438B8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_fenceposts", "src\ext_fenceposts\ext_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ext_fenceposts", "src\ext\ext_fenceposts\ext_fenceposts.csproj", "{40EA3463-4A08-4E2C-938F-5025E87D6CB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_rocket_slime_3ds", "src\game_rocket_slime_3ds\game_rocket_slime_3ds.csproj", "{76791481-35E8-41C0-A01C-F0FC66416A20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_rocket_slime_3ds", "src\game\game_rocket_slime_3ds\game_rocket_slime_3ds.csproj", "{76791481-35E8-41C0-A01C-F0FC66416A20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_great_detective_pikachu", "src\game_great_detective_pikachu\game_great_detective_pikachu.csproj", "{05E492D3-00B6-475A-BC9E-A22237864C52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_great_detective_pikachu", "src\game\game_great_detective_pikachu\game_great_detective_pikachu.csproj", "{05E492D3-00B6-475A-BC9E-A22237864C52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "runext", "src\runext\runext.csproj", "{22CBC179-CCE1-4C27-AA9D-DC69D9588101}"
 	ProjectSection(ProjectDependencies) = postProject
 		{51E474F7-1497-4C30-BC18-C357C884B8B2} = {51E474F7-1497-4C30-BC18-C357C884B8B2}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_maple_story_3ds", "src\game_maple_story_3ds\game_maple_story_3ds.csproj", "{8B851D96-DA5D-48E4-9791-F15EB36E7142}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_maple_story_3ds", "src\game\game_maple_story_3ds\game_maple_story_3ds.csproj", "{8B851D96-DA5D-48E4-9791-F15EB36E7142}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kukkii", "src\Kukkii\Kukkii.csproj", "{DDF760B7-1273-4048-A052-4E396245937B}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -81,17 +81,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kukkii", "src\Kukkii\Kukkii
 		{77A182C0-4E86-469D-986E-9FAFAABCD26E} = {77A182C0-4E86-469D-986E-9FAFAABCD26E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_daigasso_band_brothers_p", "src\game_daigasso_band_brothers_p\game_daigasso_band_brothers_p.csproj", "{D1A02778-ADD3-41CF-B2E4-BA6AA9FACE70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_daigasso_band_brothers_p", "src\game\game_daigasso_band_brothers_p\game_daigasso_band_brothers_p.csproj", "{D1A02778-ADD3-41CF-B2E4-BA6AA9FACE70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_time_travelers", "src\game_time_travelers\game_time_travelers.csproj", "{9913FA89-71FC-486A-9B81-43289AA70A55}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_time_travelers", "src\game\game_time_travelers\game_time_travelers.csproj", "{9913FA89-71FC-486A-9B81-43289AA70A55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_ttbin", "src\text_tt_bin\text_ttbin.csproj", "{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_ttbin", "src\text\text_tt_bin\text_ttbin.csproj", "{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_jtex", "src\image_jtex\image_jtex.csproj", "{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_jtex", "src\image\image_jtex\image_jtex.csproj", "{515D26A0-26DD-49DE-A66D-BF4CAD0029E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_zelda_a_link_between_worlds", "src\game_zelda_a_link_between_worlds\game_zelda_a_link_between_worlds.csproj", "{9002E338-6029-43C0-99A7-2241E32B5102}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_zelda_a_link_between_worlds", "src\game\game_zelda_a_link_between_worlds\game_zelda_a_link_between_worlds.csproj", "{9002E338-6029-43C0-99A7-2241E32B5102}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_miitopia_3ds", "src\game_miitopia_3ds\game_miitopia_3ds.csproj", "{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_miitopia_3ds", "src\game\game_miitopia_3ds\game_miitopia_3ds.csproj", "{E14CC95B-2D0D-4FB5-BE4C-1F717FB59FE6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karameru", "src\Karameru\Karameru.csproj", "{F069B9AB-356C-4ED6-AF84-2EAB83B5D55F}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -115,17 +115,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karameru", "src\Karameru\Ka
 		{FDD173FC-2234-4812-90D4-AAD6AB8E20AE} = {FDD173FC-2234-4812-90D4-AAD6AB8E20AE}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_dpk", "src\archive_dpk\archive_dpk.csproj", "{1BFF38F5-1848-45B1-B84D-1270A25B7675}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_dpk", "src\archive\archive_dpk\archive_dpk.csproj", "{1BFF38F5-1848-45B1-B84D-1270A25B7675}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_tdt", "src\text_tdt\text_tdt.csproj", "{7FF82162-F86F-411B-98C8-F646BB09A172}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_tdt", "src\text\text_tdt\text_tdt.csproj", "{7FF82162-F86F-411B-98C8-F646BB09A172}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_theatrythm_final_fantasy", "src\game_theatrythm_final_fantasy\game_theatrythm_final_fantasy.csproj", "{98C3517B-2105-430B-90F6-E85D3AC22817}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_theatrythm_final_fantasy", "src\game\game_theatrythm_final_fantasy\game_theatrythm_final_fantasy.csproj", "{98C3517B-2105-430B-90F6-E85D3AC22817}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_mdt", "src\text_mdt\text_mdt.csproj", "{DF200FAA-0808-44AF-B2D6-66DCB041151E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_mdt", "src\text\text_mdt\text_mdt.csproj", "{DF200FAA-0808-44AF-B2D6-66DCB041151E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cetera", "src\Cetera\Cetera.csproj", "{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_hpi_hpb", "src\archive_hpi_hpb\archive_hpi_hpb.csproj", "{30BE912F-6874-4F11-9094-EF9CF098D16A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_hpi_hpb", "src\archive\archive_hpi_hpb\archive_hpi_hpb.csproj", "{30BE912F-6874-4F11-9094-EF9CF098D16A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "archive", "archive", "{793D1110-C4FD-41A5-9124-6138A5C0B8A7}"
 EndProject
@@ -137,75 +137,82 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "image", "image", "{FA7A6EB6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ext", "ext", "{C718F48B-AB0B-4E32-A531-97F6FEE599DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_stex", "src\image_stex\image_stex.csproj", "{6DD11D33-6CD9-4445-8C36-68B8D63BA6DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_stex", "src\image\image_stex\image_stex.csproj", "{6DD11D33-6CD9-4445-8C36-68B8D63BA6DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tmx", "src\image_tmx\image_tmx.csproj", "{7F679E7F-EA49-4EB9-8D6C-16DD131CB3AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tmx", "src\image\image_tmx\image_tmx.csproj", "{7F679E7F-EA49-4EB9-8D6C-16DD131CB3AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_mbm", "src\text_mbm\text_mbm.csproj", "{A19343AD-292B-4951-94B4-63A329CBD21B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_mbm", "src\text\text_mbm\text_mbm.csproj", "{A19343AD-292B-4951-94B4-63A329CBD21B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_etrian_odyssey_v", "src\game_etrian_odyssey_v\game_etrian_odyssey_v.csproj", "{2E4BC70E-67FF-4728-9799-A4840E617FFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_etrian_odyssey_v", "src\game\game_etrian_odyssey_v\game_etrian_odyssey_v.csproj", "{2E4BC70E-67FF-4728-9799-A4840E617FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_ctxb", "src\image_ctxb\image_ctxb.csproj", "{C741AB50-669D-406F-9D27-B5EF5BDD1294}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_ctxb", "src\image\image_ctxb\image_ctxb.csproj", "{C741AB50-669D-406F-9D27-B5EF5BDD1294}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KuriimuTests", "src\KuriimuTests\KuriimuTests.csproj", "{0105C7BE-5D1C-446A-B121-E84C9F659DAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_999", "src\archive_999\archive_999.csproj", "{D88E4112-20CE-4C8D-9998-300BC7C01573}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_999", "src\archive\archive_999\archive_999.csproj", "{D88E4112-20CE-4C8D-9998-300BC7C01573}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_afs", "src\archive_afs\archive_afs.csproj", "{60A8FA6B-7829-45CE-8E0D-4999D1621B89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_afs", "src\archive\archive_afs\archive_afs.csproj", "{60A8FA6B-7829-45CE-8E0D-4999D1621B89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tm2", "src\image_tm2\image_tm2.csproj", "{482A2B54-F27D-4095-8D91-16B9C03C3403}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tm2", "src\image\image_tm2\image_tm2.csproj", "{482A2B54-F27D-4095-8D91-16B9C03C3403}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_bmd", "src\text_bmd\text_bmd.csproj", "{CC01BCBF-871A-48AC-9AA9-19507940CFF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_bmd", "src\text\text_bmd\text_bmd.csproj", "{CC01BCBF-871A-48AC-9AA9-19507940CFF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_f3xt", "src\image_f3xt\image_f3xt.csproj", "{269D0F0D-AE95-447B-8403-41F28D8DE00C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_f3xt", "src\image\image_f3xt\image_f3xt.csproj", "{269D0F0D-AE95-447B-8403-41F28D8DE00C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tex", "src\image_tex\image_tex.csproj", "{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tex", "src\image\image_tex\image_tex.csproj", "{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_srtz", "src\text_srtz\text_srtz.csproj", "{9A0C08B2-C1FF-4DE5-B9BB-7267D8FA0EE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_srtz", "src\text\text_srtz\text_srtz.csproj", "{9A0C08B2-C1FF-4DE5-B9BB-7267D8FA0EE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_srtz", "src\archive_srtz\archive_srtz.csproj", "{665782EB-3D6E-4426-B052-5048334D31C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_srtz", "src\archive\archive_srtz\archive_srtz.csproj", "{665782EB-3D6E-4426-B052-5048334D31C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tim2", "src\image_tim2\image_tim2.csproj", "{22B0F441-5CF7-44CB-BA4F-0F1A25592614}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_tim2", "src\image\image_tim2\image_tim2.csproj", "{22B0F441-5CF7-44CB-BA4F-0F1A25592614}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_xbb", "src\archive_xbb\archive_xbb.csproj", "{D133A149-3196-4F2C-8B04-A943611F650A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_xbb", "src\archive\archive_xbb\archive_xbb.csproj", "{D133A149-3196-4F2C-8B04-A943611F650A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_nintendo", "src\archive_nintendo\archive_nintendo.csproj", "{EFDC3079-B1ED-493D-B9DC-55658A84B1A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_nintendo", "src\archive\archive_nintendo\archive_nintendo.csproj", "{EFDC3079-B1ED-493D-B9DC-55658A84B1A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_level5", "src\archive_level5\archive_level5.csproj", "{95F859B9-118C-4F39-AA04-76901412413E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_level5", "src\archive\archive_level5\archive_level5.csproj", "{95F859B9-118C-4F39-AA04-76901412413E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_nintendo", "src\image_nintendo\image_nintendo.csproj", "{77A182C0-4E86-469D-986E-9FAFAABCD26E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_nintendo", "src\image\image_nintendo\image_nintendo.csproj", "{77A182C0-4E86-469D-986E-9FAFAABCD26E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_level5", "src\image_level5\image_level5.csproj", "{1C9D7F75-2E04-441E-83D4-00A406809E09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_level5", "src\image\image_level5\image_level5.csproj", "{1C9D7F75-2E04-441E-83D4-00A406809E09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_shin_megami_tensei_iv", "src\game_shin_megami_tensei_iv\game_shin_megami_tensei_iv.csproj", "{FBED47D0-6A0B-4668-9F10-22E86519CA2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_shin_megami_tensei_iv", "src\game\game_shin_megami_tensei_iv\game_shin_megami_tensei_iv.csproj", "{FBED47D0-6A0B-4668-9F10-22E86519CA2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_fnt", "src\archive_fnt\archive_fnt.csproj", "{FDD173FC-2234-4812-90D4-AAD6AB8E20AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_fnt", "src\archive\archive_fnt\archive_fnt.csproj", "{FDD173FC-2234-4812-90D4-AAD6AB8E20AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_td3", "src\text_td3\text_td3.csproj", "{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_td3", "src\text\text_td3\text_td3.csproj", "{17DE9B14-4ABD-4CF9-9FFE-17F5D6E1A3FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_ara", "src\archive_ara\archive_ara.csproj", "{CAC0CCE5-37DE-4A5D-A645-0F5395B22188}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_ara", "src\archive\archive_ara\archive_ara.csproj", "{CAC0CCE5-37DE-4A5D-A645-0F5395B22188}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_ddt_img", "src\archive_ddt_img\archive_ddt_img.csproj", "{7E0E6B1D-36D4-47C1-B7B6-447E31AF81A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_ddt_img", "src\archive\archive_ddt_img\archive_ddt_img.csproj", "{7E0E6B1D-36D4-47C1-B7B6-447E31AF81A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_skb", "src\archive_ktd\archive_skb.csproj", "{089E2871-C869-46F5-BE32-20C331B57694}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_skb", "src\archive\archive_ktd\archive_skb.csproj", "{089E2871-C869-46F5-BE32-20C331B57694}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_dc1", "src\archive_dc1\archive_dc1.csproj", "{7A12E130-55C3-4498-A11E-E2D5E1EAE860}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_dc1", "src\archive\archive_dc1\archive_dc1.csproj", "{7A12E130-55C3-4498-A11E-E2D5E1EAE860}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_srtux", "src\archive_srtux\archive_srtux.csproj", "{7B4CA7D1-B77E-411E-999F-279E53D30744}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_srtux", "src\archive\archive_srtux\archive_srtux.csproj", "{7B4CA7D1-B77E-411E-999F-279E53D30744}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_aatri", "src\archive_aatri\archive_aatri.csproj", "{D9DD672A-7AE1-482D-9CAA-B6C6E4777673}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_aatri", "src\archive\archive_aatri\archive_aatri.csproj", "{D9DD672A-7AE1-482D-9CAA-B6C6E4777673}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_pak", "src\archive_pak\archive_pak.csproj", "{17C385CF-F239-4BED-ADEA-8BB3E027A161}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_pak", "src\archive\archive_pak\archive_pak.csproj", "{17C385CF-F239-4BED-ADEA-8BB3E027A161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmsg", "src\text_gmsg\text_gmsg.csproj", "{D15ADF8E-01E7-4978-8DC2-416A28333803}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmsg", "src\text\text_gmsg\text_gmsg.csproj", "{D15ADF8E-01E7-4978-8DC2-416A28333803}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmm", "src\text_gmm\text_gmm.csproj", "{9E049004-1352-43F3-BE38-BBC2EB83136F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_gmm", "src\text\text_gmm\text_gmm.csproj", "{9E049004-1352-43F3-BE38-BBC2EB83136F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_metal", "src\text_metal\text_metal.csproj", "{CA68B722-81D8-4BC8-8BE0-D49BFFAEB08E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_metal", "src\text\text_metal\text_metal.csproj", "{CA68B722-81D8-4BC8-8BE0-D49BFFAEB08E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_irarc", "src\archive_irarc\archive_irarc.csproj", "{2B7589A7-81A9-461F-8BF1-1684093E796A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_irarc", "src\archive\archive_irarc\archive_irarc.csproj", "{2B7589A7-81A9-461F-8BF1-1684093E796A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_heroes", "src\text_heroes\text_heroes.csproj", "{B5B621DD-4445-4CBF-95FB-1C3D16A97611}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_heroes", "src\text\text_heroes\text_heroes.csproj", "{B5B621DD-4445-4CBF-95FB-1C3D16A97611}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{58D89148-3260-44C1-AC5C-1FDE25809710}"
+	ProjectSection(SolutionItems) = preProject
+		get_git_info.ps1 = get_git_info.ps1
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
