@@ -35,10 +35,10 @@ namespace Cetera.Image
         /// <summary>
         /// This is currently a hack
         /// </summary>
-        public void SetFormat<T>(T originalFormat) where T : struct, IConvertible
-        {
-            Format = ConvertFormat(originalFormat);
-        }
+        //public void SetFormat<T>(T originalFormat) where T : struct, IConvertible
+        //{
+        //    Format = ConvertFormat(originalFormat);
+        //}
 
         public static Format ConvertFormat<T>(T originalFormat) where T : struct, IConvertible
         {

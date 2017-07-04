@@ -10,23 +10,25 @@ namespace Cetera.Image
     public sealed class BXLIM
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct BCLIMImageHeader
+        public class BCLIMImageHeader
         {
             public short width;
             public short height;
             public Format format;
             public Orientation orientation;
-            public short unknown;
+            public short alignment;
+            public int datasize;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct BFLIMImageHeader
+        public class BFLIMImageHeader
         {
             public short width;
             public short height;
-            public short unknown;
+            public short alignment;
             public Format format;
             public Orientation orientation;
+            public int datasize;
         }
 
         public enum Format : byte
@@ -42,7 +44,6 @@ namespace Cetera.Image
         public BFLIMImageHeader BFLIMHeader { get; private set; }
         public Bitmap Image { get; set; }
         public ImageSettings Settings { get; set; }
-        public short UnknownShort { get; set; }
 
         public BXLIM(Stream input)
         {
@@ -53,16 +54,12 @@ namespace Cetera.Image
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
-                        BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>();
-                        Settings = new ImageSettings { Width = BCLIMHeader.width, Height = BCLIMHeader.height, Orientation = BCLIMHeader.orientation };
-                        Settings.SetFormat(BCLIMHeader.format);
-                        UnknownShort = BCLIMHeader.unknown;
+                        BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(br.ByteOrder);
+                        Settings = new ImageSettings { Width = BCLIMHeader.width, Height = BCLIMHeader.height, Format = ImageSettings.ConvertFormat(BCLIMHeader.format), Orientation = BCLIMHeader.orientation };
                         break;
                     case "FLIM":
-                        BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>();
-                        Settings = new ImageSettings { Width = BFLIMHeader.width, Height = BFLIMHeader.height, Orientation = BFLIMHeader.orientation };
-                        Settings.SetFormat(BFLIMHeader.format);
-                        UnknownShort = BFLIMHeader.unknown;
+                        BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(br.ByteOrder);
+                        Settings = new ImageSettings { Width = BFLIMHeader.width, Height = BFLIMHeader.height, Format = ImageSettings.ConvertFormat(BFLIMHeader.format), Orientation = BFLIMHeader.orientation };
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");

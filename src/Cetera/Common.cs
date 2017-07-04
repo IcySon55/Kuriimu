@@ -55,7 +55,8 @@ namespace Cetera
         public short header_size;
         public int version;
         public int file_size;
-        public int section_count;
+        public short section_count;
+        public short padding;
     };
 
     [DebuggerDisplay("{Magic,nq}: {Data.Length} bytes")]

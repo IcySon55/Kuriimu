@@ -54,8 +54,7 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(input))
             {
                 var header = br.ReadStruct<Header>();
-                Settings = new ImageSettings { Width = header.width, Height = header.height, Orientation = header.orientation, PadToPowerOf2 = false };
-                Settings.SetFormat(header.imageFormat);
+                Settings = new ImageSettings { Width = header.width, Height = header.height, Format = ImageSettings.ConvertFormat(header.imageFormat) , Orientation = header.orientation, PadToPowerOf2 = false };
                 CombineFormat = header.combineFormat;
 
                 if (CombineFormat != 1)

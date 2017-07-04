@@ -32,8 +32,7 @@ namespace image_jtex
             using (var br = new BinaryReaderX(input))
             {
                 JTEXHeader = br.ReadStruct<Header>();
-                Settings = new ImageSettings { Width = JTEXHeader.width, Height = JTEXHeader.height };
-                Settings.SetFormat(JTEXHeader.format);
+                Settings = new ImageSettings { Width = JTEXHeader.width, Height = JTEXHeader.height, Format = ImageSettings.ConvertFormat(JTEXHeader.format)};
                 var texture2 = br.ReadBytes(JTEXHeader.unk3[0]); // bytes to read?
                 Image = Common.Load(texture2, Settings);
             }
