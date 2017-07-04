@@ -1,6 +1,6 @@
 # Kuriimu
 
-![Logo](https://github.com/IcySon55/Kuriimu/blob/master/Kuriimu/images/btn-editor.png)
+![Logo](https://github.com/IcySon55/Kuriimu/blob/master/src/Kuriimu/images/btn-editor.png)
 
 A general purpose game translation toolkit for authors of fan translations.
 
