@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Cetera;
+using Kuriimu.IO;
 using Kuriimu.Kontract;
 
 namespace archive_nintendo.CGRP

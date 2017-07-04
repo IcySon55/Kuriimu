@@ -72,6 +72,7 @@
             this.lstFiles = new System.Windows.Forms.ListView();
             this.clmName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clmSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.clmState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mnuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,7 +91,7 @@
             this.tsbFileRename = new System.Windows.Forms.ToolStripButton();
             this.tsbFileDelete = new System.Windows.Forms.ToolStripButton();
             this.tsbFileProperties = new System.Windows.Forms.ToolStripButton();
-            this.viewToolStripDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tsbView = new System.Windows.Forms.ToolStripDropDownButton();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.smallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,7 +99,6 @@
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imlFiles = new System.Windows.Forms.ImageList(this.components);
             this.imlFilesLarge = new System.Windows.Forms.ImageList(this.components);
-            this.clmState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -532,6 +532,11 @@
             this.clmSize.Text = "Size";
             this.clmSize.Width = 81;
             // 
+            // clmState
+            // 
+            this.clmState.Text = "State";
+            this.clmState.Width = 106;
+            // 
             // mnuFiles
             // 
             this.mnuFiles.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -639,7 +644,7 @@
             this.tsbFileRename,
             this.tsbFileDelete,
             this.tsbFileProperties,
-            this.viewToolStripDropDownButton});
+            this.tsbView});
             this.tlsPreview.Location = new System.Drawing.Point(0, 0);
             this.tlsPreview.Name = "tlsPreview";
             this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -709,27 +714,27 @@
             this.tsbFileProperties.Size = new System.Drawing.Size(23, 22);
             this.tsbFileProperties.Text = "File Properties";
             // 
-            // viewToolStripDropDownButton
+            // tsbView
             // 
-            this.viewToolStripDropDownButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.viewToolStripDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.viewToolStripDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsbView.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsbView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.largeToolStripMenuItem,
             this.smallToolStripMenuItem,
             this.listToolStripMenuItem,
             this.detailsToolStripMenuItem,
             this.tileToolStripMenuItem});
-            this.viewToolStripDropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("viewToolStripDropDownButton.Image")));
-            this.viewToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.viewToolStripDropDownButton.Name = "viewToolStripDropDownButton";
-            this.viewToolStripDropDownButton.Size = new System.Drawing.Size(45, 22);
-            this.viewToolStripDropDownButton.Text = "View";
+            this.tsbView.Image = ((System.Drawing.Image)(resources.GetObject("tsbView.Image")));
+            this.tsbView.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbView.Name = "tsbView";
+            this.tsbView.Size = new System.Drawing.Size(45, 22);
+            this.tsbView.Text = "View";
             // 
             // largeToolStripMenuItem
             // 
             this.largeToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_large;
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -737,7 +742,7 @@
             // 
             this.smallToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_small;
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.smallToolStripMenuItem.Text = "Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -745,7 +750,7 @@
             // 
             this.listToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_list;
             this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.listToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.listToolStripMenuItem.Text = "List";
             this.listToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -753,7 +758,7 @@
             // 
             this.detailsToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_details;
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.detailsToolStripMenuItem.Text = "Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -761,7 +766,7 @@
             // 
             this.tileToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_tiles;
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.tileToolStripMenuItem.Text = "Tiles";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -776,11 +781,6 @@
             this.imlFilesLarge.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imlFilesLarge.ImageSize = new System.Drawing.Size(32, 32);
             this.imlFilesLarge.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // clmState
-            // 
-            this.clmState.Text = "State";
-            this.clmState.Width = 106;
             // 
             // Manager
             // 
@@ -880,7 +880,7 @@
         private System.Windows.Forms.ToolStripMenuItem editInKukkiiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editInKarameruToolStripMenuItem;
         private System.Windows.Forms.ImageList imlFilesLarge;
-        private System.Windows.Forms.ToolStripDropDownButton viewToolStripDropDownButton;
+        private System.Windows.Forms.ToolStripDropDownButton tsbView;
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem smallToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem listToolStripMenuItem;

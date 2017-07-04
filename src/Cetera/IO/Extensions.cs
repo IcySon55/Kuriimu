@@ -8,10 +8,13 @@ namespace Cetera.IO
     {
         public static NW4CSectionList ReadSections(this BinaryReaderX br)
         {
+            br.BaseStream.Position += 4;
+            br.ByteOrder = (ByteOrder)br.ReadUInt16();
+            br.BaseStream.Position -= 6;
             var lst = new NW4CSectionList { Header = br.ReadStruct<NW4CHeader>() };
             lst.AddRange(from _ in Enumerable.Range(0, lst.Header.section_count)
                          let magic1 = br.ReadStruct<String4>()
-                         let data = br.ReadBytes(br.ReadInt32() - 8)
+                         let data = br.ReadBytes(br.ReadInt32() - 4)
                          select new NW4CSection(magic1, data));
             return lst;
         }

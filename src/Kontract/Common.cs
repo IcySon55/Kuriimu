@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Kuriimu.Kontract
 {
@@ -42,5 +43,10 @@ namespace Kuriimu.Kontract
     {
         long value;
         public static implicit operator string(Magic8 magic) => Encoding.ASCII.GetString(BitConverter.GetBytes(magic.value));
+    }
+
+    public static class Extensions
+    {
+        public static string SpaceCase(this string str) => Regex.Replace(str, @"([A-Z])", @" $1").Trim();
     }
 }

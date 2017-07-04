@@ -666,7 +666,7 @@ namespace Karameru
         private void viewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var menuItem = sender as ToolStripMenuItem;
-            foreach (ToolStripMenuItem mnuItem in viewToolStripDropDownButton.DropDownItems)
+            foreach (ToolStripMenuItem mnuItem in tsbView.DropDownItems)
                 mnuItem.Checked = false;
             menuItem.Checked = true;
             lstFiles.View = (View)menuItem.Tag;

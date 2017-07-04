@@ -2,15 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Kuriimu.IO;
 
 namespace Cetera
 {
-    public enum ByteOrder : ushort
-    {
-        LittleEndian = 0xFEFF,
-        BigEndian = 0xFFFE
-    }
-
     static class CommonExtensions
     {
         public static string ToCString(this byte[] bytes) => string.Concat(from b in bytes where b != 0 select (char)b);
