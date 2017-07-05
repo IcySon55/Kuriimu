@@ -398,7 +398,7 @@ namespace Kukkii
             var gfx = Graphics.FromImage(thumb);
 
             gfx.CompositingQuality = CompositingQuality.HighSpeed;
-            gfx.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+            gfx.PixelOffsetMode = PixelOffsetMode.Default;
             gfx.SmoothingMode = SmoothingMode.HighSpeed;
             gfx.InterpolationMode = InterpolationMode.Default;
 
@@ -409,15 +409,18 @@ namespace Kukkii
             if (input.Width <= thumbWidth && input.Height <= thumbHeight)
                 ratio = 1.0f;
 
-            var size = new SizeF(Math.Min(input.Width / ratio, thumbWidth), Math.Min(input.Height / ratio, thumbHeight));
-            var pos = new PointF((float)thumbWidth / 2 - size.Width / 2, (float)thumbHeight / 2 - size.Height / 2);
+            var size = new Size((int)Math.Min(input.Width / ratio, thumbWidth), (int)Math.Min(input.Height / ratio, thumbHeight));
+            var pos = new Point(thumbWidth / 2 - size.Width / 2, thumbHeight / 2 - size.Height / 2);
 
             // Grid
             if (_thumbnailBackground == null)
                 GenerateThumbnailBackground();
 
             gfx.DrawImageUnscaled(_thumbnailBackground, 0, 0, _thumbnailBackground.Width, _thumbnailBackground.Height);
-            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            if (ratio != 1.0f)
+                gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            else
+                gfx.InterpolationMode = InterpolationMode.Default;
             gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
 
             return thumb;
