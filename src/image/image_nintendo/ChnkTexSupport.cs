@@ -4,7 +4,7 @@ using Kuriimu.Kontract;
 
 namespace image_nintendo
 {
-    public enum ChnkTexFormat : byte
+    public enum TXPLBitDepth : byte
     {
         BGR555
     }
@@ -14,7 +14,7 @@ namespace image_nintendo
         BPP8 = 1,
         BPP4 = 2,
         BPP2 = 4,
-        BPP3 = 99
+        L8 = 8
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -34,7 +34,8 @@ namespace image_nintendo
         public int PaletteSize;
         public short Width;
         public short Height;
-        public int ImageCount;
+        public short ImageCount;
+        public short Unk3;
     }
 
     public class Section
@@ -49,11 +50,11 @@ namespace image_nintendo
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public ChnkTexFormat Format { get; set; }
+        public TXIMBitDepth BitDepth { get; set; }
 
         [Category("Properties")]
         [ReadOnly(true)]
-        public TXIMBitDepth BitDepth { get; set; }
+        public TXPLBitDepth PaletteBitDepth { get; set; }
 
         [Category("Properties")]
         [ReadOnly(true)]
