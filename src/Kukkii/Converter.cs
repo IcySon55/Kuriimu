@@ -718,6 +718,11 @@ namespace Kukkii
             treBitmaps.Focus();
         }
 
+        private void cmsPreviewCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(imbPreview.Image);
+        }
+
         // Info Controls
         private void treBitmaps_AfterSelect(object sender, TreeViewEventArgs e)
         {

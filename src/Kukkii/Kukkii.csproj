@@ -175,6 +175,9 @@
   <ItemGroup>
     <None Include="images\menu-border-simple.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-copy.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>
