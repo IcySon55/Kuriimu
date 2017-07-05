@@ -76,12 +76,13 @@
             this.tslTools = new System.Windows.Forms.ToolStrip();
             this.tslZoom = new System.Windows.Forms.ToolStripLabel();
             this.tslTool = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.splProperties = new System.Windows.Forms.SplitContainer();
             this.treBitmaps = new System.Windows.Forms.TreeView();
             this.imlBitmaps = new System.Windows.Forms.ImageList(this.components);
             this.pptImageProperties = new System.Windows.Forms.PropertyGrid();
             this.clrDialog = new System.Windows.Forms.ColorDialog();
+            this.cmsPreview = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmsPreviewCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -94,6 +95,7 @@
             this.splProperties.Panel1.SuspendLayout();
             this.splProperties.Panel2.SuspendLayout();
             this.splProperties.SuspendLayout();
+            this.cmsPreview.SuspendLayout();
             this.SuspendLayout();
             // 
             // mnuMain
@@ -472,9 +474,10 @@
             // 
             // tsbImageBorderStyle
             // 
+            this.tsbImageBorderStyle.Image = global::Kukkii.Properties.Resources.menu_border_none;
             this.tsbImageBorderStyle.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbImageBorderStyle.Name = "tsbImageBorderStyle";
-            this.tsbImageBorderStyle.Size = new System.Drawing.Size(49, 22);
+            this.tsbImageBorderStyle.Size = new System.Drawing.Size(65, 22);
             this.tsbImageBorderStyle.Text = "None";
             this.tsbImageBorderStyle.ToolTipText = "Image Border Style";
             // 
@@ -518,6 +521,7 @@
             // imbPreview
             // 
             this.imbPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.imbPreview.ContextMenuStrip = this.cmsPreview;
             this.imbPreview.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imbPreview.GridCellSize = 16;
             this.imbPreview.GridColor = System.Drawing.Color.Silver;
@@ -541,8 +545,7 @@
             this.tslTools.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tslTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tslZoom,
-            this.tslTool,
-            this.toolStripButton2});
+            this.tslTool});
             this.tslTools.Location = new System.Drawing.Point(0, 572);
             this.tslTools.Name = "tslTools";
             this.tslTools.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -565,16 +568,6 @@
             this.tslTool.Name = "tslTool";
             this.tslTool.Size = new System.Drawing.Size(69, 22);
             this.tslTool.Text = "Tool: Zoom";
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Enabled = false;
-            this.toolStripButton2.Image = global::Kukkii.Properties.Resources.menu_export;
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton2.Text = "Export PNG";
             // 
             // splProperties
             // 
@@ -628,6 +621,21 @@
             this.pptImageProperties.TabIndex = 0;
             this.pptImageProperties.ToolbarVisible = false;
             // 
+            // cmsPreview
+            // 
+            this.cmsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmsPreviewCopy});
+            this.cmsPreview.Name = "cmsPreview";
+            this.cmsPreview.Size = new System.Drawing.Size(103, 26);
+            // 
+            // cmsPreviewCopy
+            // 
+            this.cmsPreviewCopy.Image = global::Kukkii.Properties.Resources.menu_copy;
+            this.cmsPreviewCopy.Name = "cmsPreviewCopy";
+            this.cmsPreviewCopy.Size = new System.Drawing.Size(102, 22);
+            this.cmsPreviewCopy.Text = "&Copy";
+            this.cmsPreviewCopy.Click += new System.EventHandler(this.cmsPreviewCopy_Click);
+            // 
             // Converter
             // 
             this.AllowDrop = true;
@@ -657,6 +665,7 @@
             this.splProperties.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splProperties)).EndInit();
             this.splProperties.ResumeLayout(false);
+            this.cmsPreview.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -697,7 +706,6 @@
         private System.Windows.Forms.ToolStripButton tsbBatchImport;
         private System.Windows.Forms.ToolStripButton tsbImportPNG;
         private System.Windows.Forms.ToolStripMenuItem importPNGToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton tsbKuriimu;
         private System.Windows.Forms.ToolStripButton tsbKarameru;
         private System.Windows.Forms.ToolStripMenuItem batchExportPNGToolStripMenuItem;
@@ -717,6 +725,8 @@
         private System.Windows.Forms.ToolStripMenuItem openRawToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton tsbImageBorderColor;
         private System.Windows.Forms.ToolStripDropDownButton tsbImageBorderStyle;
+        private System.Windows.Forms.ContextMenuStrip cmsPreview;
+        private System.Windows.Forms.ToolStripMenuItem cmsPreviewCopy;
     }
 }
 
