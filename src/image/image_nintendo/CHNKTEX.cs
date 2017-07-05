@@ -25,29 +25,29 @@ namespace image_nintendo
             TXIF = new BinaryReaderX(new MemoryStream(Sections["TXIF"].Data)).ReadStruct<TXIF>();
             var txim = Sections["TXIM"];
             var txpl = Sections["TXPL"];
-            Section tx4i;
-            HasMap = Sections.TryGetValue("TX4I", out tx4i);
+            HasMap = Sections.TryGetValue("TX4I", out var tx4i);
             // TODO: Investigate the unknown TXPI section
 
-            int virtualWidth = TXIF.Width;
-            int width = 2 << (int)Math.Log(TXIF.Width - 1, 2), height = TXIF.Height;
-            BitDepth = (TXIMBitDepth)(width * height * Math.Max(TXIF.ImageCount, (short)1) / txim.Data.Length);
-            var bmp = new Bitmap(width, height);
+            int width = TXIF.Width, height = TXIF.Height;
+            var paddedWidth = 2 << (int)Math.Log(TXIF.Width - 1, 2);
+            var imgCount = Math.Max((int)TXIF.ImageCount, 1);
+            var bitDepth = 8 * txim.Data.Length / height / paddedWidth / imgCount;
+            BitDepth = TXIMBitDepth.BPP2; // THIS IS JUST A HAX TO MAKE KUKKII NOT CRASH FOR NOW
+            var bmp = new Bitmap(paddedWidth, height);
             var pal = Enumerable.Range(0, txpl.Data.Length / 2).Select(w => ToBGR555(BitConverter.ToInt16(txpl.Data, 2 * w))).ToList();
 
             // TODO: This check needs to be replaced with something more concrete later
-            if (BitDepth == TXIMBitDepth.BPP8 && txim.Data.Any(b => b > pal.Count))
-                BitDepth = TXIMBitDepth.L8;
+            var IsL8 = bitDepth == 8 && txim.Data.Any(b => b > pal.Count);
 
             if (HasMap)
             {
-                for (var i = 0; i < width * height; i++)
+                for (var i = 0; i < paddedWidth * height; i++)
                 {
                     // TODO: Finish figuring out TX4I
-                    var (x, y, z) = (i % width, i / width, 0);
-                    var (a, b, c, d) = (i & -(4 * width), i & (3 * width), i & (width - 4), i & 3);
-                    var bits = (txim.Data[a / 4 + b / width + c] >> 2 * d) & 3;
-                    var entry = BitConverter.ToInt16(tx4i.Data, x / 4 * 2 + y / 4 * (width / 2));
+                    var (x, y, z) = (i % paddedWidth, i / paddedWidth, 0);
+                    var (a, b, c, d) = (i & -(4 * paddedWidth), i & (3 * paddedWidth), i & (paddedWidth - 4), i & 3);
+                    var bits = (txim.Data[a / 4 + b / paddedWidth + c] >> 2 * d) & 3;
+                    var entry = BitConverter.ToInt16(tx4i.Data, x / 4 * 2 + y / 4 * (paddedWidth / 2));
                     if (entry < 0 || bits < 3) z = 2 * (entry & 0x3FFF) + bits;
                     bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                 }
@@ -56,88 +56,22 @@ namespace image_nintendo
             }
             else
             {
-                var offset = 0;
-                for (var i = 0; i < Math.Max(TXIF.ImageCount, (short)1); i++)
+                for (var i = 0; i < imgCount; i++)
                 {
-                    bmp = new Bitmap(virtualWidth, height);
+                    bmp = new Bitmap(width, height);
 
-                    var accumulator = 0;
-                    switch (BitDepth)
+                    for (var y = 0; y < height; y++)
                     {
-                        case TXIMBitDepth.BPP8:
-                            for (var j = 0; j < width * height; j++)
-                            {
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset]);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                            }
-                            break;
-                        case TXIMBitDepth.BPP4:
-                            for (var j = 0; j < width * height / (int)BitDepth; j++)
-                            {
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] & 0xF);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                                accumulator++;
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] >> 4);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                            }
-                            break;
-                        case TXIMBitDepth.BPP2:
-                            for (var j = 0; j < (width * height) / (int)BitDepth; j++)
-                            {
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] & 0x3);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                                accumulator++;
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, (txim.Data[j + offset] & 0xF) >> 2);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                                accumulator++;
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, (txim.Data[j + offset] & 0x3F) >> 4);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                                accumulator++;
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset] >> 6);
-                                    if (z < pal.Count)
-                                        bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
-                                }
-                            }
-                            break;
-                        case TXIMBitDepth.L8:
-                            for (var j = 0; j < width * height; j++)
-                            {
-                                // TODO: The results of this method aren't representative of the in-game result
-                                if ((j + accumulator) % width < virtualWidth)
-                                {
-                                    var (x, y, z) = ((j + accumulator) % width, (j + accumulator) / width, txim.Data[j + offset]);
-                                    bmp.SetPixel(x, y, z == 0 ? Color.Transparent : Color.FromArgb(z, z, z));
-                                }
-                            }
-                            break;
+                        for (var x = 0; x < width; x++)
+                        {
+                            var k = y * paddedWidth + x;
+                            var z = (txim.Data[k * bitDepth / 8] >> bitDepth * (x % (8 / bitDepth))) & ((1 << bitDepth) - 1);
+                            if (IsL8)
+                                bmp.SetPixel(x, y, z == 0 ? Color.Transparent : Color.FromArgb(z, z, z));
+                            if (z < pal.Count)
+                                bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
+                        }
                     }
-                    offset += width * height / (BitDepth < TXIMBitDepth.L8 ? (int)BitDepth : 1);
 
                     Bitmaps.Add(bmp);
                 }
