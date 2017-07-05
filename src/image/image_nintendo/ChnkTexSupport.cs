@@ -9,12 +9,12 @@ namespace image_nintendo
         BGR555
     }
 
-    public enum TXIMBitDepth : int
+    public enum TXIMBitDepth
     {
-        BPP8 = 1,
-        BPP4 = 2,
-        BPP2 = 4,
-        L8 = 8
+        BPP8 = 8,
+        BPP4 = 4,
+        BPP2 = 2,
+        L8 = 0
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

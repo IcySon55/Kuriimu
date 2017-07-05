@@ -32,12 +32,13 @@ namespace image_nintendo
             var paddedWidth = 2 << (int)Math.Log(TXIF.Width - 1, 2);
             var imgCount = Math.Max((int)TXIF.ImageCount, 1);
             var bitDepth = 8 * txim.Data.Length / height / paddedWidth / imgCount;
-            BitDepth = TXIMBitDepth.BPP2; // THIS IS JUST A HAX TO MAKE KUKKII NOT CRASH FOR NOW
+            BitDepth = (TXIMBitDepth)bitDepth;
             var bmp = new Bitmap(paddedWidth, height);
             var pal = Enumerable.Range(0, txpl.Data.Length / 2).Select(w => ToBGR555(BitConverter.ToInt16(txpl.Data, 2 * w))).ToList();
 
             // TODO: This check needs to be replaced with something more concrete later
             var IsL8 = bitDepth == 8 && txim.Data.Any(b => b > pal.Count);
+            if (IsL8) BitDepth = TXIMBitDepth.L8;
 
             if (HasMap)
             {
@@ -64,11 +65,11 @@ namespace image_nintendo
                     {
                         for (var x = 0; x < width; x++)
                         {
-                            var k = y * paddedWidth + x;
-                            var z = (txim.Data[k * bitDepth / 8] >> bitDepth * (x % (8 / bitDepth))) & ((1 << bitDepth) - 1);
+                            var k = y * paddedWidth + x + i * paddedWidth * height;
+                            var z = (txim.Data[k * bitDepth / 8] >> bitDepth * (x % (8 / Math.Max(bitDepth, 1)))) & ((1 << bitDepth) - 1);
                             if (IsL8)
                                 bmp.SetPixel(x, y, z == 0 ? Color.Transparent : Color.FromArgb(z, z, z));
-                            if (z < pal.Count)
+                            else if (z < pal.Count)
                                 bmp.SetPixel(x, y, z == 0 ? Color.Transparent : pal[z]);
                         }
                     }
