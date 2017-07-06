@@ -27,6 +27,11 @@ namespace Kukkii
         {
             Icon = Resources.kukkii;
 
+            imbPreview.GridColor = Settings.Default.GridColor1;
+            imbPreview.GridColorAlternate = Settings.Default.GridColor2;
+            imbPreview.ImageBorderStyle = Settings.Default.ImageBorderStyle;
+            imbPreview.ImageBorderColor = Settings.Default.ImageBorderColor;
+
             lblFilename.Text = Path.GetFileName(_filename);
 
             numWidth.ValueChanged -= numWidth_ValueChanged;
