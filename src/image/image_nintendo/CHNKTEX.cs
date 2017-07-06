@@ -11,27 +11,32 @@ namespace image_nintendo
 {
     class CHNKTEX
     {
-        private Dictionary<Magic, Section> Sections;
+        private List<Section> Sections;
 
         public List<Bitmap> Bitmaps = new List<Bitmap>();
         public TXIF TXIF { get; }
         public TXIMBitDepth BitDepth { get; }
+        public bool IsMultiTXIM { get; } = false;
         public bool HasMap { get; } = false;
 
         public CHNKTEX(Stream input)
         {
-            Sections = GetSections(input).ToDictionary(o => o.Magic, o => o);
+            Sections = GetSections(input).ToList();
 
-            TXIF = new BinaryReaderX(new MemoryStream(Sections["TXIF"].Data)).ReadStruct<TXIF>();
-            var txim = Sections["TXIM"];
-            var txpl = Sections["TXPL"];
-            HasMap = Sections.TryGetValue("TX4I", out var tx4i);
+            TXIF = new BinaryReaderX(new MemoryStream(Sections.FirstOrDefault(s => s.Magic == "TXIF").Data)).ReadStruct<TXIF>();
+            var txim = Sections.FirstOrDefault(s => s.Magic == "TXIM");
+            var txims = Sections.Where(s => s.Magic == "TXIM").ToList();
+            var txpl = Sections.FirstOrDefault(s => s.Magic == "TXPL");
+            var tx4i = Sections.FirstOrDefault(s => s.Magic == "TX4I");
+            IsMultiTXIM = txims.Count > 1;
+            HasMap = tx4i != null;
             // TODO: Investigate the unknown TXPI section
+
 
             int width = TXIF.Width, height = TXIF.Height;
             var paddedWidth = 2 << (int)Math.Log(TXIF.Width - 1, 2);
             var imgCount = Math.Max((int)TXIF.ImageCount, 1);
-            var bitDepth = 8 * txim.Data.Length / height / paddedWidth / imgCount;
+            var bitDepth = 8 * txim.Data.Length / height / paddedWidth / (!IsMultiTXIM ? imgCount : 1);
             BitDepth = (TXIMBitDepth)bitDepth;
             var bmp = new Bitmap(paddedWidth, height);
             var pal = Enumerable.Range(0, txpl.Data.Length / 2).Select(w => ToBGR555(BitConverter.ToInt16(txpl.Data, 2 * w))).ToList();
@@ -61,11 +66,14 @@ namespace image_nintendo
                 {
                     bmp = new Bitmap(width, height);
 
+                    if (IsMultiTXIM)
+                        txim = txims[i];
+
                     for (var y = 0; y < height; y++)
                     {
                         for (var x = 0; x < width; x++)
                         {
-                            var k = y * paddedWidth + x + i * paddedWidth * height;
+                            var k = y * paddedWidth + x + (!IsMultiTXIM ? i * paddedWidth * height : 0);
                             var z = (txim.Data[k * bitDepth / 8] >> bitDepth * (x % (8 / Math.Max(bitDepth, 1)))) & ((1 << bitDepth) - 1);
                             if (IsL8)
                                 bmp.SetPixel(x, y, z == 0 ? Color.Transparent : Color.FromArgb(z, z, z));
@@ -95,8 +103,10 @@ namespace image_nintendo
                     };
                     section.Data = br.ReadBytes(section.Size);
 
-                    if (chunk.DecompressedSize != 0)
+                    if (chunk.DecompressedSize != 0 && section.Data[0] == 0x11)
                         section.Data = LZ11.Decompress(new MemoryStream(section.Data));
+                    else if (chunk.DecompressedSize != 0 && section.Data[0] == 0x30)
+                        section.Data = RLE.Decompress(new MemoryStream(section.Data), chunk.DecompressedSize);
 
                     yield return section;
                 }

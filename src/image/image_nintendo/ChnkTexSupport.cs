@@ -58,6 +58,10 @@ namespace image_nintendo
 
         [Category("Properties")]
         [ReadOnly(true)]
+        public bool IsMultiTXIM { get; set; }
+
+        [Category("Properties")]
+        [ReadOnly(true)]
         public bool HasTX4I { get; set; }
     }
 }
