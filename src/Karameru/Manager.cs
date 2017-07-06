@@ -519,7 +519,7 @@ namespace Karameru
 
                     var sb = new StringBuilder(16);
                     Win32.StrFormatByteSize((long)file.FileSize, sb, 16);
-                    lstFiles.Items.Add(new ListViewItem( new[] { Path.GetFileName(file.FileName), sb.ToString(), file.State.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), sb.ToString(), file.State.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
                 }
 
                 tslFileCount.Text = $"Files: {files.Count()}";
@@ -676,10 +676,10 @@ namespace Karameru
         private void mnuDirectories_Opening(object sender, CancelEventArgs e)
         {
             extractDirectoryToolStripMenuItem.Enabled = _canExtractDirectories;
-            extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Extract is not supported";
+            extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Extract is not supported";
 
             replaceDirectoryToolStripMenuItem.Enabled = _canReplaceDirectories;
-            replaceDirectoryToolStripMenuItem.Text = _canReplaceDirectories ? $"&Replace {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Replace is not supported";
+            replaceDirectoryToolStripMenuItem.Text = _canReplaceDirectories ? $"&Replace {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Replace is not supported";
         }
 
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -693,7 +693,7 @@ namespace Karameru
                 node = node.Parent;
             }
 
-            ExtractFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
+            ExtractFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_'), selectedPath.TrimEnd('\\'));
         }
 
         private void replaceDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -707,7 +707,7 @@ namespace Karameru
                 node = node.Parent;
             }
 
-            ReplaceFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
+            ReplaceFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_'), selectedPath.TrimEnd('\\'));
         }
 
         private static IEnumerable<ArchiveFileInfo> CollectFiles(TreeNode node)
@@ -923,7 +923,7 @@ namespace Karameru
             {
                 var fbd = new FolderBrowserDialog
                 {
-                    SelectedPath = Settings.Default.LastDirectory,
+                    SelectedPath = Directory.Exists(Path.Combine(Settings.Default.LastDirectory, selectedNode)) ? Path.Combine(Settings.Default.LastDirectory, selectedNode) : Settings.Default.LastDirectory,
                     Description = $"Select where you want to replace {selectedNode} from..."
                 };
 
