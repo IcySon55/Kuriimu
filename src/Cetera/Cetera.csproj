@@ -68,6 +68,8 @@
     <Compile Include="Image\XI.cs" />
     <Compile Include="Hardware\OnionFS.cs" />
     <Compile Include="Image\Etc1.cs" />
+    <Compile Include="PICA\PicaCommandReader.cs" />
+    <Compile Include="PICA\PicaCommand.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
