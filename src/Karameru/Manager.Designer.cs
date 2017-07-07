@@ -61,6 +61,9 @@
             this.tsbKukkii = new System.Windows.Forms.ToolStripButton();
             this.tsbProperties = new System.Windows.Forms.ToolStripButton();
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbBatchExtract = new System.Windows.Forms.ToolStripButton();
+            this.tsbBatchArchive = new System.Windows.Forms.ToolStripButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.treDirectories = new System.Windows.Forms.TreeView();
@@ -304,7 +307,10 @@
             this.toolStripSeparator3,
             this.tsbKukkii,
             this.tsbProperties,
-            this.tsbKuriimu});
+            this.tsbKuriimu,
+            this.toolStripSeparator4,
+            this.tsbBatchExtract,
+            this.tsbBatchArchive});
             this.tlsMain.Location = new System.Drawing.Point(0, 24);
             this.tlsMain.Name = "tlsMain";
             this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -404,6 +410,31 @@
             this.tsbKuriimu.Size = new System.Drawing.Size(69, 22);
             this.tsbKuriimu.Text = "Kuriimu";
             this.tsbKuriimu.Click += new System.EventHandler(this.tsbKuriimu_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tsbBatchExtract
+            // 
+            this.tsbBatchExtract.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchExtract.Image = global::Karameru.Properties.Resources.menu_batch_extract;
+            this.tsbBatchExtract.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbBatchExtract.Name = "tsbBatchExtract";
+            this.tsbBatchExtract.Size = new System.Drawing.Size(23, 22);
+            this.tsbBatchExtract.Text = "Batch Extract";
+            this.tsbBatchExtract.Click += new System.EventHandler(this.tsbBatchExtract_Click);
+            // 
+            // tsbBatchArchive
+            // 
+            this.tsbBatchArchive.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchArchive.Image = global::Karameru.Properties.Resources.menu_batch_archive;
+            this.tsbBatchArchive.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbBatchArchive.Name = "tsbBatchArchive";
+            this.tsbBatchArchive.Size = new System.Drawing.Size(23, 22);
+            this.tsbBatchArchive.Text = "Batch Archive";
+            this.tsbBatchArchive.Click += new System.EventHandler(this.tsbBatchArchive_Click);
             // 
             // pnlMain
             // 
@@ -734,7 +765,7 @@
             // 
             this.largeToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_large;
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -742,7 +773,7 @@
             // 
             this.smallToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_small;
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.smallToolStripMenuItem.Text = "Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -750,7 +781,7 @@
             // 
             this.listToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_list;
             this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.listToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.listToolStripMenuItem.Text = "List";
             this.listToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -758,7 +789,7 @@
             // 
             this.detailsToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_details;
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.detailsToolStripMenuItem.Text = "Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -766,7 +797,7 @@
             // 
             this.tileToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_tiles;
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.tileToolStripMenuItem.Text = "Tiles";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -890,6 +921,9 @@
         private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader clmState;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripButton tsbBatchExtract;
+        private System.Windows.Forms.ToolStripButton tsbBatchArchive;
     }
 }
 

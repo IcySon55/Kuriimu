@@ -185,6 +185,16 @@ namespace Karameru
             propertiesToolStripMenuItem_Click(sender, e);
         }
 
+        private void tsbBatchExtract_Click(object sender, EventArgs e)
+        {
+            BatchExtract();
+        }
+
+        private void tsbBatchArchive_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void tsbKuriimu_Click(object sender, EventArgs e)
         {
             var start = new ProcessStartInfo(Path.Combine(Application.StartupPath, "kuriimu.exe")) { WorkingDirectory = Application.StartupPath };
@@ -823,6 +833,87 @@ namespace Karameru
                 {
                     MessageBox.Show(ex.ToString(), "Edit Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void BatchExtract()
+        {
+            var fbd = new FolderBrowserDialog
+            {
+                Description = "Select the source directory containing archive files...",
+                SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory,
+                ShowNewFolderButton = false
+            };
+
+            if (fbd.ShowDialog() != DialogResult.OK) return;
+
+            var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+            if (dr == DialogResult.Cancel) return;
+            var browseSubdirectories = dr == DialogResult.Yes;
+
+            Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+            Settings.Default.Save();
+
+            var path = fbd.SelectedPath;
+            var count = 0;
+
+            if (Directory.Exists(path))
+            {
+                var selectedPathRegex = "^" + @"[\\/]?";
+                string[] types = _archiveManagers.Select(x => x.Extension.ToLower()).ToArray();
+
+                List<string> files = new List<string>();
+                foreach (string type in types)
+                {
+                    string[] subTypes = type.Split(';');
+                    foreach (string subType in subTypes)
+                        files.AddRange(Directory.GetFiles(path, subType, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
+                }
+
+                foreach (string file in files)
+                {
+                    if (File.Exists(file))
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        IArchiveManager currentManager = SelectArchiveManager(file, true);
+
+                        if (currentManager != null)
+                        {
+                            currentManager.Load(file);
+
+                            foreach (var afi in currentManager.Files)
+                            {
+                                var stream = afi.FileData;
+                                if (stream == null) continue;
+
+                                var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
+
+                                if (!Directory.Exists(exPath))
+                                    Directory.CreateDirectory(exPath);
+
+                                using (var fs = File.Create(Path.Combine(exPath, Path.GetFileName(afi.FileName))))
+                                {
+                                    if (stream.CanSeek)
+                                        stream.Position = 0;
+
+                                    try
+                                    {
+                                        if (afi.FileSize > 0)
+                                        {
+                                            stream.CopyTo(fs);
+                                            fs.Close();
+                                        }
+                                    }
+                                    catch (Exception ex) { }
+                                }
+                            }
+
+                            count++;
+                        }
+                    }
+                }
+
+                MessageBox.Show("Batch extract completed successfully. " + count + " archive(s) succesfully extracted.", "Batch Extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
