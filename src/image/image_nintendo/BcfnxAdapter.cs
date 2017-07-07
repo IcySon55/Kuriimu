@@ -46,7 +46,7 @@ namespace image_nintendo.BCFNX
             if (FileInfo.Exists)
             {
                 _bcfnx = new BCFNT(FileInfo.OpenRead());
-                _bitmaps = _bcfnx.bmps.Select(o => new BitmapInfo {Bitmap = o}).ToList();
+                _bitmaps = _bcfnx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
