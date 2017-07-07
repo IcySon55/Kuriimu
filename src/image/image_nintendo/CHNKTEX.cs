@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Kuriimu.Compression;
 using Kuriimu.IO;
-using Kuriimu.Kontract;
 
 namespace image_nintendo
 {
@@ -31,7 +30,6 @@ namespace image_nintendo
             IsMultiTXIM = txims.Count > 1;
             HasMap = tx4i != null;
             // TODO: Investigate the unknown TXPI section
-
 
             int width = TXIF.Width, height = TXIF.Height;
             var paddedWidth = 2 << (int)Math.Log(TXIF.Width - 1, 2);
