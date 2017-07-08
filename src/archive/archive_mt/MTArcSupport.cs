@@ -13,15 +13,6 @@ namespace archive_mt
         public Magic magic;
         public short version;
         public short entryCount;
-        int padding;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class CraHeader
-    {
-        public Magic magic;
-        public short version;
-        public short entryCount;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

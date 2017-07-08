@@ -35,7 +35,8 @@ namespace archive_mt
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ARC";
+                var magic = br.ReadString(4);
+                return magic == "ARC" || magic == "\0CRA";
             }
         }
 

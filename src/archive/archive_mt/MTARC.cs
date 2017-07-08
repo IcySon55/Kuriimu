@@ -13,19 +13,30 @@ namespace archive_mt
         private Stream _stream = null;
 
         private ArcHeader Header;
+        private int HeaderLength = 12;
+        private ByteOrder ByteOrder = ByteOrder.LittleEndian;
+        private int CompressionIdentifier = 0x9C78;
 
         public MTARC(Stream input)
         {
             _stream = input;
-            using (var br = new BinaryReaderX(input, true))
+            using (var br = new BinaryReaderX(input, true, ByteOrder))
             {
+                if (br.PeekString() == "\0CRA")
+                {
+                    br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
+                    HeaderLength = 8;
+                    CompressionIdentifier = 0x6881;
+                }
+
                 Header = br.ReadStruct<ArcHeader>();
+                if (ByteOrder == ByteOrder.LittleEndian) br.ReadInt32();
                 var lst = Enumerable.Range(0, Header.entryCount).Select(_ => br.ReadStruct<FileMetadata>()).ToList();
                 Files.AddRange(lst.Select(metadata =>
                 {
                     // zlib header
-                    br.BaseStream.Position = metadata.offset + 1;
-                    var level = br.ReadByte();
+                    br.BaseStream.Position = metadata.offset;
+                    var level = br.ReadUInt16();
 
                     // deflate stream
                     var ms = new MemoryStream();
@@ -38,7 +49,7 @@ namespace archive_mt
                     return new MTArcFileInfo
                     {
                         Metadata = metadata,
-                        CompressionLevel = level == 0x9C ? CompressionLevel.Optimal : CompressionLevel.NoCompression,
+                        CompressionLevel = level == CompressionIdentifier ? CompressionLevel.Optimal : CompressionLevel.NoCompression,
                         FileData = ms,
                         FileName = metadata.filename + (ArcShared.ExtensionMap.ContainsKey(metadata.extensionHash) ? ArcShared.ExtensionMap[metadata.extensionHash] : ".bin"),
                         State = ArchiveFileState.Archived
@@ -52,10 +63,10 @@ namespace archive_mt
             Header.entryCount = (short)Files.Count;
             var compressedList = Files.Select(e =>
             {
-                using (var bw = new BinaryWriterX(new MemoryStream()))
+                using (var bw = new BinaryWriterX(new MemoryStream(), ByteOrder))
                 {
                     // zlib header
-                    bw.Write((short)(e.CompressionLevel == CompressionLevel.Optimal ? 0x9C78 : 0x0178));
+                    bw.Write((short)(e.CompressionLevel == CompressionLevel.Optimal ? CompressionIdentifier : 0x0178));
 
                     // deflate stream
                     byte[] bytes;
@@ -73,9 +84,10 @@ namespace archive_mt
                 }
             }).ToList();
 
-            using (var bw = new BinaryWriterX(output))
+            using (var bw = new BinaryWriterX(output, ByteOrder))
             {
                 bw.WriteStruct(Header);
+                if (ByteOrder == ByteOrder.LittleEndian) bw.Write(0);
                 var padding = Files.Count % 2 == 0 ? 20 : 4;
                 for (var i = 0; i < Files.Count; i++)
                 {
@@ -86,7 +98,7 @@ namespace archive_mt
                         extensionHash = ArcShared.ExtensionMap.ContainsValue(ext) ? ArcShared.ExtensionMap.Single(pair => pair.Value == ext).Key : Files[i].Metadata.extensionHash,
                         compressedSize = compressedList[i].Length,
                         uncompressedSize = (int)Files[i].FileData.Length | 0x40000000,
-                        offset = 12 + Files.Count * 80 + padding + compressedList.Take(i).Sum(bytes => bytes.Length)
+                        offset = HeaderLength + Files.Count * 80 + padding + compressedList.Take(i).Sum(bytes => bytes.Length)
                     });
                 }
                 bw.WritePadding(padding);
