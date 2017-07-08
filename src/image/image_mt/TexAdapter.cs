@@ -5,7 +5,7 @@ using System.Linq;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace image_tex
+namespace image_mt
 {
     public class TexAdapter : IImageAdapter
     {

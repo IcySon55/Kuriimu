@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
 
-namespace image_tex
+namespace image_mt
 {
     public enum Format : byte
     {

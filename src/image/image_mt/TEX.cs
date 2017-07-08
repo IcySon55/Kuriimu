@@ -6,7 +6,7 @@ using System.Linq;
 using Cetera.Image;
 using Kuriimu.IO;
 
-namespace image_tex
+namespace image_mt
 {
     class TEX
     {
@@ -56,9 +56,9 @@ namespace image_tex
         {
             using (var bw = new BinaryWriterX(output))
             {
-                Header.Block1 = (uint)(HeaderInfo.Version ^ (HeaderInfo.Unknown1 << 12) ^ (HeaderInfo.Unused1 << 24) ^ ((int)HeaderInfo.AlphaChannelFlags << 28));
-                Header.Block2 = (uint)(HeaderInfo.MipMapCount ^ (HeaderInfo.Width << 6) ^ (HeaderInfo.Height << 19));
-                Header.Block3 = (uint)(HeaderInfo.Unknown2 ^ ((int)HeaderInfo.Format << 8) ^ (HeaderInfo.Unknown3 << 16));
+                Header.Block1 = (uint)(HeaderInfo.Version | (HeaderInfo.Unknown1 << 12) | (HeaderInfo.Unused1 << 24) | ((int)HeaderInfo.AlphaChannelFlags << 28));
+                Header.Block2 = (uint)(HeaderInfo.MipMapCount | (HeaderInfo.Width << 6) | (HeaderInfo.Height << 19));
+                Header.Block3 = (uint)(HeaderInfo.Unknown2 | ((int)HeaderInfo.Format << 8) | (HeaderInfo.Unknown3 << 16));
                 bw.WriteStruct(Header);
 
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
