@@ -16,7 +16,7 @@ namespace archive_aatri
         public string Name => "AATRI";
         public string Description => "Ace Attorney Trilogy pack";
         public string Extension => "*.inc";
-        public string About => "This is the archive_aatri archive manager for Karameru.";
+        public string About => "This is the AATRI archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;

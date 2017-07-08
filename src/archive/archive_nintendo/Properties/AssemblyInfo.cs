@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("archive_nintendo")]
-[assembly: AssemblyDescription("SARC Archive manager for Karameru")]
+[assembly: AssemblyDescription("This is the Nintendo archive manager for Karameru.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("archive_nintendo")]
-[assembly: AssemblyCopyright("Copyright © onepiecefreak 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

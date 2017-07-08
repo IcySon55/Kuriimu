@@ -22,7 +22,7 @@ namespace text_bmd
         public string Name => "BMD";
         public string Description => "Battle Message Data";
         public string Extension => "*.bmd";
-        public string About => "This is the BMD file adapter for Kuriimu.";
+        public string About => "This is the BMD text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

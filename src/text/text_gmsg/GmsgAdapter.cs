@@ -26,7 +26,7 @@ namespace text_gmsg
 
         public string Extension => "*.gmsg";
 
-        public string About => "This is the GMSG file adapter for Kuriimu.";
+        public string About => "This is the GMSG text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

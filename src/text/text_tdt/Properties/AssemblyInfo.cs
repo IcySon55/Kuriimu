@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("text_tdt")]
-[assembly: AssemblyDescription("TDT Text adapter for Kuriimu")]
+[assembly: AssemblyDescription("This is the TDT text adapter for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("text_tdt")]
-[assembly: AssemblyCopyright("Copyright © onepiecefreak 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

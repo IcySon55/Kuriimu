@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("game_theatrythm_final_fantasy")]
-[assembly: AssemblyDescription("Theatrythm Final Fantasy Game handler for Kuriimu")]
+[assembly: AssemblyDescription("Theatrythm Final Fantasy game handler for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("game_theatrythm_final_fantasy")]
-[assembly: AssemblyCopyright("Copyright © onepiecefreak 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

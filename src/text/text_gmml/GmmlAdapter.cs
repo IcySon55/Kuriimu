@@ -25,7 +25,7 @@ namespace text_gmml
 
         public string Extension => "*.gmm;*.gmml";
 
-        public string About => "This is the GMML file adapter for Kuriimu.";
+        public string About => "This is the GMML text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

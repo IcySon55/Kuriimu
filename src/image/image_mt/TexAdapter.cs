@@ -18,7 +18,7 @@ namespace image_mt
         public string Name => "TEX";
         public string Description => "MT Framework Texture";
         public string Extension => "*.tex";
-        public string About => "This is the MT Framework TEX image adapter for Kukkii. Many thanks to dasding for bootstrapping this plugin.";
+        public string About => "This is the MT Framework image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

@@ -26,7 +26,7 @@ namespace text_mbm
 
         public string Extension => "*.mbm";
 
-        public string About => "This is the MBM file adapter for Kuriimu.";
+        public string About => "This is the MBM text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

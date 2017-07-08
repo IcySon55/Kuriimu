@@ -26,7 +26,7 @@ namespace text_btxt
 
         public string Extension => "*.btxt";
 
-        public string About => "This is the BTXT file adapter for Kuriimu.";
+        public string About => "This is the BTXT text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

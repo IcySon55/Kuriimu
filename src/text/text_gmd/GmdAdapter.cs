@@ -26,7 +26,7 @@ namespace text_gmd
 
         public string Extension => "*.gmd";
 
-        public string About => "This is the GMD file adapter for Kuriimu.";
+        public string About => "This is the GMD text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
