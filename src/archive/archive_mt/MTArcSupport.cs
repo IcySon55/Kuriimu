@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,7 +9,7 @@ using Kuriimu.Kontract;
 namespace archive_mt
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class ArcHeader
+    public class Header
     {
         public Magic magic;
         public short version;
@@ -30,6 +31,21 @@ namespace archive_mt
     {
         public FileMetadata Metadata { get; set; }
         public CompressionLevel CompressionLevel { get; set; }
+
+        public override Stream FileData
+        {
+            get
+            {
+                var ms = new MemoryStream();
+                using (var ds = new DeflateStream(base.FileData, CompressionMode.Decompress, true))
+                    ds.CopyTo(ms);
+                return ms;
+            }
+        }
+
+        public Stream CompressedFileData => base.FileData;
+
+        public override long? FileSize => Metadata.uncompressedSize / 8;
     }
 
     public static class ArcShared

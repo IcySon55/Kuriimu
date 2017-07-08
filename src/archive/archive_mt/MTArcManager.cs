@@ -16,7 +16,7 @@ namespace archive_mt
         public string Name => "MTARC";
         public string Description => "MT Framework Archive";
         public string Extension => "*.arc";
-        public string About => "This is the MT Framework Archive archive manager for Karameru.";
+        public string About => "This is the MT Framework archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
