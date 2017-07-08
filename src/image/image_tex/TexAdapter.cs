@@ -44,7 +44,7 @@ namespace image_tex
             if (FileInfo.Exists)
             {
                 _tex = new TEX(FileInfo.OpenRead());
-                _bitmaps = _tex.Bitmaps.Select(b => new TexBitmapInfo { Bitmap = b, Format = _tex.Header.Format }).ToList<BitmapInfo>();
+                _bitmaps = _tex.Bitmaps.Select(b => new TexBitmapInfo { Bitmap = b, Format = _tex.HeaderInfo.Format }).ToList<BitmapInfo>();
             }
         }
 
@@ -54,7 +54,7 @@ namespace image_tex
                 FileInfo = new FileInfo(filename);
 
             if (_bitmaps.Count >= 1)
-                _tex.Header.Format = ((TexBitmapInfo)_bitmaps[0]).Format;
+                _tex.HeaderInfo.Format = ((TexBitmapInfo)_bitmaps[0]).Format;
             _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
         }
