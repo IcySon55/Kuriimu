@@ -19,6 +19,7 @@ namespace image_mt
         RGB888 = 0x11
     }
 
+    // This particual enum is questionable as the data space for it is only 4-bits (maybe)
     public enum AlphaChannelFlags : byte
     {
         Normal = 0x0,
@@ -69,7 +70,7 @@ namespace image_mt
         public int Unknown3;
     }
 
-    public sealed class TexBitmapInfo : BitmapInfo
+    public sealed class MTTexBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
         public Format Format { get; set; }

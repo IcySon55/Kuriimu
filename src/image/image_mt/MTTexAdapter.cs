@@ -7,15 +7,15 @@ using Kuriimu.IO;
 
 namespace image_mt
 {
-    public class TexAdapter : IImageAdapter
+    public class MTTexAdapter : IImageAdapter
     {
-        private TEX _tex = null;
+        private MTTEX _tex = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
         // Information
-        public string Name => "TEX";
+        public string Name => "MTTEX";
         public string Description => "MT Framework Texture";
         public string Extension => "*.tex";
         public string About => "This is the MT Framework image adapter for Kukkii.";
@@ -43,8 +43,8 @@ namespace image_mt
 
             if (FileInfo.Exists)
             {
-                _tex = new TEX(FileInfo.OpenRead());
-                _bitmaps = _tex.Bitmaps.Select(b => new TexBitmapInfo { Bitmap = b, Format = _tex.HeaderInfo.Format }).ToList<BitmapInfo>();
+                _tex = new MTTEX(FileInfo.OpenRead());
+                _bitmaps = _tex.Bitmaps.Select(b => new MTTexBitmapInfo { Bitmap = b, Format = _tex.HeaderInfo.Format }).ToList<BitmapInfo>();
             }
         }
 
@@ -54,7 +54,7 @@ namespace image_mt
                 FileInfo = new FileInfo(filename);
 
             if (_bitmaps.Count >= 1)
-                _tex.HeaderInfo.Format = ((TexBitmapInfo)_bitmaps[0]).Format;
+                _tex.HeaderInfo.Format = ((MTTexBitmapInfo)_bitmaps[0]).Format;
             _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
         }

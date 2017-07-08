@@ -8,7 +8,7 @@ using Kuriimu.IO;
 
 namespace image_mt
 {
-    class TEX
+    class MTTEX
     {
         private const int MinHeight = 8;
 
@@ -17,7 +17,7 @@ namespace image_mt
         public ImageSettings Settings = new ImageSettings();
         public List<Bitmap> Bitmaps = new List<Bitmap>();
 
-        public TEX(Stream input)
+        public MTTEX(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {

@@ -41,9 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TexSupport.cs" />
-    <Compile Include="TEX.cs" />
-    <Compile Include="TexAdapter.cs" />
+    <Compile Include="MTTEX.cs" />
+    <Compile Include="MTTexAdapter.cs" />
+    <Compile Include="MTTexSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
