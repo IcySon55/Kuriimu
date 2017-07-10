@@ -4,7 +4,7 @@ using Kuriimu.Kontract;
 using Kuriimu.Compression;
 using Kuriimu.IO;
 
-namespace archive_aatri
+namespace archive_aatri.aatri
 {
     public class AatriFileInfo : ArchiveFileInfo
     {

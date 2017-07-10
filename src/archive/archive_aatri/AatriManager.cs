@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace archive_aatri
+namespace archive_aatri.aatri
 {
     public class AatriManager : IArchiveManager
     {
