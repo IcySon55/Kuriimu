@@ -429,11 +429,12 @@
             // tsbBatchArchive
             // 
             this.tsbBatchArchive.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchArchive.Enabled = false;
             this.tsbBatchArchive.Image = global::Karameru.Properties.Resources.menu_batch_archive;
             this.tsbBatchArchive.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbBatchArchive.Name = "tsbBatchArchive";
             this.tsbBatchArchive.Size = new System.Drawing.Size(23, 22);
-            this.tsbBatchArchive.Text = "Batch Archive";
+            this.tsbBatchArchive.Text = "Batch Archive (Soon)";
             this.tsbBatchArchive.Click += new System.EventHandler(this.tsbBatchArchive_Click);
             // 
             // pnlMain

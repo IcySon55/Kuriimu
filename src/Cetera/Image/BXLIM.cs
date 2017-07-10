@@ -89,11 +89,11 @@ namespace Cetera.Image
                         var modifiedBCLIMHeader = BCLIMHeader;
                         modifiedBCLIMHeader.width = (short)Image.Width;
                         modifiedBCLIMHeader.height = (short)Image.Height;
+                        modifiedBCLIMHeader.datasize = texture.Length;
                         BCLIMHeader = modifiedBCLIMHeader;
                         sections[0].Data = BCLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
                         bw.WriteSections(sections);
-                        bw.Write(texture.Length);
                         break;
                     case "FLIM":
                         settings.Width = BFLIMHeader.width;
@@ -107,11 +107,11 @@ namespace Cetera.Image
                         var modifiedBFLIMHeader = BFLIMHeader;
                         modifiedBFLIMHeader.width = (short)Image.Width;
                         modifiedBFLIMHeader.height = (short)Image.Height;
+                        modifiedBFLIMHeader.datasize = texture.Length;
                         BFLIMHeader = modifiedBFLIMHeader;
                         sections[0].Data = BFLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
                         bw.WriteSections(sections);
-                        bw.Write(texture.Length);
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");

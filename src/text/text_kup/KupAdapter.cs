@@ -18,7 +18,7 @@ namespace text_kup
         public string Name => "KUP";
         public string Description => "Kuriimu Archive";
         public string Extension => "*.kup";
-        public string About => "This is the KUP file adapter for Kuriimu.";
+        public string About => "This is the KUP text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => true;

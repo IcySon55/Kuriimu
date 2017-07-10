@@ -16,7 +16,7 @@ namespace archive_mt
         public string Name => "MTARC";
         public string Description => "MT Framework Archive";
         public string Extension => "*.arc";
-        public string About => "This is the MT Framework Archive archive manager for Karameru.";
+        public string About => "This is the MT Framework archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -35,7 +35,8 @@ namespace archive_mt
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ARC";
+                var magic = br.ReadString(4);
+                return magic == "ARC" || magic == "\0CRA";
             }
         }
 

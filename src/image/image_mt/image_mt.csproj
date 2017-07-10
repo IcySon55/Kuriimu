@@ -7,8 +7,8 @@
     <ProjectGuid>{9E078594-73AE-4EC1-ABA2-BF8F338FCCD4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>image_tex</RootNamespace>
-    <AssemblyName>image_tex</AssemblyName>
+    <RootNamespace>image_mt</RootNamespace>
+    <AssemblyName>image_mt</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,9 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TexSupport.cs" />
-    <Compile Include="TEX.cs" />
-    <Compile Include="TexAdapter.cs" />
+    <Compile Include="MTTEX.cs" />
+    <Compile Include="MTTexAdapter.cs" />
+    <Compile Include="MTTexSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("image_jtex")]
-[assembly: AssemblyDescription("JTEX Image adapter for Kukkii")]
+[assembly: AssemblyDescription("This is the JTEX image adapter for Kukkii.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("image_jtex")]
-[assembly: AssemblyCopyright("Copyright © onepiecefreak 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

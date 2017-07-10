@@ -27,7 +27,7 @@ namespace tt.text_ttbin
 
         public string Extension => "*.cfg.bin";
 
-        public string About => "This is the TTBin file adapter for Kuriimu.";
+        public string About => "This is the TTBin text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

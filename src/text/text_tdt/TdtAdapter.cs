@@ -25,7 +25,7 @@ namespace text_tdt
 
         public string Extension => "*.tdt";
 
-        public string About => "This is the TDT file adapter for Kuriimu.";
+        public string About => "This is the TDT text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

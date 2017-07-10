@@ -351,7 +351,7 @@ namespace Kukkii
 
             // Image Border Style
             imbPreview.ImageBorderStyle = Settings.Default.ImageBorderStyle;
-            tsbImageBorderStyle.Image = (Image) Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
+            tsbImageBorderStyle.Image = (Image)Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
             tsbImageBorderStyle.Text = _stylesText[Settings.Default.ImageBorderStyle.ToString()];
 
             // Image Border Color
@@ -511,21 +511,21 @@ namespace Kukkii
                     }
 
                     foreach (string file in files)
-                    {
                         if (File.Exists(file))
-                        {
-                            FileInfo fi = new FileInfo(file);
-                            IImageAdapter currentAdapter = SelectImageAdapter(file, true);
-
-                            if (currentAdapter != null)
+                            try
                             {
-                                currentAdapter.Load(file);
-                                for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                    currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
-                                count++;
+                                FileInfo fi = new FileInfo(file);
+                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+
+                                if (currentAdapter != null)
+                                {
+                                    currentAdapter.Load(file);
+                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                        currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
+                                    count++;
+                                }
                             }
-                        }
-                    }
+                            catch (Exception) { }
 
                     MessageBox.Show("Batch export completed successfully. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -566,14 +566,13 @@ namespace Kukkii
                     }
 
                     foreach (string file in files)
-                    {
                         if (File.Exists(file))
-                        {
-                            FileInfo fi = new FileInfo(file);
-                            IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+                            try
+                            {
+                                FileInfo fi = new FileInfo(file);
+                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
 
-                            if (currentAdapter != null && currentAdapter.CanSave)
-                                try
+                                if (currentAdapter != null && currentAdapter.CanSave)
                                 {
                                     currentAdapter.Load(file);
                                     for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
@@ -585,11 +584,10 @@ namespace Kukkii
                                     currentAdapter.Save();
                                     importCount++;
                                 }
-                                catch (Exception) { }
 
-                            fileCount++;
-                        }
-                    }
+                                fileCount++;
+                            }
+                            catch (Exception) { }
 
                     MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }

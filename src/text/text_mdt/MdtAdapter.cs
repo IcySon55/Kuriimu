@@ -26,7 +26,7 @@ namespace text_mdt
 
         public string Extension => "*.mdt";
 
-        public string About => "This is the MDT file adapter for Kuriimu.";
+        public string About => "This is the MDT text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

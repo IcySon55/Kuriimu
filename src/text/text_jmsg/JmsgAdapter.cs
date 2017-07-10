@@ -26,7 +26,7 @@ namespace text_jmsg
 
         public string Extension => "*.jmsg";
 
-        public string About => "This is the JMSG file adapter for Kuriimu.";
+        public string About => "This is the JMSG text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
