@@ -351,7 +351,7 @@ namespace Kukkii
 
             // Image Border Style
             imbPreview.ImageBorderStyle = Settings.Default.ImageBorderStyle;
-            tsbImageBorderStyle.Image = (Image) Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
+            tsbImageBorderStyle.Image = (Image)Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
             tsbImageBorderStyle.Text = _stylesText[Settings.Default.ImageBorderStyle.ToString()];
 
             // Image Border Color
@@ -514,16 +514,20 @@ namespace Kukkii
                     {
                         if (File.Exists(file))
                         {
-                            FileInfo fi = new FileInfo(file);
-                            IImageAdapter currentAdapter = SelectImageAdapter(file, true);
-
-                            if (currentAdapter != null)
+                            try
                             {
-                                currentAdapter.Load(file);
-                                for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                    currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
-                                count++;
+                                FileInfo fi = new FileInfo(file);
+                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+
+                                if (currentAdapter != null)
+                                {
+                                    currentAdapter.Load(file);
+                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                        currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
+                                    count++;
+                                }
                             }
+                            catch (Exception) { }
                         }
                     }
 
@@ -569,25 +573,29 @@ namespace Kukkii
                     {
                         if (File.Exists(file))
                         {
-                            FileInfo fi = new FileInfo(file);
-                            IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+                            try
+                            {
+                                FileInfo fi = new FileInfo(file);
+                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
 
-                            if (currentAdapter != null && currentAdapter.CanSave)
-                                try
-                                {
-                                    currentAdapter.Load(file);
-                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                if (currentAdapter != null && currentAdapter.CanSave)
+                                    try
                                     {
-                                        var targetName = fi.FullName + "." + i.ToString("00") + ".png";
-                                        if (!File.Exists(targetName)) continue;
-                                        currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
+                                        currentAdapter.Load(file);
+                                        for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                        {
+                                            var targetName = fi.FullName + "." + i.ToString("00") + ".png";
+                                            if (!File.Exists(targetName)) continue;
+                                            currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
+                                        }
+                                        currentAdapter.Save();
+                                        importCount++;
                                     }
-                                    currentAdapter.Save();
-                                    importCount++;
-                                }
-                                catch (Exception) { }
+                                    catch (Exception) { }
 
-                            fileCount++;
+                                fileCount++;
+                            }
+                            catch (Exception) { }
                         }
                     }
 
