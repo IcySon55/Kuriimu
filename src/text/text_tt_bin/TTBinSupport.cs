@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Kuriimu.Kontract;
 
-namespace text_ttbin
+namespace tt.text_ttbin
 {
     #region Entry_Definition
     public sealed class Entry : TextEntry

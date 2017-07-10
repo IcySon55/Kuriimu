@@ -9,7 +9,7 @@ using Kuriimu.Kontract;
 using Kuriimu.IO;
 using text_ttbin.Properties;
 
-namespace text_ttbin
+namespace tt.text_ttbin
 {
     public sealed class TTBinAdapter : ITextAdapter
     {

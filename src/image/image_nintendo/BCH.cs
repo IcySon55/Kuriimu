@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Cetera.Image;
 using Kuriimu.IO;
+using Cetera.PICA;
 
 //Code ported from Ohana3DS
 
@@ -15,7 +16,8 @@ namespace image_nintendo.BCH
         public List<Bitmap> bmps = new List<Bitmap>();
 
         Header header;
-        List<TexEntry> entries = new List<TexEntry>();
+        List<PICACommandReader> picaEntries = new List<PICACommandReader>();
+        List<TexEntry> origValues = new List<TexEntry>();
 
         Stream _stream = null;
 
@@ -30,110 +32,86 @@ namespace image_nintendo.BCH
 
                 if (header.dataSize != 0)
                 {
-                    //get entrySize
-                    uint entrySize = 0;
-                    br.BaseStream.Position = header.gpuCommandsOffset;
-                    var wh = br.ReadBytes(4);
-                    while (!br.ReadBytes(4).SequenceEqual(wh)) entrySize += 4;
-                    entrySize += 4;
-
                     //get entryCount
+                    br.BaseStream.Position = header.gpuCommandsOffset;
                     int entryCount = 0;
-                    for (uint o = header.gpuCommandsOffset; o < header.gpuCommandsOffset + header.gpuCommandsSize;)
+                    List<uint> wordCount = new List<uint>();
+                    wordCount.Add(0);
+                    using (var br2 = new BinaryReaderX(new MemoryStream(br.ReadBytes((int)header.gpuCommandsSize))))
                     {
-                        br.BaseStream.Position = o;
-
-                        bool legit = true;
-                        byte[] check;
-                        var count = 0;
-                        do
+                        while (br2.BaseStream.Position < br2.BaseStream.Length - 2)
                         {
-                            if (count >= entrySize)
+                            br2.BaseStream.Position += 4;
+                            var comp = br2.ReadUInt16();
+                            wordCount[wordCount.Count - 1] += 2;
+                            if (comp == 0x23d)
                             {
-                                legit = false;
-                                break;
+                                entryCount++;
+                                wordCount.Add(0);
                             }
-                            check = br.ReadBytes(4);
-                            count += 4;
-                        } while (!check.SequenceEqual(new byte[] { 0x85, 0, 0xf, 0 }));
-
-                        if (legit)
-                        {
-                            entries.Add(new TexEntry
-                            {
-                                entrySize = entrySize
-                            });
-                            entryCount++;
-                            o += 3 * entrySize;
-                        }
-                        else
-                        {
-                            break;
+                            br2.BaseStream.Position += 2;
                         }
                     }
 
-                    //Texture Entries
-                    for (int o = (int)header.gpuCommandsOffset, i = 0; i < entryCount; i++)
+                    //get commands
+                    br.BaseStream.Position = header.gpuCommandsOffset;
+                    for (int i = 0; i < entryCount; i++)
                     {
-                        br.BaseStream.Position = o;
-
-                        var height = br.ReadUInt16();
-                        var width = br.ReadUInt16();
-
-                        byte[] check;
-                        do { check = br.ReadBytes(4); }
-                        while (!check.SequenceEqual(new byte[] { 0x85, 0, 0xf, 0 }));
-                        Format format = (Format)br.ReadByte();
-
-                        entries[i].width = width;
-                        entries[i].height = height;
-                        entries[i].format = format;
-
-                        o += 3 * (int)entrySize;
+                        picaEntries.Add(new PICACommandReader(br.BaseStream, wordCount[i]));
                     }
 
-                    //Textures
+                    //loop through commandReaders to get textures
                     br.BaseStream.Position = header.dataOffset;
                     for (int i = 0; i < entryCount; i++)
                     {
-                        int bitDepth = 0;
-                        switch (entries[i].format)
+                        var size = picaEntries[i].getTexUnit0Size();
+                        if (size.Height != 0 && size.Width != 0)
                         {
-                            case Format.RGBA8888:
-                                bitDepth = 32;
-                                break;
-                            case Format.RGB888:
-                                bitDepth = 24;
-                                break;
-                            case Format.RGBA5551:
-                            case Format.RGB565:
-                            case Format.RGBA4444:
-                            case Format.LA88:
-                            case Format.HL88:
-                                bitDepth = 16;
-                                break;
-                            case Format.L8:
-                            case Format.A8:
-                            case Format.LA44:
-                            case Format.ETC1A4:
-                                bitDepth = 8;
-                                break;
-                            case Format.L4:
-                            case Format.A4:
-                            case Format.ETC1:
-                                bitDepth = 4;
-                                break;
+                            var format = (Format)picaEntries[i].getTexUnit0Format();
+                            int bitDepth;
+
+                            switch (format)
+                            {
+                                case Format.RGBA8888:
+                                    bitDepth = 32;
+                                    break;
+                                case Format.RGB888:
+                                    bitDepth = 24;
+                                    break;
+                                case Format.RGBA5551:
+                                case Format.RGB565:
+                                case Format.RGBA4444:
+                                case Format.LA88:
+                                case Format.HL88:
+                                    bitDepth = 16;
+                                    break;
+                                case Format.L8:
+                                case Format.A8:
+                                case Format.LA44:
+                                case Format.ETC1A4:
+                                    bitDepth = 8;
+                                    break;
+                                case Format.L4:
+                                case Format.A4:
+                                case Format.ETC1:
+                                    bitDepth = 4;
+                                    break;
+                                default:
+                                    throw new NotSupportedException();
+                            }
+
+                            origValues.Add(new TexEntry(size.Width, size.Height, format));
+
+                            var settings = new ImageSettings
+                            {
+                                Width = size.Width,
+                                Height = size.Height,
+                                Format = format,
+                                PadToPowerOf2 = false
+                            };
+
+                            bmps.Add(Common.Load(br.ReadBytes(((size.Width * size.Height) * bitDepth) / 8), settings));
                         }
-
-                        var settings = new ImageSettings
-                        {
-                            Width = entries[i].width,
-                            Height = entries[i].height,
-                            Format = entries[i].format,
-                            PadToPowerOf2 = false
-                        };
-
-                        bmps.Add(Common.Load(br.ReadBytes(((entries[i].width * entries[i].height) * bitDepth) / 8), settings));
                     }
                 }
             }
@@ -141,11 +119,10 @@ namespace image_nintendo.BCH
 
         public void Save(string filename)
         {
-            var count = 0;
-            foreach (var bmp in bmps)
+            for (int i = 0; i < bmps.Count(); i++)
             {
-                if (entries[count].width != bmp.Width || entries[count].height != bmp.Height)
-                    throw new Exception("BCH textures have to be the same size");
+                if (origValues[i].width != bmps[i].Width || origValues[i].height != bmps[i].Height)
+                    throw new Exception("All BCH textures have to be the same size");
             }
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
@@ -154,13 +131,13 @@ namespace image_nintendo.BCH
                 _stream.CopyTo(bw.BaseStream);
 
                 bw.BaseStream.Position = header.dataOffset;
-                for (int i = 0; i < entries.Count(); i++)
+                for (int i = 0; i < bmps.Count(); i++)
                 {
                     var settings = new ImageSettings
                     {
-                        Width = entries[i].width,
-                        Height = entries[i].height,
-                        Format = entries[i].format,
+                        Width = bmps[i].Width,
+                        Height = bmps[i].Height,
+                        Format = origValues[i].format,
                         PadToPowerOf2 = false
                     };
                     bw.Write(Common.Save(bmps[i], settings));
