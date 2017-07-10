@@ -511,9 +511,7 @@ namespace Kukkii
                     }
 
                     foreach (string file in files)
-                    {
                         if (File.Exists(file))
-                        {
                             try
                             {
                                 FileInfo fi = new FileInfo(file);
@@ -528,8 +526,6 @@ namespace Kukkii
                                 }
                             }
                             catch (Exception) { }
-                        }
-                    }
 
                     MessageBox.Show("Batch export completed successfully. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -570,34 +566,28 @@ namespace Kukkii
                     }
 
                     foreach (string file in files)
-                    {
                         if (File.Exists(file))
-                        {
                             try
                             {
                                 FileInfo fi = new FileInfo(file);
                                 IImageAdapter currentAdapter = SelectImageAdapter(file, true);
 
                                 if (currentAdapter != null && currentAdapter.CanSave)
-                                    try
+                                {
+                                    currentAdapter.Load(file);
+                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
                                     {
-                                        currentAdapter.Load(file);
-                                        for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                        {
-                                            var targetName = fi.FullName + "." + i.ToString("00") + ".png";
-                                            if (!File.Exists(targetName)) continue;
-                                            currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
-                                        }
-                                        currentAdapter.Save();
-                                        importCount++;
+                                        var targetName = fi.FullName + "." + i.ToString("00") + ".png";
+                                        if (!File.Exists(targetName)) continue;
+                                        currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
                                     }
-                                    catch (Exception) { }
+                                    currentAdapter.Save();
+                                    importCount++;
+                                }
 
                                 fileCount++;
                             }
                             catch (Exception) { }
-                        }
-                    }
 
                     MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
