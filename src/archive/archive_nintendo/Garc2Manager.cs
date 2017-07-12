@@ -4,19 +4,19 @@ using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace archive_nintendo.GARC4
+namespace archive_nintendo.GARC2
 {
-    public class Garc4Manager : IArchiveManager
+    public class Garc2Manager : IArchiveManager
     {
-        private GARC4 _garc4 = null;
+        private GARC2 _garc2 = null;
 
         #region Properties
 
         // Information
-        public string Name => "GARC4";
-        public string Description => "General ARChive v.4";
+        public string Name => "GARC2";
+        public string Description => "General ARChive v.2";
         public string Extension => "*.garc";
-        public string About => "This is the GARC4 archive manager for Karameru.";
+        public string About => "This is the GARC2 archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -39,7 +39,7 @@ namespace archive_nintendo.GARC4
                 if (br.BaseStream.Length < 0xc) return false;
                 br.BaseStream.Position = 0xb;
                 var version = br.ReadByte();
-                return version == 4;
+                return version == 2;
             }
         }
 
@@ -48,7 +48,7 @@ namespace archive_nintendo.GARC4
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _garc4 = new GARC4(FileInfo.OpenRead());
+                _garc2 = new GARC2(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -59,14 +59,14 @@ namespace archive_nintendo.GARC4
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _garc4.Save(FileInfo.Create());
-                _garc4.Close();
+                _garc2.Save(FileInfo.Create());
+                _garc2.Close();
             }
             else
             {
                 // Create the temp file
-                _garc4.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _garc4.Close();
+                _garc2.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _garc2.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -79,11 +79,11 @@ namespace archive_nintendo.GARC4
 
         public void Unload()
         {
-            _garc4?.Close();
+            _garc2?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _garc4.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _garc2.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 
