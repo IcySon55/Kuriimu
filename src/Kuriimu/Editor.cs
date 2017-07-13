@@ -851,38 +851,42 @@ namespace Kuriimu
                             FileInfo fi = new FileInfo(file);
                             ITextAdapter currentAdapter = SelectTextAdapter(file, true);
 
-                            if (currentAdapter != null)
+                            try
                             {
-                                KUP kup = new KUP();
-
-                                currentAdapter.Load(file, true);
-                                foreach (TextEntry entry in currentAdapter.Entries)
+                                if (currentAdapter != null)
                                 {
-                                    Entry kEntry = new Entry();
-                                    kEntry.Name = entry.Name;
-                                    kEntry.EditedText = entry.EditedText;
-                                    kEntry.OriginalText = entry.OriginalText;
-                                    kEntry.MaxLength = entry.MaxLength;
-                                    kup.Entries.Add(kEntry);
+                                    KUP kup = new KUP();
 
-                                    if (currentAdapter.EntriesHaveSubEntries)
+                                    currentAdapter.Load(file, true);
+                                    foreach (TextEntry entry in currentAdapter.Entries)
                                     {
-                                        foreach (TextEntry sub in entry.SubEntries)
+                                        Entry kEntry = new Entry();
+                                        kEntry.Name = entry.Name;
+                                        kEntry.EditedText = entry.EditedText;
+                                        kEntry.OriginalText = entry.OriginalText;
+                                        kEntry.MaxLength = entry.MaxLength;
+                                        kup.Entries.Add(kEntry);
+
+                                        if (currentAdapter.EntriesHaveSubEntries)
                                         {
-                                            Entry kSub = new Entry();
-                                            kSub.Name = sub.Name;
-                                            kSub.EditedText = sub.EditedText;
-                                            kSub.OriginalText = sub.OriginalText;
-                                            kSub.MaxLength = sub.MaxLength;
-                                            kSub.ParentEntry = entry;
-                                            kEntry.SubEntries.Add(kSub);
+                                            foreach (TextEntry sub in entry.SubEntries)
+                                            {
+                                                Entry kSub = new Entry();
+                                                kSub.Name = sub.Name;
+                                                kSub.EditedText = sub.EditedText;
+                                                kSub.OriginalText = sub.OriginalText;
+                                                kSub.MaxLength = sub.MaxLength;
+                                                kSub.ParentEntry = entry;
+                                                kEntry.SubEntries.Add(kSub);
+                                            }
                                         }
                                     }
-                                }
 
-                                kup.Save(fi.FullName + ".kup");
-                                fileCount++;
+                                    kup.Save(fi.FullName + ".kup");
+                                    fileCount++;
+                                }
                             }
+                            catch (Exception) { }
                         }
                     }
 
@@ -928,36 +932,39 @@ namespace Kuriimu
                         {
                             FileInfo fi = new FileInfo(file);
                             ITextAdapter currentAdapter = SelectTextAdapter(file, true);
-
-                            if (currentAdapter != null && currentAdapter.CanSave && File.Exists(fi.FullName + ".kup"))
+                            try
                             {
-                                KUP kup = KUP.Load(fi.FullName + ".kup");
-
-                                currentAdapter.Load(file, true);
-                                foreach (TextEntry entry in currentAdapter.Entries)
+                                if (currentAdapter != null && currentAdapter.CanSave && File.Exists(fi.FullName + ".kup"))
                                 {
-                                    Entry kEntry = kup.Entries.Find(o => o.Name == entry.Name);
+                                    KUP kup = KUP.Load(fi.FullName + ".kup");
 
-                                    if (kEntry != null)
-                                        entry.EditedText = kEntry.EditedText;
-
-                                    if (currentAdapter.EntriesHaveSubEntries && kEntry != null)
+                                    currentAdapter.Load(file, true);
+                                    foreach (TextEntry entry in currentAdapter.Entries)
                                     {
-                                        foreach (TextEntry sub in entry.SubEntries)
-                                        {
-                                            Entry kSub = (Entry)kEntry.SubEntries.Find(o => o.Name == sub.Name);
+                                        Entry kEntry = kup.Entries.Find(o => o.Name == entry.Name);
 
-                                            if (kSub != null)
-                                                sub.EditedText = kSub.EditedText;
+                                        if (kEntry != null)
+                                            entry.EditedText = kEntry.EditedText;
+
+                                        if (currentAdapter.EntriesHaveSubEntries && kEntry != null)
+                                        {
+                                            foreach (TextEntry sub in entry.SubEntries)
+                                            {
+                                                Entry kSub = (Entry)kEntry.SubEntries.Find(o => o.Name == sub.Name);
+
+                                                if (kSub != null)
+                                                    sub.EditedText = kSub.EditedText;
+                                            }
                                         }
                                     }
+
+                                    currentAdapter.Save();
+                                    importCount++;
                                 }
 
-                                currentAdapter.Save();
-                                importCount++;
+                                fileCount++;
                             }
-
-                            fileCount++;
+                            catch (Exception) { }
                         }
                     }
 
