@@ -22,6 +22,8 @@ namespace text_gmd
 
         List<String> labels = new List<String>();
 
+        bool xored = false;
+
         public GMD(string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
@@ -78,6 +80,7 @@ namespace text_gmd
                 byte[] text = br.ReadBytes((int)header.secSize);
                 if (XOR.IsXORed(br.BaseStream))
                 {
+                    xored = true;
                     text = XOR.Deobfuscate(text);
                 }
 
@@ -104,10 +107,7 @@ namespace text_gmd
 
         public void Save(string filename)
         {
-            /*using (var bw=new BinaryWriterX(File.OpenWrite(filename)))
-            {
-
-            }*/
+            
         }
     }
 }
