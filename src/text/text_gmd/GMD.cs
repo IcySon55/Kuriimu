@@ -48,6 +48,11 @@ namespace text_gmd
                     uint temp = br.ReadUInt32();
                     while (temp < 0x100000 || temp == 0xffffffff) temp = br.ReadUInt32();
                     br.BaseStream.Position -= 4;
+
+                    temp = br.ReadByte();
+                    while (temp == 0) temp = br.ReadByte();
+                    br.BaseStream.Position--;
+
                     var unkSize = br.BaseStream.Position - bk;
                     br.BaseStream.Position = bk;
 
@@ -71,7 +76,7 @@ namespace text_gmd
                 }
 
                 byte[] text = br.ReadBytes((int)header.secSize);
-                if (XOR.IsXORed(br.BaseStream, (uint)dataOffset))
+                if (XOR.IsXORed(br.BaseStream))
                 {
                     text = XOR.Deobfuscate(text);
                 }
@@ -99,68 +104,10 @@ namespace text_gmd
 
         public void Save(string filename)
         {
-            /*bool result = false;
-
-            try
+            /*using (var bw=new BinaryWriterX(File.OpenWrite(filename)))
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    BinaryWriterX bw = new BinaryWriterX(fs);
 
-                    // Header
-                    bw.WriteASCII(Header.Identifier + "\0");
-                    bw.Write(Header.Unknown1);
-                    bw.Write(Header.Unknown2);
-                    bw.Write(Header.Unknown3);
-                    bw.Write(Header.NumberOfLabels);
-                    bw.Write(Header.NumberOfOffsets);
-                    bw.Write(Header.Unknown4);
-                    long dataSizeOffset = bw.BaseStream.Position;
-                    bw.Write(Header.DataSize);
-                    bw.Write(Header.NameLength);
-                    bw.WriteASCII(Header.Name + "\0");
-
-                    foreach (Label label in Labels)
-                    {
-                        bw.Write(label.ID);
-                        bw.Write(label.Unknown1);
-                        bw.Write(label.Unknown2);
-                        bw.Write(label.Unknown3);
-                        bw.Write(label.Unknown4);
-                    }
-
-                    bw.Write(Unknown1024);
-
-                    // Read in the label names
-                    foreach (Label label in Labels)
-                    {
-                        bw.WriteASCII(label.Name);
-                        bw.Write(new byte[] { 0x0 });
-                    }
-
-                    // Read in the text data
-                    uint dataSize = 0;
-                    foreach (Label label in Labels)
-                    {
-                        bw.Write(label.Text);
-                        bw.Write(new byte[] { 0x0 });
-                        dataSize += (uint)label.Text.Length + 1;
-                    }
-
-                    // Update DataSize
-                    bw.BaseStream.Seek(dataSizeOffset, SeekOrigin.Begin);
-                    bw.Write(dataSize);
-
-                    bw.Close();
-
-                    result = true;
-                }
-            }
-            catch (Exception)
-            { }
-
-            return result;
-        }*/
+            }*/
         }
     }
 }
