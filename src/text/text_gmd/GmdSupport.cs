@@ -81,11 +81,11 @@ namespace text_gmd
             }
         }
 
-        public static bool IsXORed(Stream input, uint stringOffset)
+        public static bool IsXORed(Stream input)
         {
             var bk = input.Position;
-            input.Position = stringOffset;
-            bool result = input.ReadByte() != 0x3c;
+            input.Position = input.Length - 1;
+            bool result = input.ReadByte() != 0x00;
             input.Position = bk;
 
             return result;
