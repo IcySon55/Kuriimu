@@ -55,6 +55,9 @@
     <Compile Include="DdsfsManager.cs" />
     <Compile Include="DdsfsSupport.cs" />
     <Compile Include="GAR.cs" />
+    <Compile Include="GARC2.cs" />
+    <Compile Include="Garc2Manager.cs" />
+    <Compile Include="Garc2Support.cs" />
     <Compile Include="GARC4.cs" />
     <Compile Include="Garc4Manager.cs" />
     <Compile Include="Garc4Support.cs" />

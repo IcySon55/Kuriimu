@@ -8,9 +8,9 @@ using Kuriimu.Kontract;
 using System.IO;
 using Kuriimu.IO;
 
-namespace archive_nintendo.GARC4
+namespace archive_nintendo.GARC2
 {
-    public class GARC4FileInfo : ArchiveFileInfo
+    public class GARC2FileInfo : ArchiveFileInfo
     {
 
     }
@@ -25,7 +25,6 @@ namespace archive_nintendo.GARC4
         public uint secCount;
         public uint dataOffset;
         public uint fileSize;
-        public uint largestFileSize;
     }
 
     //File Allocation Table Offsets
@@ -33,7 +32,7 @@ namespace archive_nintendo.GARC4
     public class FatoHeader
     {
         public Magic magic;
-        public uint headerSize;
+        public uint sectionSize;
         public ushort entryCount;
         //ushort padding with 0xff
     }
@@ -43,7 +42,7 @@ namespace archive_nintendo.GARC4
     public class FatbHeader
     {
         public Magic magic;
-        public uint headerSize;
+        public uint sectionSize;
         public uint entryCount;
     }
 
@@ -53,7 +52,6 @@ namespace archive_nintendo.GARC4
         public uint unk1;
         public uint offset;
         public uint endOffset;
-        public uint size;
     }
 
     //FIMB
@@ -61,7 +59,7 @@ namespace archive_nintendo.GARC4
     public class FimbHeader
     {
         public Magic magic;
-        public uint headerSize;
+        public uint sectionSize;
         public uint dataSize;
     }
 }
