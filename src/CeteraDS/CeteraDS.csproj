@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hash\Crc16.cs" />
     <Compile Include="Image\Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
