@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Kuriimu.IO;
+using System.Collections.Generic;
 
 using Security.Cryptography;
 
@@ -31,6 +33,8 @@ namespace Kuriimu.CTR
         private AesMode Mode;
 
         private int Slot;
+
+        private Dictionary<ulong, byte[]> contLockSeeds;
 
         private bool _isdev;
 
@@ -516,11 +520,28 @@ namespace Kuriimu.CTR
             return (byte[])(NormalKeys[i].Clone());
         }
 
+        public void LoadContentLockSeeds()
+        {
+            var tmp = File.OpenRead("bin\\seeddb.bin");
+            contLockSeeds = new Dictionary<ulong, byte[]>();
+            using (var br = new BinaryReaderX(tmp))
+            {
+                var entryCount = br.ReadUInt32();
+                br.BaseStream.Position += 0xc;
+                for (int i = 0; i < entryCount; i++)
+                {
+                    var titleID = br.ReadBytes(8).Reverse().ToArray().BytesToStruct<ulong>();
+                    var seed = br.ReadBytes(0x10);
+                    contLockSeeds.Add(titleID, seed);
+                    br.BaseStream.Position += 0x8;
+                }
+            }
+        }
 
         public void LoadBootromKeys()
         {
             var tmp = File.OpenRead("bin\\boot9.bin");
-            byte[] boot9=new byte[tmp.Length];
+            byte[] boot9 = new byte[tmp.Length];
             tmp.Read(boot9, 0, (int)tmp.Length);
             tmp.Close();
             LoadKeysFromBootromFile(boot9);
@@ -792,7 +813,8 @@ namespace Kuriimu.CTR
                 tmp.Close();
 
                 keysector = key_dev;
-            } else
+            }
+            else
             {
                 var tmp = File.OpenRead("bin\\n3ds_keysector_retail.bin");
                 byte[] key_ret = new byte[tmp.Length];
@@ -1262,9 +1284,154 @@ namespace Kuriimu.CTR
             // And we're done.
         }
 
-        public void DecryptCIA(Stream ciaInStream, Stream ciaOutstream, byte[] seed = null)
+        List<byte[]> cia_common_keyYs = new List<byte[]> {
+            new byte[] {0xD0, 0x7B, 0x33, 0x7F, 0x9C, 0xA4, 0x38, 0x59, 0x32, 0xA2, 0xE2, 0x57, 0x23, 0x23, 0x2E, 0xB9} , // 0 - eShop Titles
+            new byte[] {0x0C, 0x76, 0x72, 0x30, 0xF0, 0x99, 0x8F, 0x1C, 0x46, 0x82, 0x82, 0x02, 0xFA, 0xAC, 0xBE, 0x4C} , // 1 - System Titles
+            new byte[] {0xC4, 0x75, 0xCB, 0x3A, 0xB8, 0xC7, 0x88, 0xBB, 0x57, 0x5E, 0x12, 0xA1, 0x09, 0x07, 0xB8, 0xA4} , // 2
+            new byte[] {0xE4, 0x86, 0xEE, 0xE3, 0xD0, 0xC0, 0x9C, 0x90, 0x2F, 0x66, 0x86, 0xD4, 0xC0, 0x6F, 0x64, 0x9F} , // 3
+            new byte[] {0xED, 0x31, 0xBA, 0x9C, 0x04, 0xB0, 0x67, 0x50, 0x6C, 0x44, 0x97, 0xA3, 0x5B, 0x78, 0x04, 0xFC} , // 4
+            new byte[] {0x5E, 0x66, 0x99, 0x8A, 0xB4, 0xE8, 0x93, 0x16, 0x06, 0x85, 0x0F, 0xD7, 0xA1, 0x6D, 0xD7, 0x55} , // 5
+        };
+
+        //CIA decryption algo by onepiecefreak
+        public void DecryptCIA(Stream ciaInStream, Stream ciaOutstream)
         {
-            // TODO
+            using (var br = new BinaryReaderX(ciaInStream, true))
+            {
+                //get Header Information
+                var archiveHeaderSize = br.ReadUInt32();
+                br.ReadInt32();
+                var certChainSize = br.ReadUInt32();
+                var ticketSize = br.ReadUInt32();
+                var tmdSize = br.ReadUInt32();
+                var metaSize = br.ReadUInt32();
+                var contSize = br.ReadUInt64();
+                byte[] contentIndex = br.ReadBytes(0x2000);
+
+                //get Ticket
+                var ticketOffset = ((archiveHeaderSize + 0x3f & ~0x3f) + certChainSize) + 0x3f & ~0x3f;
+                br.BaseStream.Position = ticketOffset;
+                byte[] ticket = br.ReadBytes((int)ticketSize);
+
+                //get encrypted TitleKey
+                byte[] encTitleKey;
+                byte[] titleID;
+                ulong titleIDI;
+                byte keyYIndex = 0;
+                using (var tk = new BinaryReaderX(new MemoryStream(ticket), ByteOrder.BigEndian))
+                {
+                    var sigType = tk.ReadUInt32();
+                    int sigSize = 0;
+                    int padSize = 0;
+                    switch (sigType)
+                    {
+                        case 0x010003:
+                            sigSize = 0x200;
+                            padSize = 0x3c;
+                            break;
+                        case 0x010004:
+                            sigSize = 0x100;
+                            padSize = 0x3c;
+                            break;
+                        case 0x010005:
+                            sigSize = 0x3c;
+                            padSize = 0x40;
+                            break;
+                    }
+                    tk.BaseStream.Position += sigSize + padSize + 0x7f;
+                    encTitleKey = tk.ReadBytes(0x10);
+                    tk.BaseStream.Position += 0x0D;
+                    titleID = tk.ReadBytes(0x8);
+                    titleIDI = titleID.BytesToStruct<ulong>();
+                    tk.BaseStream.Position += 0xd;
+                    keyYIndex = tk.ReadByte();
+                }
+
+                //decrypt TitleKey
+
+                SetMode(AesMode.CBC);
+                SelectKeyslot(0x3D);
+                SetNormalKey(KeyScrambler.GetNormalKey(GetKeyX(0x3D), cia_common_keyYs[keyYIndex]));
+                var iv = new byte[0x10];
+                titleID.CopyTo(iv, 0);
+                SetIV(iv);
+                var decTitleKey = Decrypt(encTitleKey);
+
+                //get TMD
+                br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
+                var tmdOffset = br.BaseStream.Position;
+                byte[] TMD = br.ReadBytes((int)tmdSize);
+
+                //get TMD contentIndex
+                uint tmdTypeOffset = 0;
+                ushort tmdType = 0;
+                byte[] contIndex;
+                using (var tmd = new BinaryReaderX(new MemoryStream(TMD), ByteOrder.BigEndian))
+                {
+                    var sigType = br.ReadUInt32();
+                    int sigSize = 0;
+                    int padSize = 0;
+                    switch (sigType)
+                    {
+                        case 0x010003:
+                            sigSize = 0x200;
+                            padSize = 0x3c;
+                            break;
+                        case 0x010004:
+                            sigSize = 0x100;
+                            padSize = 0x3c;
+                            break;
+                        case 0x010005:
+                            sigSize = 0x3c;
+                            padSize = 0x40;
+                            break;
+                    }
+                    //Header
+                    tmd.BaseStream.Position += sigSize + padSize;
+                    tmd.BaseStream.Position += 0x9e;
+                    var contCount = br.ReadUInt16();
+                    tmd.BaseStream.Position += 0x24;
+
+                    tmd.BaseStream.Position += 64 * 0x24;   //Content Info Records
+
+                    tmd.BaseStream.Position += 4;
+                    contIndex = br.ReadBytes(2);
+                    tmdTypeOffset = (uint)tmd.BaseStream.Position;
+                    tmdType = br.ReadUInt16();
+                }
+
+                //Ignore MetaData
+                br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
+                if (metaSize != 0) br.BaseStream.Position += metaSize;
+                br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
+                var contOffset = br.BaseStream.Position;
+
+                //Decrypt CIA Content with decrypted TitleKey
+                SetMode(AesMode.CBC);
+                SetNormalKey(decTitleKey);
+                iv = new byte[0x10];
+                contIndex.CopyTo(iv, 0);
+                SetIV(iv);
+                var decContent = Decrypt(br.ReadBytes((int)contSize));
+
+                //Decrypt NCCH
+                LoadContentLockSeeds();
+                var ciaContent = new MemoryStream(decContent);
+                var seed = (contLockSeeds.ContainsKey(titleIDI)) ? contLockSeeds[titleIDI] : null;
+                DecryptNCCH(new MemoryStream(decContent), ciaContent, seed);
+
+                using (var bw = new BinaryWriterX(ciaOutstream, true, ByteOrder.BigEndian))
+                {
+                    //Set contentType to Encrypted=0
+                    bw.BaseStream.Position = tmdOffset + tmdTypeOffset;
+                    tmdType &= 0xfffe;
+                    bw.Write(tmdType);
+
+                    //Write decrpted Content
+                    bw.BaseStream.Position = contOffset;
+                    ciaContent.CopyTo(bw.BaseStream);
+                }
+            }
         }
 
         public void DecryptNAND(Stream nandInStream, Stream nandOutStream, bool isNew3DS)
