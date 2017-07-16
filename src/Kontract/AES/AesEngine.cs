@@ -1293,9 +1293,18 @@ namespace Kuriimu.CTR
             new byte[] {0x5E, 0x66, 0x99, 0x8A, 0xB4, 0xE8, 0x93, 0x16, 0x06, 0x85, 0x0F, 0xD7, 0xA1, 0x6D, 0xD7, 0x55} , // 5
         };
 
+        public class chunkRecord
+        {
+            public byte[] index;
+            public ushort type;
+            public ulong size;
+        }
+
         //CIA decryption algo by onepiecefreak
         public void DecryptCIA(Stream ciaInStream, Stream ciaOutstream)
         {
+            List<chunkRecord> chunkRecords = new List<chunkRecord>();
+
             using (var br = new BinaryReaderX(ciaInStream, true))
             {
                 //get Header Information
@@ -1348,7 +1357,6 @@ namespace Kuriimu.CTR
                 }
 
                 //decrypt TitleKey
-
                 SetMode(AesMode.CBC);
                 SelectKeyslot(0x3D);
                 SetNormalKey(KeyScrambler.GetNormalKey(GetKeyX(0x3D), cia_common_keyYs[keyYIndex]));
@@ -1362,13 +1370,11 @@ namespace Kuriimu.CTR
                 var tmdOffset = br.BaseStream.Position;
                 byte[] TMD = br.ReadBytes((int)tmdSize);
 
-                //get TMD contentIndex
-                uint tmdTypeOffset = 0;
-                ushort tmdType = 0;
-                byte[] contIndex;
+                //get TMD contentIndeces
+                uint contChunkOffset = 0;
                 using (var tmd = new BinaryReaderX(new MemoryStream(TMD), ByteOrder.BigEndian))
                 {
-                    var sigType = br.ReadUInt32();
+                    var sigType = tmd.ReadUInt32();
                     int sigSize = 0;
                     int padSize = 0;
                     switch (sigType)
@@ -1389,48 +1395,72 @@ namespace Kuriimu.CTR
                     //Header
                     tmd.BaseStream.Position += sigSize + padSize;
                     tmd.BaseStream.Position += 0x9e;
-                    var contCount = br.ReadUInt16();
+                    var contCount = tmd.ReadUInt16();
                     tmd.BaseStream.Position += 0x24;
 
                     tmd.BaseStream.Position += 64 * 0x24;   //Content Info Records
 
-                    tmd.BaseStream.Position += 4;
-                    contIndex = br.ReadBytes(2);
-                    tmdTypeOffset = (uint)tmd.BaseStream.Position;
-                    tmdType = br.ReadUInt16();
+                    contChunkOffset = (uint)tmd.BaseStream.Position + (uint)tmdOffset;
+                    for (int i = 0; i < contCount; i++)
+                    {
+                        tmd.BaseStream.Position += 4;
+                        chunkRecords.Add(new chunkRecord
+                        {
+                            index = tmd.ReadBytes(2),
+                            type = tmd.ReadUInt16(),
+                            size = tmd.ReadUInt64()
+                        });
+                        tmd.BaseStream.Position += 0x20;
+                    }
                 }
 
                 //Ignore MetaData
                 br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
                 if (metaSize != 0) br.BaseStream.Position += metaSize;
                 br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
-                var contOffset = br.BaseStream.Position;
 
-                //Decrypt CIA Content with decrypted TitleKey
+                //Decrypt CIA Contents with decrypted TitleKey
+                LoadContentLockSeeds();
                 SetMode(AesMode.CBC);
                 SetNormalKey(decTitleKey);
                 iv = new byte[0x10];
-                contIndex.CopyTo(iv, 0);
                 SetIV(iv);
+                var contOffset = br.BaseStream.Position;
                 var decContent = Decrypt(br.ReadBytes((int)contSize));
+                File.OpenWrite("C:\\Users\\Kirito\\Desktop\\output_0.bin").Write(decContent, 0, decContent.Length);
 
-                //Decrypt NCCH
-                LoadContentLockSeeds();
-                var ciaContent = new MemoryStream(decContent);
-                var seed = (contLockSeeds.ContainsKey(titleIDI)) ? contLockSeeds[titleIDI] : null;
-                DecryptNCCH(new MemoryStream(decContent), ciaContent, seed);
-
-                using (var bw = new BinaryWriterX(ciaOutstream, true, ByteOrder.BigEndian))
+                for (int i = 0; i < chunkRecords.Count; i++)
                 {
-                    //Set contentType to Encrypted=0
-                    bw.BaseStream.Position = tmdOffset + tmdTypeOffset;
-                    tmdType &= 0xfffe;
-                    bw.Write(tmdType);
+                    using (var br2 = new BinaryReaderX(new MemoryStream(decContent), true))
+                    {
+                        //Decrypt NCCH
+                        var ncchContent = new MemoryStream(br2.ReadBytes((int)chunkRecords[i].size));
+                        var decNcchContent = new MemoryStream();
+                        ncchContent.CopyTo(decNcchContent);
+                        decNcchContent.Position = ncchContent.Position = 0;
+                        var seed = (contLockSeeds.ContainsKey(titleIDI)) ? contLockSeeds[titleIDI] : null;
+                        DecryptNCCH(ncchContent, decNcchContent, seed);
 
-                    //Write decrpted Content
-                    bw.BaseStream.Position = contOffset;
-                    ciaContent.CopyTo(bw.BaseStream);
+                        //Write decrypted NCCH
+                        using (var bw = new BinaryWriterX(ciaOutstream, true, ByteOrder.BigEndian))
+                        {
+                            //Set contentType to Encrypted=0
+                            chunkRecords[i].type &= 0xfffe;
+                            bw.BaseStream.Position = contChunkOffset + i * 0x30 + 6;
+                            bw.Write(chunkRecords[i].type);
+
+                            //Write decrypted Content
+                            bw.BaseStream.Position = contOffset;
+                            decNcchContent.CopyTo(bw.BaseStream);
+                            contOffset += (int)chunkRecords[i].size;
+                            contOffset = contOffset + 0x3f & ~0x3f;
+                        }
+
+                        br2.BaseStream.Position = br2.BaseStream.Position + 0x3f & ~0x3f;
+                    }
                 }
+
+                decContent = null;
             }
         }
 
