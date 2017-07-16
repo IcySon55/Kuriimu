@@ -22,9 +22,9 @@ namespace Kuriimu.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
             tsb3.DropDownItems[0].Tag = Types.normal;
-            /*tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
+            tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
             tsb3.DropDownItems[1].Tag = Types.CIA;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
+            /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
             tsb3.DropDownItems[2].Tag = Types.BOSS;*/
         }
 
@@ -37,7 +37,7 @@ namespace Kuriimu.UI
 
             try
             {
-                using (var openBr=new BinaryReaderX(openFile))
+                using (var openBr = new BinaryReaderX(openFile))
                 using (var outFs = new BinaryWriterX(saveFile))
                 {
                     var engine = new AesEngine();
@@ -47,14 +47,17 @@ namespace Kuriimu.UI
                             openBr.BaseStream.CopyTo(outFs.BaseStream);
                             openBr.BaseStream.Position = 0;
                             outFs.BaseStream.Position = 0;
-                            engine.DecryptGameNCSD(openBr.BaseStream,outFs.BaseStream);
+                            engine.DecryptGameNCSD(openBr.BaseStream, outFs.BaseStream);
                             break;
-                        /*case Types.CIA:
-                            engine.DecryptCIA(openBr.BaseStream,outFs.BaseStream);
+                        case Types.CIA:
+                            openBr.BaseStream.CopyTo(outFs.BaseStream);
+                            openBr.BaseStream.Position = 0;
+                            outFs.BaseStream.Position = 0;
+                            engine.DecryptCIA(openBr.BaseStream, outFs.BaseStream);
                             break;
-                        case Types.BOSS:
-                            outFs.Write(engine.DecryptBOSS(openBr.ReadBytes((int)openBr.BaseStream.Length)));
-                            break;*/
+                            /*case Types.BOSS:
+                                outFs.Write(engine.DecryptBOSS(openBr.ReadBytes((int)openBr.BaseStream.Length)));
+                                break;*/
                     }
                 }
             }

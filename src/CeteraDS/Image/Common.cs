@@ -35,7 +35,7 @@ namespace CeteraDS.Image
         public BitLength BitPerIndex { get; set; }
         public Orientation Orientation { get; set; } = Orientation.Default;
         public int TileSize { get; set; } = 8;
-        public bool PadToPowerOf2 { get; set; } = true;
+        public bool PadToPowerOf2 { get; set; } = false;
 
         /// <summary>
         /// This is currently a hack
@@ -91,16 +91,21 @@ namespace CeteraDS.Image
             {
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    int i = 0;
                     switch (bitLength)
                     {
                         case BitLength.Bit4:
-                            i = br.ReadNibble();
+                            int i = br.ReadNibble();
+                            int i2 = br.ReadNibble();
+                            yield return palette.ToList()[i];
+                            yield return palette.ToList()[i2];
+                            break;
+                        case BitLength.Bit8:
+                            int i3 = br.ReadByte();
+                            yield return palette.ToList()[i3];
                             break;
                         default:
                             throw new NotSupportedException($"Unknown bitLength format {bitLength}");
                     }
-                    yield return palette.ToList()[i];
                 }
             }
         }
@@ -146,7 +151,7 @@ namespace CeteraDS.Image
         public static Bitmap Load(byte[] indeces, ImageSettings settings, IEnumerable<Color> palette)
         {
             int width = settings.Width, height = settings.Height;
-            var colors = GetColorsFromIndeces(indeces, settings.BitPerIndex, palette);
+            var colors = GetColorsFromIndeces(indeces, settings.BitPerIndex, palette).ToList();
             var points = GetPointSequence(settings);
 
             // Now we just need to merge the points with the colors
@@ -228,10 +233,7 @@ namespace CeteraDS.Image
             {
                 foreach (var point in points)
                 {
-                    int x = Clamp(point.X, 0, bmp.Width);
-                    int y = Clamp(point.Y, 0, bmp.Height);
-
-                    var color = bmp.GetPixel(x, y);
+                    var color = bmp.GetPixel(point.X, point.Y);
 
                     switch (settings.BitPerIndex)
                     {
