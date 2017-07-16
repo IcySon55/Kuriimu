@@ -1427,7 +1427,6 @@ namespace Kuriimu.CTR
                 SetIV(iv);
                 var contOffset = br.BaseStream.Position;
                 var decContent = Decrypt(br.ReadBytes((int)contSize));
-                File.OpenWrite("C:\\Users\\Kirito\\Desktop\\output_0.bin").Write(decContent, 0, decContent.Length);
 
                 for (int i = 0; i < chunkRecords.Count; i++)
                 {
