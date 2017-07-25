@@ -19,9 +19,9 @@ namespace Kuriimu.UI
             tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
 
-            // Level5
+            // CriWare
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.Level5.ToString(), null));
-            tsb3=(ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[0].Tag = Compression.Level5;
 

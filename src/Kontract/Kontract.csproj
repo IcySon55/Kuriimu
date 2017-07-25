@@ -71,6 +71,7 @@
     <Compile Include="Compression\RevLZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
     <Compile Include="Compression\ZLib.cs" />
+    <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Tools.cs" />
     <Compile Include="UI\Compression.cs" />
     <Compile Include="UI\Encryption.cs" />
+    <Compile Include="UI\Hash.cs" />
     <Compile Include="UI\Win32.cs" />
     <Compile Include="ValueTuple.cs" />
   </ItemGroup>
