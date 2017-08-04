@@ -20,7 +20,7 @@ namespace archive_level5.ARC0
         byte[] unk2;
 
         private List<Entry> entries = new List<Entry>();
-        private List<string> fileNames = new List<string>();
+        private List<FileName> fileNames = new List<FileName>();
         private List<string> dirStruct = new List<string>();
         private List<int> folderCounts = new List<int>();
 
@@ -45,7 +45,6 @@ namespace archive_level5.ARC0
                     nl.BaseStream.Position++;
                     string tmp = nl.ReadCStringSJIS();
                     nl.BaseStream.Position--;
-                    fileNames = new List<string>();
                     folderCounts.Add(0);
 
                     while (tmp != "" && nl.BaseStream.Position < nl.BaseStream.Length)
@@ -59,7 +58,11 @@ namespace archive_level5.ARC0
                         else
                         {
                             dirStruct.Add(currentFolder + tmp);
-                            fileNames.Add(currentFolder + tmp);
+                            fileNames.Add(new FileName
+                            {
+                                crc32 = Crc32.Create(tmp.ToLower()),
+                                name = currentFolder + tmp,
+                            });
                             folderCounts[folderCounts.Count - 1] += 1;
                         }
 
@@ -73,7 +76,25 @@ namespace archive_level5.ARC0
                 }
 
                 //FileData
-                int pos = 0;
+                foreach (var fileName in fileNames)
+                {
+                    var entry = entries.Find(x => x.crc32==fileName.crc32);
+                    try
+                    {
+                        Files.Add(new ARC0FileInfo
+                        {
+                            State = ArchiveFileState.Archived,
+                            FileName = fileName.name,
+                            FileData = new SubStream(br.BaseStream, entry.fileOffset + header.dataOffset, entry.fileSize),
+                            crc32 = entry.crc32
+                        });
+                    } catch
+                    {
+
+                    }
+                }
+
+                /*int pos = 0;
                 foreach (var folderCount in folderCounts)
                 {
                     var tmpFiles = new List<NameEntry>();
@@ -96,7 +117,7 @@ namespace archive_level5.ARC0
                                 crc32 = entries[pos++].crc32
                             });
                     }
-                }
+                }*/
             }
         }
 

@@ -12,7 +12,7 @@ namespace CeteraDS.Image
 {
     public enum Format : byte
     {
-        BGR555, ABGR1555
+        ABGR1555, BGR555
     }
 
     public enum BitLength : byte

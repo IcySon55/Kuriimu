@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -7,19 +7,19 @@ using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace archive_level5.XPCK
+namespace archive_level5.XFSA
 {
-    public class XpckManager : IArchiveManager
+    public class XfsakManager : IArchiveManager
     {
-        private XPCK _xpck = null;
+        private XFSA _xfsa = null;
 
         #region Properties
 
         // Information
-        public string Name => "XPCK";
-        public string Description => "Level 5 eXtractable PaCKage";
-        public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
-        public string About => "This is the XPCK archive manager for Karameru.";
+        public string Name => "XFSA";
+        public string Description => "Level 5 XFS Archive";
+        public string Extension => "*.fa";
+        public string About => "This is the XFSA archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -38,7 +38,7 @@ namespace archive_level5.XPCK
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "XPCK";
+                return br.ReadString(4) == "XFSA";
             }
         }
 
@@ -47,7 +47,7 @@ namespace archive_level5.XPCK
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _xpck = new XPCK(FileInfo.FullName);
+                _xfsa = new XFSA(FileInfo.FullName);
         }
 
         public void Save(string filename = "")
@@ -58,14 +58,14 @@ namespace archive_level5.XPCK
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _xpck.Save(FileInfo.Create());
-                _xpck.Close();
+                _xfsa.Save(FileInfo.Create());
+                _xfsa.Close();
             }
             else
             {
                 // Create the temp file
-                _xpck.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _xpck.Close();
+                _xfsa.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _xfsa.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -78,11 +78,11 @@ namespace archive_level5.XPCK
 
         public void Unload()
         {
-            _xpck?.Close();
+            _xfsa?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _xpck.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _xfsa.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

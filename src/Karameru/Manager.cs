@@ -94,6 +94,7 @@ namespace Karameru
             // Tools
             CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
             EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+            HashTools.LoadHashTools(hashToolStripMenuItem);
 
             Tools.DoubleBuffer(treDirectories, true);
             Tools.DoubleBuffer(lstFiles, true);

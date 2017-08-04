@@ -40,7 +40,7 @@ namespace archive_level5.PCK
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _pck = new PCK(FileInfo.OpenRead());
+                _pck = new PCK(FileInfo.OpenRead(), filename);
         }
 
         public void Save(string filename = "")

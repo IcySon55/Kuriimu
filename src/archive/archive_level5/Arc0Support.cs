@@ -35,6 +35,13 @@ namespace archive_level5.ARC0
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class FileName
+    {
+        public uint crc32;
+        public string name;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Entry
     {
         public uint crc32; //only filename.ToLower()
