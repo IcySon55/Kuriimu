@@ -1,21 +1,25 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
+using Cetera.Hash;
+using Kuriimu.Compression;
 using Kuriimu.Kontract;
+using Kuriimu.IO;
 
-namespace archive_level5.PCK
+namespace archive_level5.XFSA
 {
-    public class PckManager : IArchiveManager
+    public class XfsakManager : IArchiveManager
     {
-        private PCK _pck = null;
+        private XFSA _xfsa = null;
 
         #region Properties
 
         // Information
-        public string Name => "PCK";
-        public string Description => "Level 5 PaCKage";
-        public string Extension => "*.pck";
-        public string About => "This is the PCK archive manager for Karameru.";
+        public string Name => "XFSA";
+        public string Description => "Level 5 XFS Archive";
+        public string Extension => "*.fa";
+        public string About => "This is the XFSA archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -31,8 +35,11 @@ namespace archive_level5.PCK
 
         public bool Identify(string filename)
         {
-            // TODO: Make this way more robust
-            return filename.EndsWith(".pck");
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            {
+                if (br.BaseStream.Length < 4) return false;
+                return br.ReadString(4) == "XFSA";
+            }
         }
 
         public void Load(string filename)
@@ -40,7 +47,7 @@ namespace archive_level5.PCK
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _pck = new PCK(FileInfo.OpenRead(), filename);
+                _xfsa = new XFSA(FileInfo.FullName);
         }
 
         public void Save(string filename = "")
@@ -51,14 +58,14 @@ namespace archive_level5.PCK
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _pck.Save(FileInfo.Create());
-                _pck.Close();
+                _xfsa.Save(FileInfo.Create());
+                _xfsa.Close();
             }
             else
             {
                 // Create the temp file
-                _pck.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _pck.Close();
+                _xfsa.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _xfsa.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -71,11 +78,11 @@ namespace archive_level5.PCK
 
         public void Unload()
         {
-            _pck?.Close();
+            _xfsa?.Close();
         }
 
-        //Files
-        public IEnumerable<ArchiveFileInfo> Files => _pck.Files;
+        // Files
+        public IEnumerable<ArchiveFileInfo> Files => _xfsa.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 
