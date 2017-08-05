@@ -47,7 +47,6 @@ namespace archive_level5.XFSA
                 fileNames = GetFileNames(Level5.Decompress(new MemoryStream(nameC)));
 
                 //Add Files
-                var count = 0;
                 List<uint> combs = new List<uint>();
                 foreach (var name in fileNames)
                 {

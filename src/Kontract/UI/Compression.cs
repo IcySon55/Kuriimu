@@ -88,11 +88,14 @@ namespace Kuriimu.UI
             tsb3.DropDownItems[0].Tag = Compression.LZECD;
 
             // LZSS
-            //tsb.DropDownItems.Add(new ToolStripMenuItem("LZ11", null, LZ11_Compress));
+            tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.LZSS.ToString(), null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[8];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[0].Tag = Compression.LZSS;
 
             // RLE
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.RLE.ToString(), null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[8];
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[9];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.RLE;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
@@ -100,7 +103,7 @@ namespace Kuriimu.UI
 
             // ZLib
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.ZLib.ToString(), null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[9];
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[10];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.ZLib;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
@@ -182,9 +185,9 @@ namespace Kuriimu.UI
                         case Compression.LZ77:
                             outFs.Write(LZ77.Decompress(openFile));
                             break;
-                        /*case Compression.LZSS:
+                        case Compression.LZSS:
                             outFs.Write(LZSS.Decompress(openFile, LZSS.GetDecompressedSize(openFile)));
-                            break;*/
+                            break;
                         case Compression.LZSSVLE:
                             outFs.Write(LZSSVLE.Decompress(openFile));
                             break;
