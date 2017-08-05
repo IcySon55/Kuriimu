@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.ComponentModel;
+using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
 
 namespace image_nintendo.CTPK
@@ -36,5 +37,12 @@ namespace image_nintendo.CTPK
     {
         public uint crc32;
         public int entryNr;
+    }
+
+    public sealed class CtpkBitmapInfo : BitmapInfo
+    {
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public Cetera.Image.Format Format { get; set; }
     }
 }
