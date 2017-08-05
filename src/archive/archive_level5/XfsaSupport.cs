@@ -5,7 +5,7 @@ namespace archive_level5.XFSA
 {
     public class XFSAFileInfo : ArchiveFileInfo
     {
-        public uint crc32;
+        public FileEntry entry;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

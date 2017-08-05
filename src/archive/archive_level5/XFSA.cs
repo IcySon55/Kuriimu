@@ -48,16 +48,18 @@ namespace archive_level5.XFSA
 
                 //Add Files
                 var count = 0;
+                List<uint> combs = new List<uint>();
                 foreach (var name in fileNames)
                 {
                     var crc32 = Crc32.Create(name.Split('/').Last());
-                    var entry = entries.Find(c => c.crc32 == crc32);
+                    var entry = entries.Find(c => c.crc32 == crc32 && !combs.Contains(c.comb1));
+                    combs.Add(entry.comb1);
                     Files.Add(new XFSAFileInfo
                     {
                         State = ArchiveFileState.Archived,
                         FileName = name,
                         FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.comb1 & 0x00ffffff) << 4), entry.comb2 & 0x000fffff),
-                        crc32 = crc32
+                        entry = entry
                     });
                 }
             }
@@ -102,16 +104,18 @@ namespace archive_level5.XFSA
 
                 //FileEntries Table
                 bw.Write((entries.Count * 0xc) << 3);
-                var files = Files.OrderBy(c => c.crc32);
 
                 uint offset = 0;
-                int count = 0;
+                List<XFSAFileInfo> files = new List<XFSAFileInfo>();
                 foreach (var entry in entries)
                 {
+                    var file = Files.Find(c => c.entry.comb1 == entry.comb1);
+                    files.Add(file);
+
                     //catch file limits
-                    if (Files[count].FileData.Length >= 0x100000)
+                    if (file.FileData.Length >= 0x100000)
                     {
-                        throw new Exception("File " + Files[count].FileName + " is too big to pack into this archive type!");
+                        throw new Exception("File " + file.FileName + " is too big to pack into this archive type!");
                     }
                     else if (offset + dataOffset >= 0x10000000)
                     {
@@ -120,14 +124,13 @@ namespace archive_level5.XFSA
 
                     //edit entry
                     entry.comb1 = (entry.comb1 & 0xff000000) | (offset >> 4);
-                    entry.comb2 = (entry.comb1 & 0xfff00000) | ((uint)Files[count].FileData.Length);
+                    entry.comb2 = (entry.comb1 & 0xfff00000) | ((uint)file.FileData.Length);
 
                     //write entry
                     bw.WriteStruct(entry);
 
                     //edit values
-                    offset = (uint)(((offset + Files[count].FileData.Length) + 0xf) & ~0xf);
-                    count++;
+                    offset = (uint)(((offset + file.FileData.Length) + 0xf) & ~0xf);
                 }
 
                 //Nametable
@@ -135,7 +138,6 @@ namespace archive_level5.XFSA
 
                 //Files
                 bw.BaseStream.Position = dataOffset;
-                files = Files.OrderBy(c => c.FileData.Position);
                 foreach (var file in files)
                 {
                     file.FileData.CopyTo(bw.BaseStream);

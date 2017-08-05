@@ -18,7 +18,7 @@ namespace archive_level5.XPCK
         // Information
         public string Name => "XPCK";
         public string Description => "Level 5 eXtractable PaCKage";
-        public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
+        public string Extension => "*.xa;*.xb;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
         public string About => "This is the XPCK archive manager for Karameru.";
 
         // Feature Support
