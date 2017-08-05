@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kuriimu.Kontract;
 using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace image_nintendo.CTPK
 {
@@ -17,7 +16,7 @@ namespace image_nintendo.CTPK
 
         public string Name => "CTPK";
         public string Description => "CTR Texture PacKage";
-        public string Extension => "*.ctpk";
+        public string Extension => "*.ctpk;*.amt";
         public string About => "This is the CTPK image adapter for Kukkii.";
 
         // Feature Support
@@ -33,7 +32,7 @@ namespace image_nintendo.CTPK
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "CTPK" || Path.GetExtension(filename) == ".ctpk";
+                return br.ReadString(4) == "CTPK";
             }
         }
 
