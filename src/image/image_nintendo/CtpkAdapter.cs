@@ -43,11 +43,8 @@ namespace image_nintendo.CTPK
             if (FileInfo.Exists)
             {
                 using (var br = new BinaryReaderX(FileInfo.OpenRead()))
-                    if (br.ReadString(4) == "CTPK")
-                        _ctpk = new CTPK(FileInfo.FullName);
-                    else
-                        _ctpk = new CTPK(FileInfo.FullName, true);
-                _bitmaps = _ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                    _ctpk = new CTPK(FileInfo.FullName);
+                _bitmaps = _ctpk.bmps.Select(o => new CtpkBitmapInfo { Bitmap = o }).ToList<BitmapInfo>();
             }
         }
 
