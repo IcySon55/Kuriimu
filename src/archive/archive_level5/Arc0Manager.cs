@@ -35,7 +35,8 @@ namespace archive_level5.ARC0
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ARC0";
+                var magic = br.ReadString(4);
+                return magic == "ARC0";
             }
         }
 
