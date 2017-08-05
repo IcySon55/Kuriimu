@@ -47,6 +47,12 @@ namespace Kuriimu.Compression
         {
             using (BinaryReaderX br = new BinaryReaderX(input, true))
             {
+                if (br.ReadString(4) == "SSZL")
+                {
+                    br.BaseStream.Position = 0xc;
+                    return br.ReadUInt32();
+                }
+
                 return 0;
             }
         }
