@@ -1,22 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Text;
+using Cetera.Hash;
+using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace archive_level5.ARC0
+namespace archive_level5.XFSA
 {
-    public class Arc0Manager : IArchiveManager
+    public class XfsakManager : IArchiveManager
     {
-        private ARC0 _arc0 = null;
+        private XFSA _xfsa = null;
 
         #region Properties
 
         // Information
-        public string Name => "ARC0";
-        public string Description => "Level 5 ARChive 0";
+        public string Name => "XFSA";
+        public string Description => "Level 5 XFS Archive";
         public string Extension => "*.fa";
-        public string About => "This is the ARC0 archive manager for Karameru.";
+        public string About => "This is the XFSA archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -35,7 +38,7 @@ namespace archive_level5.ARC0
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ARC0";
+                return br.ReadString(4) == "XFSA";
             }
         }
 
@@ -44,7 +47,7 @@ namespace archive_level5.ARC0
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _arc0 = new ARC0(FileInfo.OpenRead());
+                _xfsa = new XFSA(FileInfo.FullName);
         }
 
         public void Save(string filename = "")
@@ -55,14 +58,14 @@ namespace archive_level5.ARC0
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _arc0.Save(FileInfo.Create());
-                _arc0.Close();
+                _xfsa.Save(FileInfo.Create());
+                _xfsa.Close();
             }
             else
             {
                 // Create the temp file
-                _arc0.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _arc0.Close();
+                _xfsa.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _xfsa.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -75,11 +78,11 @@ namespace archive_level5.ARC0
 
         public void Unload()
         {
-            _arc0?.Close();
+            _xfsa?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _arc0.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _xfsa.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

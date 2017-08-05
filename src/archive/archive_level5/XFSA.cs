@@ -1,74 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Cetera.Hash;
 using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
+using System;
+using Cetera.Hash;
 
-namespace archive_level5.ARC0
+namespace archive_level5.XFSA
 {
-    public sealed class ARC0
+    public sealed class XFSA
     {
-        public List<ARC0FileInfo> Files = new List<ARC0FileInfo>();
+        public List<XFSAFileInfo> Files = new List<XFSAFileInfo>();
         Stream _stream = null;
 
-        public Header header;
-        public byte[] table1;
-        public byte[] table2;
-        public byte[] nameC;
+        Header header;
+        byte[] table1;
+        byte[] table2;
+        byte[] nameC;
         List<FileEntry> entries = new List<FileEntry>();
         List<string> fileNames = new List<string>();
 
-        public ARC0(Stream input)
+        public XFSA(string filename)
         {
-            _stream = input;
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
+            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
             {
                 //Header
                 header = br.ReadStruct<Header>();
 
-                //Table 1
+                //1st table
                 br.BaseStream.Position = header.offset1;
                 table1 = br.ReadBytes((int)(header.offset2 - header.offset1));
 
-                //Table 1
+                //2nd table
                 br.BaseStream.Position = header.offset2;
-                table2 = br.ReadBytes((int)(header.fileEntriesOffset - header.offset2));
+                table2 = br.ReadBytes((int)(header.fileEntryTableOffset - header.offset2));
 
                 //File Entry Table
-                br.BaseStream.Position = header.fileEntriesOffset;
-                entries = new BinaryReaderX(new MemoryStream(Level5.Decompress(new MemoryStream(br.ReadBytes((int)(header.nameOffset - header.fileEntriesOffset))))))
-                  .ReadMultiple<FileEntry>(header.fileEntriesCount);
+                br.BaseStream.Position = header.fileEntryTableOffset;
+                entries = new BinaryReaderX(new MemoryStream(Level5.Decompress(new MemoryStream(br.ReadBytes((int)(header.nameTableOffset - header.fileEntryTableOffset))))))
+                    .ReadMultiple<FileEntry>((int)header.fileEntryCount);
 
-                //NameTable
-                br.BaseStream.Position = header.nameOffset;
-                nameC = br.ReadBytes((int)(header.dataOffset - header.nameOffset));
+                //Name Table
+                br.BaseStream.Position = header.nameTableOffset;
+                nameC = br.ReadBytes((int)(header.dataOffset - header.nameTableOffset));
                 fileNames = GetFileNames(Level5.Decompress(new MemoryStream(nameC)));
 
                 //Add Files
-                List<uint> offsets = new List<uint>();
+                List<uint> combs = new List<uint>();
                 foreach (var name in fileNames)
                 {
                     var crc32 = Crc32.Create(name.Split('/').Last());
-                    try
+                    var entry = entries.Find(c => c.crc32 == crc32 && !combs.Contains(c.comb1));
+                    combs.Add(entry.comb1);
+                    Files.Add(new XFSAFileInfo
                     {
-                        var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
-                        offsets.Add(entry.fileOffset);
-                        Files.Add(new ARC0FileInfo
-                        {
-                            State = ArchiveFileState.Archived,
-                            FileName = name,
-                            FileData = new SubStream(br.BaseStream, header.dataOffset + entry.fileOffset, entry.fileSize),
-                            entry = entry
-                        });
-                    }
-                    catch
-                    {
-                        var t = 2;
-                    }
+                        State = ArchiveFileState.Archived,
+                        FileName = name,
+                        FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.comb1 & 0x00ffffff) << 4), entry.comb2 & 0x000fffff),
+                        entry = entry
+                    });
                 }
             }
         }
@@ -99,46 +90,46 @@ namespace archive_level5.ARC0
             return names;
         }
 
-        public void Save(Stream output)
+        public void Save(Stream xfsa)
         {
-            using (var bw = new BinaryWriterX(output))
+            using (BinaryWriterX bw = new BinaryWriterX(xfsa))
             {
-                int dataOffset = ((0x48 + table1.Length + table2.Length + nameC.Length + entries.Count * 0x10 + 4) + 0x4) & ~0x4;
+                int dataOffset = ((0x24 + table1.Length + table2.Length + nameC.Length + entries.Count * 0xc + 4) + 0xf) & ~0xf;
 
                 //Table 1 & 2
-                bw.BaseStream.Position = 0x48;
+                bw.BaseStream.Position = 0x24;
                 bw.Write(table1);
                 bw.Write(table2);
 
                 //FileEntries Table
-                bw.Write((entries.Count * 0x10) << 3);
+                bw.Write((entries.Count * 0xc) << 3);
 
                 uint offset = 0;
-                List<ARC0FileInfo> files = new List<ARC0FileInfo>();
+                List<XFSAFileInfo> files = new List<XFSAFileInfo>();
                 foreach (var entry in entries)
                 {
-                    var file = Files.Find(c => c.entry.fileOffset == entry.fileOffset);
+                    var file = Files.Find(c => c.entry.comb1 == entry.comb1);
                     files.Add(file);
 
                     //catch file limits
-                    if (file.FileData.Length > 0xffffffff)
+                    if (file.FileData.Length >= 0x100000)
                     {
                         throw new Exception("File " + file.FileName + " is too big to pack into this archive type!");
                     }
-                    else if (offset + dataOffset > 0xffffffff)
+                    else if (offset + dataOffset >= 0x10000000)
                     {
-                        throw new Exception("The archive can't be bigger than 0xffffffff Bytes.");
+                        throw new Exception("The archive can't be bigger than 0x10000000 Bytes.");
                     }
 
                     //edit entry
-                    entry.fileOffset = offset;
-                    entry.fileSize = (uint)file.FileData.Length;
+                    entry.comb1 = (entry.comb1 & 0xff000000) | (offset >> 4);
+                    entry.comb2 = (entry.comb1 & 0xfff00000) | ((uint)file.FileData.Length);
 
                     //write entry
                     bw.WriteStruct(entry);
 
                     //edit values
-                    offset = (uint)(((offset + file.FileData.Length) + 0x4) & ~0x4);
+                    offset = (uint)(((offset + file.FileData.Length) + 0xf) & ~0xf);
                 }
 
                 //Nametable
@@ -149,11 +140,11 @@ namespace archive_level5.ARC0
                 foreach (var file in files)
                 {
                     file.FileData.CopyTo(bw.BaseStream);
-                    bw.BaseStream.Position = (bw.BaseStream.Position + 0x4) & ~0x4;
+                    bw.BaseStream.Position = (bw.BaseStream.Position + 0xf) & ~0xf;
                 }
 
                 //Header
-                header.nameOffset = (uint)(0x48 + table1.Length + table2.Length + entries.Count * 0x10 + 4);
+                header.nameTableOffset = (uint)(0x24 + table1.Length + table2.Length + entries.Count * 0xc + 4);
                 header.dataOffset = (uint)dataOffset;
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);

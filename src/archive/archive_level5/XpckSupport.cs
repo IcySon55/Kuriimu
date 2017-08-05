@@ -5,7 +5,7 @@ namespace archive_level5.XPCK
 {
     public class XPCKFileInfo : ArchiveFileInfo
     {
-        public Entry Entry;
+        public FileInfoEntry Entry;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -19,24 +19,27 @@ namespace archive_level5.XPCK
         ushort tmp3;
         ushort tmp4;
         ushort tmp5;
-        uint tmp6;
+        public uint tmp6;
 
-        public ushort fileInfoOffset => (ushort)(tmp1 * 4);
-        public ushort filenameTableOffset => (ushort)(tmp2 * 4);
-        public ushort dataOffset => (ushort)(tmp3 * 4);
-        public ushort fileInfoSize => (ushort)(tmp4 * 4);
-        public ushort filenameTableSize => (ushort)(tmp5 * 4);
-        public uint dataSize => tmp6 * 4;
+        public ushort fileInfoOffset => (ushort)(tmp1 << 2);
+        public ushort filenameTableOffset => (ushort)(tmp2 << 2);
+        public ushort dataOffset => (ushort)(tmp3 << 2);
+        public ushort fileInfoSize => (ushort)(tmp4 << 2);
+        public ushort filenameTableSize => (ushort)(tmp5 << 2);
+        public uint dataSize => tmp6 << 2;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Entry
+    public struct FileInfoEntry
     {
         public uint crc32;
-        public ushort ID;
+        public ushort nameOffset;
+        public ushort tmp;
         public ushort tmp2;
-        public int fileSize;
+        public byte tmpZ;
+        public byte tmp2Z;
 
-        public ushort fileOffset => (ushort)(tmp2 * 4);
+        public uint fileOffset => (((uint)tmpZ << 16) | tmp) << 2;
+        public uint fileSize => ((uint)tmp2Z << 16) | tmp2;
     }
 }

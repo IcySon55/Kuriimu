@@ -4,6 +4,8 @@ using System.Linq;
 using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
+using System;
+using Cetera.Hash;
 
 namespace archive_level5.XPCK
 {
@@ -12,109 +14,82 @@ namespace archive_level5.XPCK
         public List<XPCKFileInfo> Files = new List<XPCKFileInfo>();
         Stream _stream = null;
 
+        Header header;
+        List<FileInfoEntry> entries = new List<FileInfoEntry>();
+        byte[] compNameTable;
+
         public XPCK(string filename)
         {
-            using (BinaryReaderX xpckBr = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                if (xpckBr.ReadString(4) == "XPCK")
-                {
-                    xpckBr.BaseStream.Position = 0;
-                    _stream = new MemoryStream(xpckBr.ReadBytes((int)xpckBr.BaseStream.Length));
-                }
-                else
-                {
-                    xpckBr.BaseStream.Position = 0;
-                    byte[] decomp = Level5.Decompress(xpckBr.BaseStream);
-                    _stream = new MemoryStream(decomp);
-                }
-            }
-
-            using (BinaryReaderX xpckBr = new BinaryReaderX(_stream))
+            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
             {
                 //Header
-                var header = xpckBr.ReadStruct<Header>();
-                int fileCount = header.fileInfoSize / 0xc;
+                header = br.ReadStruct<Header>();
 
-                //fileInfo
-                var entries = new List<Entry>();
-                entries.AddRange(xpckBr.ReadMultiple<Entry>(fileCount).OrderBy(e => e.fileOffset));
+                //Entries
+                br.BaseStream.Position = header.fileInfoOffset;
+                entries.AddRange(br.ReadMultiple<FileInfoEntry>(header.fileCount));
 
-                //nameList
-                var nameList = new List<string>();
-                byte[] uncompressedNameList = Level5.Decompress(new MemoryStream(xpckBr.ReadBytes(header.filenameTableSize)));
-                using (BinaryReaderX nlBr = new BinaryReaderX(new MemoryStream(uncompressedNameList)))
-                    for (int i = 0; i < fileCount; i++)
-                        nameList.Add(nlBr.ReadCStringA());
+                //Filenames
+                br.BaseStream.Position = header.filenameTableOffset;
+                compNameTable = br.ReadBytes(header.filenameTableSize);
+                var decNames = new MemoryStream(Level5.Decompress(new MemoryStream(compNameTable)));
 
-                for (int i = 0; i < fileCount; i++)
-                {
-                    xpckBr.BaseStream.Position = header.dataOffset + entries[i].fileOffset;
-                    Files.Add(new XPCKFileInfo()
+                //Files
+                using (var nameList = new BinaryReaderX(decNames))
+                    for (int i = 0; i < header.fileCount; i++)
                     {
-                        Entry = entries[i],
-                        FileName = nameList[i],
-                        FileData = new MemoryStream(xpckBr.ReadBytes(entries[i].fileSize)),
-                        State = ArchiveFileState.Archived
-                    });
-                }
+                        nameList.BaseStream.Position = entries[i].nameOffset;
+                        Files.Add(new XPCKFileInfo
+                        {
+                            State = ArchiveFileState.Archived,
+                            FileName = nameList.ReadCStringA(),
+                            FileData = new SubStream(br.BaseStream, header.dataOffset + entries[i].fileOffset, entries[i].fileSize),
+                            Entry = entries[i]
+                        });
+                    }
             }
         }
 
         public void Save(Stream xpck)
         {
-            using (BinaryWriterX xpckBw = new BinaryWriterX(xpck))
+            using (BinaryWriterX bw = new BinaryWriterX(xpck))
             {
-                int fileOffset = 0;
-                int nameListLength = 0;
+                uint absDataOffset = header.dataOffset;
+
+                //Files
+                Files = Files.OrderBy(x => x.Entry.fileOffset).ToList();
+                uint relDataOffset = 0;
+                for (int i = 0; i < Files.Count; i++)
+                {
+                    bw.BaseStream.Position = absDataOffset;
+                    Files[i].FileData.CopyTo(bw.BaseStream);
+                    bw.WriteAlignment(4);
+                    if (i != Files.Count - 1) bw.Write(0);
+
+                    //Update entry
+                    Files[i].Entry.tmp = (ushort)(((relDataOffset + 0x3 & ~0x3) >> 2) & 0xffff);
+                    Files[i].Entry.tmpZ = (byte)((((relDataOffset + 0x3 & ~0x3) >> 2) & 0xff0000) >> 16);
+                    Files[i].Entry.tmp2 = (ushort)(Files[i].FileSize & 0xffff);
+                    Files[i].Entry.tmp2Z = (byte)((Files[i].FileSize & 0xff0000) >> 16);
+                    if (i != Files.Count - 1) relDataOffset += (uint)(Files[i].FileSize + 0x3 & ~0x3) + 4;
+                    if (i != Files.Count - 1) absDataOffset += (uint)(Files[i].FileSize + 0x3 & ~0x3) + 4;
+                }
+
+                //Entries
+                Files = Files.OrderBy(x => x.Entry.crc32).ToList();
+                bw.BaseStream.Position = 0x14;
+                foreach (var file in Files)
+                {
+                    bw.WriteStruct(file.Entry);
+                }
+
+                //Namelist
+                bw.Write(compNameTable);
 
                 //Header
-                xpckBw.WriteASCII("XPCK");
-                xpckBw.Write((byte)Files.Count());
-                xpckBw.Write((byte)0); //unknown
-                xpckBw.Write((short)0x5);
-                xpckBw.Write((short)((Files.Count() * 0xc + 0x14) / 4));
-                xpckBw.Write((short)0);
-                xpckBw.Write((short)(Files.Count() * 0xc / 4));
-                xpckBw.Write((short)0);
-                xpckBw.Write(0);
-
-                //nameList
-                xpckBw.BaseStream.Position = 0x14 + Files.Count * 0xc + 4;
-                for (int i = 0; i < Files.Count(); i++)
-                {
-                    xpckBw.WriteASCII(Files[i].FileName); xpckBw.Write((byte)0);
-                    nameListLength += Files[i].FileName.Length + 1;
-                }
-                while (nameListLength % 4 != 0) { xpckBw.Write((byte)0); nameListLength++; }
-                xpckBw.BaseStream.Position = 0x14 + Files.Count * 0xc;
-                xpckBw.Write(nameListLength << 3);
-
-                //entryList
-                xpckBw.BaseStream.Position = 0x14;
-                for (int i = 0; i < Files.Count(); i++)
-                {
-                    xpckBw.Write(Files[i].Entry.crc32);
-                    xpckBw.Write(Files[i].Entry.ID);
-                    xpckBw.Write((short)(fileOffset / 4));
-
-                    long bk = xpckBw.BaseStream.Position;
-                    xpckBw.BaseStream.Position = nameListLength + 0x14 + Files.Count * 0xc + 4 + fileOffset;
-                    xpckBw.Write(new BinaryReaderX(Files[i].FileData).ReadBytes(Files[i].Entry.fileSize));
-                    xpckBw.BaseStream.Position = bk;
-
-                    fileOffset += (int)Files[i].FileData.Length;
-                    while (fileOffset % 4 != 0) fileOffset++;
-                    xpckBw.Write(Files[i].Entry.fileSize);
-                }
-                int dataLength = fileOffset;
-
-                //Header - write missing information
-                xpckBw.BaseStream.Position = 0xa;
-                xpckBw.Write((short)((nameListLength + 0x14 + Files.Count * 0xc + 4) / 4));
-                xpckBw.BaseStream.Position = 0xe;
-                xpckBw.Write((short)((nameListLength + 4) / 4));
-                xpckBw.BaseStream.Position = 0x10;
-                xpckBw.Write(dataLength);
+                header.tmp6 = (uint)(bw.BaseStream.Length - header.dataOffset) >> 2;
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
             }
         }
 

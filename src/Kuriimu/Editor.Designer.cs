@@ -50,6 +50,7 @@
             this.sortEntriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sequenceSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extensionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noExtensionsLoadedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -114,7 +115,7 @@
             this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
-            this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -332,6 +333,7 @@
             this.tolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compressionToolStripMenuItem,
             this.encryptionToolStripMenuItem,
+            this.hashToolStripMenuItem,
             this.sequenceSearchToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
             this.tolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
@@ -343,6 +345,12 @@
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
             this.compressionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
+            // 
+            // encryptionToolStripMenuItem
+            // 
+            this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.encryptionToolStripMenuItem.Text = "&Encryption";
             // 
             // sequenceSearchToolStripMenuItem
             // 
@@ -1055,11 +1063,11 @@
             this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
             this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // encryptionToolStripMenuItem
+            // hashToolStripMenuItem
             // 
-            this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
-            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.encryptionToolStripMenuItem.Text = "&Encryption";
+            this.hashToolStripMenuItem.Name = "hashToolStripMenuItem";
+            this.hashToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.hashToolStripMenuItem.Text = "Hash";
             // 
             // Editor
             // 
@@ -1207,5 +1215,6 @@
         private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sequenceSearchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hashToolStripMenuItem;
     }
 }
