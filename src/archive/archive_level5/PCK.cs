@@ -16,11 +16,6 @@ namespace archive_level5.PCK
         public PCK(Stream input, string filename)
         {
             _stream = input;
-
-            /*if (Directory.Exists(Path.GetDirectoryName(filename) + "\\stb"))
-                if (Directory.EnumerateFileSystemEntries(Path.GetDirectoryName(filename) + "\\stb").Any())
-                    GetNamesFromStb(Path.GetDirectoryName(filename) + "\\stb", Path.GetFileNameWithoutExtension(filename));*/
-
             using (var br = new BinaryReaderX(input, true))
             {
                 var entries = br.ReadMultiple<Entry>(br.ReadInt32()).ToList();
@@ -38,7 +33,6 @@ namespace archive_level5.PCK
                             input,
                             entry.fileOffset + blockOffset * 4,
                             entry.fileLength - blockOffset * 4),
-                        //FileName = $"0x{entry.hash:X8}.bin",
                         FileName = $"0x{count++:X8}.bin",
                         State = ArchiveFileState.Archived,
                         Entry = entry,
@@ -47,50 +41,6 @@ namespace archive_level5.PCK
                 }).ToList();
             }
         }
-
-        /*public void GetNamesFromStb(string stbPath, string pckName)
-        {
-            var files = Directory.EnumerateFileSystemEntries(stbPath);
-            var legitStbFiles = new List<string>();
-
-            //get files associtated with the loaded pck
-            foreach (var file in files)
-            {
-                if (Path.GetFileNameWithoutExtension(file).IndexOf(pckName) == 0)
-                {
-                    legitStbFiles.Add(file);
-                }
-            }
-
-            //get possible names from all found stb's
-            foreach (var file in legitStbFiles)
-            {
-                using (var br = new BinaryReaderX(File.OpenRead(file)))
-                {
-                    br.BaseStream.Position = 0x54;
-                    var tempOff = br.ReadUInt32();
-                    br.BaseStream.Position = tempOff - 0x24;
-
-                    //go to the stringList beginning
-                    var tmp = br.ReadUInt32();
-                    while (tmp != 0)
-                    {
-                        br.BaseStream.Position -= 8;
-                        tmp = br.ReadUInt32();
-                    }
-
-                    //get possible entryNameEntries
-                    var name = br.ReadCStringSJIS();
-                    while (name != "==== Event End ====")
-                    {
-                        if (name.IndexOf(pckName) == 0 && !name.Contains("."))
-                            if (!legitNames.Exists(c => c == name))
-                                legitNames.Add(name);
-                        name = br.ReadCStringSJIS();
-                    }
-                }
-            }
-        }*/
 
         public void Save(Stream output)
         {
