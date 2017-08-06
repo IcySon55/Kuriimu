@@ -1,9 +1,19 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using Kuriimu.Kontract;
+using Cetera.Image;
+using System.Drawing;
 
 namespace image_nintendo.CTPK
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class BitmapClass
+    {
+        public Bitmap bmp;
+        public Format format;
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
@@ -17,7 +27,17 @@ namespace image_nintendo.CTPK
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entry
+    public class CtpkEntry
+    {
+        public TexEntry texEntry;
+        public List<uint> dataSizes = new List<uint>();
+        public string name;
+        public HashEntry hash;
+        public MipmapEntry mipmapEntry;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class TexEntry
     {
         public int nameOffset;
         public int texDataSize;
@@ -36,13 +56,23 @@ namespace image_nintendo.CTPK
     public class HashEntry
     {
         public uint crc32;
-        public int entryNr;
+        public int id;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class MipmapEntry
+    {
+        public byte mipmapFormat;
+        public byte mipLvl;
+        //never used compression specifications?
+        public byte compression;
+        public byte compMethod;
     }
 
     public sealed class CtpkBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public Cetera.Image.Format Format { get; set; }
+        public Format Format { get; set; }
     }
 }
