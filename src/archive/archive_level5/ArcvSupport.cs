@@ -5,22 +5,22 @@ namespace archive_level5.ARCV
 {
     public class ARCVFileInfo : ArchiveFileInfo
     {
-        public uint hash;
+        public FileEntry entry;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
         public Magic magic;
-        public int fileCount;
+        public uint fileCount;
         public uint fileSize;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entry
+    public class FileEntry
     {
         public uint offset;
-        public int size;
-        public uint hash;
+        public uint size;
+        public uint crc32;
     }
 }

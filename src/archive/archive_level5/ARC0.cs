@@ -34,7 +34,7 @@ namespace archive_level5.ARC0
                 br.BaseStream.Position = header.offset1;
                 table1 = br.ReadBytes((int)(header.offset2 - header.offset1));
 
-                //Table 1
+                //Table 2
                 br.BaseStream.Position = header.offset2;
                 table2 = br.ReadBytes((int)(header.fileEntriesOffset - header.offset2));
 
@@ -53,22 +53,15 @@ namespace archive_level5.ARC0
                 foreach (var name in fileNames)
                 {
                     var crc32 = Crc32.Create(name.Split('/').Last());
-                    try
+                    var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
+                    offsets.Add(entry.fileOffset);
+                    Files.Add(new ARC0FileInfo
                     {
-                        var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
-                        offsets.Add(entry.fileOffset);
-                        Files.Add(new ARC0FileInfo
-                        {
-                            State = ArchiveFileState.Archived,
-                            FileName = name,
-                            FileData = new SubStream(br.BaseStream, header.dataOffset + entry.fileOffset, entry.fileSize),
-                            entry = entry
-                        });
-                    }
-                    catch
-                    {
-                        var t = 2;
-                    }
+                        State = ArchiveFileState.Archived,
+                        FileName = name,
+                        FileData = new SubStream(br.BaseStream, header.dataOffset + entry.fileOffset, entry.fileSize),
+                        entry = entry
+                    });
                 }
             }
         }
