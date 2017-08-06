@@ -60,10 +60,14 @@ namespace Kukkii
                 settings.Width = (int)numWidth.Value;
                 settings.Height = (int)numHeight.Value;
                 settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
+                settings.PadToPowerOf2 = false;
 
                 imbPreview.Image = Common.Load(File.ReadAllBytes(_filename), settings);
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                imbPreview.Image = null;
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
