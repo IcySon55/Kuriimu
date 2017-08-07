@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
 using System.Linq;
 using CeteraDS.Hash;
+using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace image_bnr
 {
-    public sealed class CtxbAdapter : IImageAdapter
+    public sealed class BnrAdapter : IImageAdapter
     {
         private BNR _bnr = null;
         private List<BitmapInfo> _bitmaps;
@@ -39,7 +39,14 @@ namespace image_bnr
                 if (br.BaseStream.Length < 0x20) return false;
                 if (br.BaseStream.Length < 0x820) return false;
                 br.BaseStream.Position = 0x20;
-                return Crc16.Create(br.ReadBytes(0x820)) == crc16;
+
+                try
+                {
+                    return Crc16.Create(br.ReadBytes(0x820)) == crc16;
+                }
+                catch (Exception) { }
+
+                return false;
             }
         }
 

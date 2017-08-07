@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using CeteraDS.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
 using CeteraDS.Hash;
+using CeteraDS.Image;
+using Kuriimu.IO;
 
 /*Nintendo DS Banner*/
-
 namespace image_bnr
 {
     public class BNR
