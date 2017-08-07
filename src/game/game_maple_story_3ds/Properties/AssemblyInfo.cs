@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("game_maple_story_3ds")]
-[assembly: AssemblyDescription("MapleStory Girl of Destiny Game handler for Kuriimu")]
+[assembly: AssemblyDescription("MapleStory Girl of Destiny game handler for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("game_maple_story_3ds")]
-[assembly: AssemblyCopyright("Copyright © IcySon55, CakeLancelot, Neobeo 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -7,7 +7,7 @@ using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace text_ttbin
+namespace tt.text_ttbin
 {
     public sealed class TTBIN
     {

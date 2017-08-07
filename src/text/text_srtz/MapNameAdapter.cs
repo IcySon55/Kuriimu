@@ -21,7 +21,7 @@ namespace text_srtz
         public string Name => "MAPNAME";
         public string Description => "Super Robot Wars Z Map Names";
         public string Extension => "*.bin";
-        public string About => "This is the MAPNAME file adapter for Kuriimu.";
+        public string About => "This is the MAPNAME text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

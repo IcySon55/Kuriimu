@@ -27,6 +27,11 @@ namespace Kukkii
         {
             Icon = Resources.kukkii;
 
+            imbPreview.GridColor = Settings.Default.GridColor1;
+            imbPreview.GridColorAlternate = Settings.Default.GridColor2;
+            imbPreview.ImageBorderStyle = Settings.Default.ImageBorderStyle;
+            imbPreview.ImageBorderColor = Settings.Default.ImageBorderColor;
+
             lblFilename.Text = Path.GetFileName(_filename);
 
             numWidth.ValueChanged -= numWidth_ValueChanged;
@@ -55,10 +60,14 @@ namespace Kukkii
                 settings.Width = (int)numWidth.Value;
                 settings.Height = (int)numHeight.Value;
                 settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
+                settings.PadToPowerOf2 = false;
 
                 imbPreview.Image = Common.Load(File.ReadAllBytes(_filename), settings);
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                imbPreview.Image = null;
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

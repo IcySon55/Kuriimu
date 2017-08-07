@@ -21,7 +21,7 @@ namespace text_srtz
         public string Name => "SRVC";
         public string Description => "Super Robot Wars Z Battle Scripts";
         public string Extension => "*.bin";
-        public string About => "This is the SRVC file adapter for Kuriimu.";
+        public string About => "This is the SRVC text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

@@ -4,9 +4,17 @@ using Kuriimu.Kontract;
 
 namespace image_nintendo
 {
-    public enum ChnkTexFormat : byte
+    public enum TXPLBitDepth : byte
     {
         BGR555
+    }
+
+    public enum TXIMBitDepth
+    {
+        BPP8 = 8,
+        BPP4 = 4,
+        BPP2 = 2,
+        L8 = 0
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -19,13 +27,15 @@ namespace image_nintendo
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class TXIF
     {
-        public int Unk1;
+        public short Unk1;
+        public short Unk2;
         public int ImageSize;
         public int MapSize;
         public int PaletteSize;
         public short Width;
         public short Height;
-        public int Unk5;
+        public short ImageCount;
+        public short Unk3;
     }
 
     public class Section
@@ -39,6 +49,19 @@ namespace image_nintendo
     public sealed class ChnkTexBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
-        public ChnkTexFormat Format { get; set; }
+        [ReadOnly(true)]
+        public TXIMBitDepth BitDepth { get; set; }
+
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public TXPLBitDepth PaletteBitDepth { get; set; }
+
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public bool IsMultiTXIM { get; set; }
+
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public bool HasTX4I { get; set; }
     }
 }

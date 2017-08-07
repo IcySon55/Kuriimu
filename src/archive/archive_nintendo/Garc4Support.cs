@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Kuriimu.Kontract;
+using System.IO;
+using Kuriimu.IO;
 
 namespace archive_nintendo.GARC4
 {

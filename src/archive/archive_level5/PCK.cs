@@ -11,13 +11,16 @@ namespace archive_level5.PCK
         public List<PckFileInfo> Files;
         Stream _stream = null;
 
-        public PCK(Stream input)
+        List<string> legitNames = new List<string>();
+
+        public PCK(Stream input, string filename)
         {
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 var entries = br.ReadMultiple<Entry>(br.ReadInt32()).ToList();
 
+                var count = 0;
                 Files = entries.Select(entry =>
                 {
                     br.BaseStream.Position = entry.fileOffset;
@@ -30,7 +33,7 @@ namespace archive_level5.PCK
                             input,
                             entry.fileOffset + blockOffset * 4,
                             entry.fileLength - blockOffset * 4),
-                        FileName = $"0x{entry.hash:X8}.bin",
+                        FileName = $"0x{count++:X8}.bin",
                         State = ArchiveFileState.Archived,
                         Entry = entry,
                         Hashes = hashes

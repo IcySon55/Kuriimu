@@ -24,7 +24,7 @@ namespace archive_level5.ARC0
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -35,7 +35,8 @@ namespace archive_level5.ARC0
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ARC0";
+                var magic = br.ReadString(4);
+                return magic == "ARC0";
             }
         }
 

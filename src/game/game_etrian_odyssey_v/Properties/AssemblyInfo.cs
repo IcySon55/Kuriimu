@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("game_etrian_odyssey_v")]
-[assembly: AssemblyDescription("Etrian Odyssey V Game handler for Kuriimu")]
+[assembly: AssemblyDescription("Etrian Odyssey V game handler for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("game_etrian_odyssey_v")]
-[assembly: AssemblyCopyright("Copyright © onepiecefreak, IcySon55 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

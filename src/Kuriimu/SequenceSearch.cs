@@ -12,16 +12,7 @@ namespace Kuriimu
 {
     public partial class SequenceSearch : Form
     {
-        public class SearchResult
-        {
-            public string Filename { get; set; }
-            public int Offset { get; set; }
-
-            public override string ToString()
-            {
-                return $"{new FileInfo(Filename).Name} - {Offset} (0x{Offset:X2})";
-            }
-        }
+        private const int SearchLimit = 10 * 1024 * 1024;
 
         public SequenceSearch()
         {
@@ -34,6 +25,9 @@ namespace Kuriimu
             txtSearchDirectory.Text = Settings.Default.SequenceSearchDirectory;
             txtSearchText.Text = Settings.Default.SequenceSearchWhat;
             chkSearchSubfolders.Checked = Settings.Default.SequenceSearchSubfolders;
+            var sb = new StringBuilder(16);
+            Win32.StrFormatByteSize(SearchLimit, sb, 16);
+            lblNote.Text = $"Files over {sb} will not be searched.";
 
             try
             {
@@ -76,7 +70,7 @@ namespace Kuriimu
                     var results = new List<SearchResult>();
                     var searcher = new KmpSearcher(W);
 
-                    foreach (var file in files.Where(o => new FileInfo(o).Length < (8 * 1024 * 1024)))
+                    foreach (var file in files.Where(o => new FileInfo(o).Length < SearchLimit))
                     {
                         using (var br = new BinaryReaderX(File.OpenRead(file)))
                         {
@@ -118,6 +112,17 @@ namespace Kuriimu
         private void btnCancel_Click(object sender, EventArgs e)
         {
             Close();
+        }
+    }
+
+    public class SearchResult
+    {
+        public string Filename { get; set; }
+        public int Offset { get; set; }
+
+        public override string ToString()
+        {
+            return $"{new FileInfo(Filename).Name} - {Offset} (0x{Offset:X2})";
         }
     }
 }

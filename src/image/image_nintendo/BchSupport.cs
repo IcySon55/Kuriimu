@@ -1,8 +1,11 @@
 ﻿using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using Kuriimu.Kontract;
+using System;
 using System.IO;
 using Kuriimu.IO;
 using Cetera.Image;
+using System.Drawing;
 
 namespace image_nintendo.BCH
 {
@@ -120,9 +123,15 @@ namespace image_nintendo.BCH
 
     public class TexEntry
     {
-        public ushort width = 0;
-        public ushort height = 0;
-        public Format format = 0;
-        public uint entrySize = 0;
+        public TexEntry(int width, int height, Format format)
+        {
+            this.width = width;
+            this.height = height;
+            this.format = format;
+        }
+
+        public int width;
+        public int height;
+        public Format format;
     }
 }

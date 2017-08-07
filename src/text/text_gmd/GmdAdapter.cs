@@ -26,12 +26,12 @@ namespace text_gmd
 
         public string Extension => "*.gmd";
 
-        public string About => "This is the GMD file adapter for Kuriimu.";
+        public string About => "This is the GMD text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
 
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public bool CanAddEntries => false;
 
@@ -141,14 +141,14 @@ namespace text_gmd
                         }
                         else
                         {
-                            Entry entry = new Entry(label, _gmdBackup.Labels.FirstOrDefault(o => o.ID == label.ID));
+                            Entry entry = new Entry(label, _gmdBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID));
                             _entries.Add(entry);
                         }
                     }
                 }
 
                 if (SortEntries)
-                    return _entries.OrderBy(e => e.EditedLabel.ID);
+                    return _entries.OrderBy(e => e.EditedLabel.TextID);
 
                 return _entries;
             }
@@ -182,67 +182,6 @@ namespace text_gmd
                 Settings.Default.SortEntries = value;
                 Settings.Default.Save();
             }
-        }
-    }
-
-    public sealed class Entry : TextEntry
-    {
-        // Interface
-        public string Name
-        {
-            get { return EditedLabel.Name; }
-            set { EditedLabel.Name = value; }
-        }
-
-        public string OriginalText => OriginalLabel.Text;
-
-        public string EditedText
-        {
-            get { return EditedLabel.Text; }
-            set { EditedLabel.Text = value; }
-        }
-
-        public int MaxLength { get; set; }
-
-        public TextEntry ParentEntry { get; set; }
-
-        public bool IsSubEntry => ParentEntry != null;
-
-        public bool HasText { get; }
-
-        public List<TextEntry> SubEntries { get; set; }
-
-        // Adapter
-        public Label EditedLabel { get; set; }
-        public Label OriginalLabel { get; }
-
-        public Entry()
-        {
-            EditedLabel = new Label();
-            OriginalLabel = new Label();
-
-            Name = string.Empty;
-            MaxLength = 0;
-            ParentEntry = null;
-            HasText = true;
-            SubEntries = new List<TextEntry>();
-        }
-
-        public Entry(Label editedLabel) : this()
-        {
-            if (editedLabel != null)
-                EditedLabel = editedLabel;
-        }
-
-        public Entry(Label editedLabel, Label originalLabel) : this(editedLabel)
-        {
-            if (originalLabel != null)
-                OriginalLabel = originalLabel;
-        }
-
-        public override string ToString()
-        {
-            return Name == string.Empty ? EditedLabel.ID.ToString() : Name;
         }
     }
 }

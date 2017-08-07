@@ -9,7 +9,7 @@ using Kuriimu.Kontract;
 using Kuriimu.IO;
 using text_ttbin.Properties;
 
-namespace text_ttbin
+namespace tt.text_ttbin
 {
     public sealed class TTBinAdapter : ITextAdapter
     {
@@ -27,7 +27,7 @@ namespace text_ttbin
 
         public string Extension => "*.cfg.bin";
 
-        public string About => "This is the TTBin file adapter for Kuriimu.";
+        public string About => "This is the TTBin text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;

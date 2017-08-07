@@ -39,7 +39,7 @@
             this.chkSearchSubfolders = new System.Windows.Forms.CheckBox();
             this.cmbEncoding = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.lblNote = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -164,14 +164,14 @@
             this.label3.TabIndex = 9;
             this.label3.Text = "Encoding:";
             // 
-            // label4
+            // lblNote
             // 
-            this.label4.Location = new System.Drawing.Point(12, 373);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(459, 20);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Files over 8MB will not be searched.";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblNote.Location = new System.Drawing.Point(12, 373);
+            this.lblNote.Name = "lblNote";
+            this.lblNote.Size = new System.Drawing.Size(459, 20);
+            this.lblNote.TabIndex = 10;
+            this.lblNote.Text = "Files over 8MB will not be searched.";
+            this.lblNote.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SequenceSearch
             // 
@@ -180,7 +180,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(484, 401);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.lblNote);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.cmbEncoding);
             this.Controls.Add(this.chkSearchSubfolders);
@@ -216,6 +216,6 @@
 		private System.Windows.Forms.CheckBox chkSearchSubfolders;
         private System.Windows.Forms.ComboBox cmbEncoding;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblNote;
     }
 }

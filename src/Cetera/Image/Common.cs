@@ -48,6 +48,34 @@ namespace Cetera.Image
 
     public class Common
     {
+        public static byte GetBitDepth(Format format)
+        {
+            switch (format)
+            {
+                case Format.RGBA8888:
+                    return 32;
+                case Format.RGB888:
+                    return 24;
+                case Format.RGBA5551:
+                case Format.RGB565:
+                case Format.RGBA4444:
+                case Format.LA88:
+                case Format.HL88:
+                    return 16;
+                case Format.L8:
+                case Format.A8:
+                case Format.LA44:
+                case Format.ETC1A4:
+                    return 8;
+                case Format.L4:
+                case Format.A4:
+                case Format.ETC1:
+                    return 4;
+                default:
+                    return 0;
+            }
+        }
+
         static int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max - 1);
 
         static IEnumerable<Color> GetColorsFromTexture(byte[] tex, Format format)

@@ -60,6 +60,7 @@ namespace Kukkii
             // Tools
             CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
             EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+            HashTools.LoadHashTools(hashToolStripMenuItem);
 
             // Image Border Styles
             tsbImageBorderStyle.DropDownItems.AddRange(Enum.GetNames(typeof(ImageBoxBorderStyle)).Select(s => new ToolStripMenuItem { Image = (Image)Resources.ResourceManager.GetObject(_stylesImages[s]), Text = _stylesText[s], Tag = s }).ToArray());
@@ -351,7 +352,7 @@ namespace Kukkii
 
             // Image Border Style
             imbPreview.ImageBorderStyle = Settings.Default.ImageBorderStyle;
-            tsbImageBorderStyle.Image = (Image) Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
+            tsbImageBorderStyle.Image = (Image)Resources.ResourceManager.GetObject(_stylesImages[Settings.Default.ImageBorderStyle.ToString()]);
             tsbImageBorderStyle.Text = _stylesText[Settings.Default.ImageBorderStyle.ToString()];
 
             // Image Border Color
@@ -398,7 +399,7 @@ namespace Kukkii
             var gfx = Graphics.FromImage(thumb);
 
             gfx.CompositingQuality = CompositingQuality.HighSpeed;
-            gfx.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+            gfx.PixelOffsetMode = PixelOffsetMode.Default;
             gfx.SmoothingMode = SmoothingMode.HighSpeed;
             gfx.InterpolationMode = InterpolationMode.Default;
 
@@ -409,15 +410,18 @@ namespace Kukkii
             if (input.Width <= thumbWidth && input.Height <= thumbHeight)
                 ratio = 1.0f;
 
-            var size = new SizeF(Math.Min(input.Width / ratio, thumbWidth), Math.Min(input.Height / ratio, thumbHeight));
-            var pos = new PointF((float)thumbWidth / 2 - size.Width / 2, (float)thumbHeight / 2 - size.Height / 2);
+            var size = new Size((int)Math.Min(input.Width / ratio, thumbWidth), (int)Math.Min(input.Height / ratio, thumbHeight));
+            var pos = new Point(thumbWidth / 2 - size.Width / 2, thumbHeight / 2 - size.Height / 2);
 
             // Grid
             if (_thumbnailBackground == null)
                 GenerateThumbnailBackground();
 
             gfx.DrawImageUnscaled(_thumbnailBackground, 0, 0, _thumbnailBackground.Width, _thumbnailBackground.Height);
-            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            if (ratio != 1.0f)
+                gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            else
+                gfx.InterpolationMode = InterpolationMode.Default;
             gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
 
             return thumb;
@@ -508,21 +512,21 @@ namespace Kukkii
                     }
 
                     foreach (string file in files)
-                    {
                         if (File.Exists(file))
-                        {
-                            FileInfo fi = new FileInfo(file);
-                            IImageAdapter currentAdapter = SelectImageAdapter(file, true);
-
-                            if (currentAdapter != null)
+                            try
                             {
-                                currentAdapter.Load(file);
-                                for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                    currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
-                                count++;
+                                FileInfo fi = new FileInfo(file);
+                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+
+                                if (currentAdapter != null)
+                                {
+                                    currentAdapter.Load(file);
+                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                        currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
+                                    count++;
+                                }
                             }
-                        }
-                    }
+                            catch (Exception) { }
 
                     MessageBox.Show("Batch export completed successfully. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -563,14 +567,13 @@ namespace Kukkii
                     }
 
                     foreach (string file in files)
-                    {
                         if (File.Exists(file))
-                        {
-                            FileInfo fi = new FileInfo(file);
-                            IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+                            try
+                            {
+                                FileInfo fi = new FileInfo(file);
+                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
 
-                            if (currentAdapter != null && currentAdapter.CanSave)
-                                try
+                                if (currentAdapter != null && currentAdapter.CanSave)
                                 {
                                     currentAdapter.Load(file);
                                     for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
@@ -582,11 +585,10 @@ namespace Kukkii
                                     currentAdapter.Save();
                                     importCount++;
                                 }
-                                catch (Exception) { }
 
-                            fileCount++;
-                        }
-                    }
+                                fileCount++;
+                            }
+                            catch (Exception) { }
 
                     MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -716,6 +718,11 @@ namespace Kukkii
         private void treBitmaps_MouseEnter(object sender, EventArgs e)
         {
             treBitmaps.Focus();
+        }
+
+        private void cmsPreviewCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(imbPreview.Image);
         }
 
         // Info Controls

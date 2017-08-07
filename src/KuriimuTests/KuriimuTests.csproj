@@ -113,9 +113,9 @@
       <Project>{6dd11d33-6cd9-4445-8c36-68b8d63ba6da}</Project>
       <Name>image_stex</Name>
     </ProjectReference>
-    <ProjectReference Include="..\image\image_tex\image_tex.csproj">
+    <ProjectReference Include="..\image\image_mt\image_mt.csproj">
       <Project>{9e078594-73ae-4ec1-aba2-bf8f338fccd4}</Project>
-      <Name>image_tex</Name>
+      <Name>image_mt</Name>
     </ProjectReference>
     <ProjectReference Include="..\image\image_tim2\image_tim2.csproj">
       <Project>{22b0f441-5cf7-44cb-ba4f-0f1a25592614}</Project>

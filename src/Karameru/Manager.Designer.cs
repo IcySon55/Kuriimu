@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Manager));
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,10 +60,13 @@
             this.tsbKukkii = new System.Windows.Forms.ToolStripButton();
             this.tsbProperties = new System.Windows.Forms.ToolStripButton();
             this.tsbKuriimu = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsbBatchExtract = new System.Windows.Forms.ToolStripButton();
+            this.tsbBatchArchive = new System.Windows.Forms.ToolStripButton();
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.treDirectories = new System.Windows.Forms.TreeView();
-            this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip();
             this.extractDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsFiles = new System.Windows.Forms.ToolStrip();
@@ -73,7 +75,7 @@
             this.clmName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clmSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clmState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.mnuFiles = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuFiles = new System.Windows.Forms.ContextMenuStrip();
             this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,8 +99,9 @@
             this.listToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.detailsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imlFiles = new System.Windows.Forms.ImageList(this.components);
-            this.imlFilesLarge = new System.Windows.Forms.ImageList(this.components);
+            this.imlFiles = new System.Windows.Forms.ImageList();
+            this.imlFilesLarge = new System.Windows.Forms.ImageList();
+            this.hashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
@@ -230,22 +233,23 @@
             // 
             this.tolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.compressionToolStripMenuItem,
-            this.encryptionToolStripMenuItem});
+            this.encryptionToolStripMenuItem,
+            this.hashToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
-            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
             // 
             // compressionToolStripMenuItem
             // 
             this.compressionToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_compression;
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // encryptionToolStripMenuItem
             // 
             this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
-            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.encryptionToolStripMenuItem.Text = "&Encryption";
             // 
             // aboutToolStripMenuItem
@@ -263,7 +267,7 @@
             // 
             this.gBATempToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_gbatemp;
             this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.gBATempToolStripMenuItem.Text = "GBATemp";
             this.gBATempToolStripMenuItem.Click += new System.EventHandler(this.gBATempToolStripMenuItem_Click);
             // 
@@ -271,21 +275,21 @@
             // 
             this.gitHubToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_git;
             this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.gitHubToolStripMenuItem.Text = "GitHub";
             this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(123, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Image = global::Karameru.Properties.Resources.menu_about;
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
             this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
             this.aboutToolStripMenuItem1.Text = "&About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
@@ -304,7 +308,10 @@
             this.toolStripSeparator3,
             this.tsbKukkii,
             this.tsbProperties,
-            this.tsbKuriimu});
+            this.tsbKuriimu,
+            this.toolStripSeparator4,
+            this.tsbBatchExtract,
+            this.tsbBatchArchive});
             this.tlsMain.Location = new System.Drawing.Point(0, 24);
             this.tlsMain.Name = "tlsMain";
             this.tlsMain.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -405,6 +412,32 @@
             this.tsbKuriimu.Text = "Kuriimu";
             this.tsbKuriimu.Click += new System.EventHandler(this.tsbKuriimu_Click);
             // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            // 
+            // tsbBatchExtract
+            // 
+            this.tsbBatchExtract.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchExtract.Image = global::Karameru.Properties.Resources.menu_batch_extract;
+            this.tsbBatchExtract.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbBatchExtract.Name = "tsbBatchExtract";
+            this.tsbBatchExtract.Size = new System.Drawing.Size(23, 22);
+            this.tsbBatchExtract.Text = "Batch Extract";
+            this.tsbBatchExtract.Click += new System.EventHandler(this.tsbBatchExtract_Click);
+            // 
+            // tsbBatchArchive
+            // 
+            this.tsbBatchArchive.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbBatchArchive.Enabled = false;
+            this.tsbBatchArchive.Image = global::Karameru.Properties.Resources.menu_batch_archive;
+            this.tsbBatchArchive.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbBatchArchive.Name = "tsbBatchArchive";
+            this.tsbBatchArchive.Size = new System.Drawing.Size(23, 22);
+            this.tsbBatchArchive.Text = "Batch Archive (Soon)";
+            this.tsbBatchArchive.Click += new System.EventHandler(this.tsbBatchArchive_Click);
+            // 
             // pnlMain
             // 
             this.pnlMain.Controls.Add(this.splMain);
@@ -497,7 +530,7 @@
             // tslDirectories
             // 
             this.tslDirectories.Name = "tslDirectories";
-            this.tslDirectories.Size = new System.Drawing.Size(84, 22);
+            this.tslDirectories.Size = new System.Drawing.Size(83, 22);
             this.tslDirectories.Text = "Directory Tree:";
             // 
             // lstFiles
@@ -734,7 +767,7 @@
             // 
             this.largeToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_large;
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -742,7 +775,7 @@
             // 
             this.smallToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_small;
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.smallToolStripMenuItem.Text = "Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -750,7 +783,7 @@
             // 
             this.listToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_list;
             this.listToolStripMenuItem.Name = "listToolStripMenuItem";
-            this.listToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.listToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.listToolStripMenuItem.Text = "List";
             this.listToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -758,7 +791,7 @@
             // 
             this.detailsToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_details;
             this.detailsToolStripMenuItem.Name = "detailsToolStripMenuItem";
-            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.detailsToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.detailsToolStripMenuItem.Text = "Details";
             this.detailsToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -766,7 +799,7 @@
             // 
             this.tileToolStripMenuItem.Image = global::Karameru.Properties.Resources.view_tiles;
             this.tileToolStripMenuItem.Name = "tileToolStripMenuItem";
-            this.tileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.tileToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.tileToolStripMenuItem.Text = "Tiles";
             this.tileToolStripMenuItem.Click += new System.EventHandler(this.viewToolStripMenuItem_Click);
             // 
@@ -781,6 +814,12 @@
             this.imlFilesLarge.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imlFilesLarge.ImageSize = new System.Drawing.Size(32, 32);
             this.imlFilesLarge.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // hashToolStripMenuItem
+            // 
+            this.hashToolStripMenuItem.Name = "hashToolStripMenuItem";
+            this.hashToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.hashToolStripMenuItem.Text = "Hash";
             // 
             // Manager
             // 
@@ -890,6 +929,10 @@
         private System.Windows.Forms.ToolStripMenuItem compressionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader clmState;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripButton tsbBatchExtract;
+        private System.Windows.Forms.ToolStripButton tsbBatchArchive;
+        private System.Windows.Forms.ToolStripMenuItem hashToolStripMenuItem;
     }
 }
 

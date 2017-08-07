@@ -133,9 +133,9 @@ namespace Karameru.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_batch_export {
+        internal static System.Drawing.Bitmap menu_batch_archive {
             get {
-                object obj = ResourceManager.GetObject("menu_batch_export", resourceCulture);
+                object obj = ResourceManager.GetObject("menu_batch_archive", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,9 +143,9 @@ namespace Karameru.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap menu_batch_import {
+        internal static System.Drawing.Bitmap menu_batch_extract {
             get {
-                object obj = ResourceManager.GetObject("menu_batch_import", resourceCulture);
+                object obj = ResourceManager.GetObject("menu_batch_extract", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
 using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace image_nintendo.BXLIM
 {

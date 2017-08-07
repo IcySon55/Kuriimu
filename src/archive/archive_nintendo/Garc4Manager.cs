@@ -37,8 +37,9 @@ namespace archive_nintendo.GARC4
                 if (br.BaseStream.Length < 4) return false;
                 if (br.ReadString(4) != "CRAG") return false;
                 if (br.BaseStream.Length < 0xc) return false;
-                br.BaseStream.Position = 0xa;
-                return br.ReadUInt16() == 0x400;
+                br.BaseStream.Position = 0xb;
+                var version = br.ReadByte();
+                return version == 4;
             }
         }
 

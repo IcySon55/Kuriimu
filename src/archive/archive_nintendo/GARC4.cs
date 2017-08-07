@@ -43,7 +43,7 @@ namespace archive_nintendo.GARC4
                 //FATO
                 fatoHeader = br.ReadStruct<FatoHeader>();
                 br.BaseStream.Position = br.BaseStream.Position + 3 & ~3;
-                fatoOffsets = br.ReadMultiple<uint>((int)fatoHeader.entryCount);
+                fatoOffsets = br.ReadMultiple<uint>(fatoHeader.entryCount);
 
                 //FATB
                 fatbHeader = br.ReadStruct<FatbHeader>();
@@ -71,11 +71,12 @@ namespace archive_nintendo.GARC4
                         }
                     }
 
+                    var size = (fatbEntries[i].size == 0) ? fatbEntries[i].endOffset - fatbEntries[i].offset : fatbEntries[i].size;
                     Files.Add(new GARC4FileInfo
                     {
                         State = ArchiveFileState.Archived,
                         FileName = $"{i:00000000}" + extension,
-                        FileData = new SubStream(br.BaseStream, fatbEntries[i].offset + header.dataOffset, fatbEntries[i].size)
+                        FileData = new SubStream(br.BaseStream, fatbEntries[i].offset + header.dataOffset, size)
                     });
                 }
             }

@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("archive_hpi_hpb")]
-[assembly: AssemblyDescription("HPIHPB Archive manager for Karameru")]
+[assembly: AssemblyDescription("This is the HPI/HPB archive manager for Karameru.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("archive_hpi_hpb")]
-[assembly: AssemblyCopyright("Copyright © onepiecefreak, Neobeo 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

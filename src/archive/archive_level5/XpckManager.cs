@@ -18,7 +18,7 @@ namespace archive_level5.XPCK
         // Information
         public string Name => "XPCK";
         public string Description => "Level 5 eXtractable PaCKage";
-        public string Extension => "*.xa;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
+        public string Extension => "*.xa;*.xb;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
         public string About => "This is the XPCK archive manager for Karameru.";
 
         // Feature Support
@@ -38,12 +38,7 @@ namespace archive_level5.XPCK
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                if (br.ReadString(4) == "XPCK") return true;
-
-                br.BaseStream.Position = 0;
-                byte[] decomp;
-                try { decomp = Level5.Decompress(br.BaseStream); } catch { return false; }
-                return new BinaryReaderX(new MemoryStream(decomp)).ReadString(4) == "XPCK";
+                return br.ReadString(4) == "XPCK";
             }
         }
 
@@ -89,23 +84,7 @@ namespace archive_level5.XPCK
         // Files
         public IEnumerable<ArchiveFileInfo> Files => _xpck.Files;
 
-        public bool AddFile(ArchiveFileInfo afi)
-        {
-            _xpck.Files.Add(new XPCKFileInfo()
-            {
-                Entry = new Entry()
-                {
-                    crc32 = Crc32.Create(Encoding.ASCII.GetBytes(afi.FileName)),
-                    ID = (ushort)(_xpck.Files.Count * 8),
-                    fileSize = (int)afi.FileData.Length
-                },
-                FileData = afi.FileData,
-                FileName = afi.FileName,
-                State = afi.State
-            });
-
-            return true;
-        }
+        public bool AddFile(ArchiveFileInfo afi) => false;
 
         public bool DeleteFile(ArchiveFileInfo afi) => false;
 

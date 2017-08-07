@@ -94,6 +94,7 @@ namespace Karameru
             // Tools
             CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
             EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
+            HashTools.LoadHashTools(hashToolStripMenuItem);
 
             Tools.DoubleBuffer(treDirectories, true);
             Tools.DoubleBuffer(lstFiles, true);
@@ -183,6 +184,16 @@ namespace Karameru
         private void tsbProperties_Click(object sender, EventArgs e)
         {
             propertiesToolStripMenuItem_Click(sender, e);
+        }
+
+        private void tsbBatchExtract_Click(object sender, EventArgs e)
+        {
+            BatchExtract();
+        }
+
+        private void tsbBatchArchive_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void tsbKuriimu_Click(object sender, EventArgs e)
@@ -519,7 +530,7 @@ namespace Karameru
 
                     var sb = new StringBuilder(16);
                     Win32.StrFormatByteSize((long)file.FileSize, sb, 16);
-                    lstFiles.Items.Add(new ListViewItem( new[] { Path.GetFileName(file.FileName), sb.ToString(), file.State.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
+                    lstFiles.Items.Add(new ListViewItem(new[] { Path.GetFileName(file.FileName), sb.ToString(), file.State.ToString() }, ext, StateToColor(file.State), Color.Transparent, lstFiles.Font) { Tag = file });
                 }
 
                 tslFileCount.Text = $"Files: {files.Count()}";
@@ -676,10 +687,10 @@ namespace Karameru
         private void mnuDirectories_Opening(object sender, CancelEventArgs e)
         {
             extractDirectoryToolStripMenuItem.Enabled = _canExtractDirectories;
-            extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Extract is not supported";
+            extractDirectoryToolStripMenuItem.Text = _canExtractDirectories ? $"E&xtract {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Extract is not supported";
 
             replaceDirectoryToolStripMenuItem.Enabled = _canReplaceDirectories;
-            replaceDirectoryToolStripMenuItem.Text = _canReplaceDirectories ? $"&Replace {Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text)}..." : "Replace is not supported";
+            replaceDirectoryToolStripMenuItem.Text = _canReplaceDirectories ? $"&Replace {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Replace is not supported";
         }
 
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -693,7 +704,7 @@ namespace Karameru
                 node = node.Parent;
             }
 
-            ExtractFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
+            ExtractFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_'), selectedPath.TrimEnd('\\'));
         }
 
         private void replaceDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -707,7 +718,7 @@ namespace Karameru
                 node = node.Parent;
             }
 
-            ReplaceFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileNameWithoutExtension(treDirectories.SelectedNode.Text), selectedPath.TrimEnd('\\'));
+            ReplaceFiles(CollectFiles(treDirectories.SelectedNode).ToList(), Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_'), selectedPath.TrimEnd('\\'));
         }
 
         private static IEnumerable<ArchiveFileInfo> CollectFiles(TreeNode node)
@@ -826,6 +837,87 @@ namespace Karameru
             }
         }
 
+        private void BatchExtract()
+        {
+            var fbd = new FolderBrowserDialog
+            {
+                Description = "Select the source directory containing archive files...",
+                SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory,
+                ShowNewFolderButton = false
+            };
+
+            if (fbd.ShowDialog() != DialogResult.OK) return;
+
+            var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+            if (dr == DialogResult.Cancel) return;
+            var browseSubdirectories = dr == DialogResult.Yes;
+
+            Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+            Settings.Default.Save();
+
+            var path = fbd.SelectedPath;
+            var count = 0;
+
+            if (Directory.Exists(path))
+            {
+                var selectedPathRegex = "^" + @"[\\/]?";
+                string[] types = _archiveManagers.Select(x => x.Extension.ToLower()).ToArray();
+
+                List<string> files = new List<string>();
+                foreach (string type in types)
+                {
+                    string[] subTypes = type.Split(';');
+                    foreach (string subType in subTypes)
+                        files.AddRange(Directory.GetFiles(path, subType, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
+                }
+
+                foreach (string file in files)
+                {
+                    if (File.Exists(file))
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        IArchiveManager currentManager = SelectArchiveManager(file, true);
+
+                        if (currentManager != null)
+                        {
+                            currentManager.Load(file);
+
+                            foreach (var afi in currentManager.Files)
+                            {
+                                var stream = afi.FileData;
+                                if (stream == null) continue;
+
+                                var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
+
+                                if (!Directory.Exists(exPath))
+                                    Directory.CreateDirectory(exPath);
+
+                                using (var fs = File.Create(Path.Combine(exPath, Path.GetFileName(afi.FileName))))
+                                {
+                                    if (stream.CanSeek)
+                                        stream.Position = 0;
+
+                                    try
+                                    {
+                                        if (afi.FileSize > 0)
+                                        {
+                                            stream.CopyTo(fs);
+                                            fs.Close();
+                                        }
+                                    }
+                                    catch (Exception ex) { }
+                                }
+                            }
+
+                            count++;
+                        }
+                    }
+                }
+
+                MessageBox.Show("Batch extract completed successfully. " + count + " archive(s) succesfully extracted.", "Batch Extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void ExtractFiles(List<ArchiveFileInfo> files, string selectedNode = "", string selectedPath = "")
         {
             var selectedPathRegex = "^" + selectedPath.Replace("\\", @"[\\/]") + @"[\\/]?";
@@ -923,7 +1015,7 @@ namespace Karameru
             {
                 var fbd = new FolderBrowserDialog
                 {
-                    SelectedPath = Settings.Default.LastDirectory,
+                    SelectedPath = Directory.Exists(Path.Combine(Settings.Default.LastDirectory, selectedNode)) ? Path.Combine(Settings.Default.LastDirectory, selectedNode) : Settings.Default.LastDirectory,
                     Description = $"Select where you want to replace {selectedNode} from..."
                 };
 
