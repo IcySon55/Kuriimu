@@ -43,9 +43,11 @@
   <ItemGroup>
     <Compile Include="JTEX.cs" />
     <Compile Include="JtexAdapter.cs" />
+    <Compile Include="JtexSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawJTEX.cs" />
     <Compile Include="RawJtexAdapter.cs" />
+    <Compile Include="RawJtexSupport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Cetera\Cetera.csproj">

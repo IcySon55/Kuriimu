@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
+using System.Linq;
 
 namespace image_jtex
 {
@@ -22,7 +23,7 @@ namespace image_jtex
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -45,7 +46,7 @@ namespace image_jtex
             {
                 _jtex = new JTEX(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _jtex.Image } };
+                _bitmaps = _jtex.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
@@ -54,7 +55,7 @@ namespace image_jtex
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _jtex.Image = _bitmaps[0].Bitmap;
+            _jtex.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _jtex.Save(FileInfo.Create());
         }
 
