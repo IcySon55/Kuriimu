@@ -5,7 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using image_level5.XI;
+using image_level5.imgc;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
@@ -104,7 +104,7 @@ namespace game_time_travelers
                 xi.BaseStream.Position = 0;
 
                 //convert xi image to bmp
-                bmp = XI.Load(xi.BaseStream);
+                bmp = IMGC.Load(xi.BaseStream);
 
                 //get fnt.bin
                 BinaryWriterX fnt = new BinaryWriterX(new MemoryStream());
@@ -116,11 +116,11 @@ namespace game_time_travelers
                 BinaryReaderX fntR = new BinaryReaderX(fnt.BaseStream);
                 fntR.BaseStream.Position = 0x28;
 
-                byte[] buf1 = XI.Decomp(fntR);
+                byte[] buf1 = ImgcSupport.Decomp(fntR);
                 while (fnt.BaseStream.Position % 4 != 0) fntR.ReadByte();
-                byte[] buf2 = XI.Decomp(fntR);
+                byte[] buf2 = ImgcSupport.Decomp(fntR);
                 while (fnt.BaseStream.Position % 4 != 0) fntR.ReadByte();
-                byte[] buf3 = XI.Decomp(fntR);
+                byte[] buf3 = ImgcSupport.Decomp(fntR);
 
                 using (BinaryReaderX br2 = new BinaryReaderX(new MemoryStream(buf1)))
                     lstCharSizeInfo = Enumerable.Range(0, buf1.Length / 4).Select(_ => br2.ReadStruct<CharSizeInfo>()).ToList();
