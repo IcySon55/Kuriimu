@@ -5,19 +5,19 @@ using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace image_level5.imgc
+namespace image_level5.imga
 {
-    public sealed class ImgcAdapter : IImageAdapter
+    public sealed class ImgaAdapter : IImageAdapter
     {
-        private Bitmap _imgc = null;
+        private Bitmap _imga = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
-        public string Name => "IMGC";
+        public string Name => "IMGA";
         public string Description => "Level 5 Compressed Image";
         public string Extension => "*.xi";
-        public string About => "This is the IMGC image adapter for Kukkii.";
+        public string About => "This is the IMGA image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -32,7 +32,7 @@ namespace image_level5.imgc
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "IMGC";
+                return br.ReadString(4) == "IMGA";
             }
         }
 
@@ -42,9 +42,9 @@ namespace image_level5.imgc
 
             if (FileInfo.Exists)
             {
-                _imgc = IMGC.Load(FileInfo.OpenRead());
+                _imga = IMGA.Load(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imgc } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imga } };
             }
         }
 
@@ -53,8 +53,8 @@ namespace image_level5.imgc
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _imgc = _bitmaps[0].Bitmap;
-            IMGC.Save(FileInfo.FullName, _imgc);
+            _imga = _bitmaps[0].Bitmap;
+            IMGA.Save(FileInfo.FullName, _imga);
         }
 
         // Bitmaps

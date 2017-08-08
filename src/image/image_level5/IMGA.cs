@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -8,9 +8,9 @@ using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace image_level5.imgc
+namespace image_level5.imga
 {
-    public class IMGC
+    public class IMGA
     {
         public static Header header;
 
@@ -20,6 +20,7 @@ namespace image_level5.imgc
             {
                 //Header
                 header = br.ReadStruct<Header>();
+                header.checkFormat();
 
                 //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
@@ -37,9 +38,9 @@ namespace image_level5.imgc
                 {
                     Width = header.width,
                     Height = header.height,
-                    Orientation = Orientation.TransposeTile,
                     Format = ImageSettings.ConvertFormat(header.imageFormat),
-                    PadToPowerOf2 = false
+                    PadToPowerOf2 = false,
+                    ZOrder = false
                 };
                 return Common.Load(pic, settings);
             }
@@ -85,9 +86,9 @@ namespace image_level5.imgc
             {
                 Width = width,
                 Height = height,
-                Orientation = Orientation.TransposeTile,
                 Format = ImageSettings.ConvertFormat(header.imageFormat),
-                PadToPowerOf2 = false
+                PadToPowerOf2 = false,
+                ZOrder = false
             };
             byte[] pic = Common.Save(bitmap, settings);
 

@@ -57,7 +57,7 @@ namespace archive_level5.XFSA
                     {
                         State = ArchiveFileState.Archived,
                         FileName = name,
-                        FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.comb1 & 0x00ffffff) << 4), entry.comb2 & 0x000fffff),
+                        FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.comb1 & 0x01ffffff) << 4), entry.comb2 & 0x000fffff),
                         entry = entry
                     });
                 }
