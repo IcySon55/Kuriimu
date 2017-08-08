@@ -49,6 +49,8 @@ namespace Kukkii
             cmbFormat.SelectedIndex = Enum.GetNames(typeof(Format)).ToList().IndexOf(Settings.Default.OpenRawFormat);
             cmbFormat.SelectedIndexChanged += cmbPixelFormat_SelectedIndexChanged;
 
+            zorderCheck.Checked = Settings.Default.OpenZOrder;
+
             UpdatePreview();
         }
 
@@ -60,6 +62,7 @@ namespace Kukkii
                 settings.Width = (int)numWidth.Value;
                 settings.Height = (int)numHeight.Value;
                 settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
+                settings.ZOrder = zorderCheck.Checked;
                 settings.PadToPowerOf2 = false;
 
                 imbPreview.Image = Common.Load(File.ReadAllBytes(_filename), settings);
@@ -108,6 +111,13 @@ namespace Kukkii
             {
                 imbPreview.Image.Save(sfd.FileName, ImageFormat.Png);
             }
+        }
+
+        private void zorderChecked_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.OpenZOrder = zorderCheck.Checked;
+            Settings.Default.Save();
+            UpdatePreview();
         }
     }
 }
