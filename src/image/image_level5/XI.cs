@@ -3,115 +3,36 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Cetera.Image;
 using Kuriimu.Compression;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace image_level5.XI
+namespace image_level5.imgc
 {
-    public class XI
+    public class IMGC
     {
-        public enum Format : byte
-        {
-            RGBA8888, RGBA4444,
-            RGBA5551, RGB888, RGB565,
-            LA88 = 11, LA44, L8, HL88, A8,
-            L4 = 26, A4, ETC1, ETC1A4
-        }
-
-        public enum Compression : byte
-        {
-            Uncompressed, LZSS,
-            Huffman4, Huffman8,
-            RLE
-        }
-
-        public static Compression tableComp = 0;
-        public static Compression picComp = 0;
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct Header
-        {
-            public Magic magic; // IMGC
-            public int const1; // 30 30 00 00
-            public short const2; // 30 00
-            public Format imageFormat;
-            public byte const3; // 01
-            public byte combineFormat;
-            public byte bitDepth;
-            public short bytesPerTile;
-            public short width;
-            public short height;
-            public int const4; // 30 00 00 00
-            public int const5; // 30 00 01 00
-            public int tableDataOffset; // always 0x48
-            public int const6; // 03 00 00 00
-            public int const7; // 00 00 00 00
-            public int const8; // 00 00 00 00
-            public int const9; // 00 00 00 00
-            public int const10; // 00 00 00 00
-            public int tableSize1;
-            public int tableSize2;
-            public int imgDataSize;
-            public int const11; // 00 00 00 00
-            public int const12; // 00 00 00 00
-
-            public void checkConst()
-            {
-                var ex = new Exception("Unknown xi file format!");
-
-                if (const1 != 0x3030) throw ex;
-                if (const2 != 0x30) throw ex;
-                if (const3 != 1) throw ex;
-                if (const4 != 0x30) throw ex;
-                if (const5 != 0x10030) throw ex;
-                if (tableDataOffset != 0x48) throw ex;
-                if (const6 != 3) throw ex;
-                if (const7 != 0) throw ex;
-                if (const8 != 0) throw ex;
-                if (const9 != 0) throw ex;
-                if (const10 != 0) throw ex;
-                if (const11 != 0) throw ex;
-                if (const12 != 0) throw ex;
-                if (((tableSize1 + 3) & ~3) != tableSize2) throw ex;
-                if (bytesPerTile != 8 * bitDepth) throw ex;
-            }
-        }
-
-        public static byte[] Decomp(BinaryReaderX br)
-        {
-            // above to be restored eventually with some changes to Cetera
-            return Level5.Decompress(br.BaseStream);
-        }
-
-        private static Header header;
+        public static Header header;
 
         public static Bitmap Load(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
-                //check header
+                //Header
                 header = br.ReadStruct<Header>();
-                header.checkConst();
 
-                //decompress table
-                br.BaseStream.Position = header.tableDataOffset;
-                tableComp = (Compression)(br.ReadUInt32() % 8);
+                //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
                 byte[] table = Level5.Decompress(new MemoryStream(br.ReadBytes(header.tableSize1)));
 
-                //get decompressed picture data
-                br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
-                picComp = (Compression)(br.ReadUInt32() % 8);
+                //get image data
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
                 byte[] tex = Level5.Decompress(new MemoryStream(br.ReadBytes(header.imgDataSize)));
 
                 //order pic blocks by table
-                byte[] pic = Order(new BinaryReaderX(new MemoryStream(table)), table.Length, new BinaryReaderX(new MemoryStream(tex)), header.width, header.height, header.bitDepth);
+                byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
 
-                //return decompressed picture data
+                //return finished image
                 var settings = new ImageSettings
                 {
                     Width = header.width,
@@ -124,51 +45,62 @@ namespace image_level5.XI
             }
         }
 
-        public static byte[] Order(BinaryReaderX table, int tableLength, BinaryReaderX tex, int w, int h, byte bitDepth)
+        public static byte[] Order(MemoryStream tableStream, MemoryStream texStream)
         {
-            var ms = new MemoryStream();
-            for (int i = 0; i < tableLength; i += 2)
+            using (var table = new BinaryReaderX(tableStream))
+            using (var tex = new BinaryReaderX(texStream))
             {
-                int entry = table.ReadUInt16();
-                if (entry == 0xFFFF)
+                int tableLength = (int)table.BaseStream.Length;
+
+                var ms = new MemoryStream();
+                for (int i = 0; i < tableLength; i += 2)
                 {
-                    for (int j = 0; j < 64 * bitDepth / 8; j++)
+                    int entry = table.ReadUInt16();
+                    if (entry == 0xFFFF)
                     {
-                        ms.WriteByte(0);
+                        for (int j = 0; j < 64 * header.bitDepth / 8; j++)
+                        {
+                            ms.WriteByte(0);
+                        }
+                    }
+                    else
+                    {
+                        tex.BaseStream.Position = entry * (64 * header.bitDepth / 8);
+                        for (int j = 0; j < 64 * header.bitDepth / 8; j++)
+                        {
+                            ms.WriteByte(tex.ReadByte());
+                        }
                     }
                 }
-                else
-                {
-                    tex.BaseStream.Position = entry * (64 * bitDepth / 8);
-                    for (int j = 0; j < 64 * bitDepth / 8; j++)
-                    {
-                        ms.WriteByte(tex.ReadByte());
-                    }
-                }
+                return ms.ToArray();
             }
-            return ms.ToArray();
         }
 
         public static void Save(string filename, Bitmap bitmap)
         {
-            int width = bitmap.Width;
-            int height = bitmap.Height;
-            while (width % 8 != 0) width++;
-            while (height % 8 != 0) height++;
+            int width = (bitmap.Width + 0x7) & ~0x7;
+            int height = (bitmap.Height + 0x7) & ~0x7;
 
-            byte[] pic = Common.Save(bitmap, new ImageSettings
+            var settings = new ImageSettings
             {
                 Width = width,
                 Height = height,
                 Orientation = Orientation.TransposeTile,
                 Format = ImageSettings.ConvertFormat(header.imageFormat),
                 PadToPowerOf2 = false
-            });
+            };
+            byte[] pic = Common.Save(bitmap, settings);
 
-            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
+            using (var bw = new BinaryWriterX(File.Create(filename)))
             {
+                //Header
+                header.bitDepth = 32;
+                header.width = (short)width;
+                header.height = (short)height;
+
+                //tile table
                 List<short> table;
-                byte[] importPic = Deflate(pic, out table, 32, width, height);
+                byte[] importPic = Deflate(pic, out table);
 
                 header.width = (short)bitmap.Width;
                 header.height = (short)bitmap.Height;
@@ -186,17 +118,17 @@ namespace image_level5.XI
             }
         }
 
-        public static byte[] Deflate(byte[] pic, out List<short> table, int bitDepth, int width, int height)
+        public static byte[] Deflate(byte[] pic, out List<short> table)
         {
             table = new List<short>();
             List<byte[]> parts = new List<byte[]>();
-            byte[] result = new byte[width * height * bitDepth / 8];
+            byte[] result = new byte[header.width * header.height * header.bitDepth / 8];
 
             using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(pic)))
             {
-                for (int i = 0; i < width * height / 64; i++)
+                for (int i = 0; i < header.width * header.height / 64; i++)
                 {
-                    byte[] tmp = br.ReadBytes(64 * bitDepth / 8);
+                    byte[] tmp = br.ReadBytes(64 * header.bitDepth / 8);
                     bool found = false;
                     int count = 0;
                     while (found == false && count < parts.Count)
