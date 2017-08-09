@@ -52,7 +52,7 @@ namespace archive_level5.ARC0
                 List<uint> offsets = new List<uint>();
                 foreach (var name in fileNames)
                 {
-                    var crc32 = Crc32.Create(name.Split('/').Last());
+                    var crc32 = Crc32.Create(name.Split('/').Last(), Encoding.GetEncoding("SJIS"));
                     var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
                     offsets.Add(entry.fileOffset);
                     Files.Add(new ARC0FileInfo

@@ -6,6 +6,7 @@ using Kuriimu.Kontract;
 using Kuriimu.IO;
 using System;
 using Cetera.Hash;
+using System.Text;
 
 namespace archive_level5.XFSA
 {
@@ -50,7 +51,7 @@ namespace archive_level5.XFSA
                 List<uint> combs = new List<uint>();
                 foreach (var name in fileNames)
                 {
-                    var crc32 = Crc32.Create(name.Split('/').Last());
+                    var crc32 = Crc32.Create(name.Split('/').Last(), Encoding.GetEncoding("SJIS"));
                     var entry = entries.Find(c => c.crc32 == crc32 && !combs.Contains(c.comb1));
                     combs.Add(entry.comb1);
                     Files.Add(new XFSAFileInfo
