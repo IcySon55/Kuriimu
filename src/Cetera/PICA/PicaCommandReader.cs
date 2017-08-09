@@ -544,6 +544,14 @@ namespace Cetera.PICA
         }
 
         /// <summary>
+        ///     Gets the Level of Detail of the texture at Texture Unit 0.
+        /// </summary>
+        public uint getTexUnit0LoD()
+        {
+            return getParameter(PICACommand.texUnit0LevelOfDetail) >> 16;
+        }
+
+        /// <summary>
         ///     Gets the Address of the texture at Texture Unit 1.
         /// </summary>
         /// <returns></returns>

@@ -68,49 +68,24 @@ namespace image_nintendo.BCH
                         if (size.Height != 0 && size.Width != 0)
                         {
                             var format = (Format)picaEntries[i].getTexUnit0Format();
-                            int bitDepth;
+                            int bitDepth = Common.GetBitDepth(format);
 
-                            switch (format)
+                            for (int j = 0; j <= picaEntries[i].getTexUnit0LoD(); j++)
                             {
-                                case Format.RGBA8888:
-                                    bitDepth = 32;
-                                    break;
-                                case Format.RGB888:
-                                    bitDepth = 24;
-                                    break;
-                                case Format.RGBA5551:
-                                case Format.RGB565:
-                                case Format.RGBA4444:
-                                case Format.LA88:
-                                case Format.HL88:
-                                    bitDepth = 16;
-                                    break;
-                                case Format.L8:
-                                case Format.A8:
-                                case Format.LA44:
-                                case Format.ETC1A4:
-                                    bitDepth = 8;
-                                    break;
-                                case Format.L4:
-                                case Format.A4:
-                                case Format.ETC1:
-                                    bitDepth = 4;
-                                    break;
-                                default:
-                                    throw new NotSupportedException();
+                                origValues.Add(new TexEntry(size.Width >> j, size.Height >> j, format));
+
+                                var settings = new ImageSettings
+                                {
+                                    Width = size.Width >> j,
+                                    Height = size.Height >> j,
+                                    Format = format,
+                                    PadToPowerOf2 = false
+                                };
+
+                                bmps.Add(Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
                             }
 
-                            origValues.Add(new TexEntry(size.Width, size.Height, format));
-
-                            var settings = new ImageSettings
-                            {
-                                Width = size.Width,
-                                Height = size.Height,
-                                Format = format,
-                                PadToPowerOf2 = false
-                            };
-
-                            bmps.Add(Common.Load(br.ReadBytes(((size.Width * size.Height) * bitDepth) / 8), settings));
+                            br.BaseStream.Position = (br.BaseStream.Position + 0x7f) & ~0x7f;
                         }
                     }
                 }
@@ -122,7 +97,7 @@ namespace image_nintendo.BCH
             for (int i = 0; i < bmps.Count(); i++)
             {
                 if (origValues[i].width != bmps[i].Width || origValues[i].height != bmps[i].Height)
-                    throw new Exception("All BCH textures have to be the same size");
+                    throw new Exception("All BCH textures have to be the same size as the original!");
             }
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
@@ -141,6 +116,8 @@ namespace image_nintendo.BCH
                         PadToPowerOf2 = false
                     };
                     bw.Write(Common.Save(bmps[i], settings));
+
+                    bw.WriteAlignment(0x80);
                 }
             }
         }
