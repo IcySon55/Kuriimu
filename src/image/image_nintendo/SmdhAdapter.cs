@@ -18,10 +18,10 @@ namespace image_nintendo.SMDH
         public string Name => "SMDH";
         public string Description => "SMDH Icon";
         public string Extension => "*.icn;*.bin";
-        public string About => "This is the SMDH Icon image adapter for Kukkii.";
+        public string About => "This is the SMDH image adapter for Kukkii.";
 
         // Feature Support
-        public bool FileHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => true;
         public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
@@ -121,6 +121,12 @@ namespace image_nintendo.SMDH
         // Bitmaps
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
-        public bool ShowProperties(Icon icon) => false;
+        public bool ShowProperties(Icon icon)
+        {
+            var extendedProperties = new SmdhProperties(_smdh, icon);
+            extendedProperties.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            extendedProperties.ShowDialog();
+            return extendedProperties.HasChanges;
+        }
     }
 }
