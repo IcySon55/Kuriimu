@@ -37,7 +37,7 @@ namespace image_aif
                 //Get information
                 texInfo = new TexInfo();
                 br.BaseStream.Position = 0x30;
-                texInfo.format = (byte)(br.ReadByte() - 2);
+                texInfo.format = (Format)br.ReadByte();
                 br.BaseStream.Position = 0x38;
                 texInfo.width = br.ReadUInt16();
                 texInfo.height = br.ReadUInt16();
