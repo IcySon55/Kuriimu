@@ -31,7 +31,8 @@ namespace image_nintendo.SMDH
                     makerID = br.ReadInt32();
                     makerBITID = br.ReadInt64();
                     flags = br.ReadInt32();
-                    eulaVer = br.ReadInt16();
+                    eulaVerMinor = br.ReadByte();
+                    eulaVerMajor = br.ReadByte();
                     reserved = br.ReadInt16();
                     animDefaultFrame = br.ReadInt32();
                     streetPassID = br.ReadInt32();
@@ -43,7 +44,8 @@ namespace image_nintendo.SMDH
             public int makerID;
             public long makerBITID;
             public int flags;
-            public short eulaVer;
+            public byte eulaVerMinor;
+            public byte eulaVerMajor;
             public short reserved;
             public int animDefaultFrame;
             public int streetPassID;
@@ -57,7 +59,8 @@ namespace image_nintendo.SMDH
                     bw.Write(makerID);
                     bw.Write(makerBITID);
                     bw.Write(flags);
-                    bw.Write(eulaVer);
+                    bw.Write(eulaVerMinor);
+                    bw.Write(eulaVerMajor);
                     bw.Write(reserved);
                     bw.Write(animDefaultFrame);
                     bw.Write(streetPassID);

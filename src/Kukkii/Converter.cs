@@ -464,6 +464,9 @@ namespace Kukkii
                 tsbExportPNG.Enabled = _fileOpen;
                 importPNGToolStripMenuItem.Enabled = _fileOpen;
                 tsbImportPNG.Enabled = _fileOpen;
+
+                // Properties
+                tsbExtendedProperties.Enabled = _fileOpen && _imageAdapter.FileHasExtendedProperties;
             }
 
             // Batch Import/Export
@@ -730,6 +733,16 @@ namespace Kukkii
         {
             _selectedImageIndex = treBitmaps.SelectedNode.Index;
             UpdatePreview();
+        }
+
+        // Properties
+        private void tsbExtendedProperties_Click(object sender, EventArgs e)
+        {
+            if (_imageAdapter.ShowProperties(Resources.kukkii))
+            {
+                _hasChanges = true;
+                UpdateForm();
+            }
         }
     }
 }
