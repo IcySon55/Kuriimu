@@ -31,7 +31,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -52,6 +54,7 @@
     <Compile Include="CGFX.cs" />
     <Compile Include="CgfxAdapter.cs" />
     <Compile Include="CgfxSupport.cs" />
+    <Compile Include="SmdhSupport.cs" />
     <Compile Include="CTPK.cs" />
     <Compile Include="CtpkAdapter.cs" />
     <Compile Include="CtpkSupport.cs" />
