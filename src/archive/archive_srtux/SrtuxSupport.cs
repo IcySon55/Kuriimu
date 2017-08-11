@@ -10,6 +10,8 @@ namespace archive_srtux
 {
     public class SrtuxFileInfo : ArchiveFileInfo
     {
+        public Entry entry;
+
         public override Stream FileData
         {
             get
@@ -19,11 +21,15 @@ namespace archive_srtux
                 {
                     var header = new ECDHeader(br.BaseStream);
                     if (header.magic != "ECD\u0001") return br.BaseStream;
+
+                    entry.comp = true;
                     br.BaseStream.Position -= 0x10;
                     return new MemoryStream(LZECD.Decompress(new MemoryStream(br.ReadBytes(header.compSize + 0x10))));
                 }
             }
         }
+
+        public override long? FileSize => entry.size;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -31,6 +37,7 @@ namespace archive_srtux
     {
         public uint offset = 0;
         public uint size = 0;
+        public bool comp = false;
     }
 
     public class ECDHeader

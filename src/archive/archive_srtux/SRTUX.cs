@@ -39,7 +39,8 @@ namespace archive_srtux
                     {
                         State = ArchiveFileState.Archived,
                         FileName = $"{i:00000000}.bin",
-                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size)
+                        FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size),
+                        entry = entries[i]
                     });
                 }
             }

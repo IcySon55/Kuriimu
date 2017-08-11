@@ -36,11 +36,29 @@ namespace archive_srtux
             {
                 try
                 {
-                    if (br.BaseStream.Length < 4) return false;
+                    uint limit = br.ReadUInt32();
+                    br.BaseStream.Position = 0;
+                    uint precheck = 0;
+                    uint length = 0;
+                    while (br.BaseStream.Position < limit)
+                    {
+                        var check = br.ReadUInt32();
+                        if (check == 0)
+                        {
+                            length = precheck;
+                            break;
+                        }
+                        precheck = check;
+                    }
+
+                    br.BaseStream.Position = br.BaseStream.Length - 4;
+                    return (length == br.BaseStream.Length) ? true : (br.ReadString(3) == "end");
+
+                    /*if (br.BaseStream.Length < 4) return false;
                     var offset = br.ReadUInt32();
                     if (br.BaseStream.Length < offset + 3) return false;
                     br.BaseStream.Position = offset;
-                    return br.ReadString(3) == "ECD";
+                    return br.ReadString(3) == "ECD";*/
                 }
                 catch
                 {
