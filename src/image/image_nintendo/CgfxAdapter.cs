@@ -23,7 +23,7 @@ namespace image_nintendo.CGFX
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -62,7 +62,8 @@ namespace image_nintendo.CGFX
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            //_cgfx.Save(FileInfo.Create());
+            _cgfx.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _cgfx.Save(FileInfo.FullName);
         }
 
         // Bitmaps
