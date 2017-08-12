@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using text_tingle_baloon.Properties;
 using Kuriimu.Kontract;
+using Kuriimu.IO;
 
 namespace text_tb
 {
@@ -64,9 +65,26 @@ namespace text_tb
 
         public bool Identify(string filename)
         {
-            if (filename.Contains("lang.bin")) return true;
+            try
+            {
+                using (var br = new BinaryReaderX(File.OpenRead(filename)))
+                {
+                    br.BaseStream.Position = 0x1c;
 
-            return false;
+                    uint length = 0;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        length += br.ReadUInt32();
+                        br.BaseStream.Position += 0xc;
+                    }
+
+                    return length == br.BaseStream.Length;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         //Load file, make backup if needed
