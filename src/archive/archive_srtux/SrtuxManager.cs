@@ -24,7 +24,7 @@ namespace archive_srtux
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -53,12 +53,6 @@ namespace archive_srtux
 
                     br.BaseStream.Position = br.BaseStream.Length - 4;
                     return (length == br.BaseStream.Length) ? true : (br.ReadString(3) == "end");
-
-                    /*if (br.BaseStream.Length < 4) return false;
-                    var offset = br.ReadUInt32();
-                    if (br.BaseStream.Length < offset + 3) return false;
-                    br.BaseStream.Position = offset;
-                    return br.ReadString(3) == "ECD";*/
                 }
                 catch
                 {

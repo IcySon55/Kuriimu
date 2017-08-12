@@ -17,20 +17,24 @@ namespace archive_srtux
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
-                uint offset = 0;
-                while (true)
+                var limit = br.ReadUInt32();
+                var offset = limit;
+                while (br.BaseStream.Position < limit)
                 {
-                    offset = br.ReadUInt32();
-                    if (offset == br.BaseStream.Length - 4 || offset == br.BaseStream.Length) break;
 
-                    var size = br.ReadUInt32() - offset;
-                    br.BaseStream.Position -= 4;
+                    var offset2 = br.ReadUInt32();
+                    if (offset2 == 0) break;
+
+                    var size = offset2 - offset;
 
                     entries.Add(new Entry
                     {
                         offset = offset,
-                        size = size
+                        size = size,
+                        comp = br.PeekString(offset, 3) == "ECD"
                     });
+
+                    offset = offset2;
                 }
 
                 for (int i = 0; i < entries.Count; i++)
@@ -50,7 +54,18 @@ namespace archive_srtux
         {
             using (var bw = new BinaryWriterX(output))
             {
+                var dataOffset = entries[0].offset;
 
+                foreach (var file in Files)
+                {
+                    bw.Write(dataOffset);
+
+                    file.Write(bw.BaseStream, dataOffset);
+
+                    dataOffset = (uint)bw.BaseStream.Length;
+                }
+
+                bw.Write(dataOffset);
             }
         }
 
