@@ -10,18 +10,39 @@ namespace archive_srtux
 {
     public class SrtuxFileInfo : ArchiveFileInfo
     {
+        public Entry entry;
+
         public override Stream FileData
         {
             get
             {
                 var baseStream = base.FileData;
+                if (State != ArchiveFileState.Archived) return base.FileData;
                 using (var br = new BinaryReaderX(baseStream, true))
                 {
                     var header = new ECDHeader(br.BaseStream);
                     if (header.magic != "ECD\u0001") return br.BaseStream;
+
                     br.BaseStream.Position -= 0x10;
                     return new MemoryStream(LZECD.Decompress(new MemoryStream(br.ReadBytes(header.compSize + 0x10))));
                 }
+            }
+        }
+
+        public override long? FileSize => entry.size;
+
+        //change when ECD compression available
+        public void Write(Stream input, uint offset)
+        {
+            using (var bw = new BinaryWriterX(input, true))
+            {
+                var startOffset = bw.BaseStream.Position;
+
+                bw.BaseStream.Position = offset;
+                base.FileData.CopyTo(input);
+                bw.WriteAlignment(0x80);
+
+                bw.BaseStream.Position = startOffset;
             }
         }
     }
@@ -31,6 +52,7 @@ namespace archive_srtux
     {
         public uint offset = 0;
         public uint size = 0;
+        public bool comp = false;
     }
 
     public class ECDHeader

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
+using System.Windows.Forms;
 
 namespace image_rawJtex
 {
@@ -32,7 +33,13 @@ namespace image_rawJtex
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return Path.GetExtension(filename) == ".jtex" && br.ReadString(4) != "jIMG";
+                if (Path.GetExtension(filename) == ".jtex" && br.PeekString(4) != "jIMG" && br.ReadByte() == 0x11)
+                {
+                    MessageBox.Show("This headerless jTEX seems compressed!", "Compressed", MessageBoxButtons.OK);
+                    return false;
+                }
+
+                return (Path.GetExtension(filename) == ".jtex" && br.PeekString(4) != "jIMG" && br.ReadByte() != 0x11);
             }
         }
 
