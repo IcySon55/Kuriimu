@@ -148,7 +148,7 @@ namespace Kuriimu.IO
             return encoding.GetString(bytes.ToArray());
         }
 
-        public string PeekString(int offset, int length = 4)
+        public string PeekString(uint offset, int length = 4)
         {
             var bytes = new List<byte>();
             var startOffset = BaseStream.Position;
@@ -162,7 +162,7 @@ namespace Kuriimu.IO
             return Encoding.ASCII.GetString(bytes.ToArray());
         }
 
-        public string PeekString(int offset, int length, Encoding encoding)
+        public string PeekString(uint offset, int length, Encoding encoding)
         {
             var bytes = new List<byte>();
             var startOffset = BaseStream.Position;
