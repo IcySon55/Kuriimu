@@ -29,7 +29,8 @@ namespace image_bnr
                 {
                     Width = 32,
                     Height = 32,
-                    BitPerIndex = BitLength.Bit4
+                    BitPerIndex = BitLength.Bit4,
+                    TransparentColor = Color.FromArgb(255, 0, 255, 0)
                 };
                 bmps.Add(Common.Load(tileData, settings, palette));
 
