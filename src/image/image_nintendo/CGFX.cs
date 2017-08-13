@@ -13,7 +13,10 @@ namespace image_nintendo.CGFX
 {
     public sealed class CGFX
     {
+        List<TxobEntry> TxObs = new List<TxobEntry>();
         public List<Bitmap> bmps = new List<Bitmap>();
+
+        byte[] list;
 
         public CGFX(Stream input)
         {
@@ -46,12 +49,15 @@ namespace image_nintendo.CGFX
                 }
 
                 //TextureObjects
-                var TxObs = new List<TxobEntry>();
                 for (int i = 0; i < dictHeader.entryCount; i++)
                 {
                     br.BaseStream.Position = dictEntries[i].dataOffset;
                     TxObs.Add(new TxobEntry(br.BaseStream));
                 }
+
+                //save lists to RAM
+                br.BaseStream.Position = 0;
+                list = br.ReadBytes((int)TxObs[0].texDataOffset);
 
                 //Add images
                 for (int i = 0; i < dictHeader.entryCount; i++)
@@ -71,7 +77,31 @@ namespace image_nintendo.CGFX
 
         public void Save(string filename)
         {
+            //check original sizes
+            for (int i = 0; i < TxObs.Count; i++)
+            {
+                if (bmps[i].Width != TxObs[i].width || bmps[i].Height != TxObs[i].height)
+                    throw new Exception($"Image {i:00} has to be {TxObs[i].width}x{TxObs[i].height}px!");
+            }
 
+            using (var bw = new BinaryWriterX(File.OpenWrite(filename)))
+            {
+                bw.Write(list);
+
+                for (int i = 0; i < TxObs.Count; i++)
+                {
+                    bw.BaseStream.Position = TxObs[i].texDataOffset;
+                    var settings = new ImageSettings
+                    {
+                        Width = (int)TxObs[i].width,
+                        Height = (int)TxObs[i].height,
+                        Format = ImageSettings.ConvertFormat(TxObs[i].format),
+                        PadToPowerOf2 = false
+                    };
+
+                    bw.Write(Common.Save(bmps[i], settings));
+                }
+            }
         }
     }
 }

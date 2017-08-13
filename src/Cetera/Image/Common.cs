@@ -31,6 +31,7 @@ namespace Cetera.Image
         public Format Format { get; set; }
         public Orientation Orientation { get; set; } = Orientation.Default;
         public bool PadToPowerOf2 { get; set; } = true;
+        public bool ZOrder { get; set; } = true;
 
         /// <summary>
         /// This is currently a hack
@@ -171,10 +172,21 @@ namespace Cetera.Image
             int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
             for (int i = 0; i < strideWidth * strideHeight; i++)
             {
-                int x_out = (i / 64 % (stride / 8)) * 8;
-                int y_out = (i / 64 / (stride / 8)) * 8;
-                int x_in = (i / 4 & 4) | (i / 2 & 2) | (i & 1);
-                int y_in = (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
+                int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
+                if (settings.ZOrder)
+                {
+                    x_out = (i / 64 % (stride / 8)) * 8;
+                    y_out = (i / 64 / (stride / 8)) * 8;
+                    x_in = (i / 4 & 4) | (i / 2 & 2) | (i & 1);
+                    y_in = (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
+                }
+                else
+                {
+                    x_out = (i / 64 % (stride / 8)) * 8;
+                    y_out = (i / 64 / (stride / 8)) * 8;
+                    x_in = i % 64 % 8;
+                    y_in = i % 64 / 8;
+                }
 
                 switch (settings.Orientation)
                 {

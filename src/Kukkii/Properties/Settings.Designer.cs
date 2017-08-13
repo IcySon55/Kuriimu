@@ -160,7 +160,22 @@ namespace Kukkii.Properties {
                 this["OpenRawFormat"] = value;
             }
         }
-        
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("true")]
+        public bool OpenZOrder
+        {
+            get
+            {
+                return ((bool)(this["OpenZOrder"]));
+            }
+            set
+            {
+                this["OpenZOrder"] = value;
+            }
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("None")]

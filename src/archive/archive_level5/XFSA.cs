@@ -6,6 +6,7 @@ using Kuriimu.Kontract;
 using Kuriimu.IO;
 using System;
 using Cetera.Hash;
+using System.Text;
 
 namespace archive_level5.XFSA
 {
@@ -50,14 +51,14 @@ namespace archive_level5.XFSA
                 List<uint> combs = new List<uint>();
                 foreach (var name in fileNames)
                 {
-                    var crc32 = Crc32.Create(name.Split('/').Last());
+                    var crc32 = Crc32.Create(name.Split('/').Last(), Encoding.GetEncoding("SJIS"));
                     var entry = entries.Find(c => c.crc32 == crc32 && !combs.Contains(c.comb1));
                     combs.Add(entry.comb1);
                     Files.Add(new XFSAFileInfo
                     {
                         State = ArchiveFileState.Archived,
                         FileName = name,
-                        FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.comb1 & 0x00ffffff) << 4), entry.comb2 & 0x000fffff),
+                        FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.comb1 & 0x01ffffff) << 4), entry.comb2 & 0x000fffff),
                         entry = entry
                     });
                 }
@@ -116,13 +117,13 @@ namespace archive_level5.XFSA
                     {
                         throw new Exception("File " + file.FileName + " is too big to pack into this archive type!");
                     }
-                    else if (offset + dataOffset >= 0x10000000)
+                    else if (offset + dataOffset >= 0x20000000)
                     {
                         throw new Exception("The archive can't be bigger than 0x10000000 Bytes.");
                     }
 
                     //edit entry
-                    entry.comb1 = (entry.comb1 & 0xff000000) | (offset >> 4);
+                    entry.comb1 = (entry.comb1 & 0xfe000000) | (offset >> 4);
                     entry.comb2 = (entry.comb1 & 0xfff00000) | ((uint)file.FileData.Length);
 
                     //write entry

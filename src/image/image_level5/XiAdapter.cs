@@ -5,19 +5,19 @@ using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace image_level5.XI
+namespace image_level5.imgc
 {
-    public sealed class XiAdapter : IImageAdapter
+    public sealed class ImgcAdapter : IImageAdapter
     {
-        private Bitmap _xi = null;
+        private Bitmap _imgc = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
-        public string Name => "XI";
+        public string Name => "IMGC";
         public string Description => "Level 5 Compressed Image";
         public string Extension => "*.xi";
-        public string About => "This is the XI image adapter for Kukkii.";
+        public string About => "This is the IMGC image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -42,9 +42,9 @@ namespace image_level5.XI
 
             if (FileInfo.Exists)
             {
-                _xi = XI.Load(FileInfo.OpenRead());
+                _imgc = IMGC.Load(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _xi } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imgc } };
             }
         }
 
@@ -53,8 +53,8 @@ namespace image_level5.XI
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _xi = _bitmaps[0].Bitmap;
-            XI.Save(FileInfo.FullName, _xi);
+            _imgc = _bitmaps[0].Bitmap;
+            IMGC.Save(FileInfo.FullName, _imgc);
         }
 
         // Bitmaps

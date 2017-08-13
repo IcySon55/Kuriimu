@@ -21,6 +21,6 @@ namespace image_rawJtex
 
     public enum Format : uint
     {
-        RGBA8888 = 4
+        RGBA8888 = 2, RGB888, RGBA4444
     }
 }

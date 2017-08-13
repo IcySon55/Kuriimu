@@ -12,7 +12,7 @@ namespace Kuriimu.IO
         private int _nibble = -1;
 
         public ByteOrder ByteOrder { get; set; }
-        
+
         public BinaryReaderX(Stream input, ByteOrder byteOrder = ByteOrder.LittleEndian) : base(input, Encoding.Unicode)
         {
             ByteOrder = byteOrder;
@@ -148,6 +148,34 @@ namespace Kuriimu.IO
             return encoding.GetString(bytes.ToArray());
         }
 
+        public string PeekString(uint offset, int length = 4)
+        {
+            var bytes = new List<byte>();
+            var startOffset = BaseStream.Position;
+
+            BaseStream.Seek(offset, SeekOrigin.Begin);
+            for (var i = 0; i < length; i++)
+                bytes.Add(ReadByte());
+
+            BaseStream.Seek(startOffset, SeekOrigin.Begin);
+
+            return Encoding.ASCII.GetString(bytes.ToArray());
+        }
+
+        public string PeekString(uint offset, int length, Encoding encoding)
+        {
+            var bytes = new List<byte>();
+            var startOffset = BaseStream.Position;
+
+            BaseStream.Seek(offset, SeekOrigin.Begin);
+            for (var i = 0; i < length; i++)
+                bytes.Add(ReadByte());
+
+            BaseStream.Seek(startOffset, SeekOrigin.Begin);
+
+            return encoding.GetString(bytes.ToArray());
+        }
+
         public int ReadNibble()
         {
             if (_nibble == -1)
@@ -167,7 +195,7 @@ namespace Kuriimu.IO
             alignmentByte = ReadByte();
             BaseStream.Seek(-1, SeekOrigin.Current);
             BaseStream.Seek(16 - remainder, SeekOrigin.Current);
-            
+
             return alignmentByte;
         }
 
