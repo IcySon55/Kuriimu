@@ -1,10 +1,11 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
+using CeteraDS.Image;
 
 namespace image_nintendo
 {
-    public enum TXPLBitDepth : byte
+    public enum TXPLFormat : byte
     {
         BGR555
     }
@@ -20,8 +21,8 @@ namespace image_nintendo
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class CHNK
     {
-        public Magic Magic;
-        public int DecompressedSize;
+        public Magic magic;
+        public int decompSize;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -29,9 +30,9 @@ namespace image_nintendo
     {
         public short Unk1;
         public short Unk2;
-        public int ImageSize;
-        public int MapSize;
-        public int PaletteSize;
+        public int imgDataSize;
+        public int mapDataSize;
+        public int paletteDataSize;
         public short Width;
         public short Height;
         public short ImageCount;
@@ -40,28 +41,24 @@ namespace image_nintendo
 
     public class Section
     {
-        public CHNK Chunk;
-        public Magic Magic;
-        public int Size;
-        public byte[] Data;
+        public CHNK chunk;
+        public Magic magic;
+        public int size;
+        public byte[] data;
     }
 
     public sealed class ChnkTexBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public TXIMBitDepth BitDepth { get; set; }
+        public TXIMBitDepth IndexBitDepth { get; set; }
 
         [Category("Properties")]
         [ReadOnly(true)]
-        public TXPLBitDepth PaletteBitDepth { get; set; }
+        public TXPLFormat PaletteFormat { get; set; }
 
         [Category("Properties")]
         [ReadOnly(true)]
-        public bool IsMultiTXIM { get; set; }
-
-        [Category("Properties")]
-        [ReadOnly(true)]
-        public bool HasTX4I { get; set; }
+        public bool TX4I { get; set; }
     }
 }

@@ -36,6 +36,7 @@ namespace CeteraDS.Image
         public Orientation Orientation { get; set; } = Orientation.Default;
         public int TileSize { get; set; } = 8;
         public bool PadToPowerOf2 { get; set; } = false;
+        public Color TransparentColor = Color.FromArgb(255, 0, 0, 0);
 
         /// <summary>
         /// This is currently a hack
@@ -85,26 +86,44 @@ namespace CeteraDS.Image
             }
         }
 
-        static IEnumerable<Color> GetColorsFromIndeces(byte[] indeces, BitLength bitLength, IEnumerable<Color> palette)
+        static IEnumerable<Color> GetColorsFromIndeces(byte[] indeces, IEnumerable<Color> palette, ImageSettings settings)
         {
             using (var br = new BinaryReaderX(new MemoryStream(indeces)))
             {
+                var count = 0;
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    switch (bitLength)
+                    switch (settings.BitPerIndex)
                     {
                         case BitLength.Bit4:
-                            int i = br.ReadNibble();
-                            int i2 = br.ReadNibble();
-                            yield return palette.ToList()[i];
-                            yield return palette.ToList()[i2];
+                            if (count < settings.Width)
+                            {
+                                yield return palette.ToList()[br.ReadNibble()];
+                                yield return palette.ToList()[br.ReadNibble()];
+                            }
+                            else
+                            {
+                                br.ReadByte();
+                            }
+                            count += 2;
+                            if (count % settings.TileSize == 0)
+                                count = 0;
                             break;
                         case BitLength.Bit8:
-                            int i3 = br.ReadByte();
-                            yield return palette.ToList()[i3];
+                            if (count < settings.Width)
+                            {
+                                yield return palette.ToList()[br.ReadByte()];
+                            }
+                            else
+                            {
+                                br.ReadByte();
+                            }
+                            count++;
+                            if (count % settings.TileSize == 0)
+                                count = 0;
                             break;
                         default:
-                            throw new NotSupportedException($"Unknown bitLength format {bitLength}");
+                            throw new NotSupportedException($"Unknown bitLength format {settings.BitPerIndex}");
                     }
                 }
             }
@@ -113,6 +132,15 @@ namespace CeteraDS.Image
         static IEnumerable<Point> GetPointSequence(ImageSettings settings)
         {
             int tileSize = settings.TileSize;
+            if ((int)settings.Orientation < 4)
+            {
+                if (tileSize > settings.Width) tileSize = settings.Width;
+            }
+            else
+            {
+                if (tileSize > settings.Height) tileSize = settings.Height;
+            }
+
             int strideWidth = (settings.Width + 7) & ~7;
             int strideHeight = (settings.Height + 7) & ~7;
             if (settings.PadToPowerOf2)
@@ -151,7 +179,7 @@ namespace CeteraDS.Image
         public static Bitmap Load(byte[] indeces, ImageSettings settings, IEnumerable<Color> palette)
         {
             int width = settings.Width, height = settings.Height;
-            var colors = GetColorsFromIndeces(indeces, settings.BitPerIndex, palette).ToList();
+            var colors = GetColorsFromIndeces(indeces, palette, settings).ToList();
             var points = GetPointSequence(settings);
 
             // Now we just need to merge the points with the colors
@@ -165,7 +193,7 @@ namespace CeteraDS.Image
                     int x = pair.Item1.X, y = pair.Item1.Y;
                     if (0 <= x && x < width && 0 <= y && y < height)
                     {
-                        ptr[data.Stride * y / 4 + x] = pair.Item2.ToArgb();
+                        ptr[data.Stride * y / 4 + x] = (pair.Item2.Equals(settings.TransparentColor)) ? Color.Transparent.ToArgb() : pair.Item2.ToArgb();
                     }
                 }
             }
