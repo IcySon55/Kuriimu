@@ -77,6 +77,10 @@
     <Compile Include="ChnkTexSupport.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CeteraDS\CeteraDS.csproj">
+      <Project>{ad9c4794-3129-436a-9828-6d83b062b484}</Project>
+      <Name>CeteraDS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Cetera\Cetera.csproj">
       <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
       <Name>Cetera</Name>
