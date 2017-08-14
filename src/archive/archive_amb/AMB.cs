@@ -31,12 +31,13 @@ namespace archive_amb
                 //Files
                 var count = 0;
                 foreach (var entry in entries)
-                    Files.Add(new AMBFileInfo
-                    {
-                        State = ArchiveFileState.Archived,
-                        FileName = $"{count++:00000000}.bin",
-                        FileData = new SubStream(br.BaseStream, entry.offset, entry.size)
-                    });
+                    if (entry.offset < br.BaseStream.Length)
+                        Files.Add(new AMBFileInfo
+                        {
+                            State = ArchiveFileState.Archived,
+                            FileName = $"{count++:00000000}.bin",
+                            FileData = new SubStream(br.BaseStream, entry.offset, entry.size)
+                        });
             }
         }
 
@@ -55,8 +56,9 @@ namespace archive_amb
                     entries[count].offset = dataOffset;
                     entries[count++].size = (uint)file.FileSize;
 
-                    dataOffset = (uint)((dataOffset + (uint)file.FileSize + 0xf) & ~0xf);
+                    dataOffset = (uint)((dataOffset + (uint)file.FileSize + 0x7f) & ~0x7f);
                 }
+                for (int i = count; i < entries.Count; i++) entries[i].offset = dataOffset;
 
                 foreach (var entry in entries)
                 {
@@ -68,7 +70,7 @@ namespace archive_amb
                 foreach (var file in Files)
                 {
                     file.FileData.CopyTo(bw.BaseStream);
-                    bw.WriteAlignment();
+                    bw.WriteAlignment(0x80);
                 }
             }
         }
