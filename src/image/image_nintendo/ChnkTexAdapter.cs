@@ -44,7 +44,7 @@ namespace image_nintendo
             if (FileInfo.Exists)
             {
                 _tex = new CHNKTEX(FileInfo.OpenRead());
-                _bitmaps = _tex.bmps.Select(b => new ChnkTexBitmapInfo
+                _bitmaps = _tex.Bitmaps.Select(b => new ChnkTexBitmapInfo
                 {
                     Bitmap = b,
                     PaletteFormat = TXPLFormat.BGR555,
@@ -61,7 +61,7 @@ namespace image_nintendo
 
             //if (_bitmaps.Count >= 1)
             //    _tex.Txif.Format = ((TximBitmapInfo)_bitmaps[0]).Format;
-            _tex.bmps = _bitmaps.Select(b => b.Bitmap).ToList();
+            _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
         }
 
