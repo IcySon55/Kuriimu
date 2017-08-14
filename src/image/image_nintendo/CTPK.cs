@@ -107,6 +107,7 @@ namespace image_nintendo.CTPK
                 foreach (var entry in entries) bw.WriteASCII(entry.name + "\0");
 
                 //Write hashes
+                bw.BaseStream.Position = (bw.BaseStream.Position + 0x3) & ~0x3;
                 List<HashEntry> hash = entries.Select(c => c.hash).OrderBy(c => c.crc32).ToList();
                 foreach (var entry in hash) bw.WriteStruct(entry);
 
