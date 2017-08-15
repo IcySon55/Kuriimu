@@ -103,6 +103,9 @@ namespace text_t2b
 
         public class TypeEntry
         {
+            //0 - string offset
+            //1 - integer
+            //2 - float
             public byte type;
             public uint value;
         }
