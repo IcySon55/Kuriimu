@@ -31,7 +31,7 @@ namespace text_t2b
         // Feature Support
         public bool FileHasExtendedProperties => false;
 
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public bool CanAddEntries => false;
 
