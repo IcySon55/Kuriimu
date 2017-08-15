@@ -47,12 +47,14 @@ namespace Kuriimu.Compression
             switch (method)
             {
                 case Method.NoCompression:
-                    var methodSize = stream.Length << 3;
-                    using (var bw = new BinaryWriterX(stream))
+                    var methodSize = (uint)stream.Length << 3;
+                    using (var bw = new BinaryWriterX(new MemoryStream()))
                     {
                         bw.Write(methodSize);
+                        stream.Position = 0;
                         stream.CopyTo(bw.BaseStream);
-                        return new BinaryReaderX(bw.BaseStream, true).ReadBytes((int)bw.BaseStream.Length);
+                        bw.BaseStream.Position = 0;
+                        return new BinaryReaderX(bw.BaseStream).ReadBytes((int)bw.BaseStream.Length);
                     }
                 default:
                     throw new Exception($"Unsupported compression method {method}!");
