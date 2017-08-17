@@ -28,6 +28,10 @@ namespace game_yokai_watch
             ["\x5d"] = "]",
             ["\x2f"] = "/",
             ["\x5c\x6e"] = "\r\n",
+        };
+
+        Dictionary<string, string> _previewPairs = new Dictionary<string, string>
+        {
             ["<PNAME>"] = "Nate"
         };
 
@@ -35,11 +39,6 @@ namespace game_yokai_watch
         static XF font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)
-        {
-            return rawString;
-        }
-
-        public string GetKuriimuStringReplaced(string rawString)
         {
             return _pairs.Aggregate(rawString, (str, pair) => str.Replace(pair.Key, pair.Value));
         }
@@ -57,7 +56,7 @@ namespace game_yokai_watch
             var pages = new List<Bitmap>();
             if (entry?.EditedText == null) return pages;
 
-            string kuriimuString = GetKuriimuStringReplaced(entry.EditedText);
+            string kuriimuString = _previewPairs.Aggregate(GetKuriimuString(entry.EditedText), (s, pair) => s.Replace(pair.Key, pair.Value));
 
             Bitmap img = new Bitmap(textBox.Width, textBox.Height);
 
