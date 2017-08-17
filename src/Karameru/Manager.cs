@@ -145,6 +145,11 @@ namespace Karameru
             SaveFile(true);
         }
 
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CloseFile();
+        }
+
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
@@ -430,6 +435,17 @@ namespace Karameru
             return dr;
         }
 
+        private void CloseFile()
+        {
+            _archiveManager?.Unload();
+            _archiveManager = null;
+            _fileOpen = false;
+            _hasChanges = false;
+
+            LoadDirectories();
+            UpdateForm();
+        }
+
         private IArchiveManager SelectArchiveManager(string filename, bool batchMode = false)
         {
             IArchiveManager result = null;
@@ -452,7 +468,7 @@ namespace Karameru
         // Loading
         private void UpdateFiles()
         {
-            _files = _archiveManager.Files.ToList();
+            _files = _archiveManager?.Files.ToList();
         }
 
         private void LoadDirectories()
@@ -462,21 +478,26 @@ namespace Karameru
             treDirectories.BeginUpdate();
             treDirectories.Nodes.Clear();
 
-            var lookup = _files.OrderBy(f => f.FileName.TrimStart('/', '\\')).ToLookup(f => Path.GetDirectoryName(f.FileName.TrimStart('/', '\\')));
-
-            // Build directory tree
-            var root = treDirectories.Nodes.Add("root", FileName(), "tree-archive-file", "tree-archive-file");
-            foreach (var dir in lookup.Select(g => g.Key))
+            if (_files != null)
             {
-                dir.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, part))
-                    .Tag = lookup[dir];
+                var lookup = _files.OrderBy(f => f.FileName.TrimStart('/', '\\')).ToLookup(f => Path.GetDirectoryName(f.FileName.TrimStart('/', '\\')));
+
+                // Build directory tree
+                var root = treDirectories.Nodes.Add("root", FileName(), "tree-archive-file", "tree-archive-file");
+                foreach (var dir in lookup.Select(g => g.Key))
+                {
+                    dir.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Aggregate(root, (node, part) => node.Nodes[part] ?? node.Nodes.Add(part, part))
+                        .Tag = lookup[dir];
+                }
+
+                root.Expand();
+                treDirectories.SelectedNode = root;
             }
+            else
+                LoadFiles();
 
-            root.Expand();
-            treDirectories.SelectedNode = root;
             treDirectories.EndUpdate();
-
             treDirectories.Focus();
         }
 
@@ -485,7 +506,7 @@ namespace Karameru
             lstFiles.BeginUpdate();
             lstFiles.Items.Clear();
 
-            if (treDirectories.SelectedNode.Tag is IEnumerable<ArchiveFileInfo> files)
+            if (treDirectories.SelectedNode?.Tag is IEnumerable<ArchiveFileInfo> files)
             {
                 foreach (var file in files)
                 {
@@ -573,50 +594,48 @@ namespace Karameru
             openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
             tsbOpen.Enabled = _archiveManagers.Count > 0;
 
-            if (_archiveManager != null)
-            {
-                var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
-                var afi = selectedItem?.Tag as ArchiveFileInfo;
+            var selectedItem = lstFiles.SelectedItems.Count > 0 ? lstFiles.SelectedItems[0] : null;
+            var afi = selectedItem?.Tag as ArchiveFileInfo;
 
-                bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
+            bool nodeSelected = _fileOpen && treDirectories.SelectedNode != null;
 
-                _canExtractDirectories = nodeSelected;
-                _canReplaceDirectories = nodeSelected;
+            _canExtractDirectories = nodeSelected;
+            _canReplaceDirectories = nodeSelected;
 
-                bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
+            bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
 
-                _canAddFiles = _fileOpen && _archiveManager.CanAddFiles;
-                _canExtractFiles = itemSelected && afi.FileSize.HasValue;
-                _canReplaceFiles = itemSelected && _archiveManager.CanReplaceFiles;
-                _canRenameFiles = itemSelected && _archiveManager.CanRenameFiles;
-                _canDeleteFiles = itemSelected && _archiveManager.CanDeleteFiles;
+            _canAddFiles = _fileOpen && (bool)_archiveManager?.CanAddFiles;
+            _canExtractFiles = itemSelected && (bool)afi?.FileSize.HasValue;
+            _canReplaceFiles = itemSelected && (bool)_archiveManager?.CanReplaceFiles;
+            _canRenameFiles = itemSelected && (bool)_archiveManager?.CanRenameFiles;
+            _canDeleteFiles = itemSelected && (bool)_archiveManager?.CanDeleteFiles;
 
-                splMain.Enabled = _fileOpen;
+            splMain.Enabled = _fileOpen;
 
-                // Menu
-                saveToolStripMenuItem.Enabled = _fileOpen && _archiveManager.CanSave;
-                tsbSave.Enabled = _fileOpen && _archiveManager.CanSave;
-                saveAsToolStripMenuItem.Enabled = _fileOpen && _archiveManager.CanSave;
-                tsbSaveAs.Enabled = _fileOpen && _archiveManager.CanSave;
-                //findToolStripMenuItem.Enabled = _fileOpen;
-                //tsbFind.Enabled = _fileOpen;
-                propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
-                tsbProperties.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
+            // Menu
+            saveToolStripMenuItem.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
+            tsbSave.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
+            saveAsToolStripMenuItem.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
+            tsbSaveAs.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
+            closeToolStripMenuItem.Enabled = _fileOpen;
+            //findToolStripMenuItem.Enabled = _fileOpen;
+            //tsbFind.Enabled = _fileOpen;
+            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
+            tsbProperties.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
 
-                // Toolbar
-                tsbFileAdd.Enabled = _canAddFiles;
-                tsbFileExtract.Enabled = _canExtractFiles;
-                tsbFileReplace.Enabled = _canReplaceFiles;
-                tsbFileRename.Enabled = _canRenameFiles;
-                tsbFileDelete.Enabled = _canDeleteFiles;
-                //addFileToolStripMenuItem.Enabled = canAdd && treEntries.Focused;
-                //renameFileToolStripMenuItem.Enabled = canRename && treEntries.Focused;
-                //deleteFileToolStripMenuItem.Enabled = canDelete && treEntries.Focused;
-                //filePropertiesToolStripMenuItem.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
-                //tsbFileProperties.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
+            // Toolbar
+            tsbFileAdd.Enabled = _canAddFiles;
+            tsbFileExtract.Enabled = _canExtractFiles;
+            tsbFileReplace.Enabled = _canReplaceFiles;
+            tsbFileRename.Enabled = _canRenameFiles;
+            tsbFileDelete.Enabled = _canDeleteFiles;
+            //addFileToolStripMenuItem.Enabled = canAdd && treEntries.Focused;
+            //renameFileToolStripMenuItem.Enabled = canRename && treEntries.Focused;
+            //deleteFileToolStripMenuItem.Enabled = canDelete && treEntries.Focused;
+            //filePropertiesToolStripMenuItem.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
+            //tsbFileProperties.Enabled = itemSelected && _archiveManager.EntriesHaveExtendedProperties;
 
-                treDirectories.Enabled = _fileOpen;
-            }
+            treDirectories.Enabled = _fileOpen;
 
             // Shortcuts
             tsbKuriimu.Enabled = File.Exists(Path.Combine(Application.StartupPath, "kuriimu.exe"));
