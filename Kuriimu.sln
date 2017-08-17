@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "src\Kuriimu\Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -259,6 +259,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "image_comp", "src\image\image_comp\image_comp.csproj", "{48651C2C-D0A4-4E38-8512-977181B5CAC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_t2b", "src\text\text_t2b\text_t2b.csproj", "{027E1B9D-FB92-41CD-8595-B10064EEAA77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_yokai_watch", "src\game\game_yokai_watch\game_yokai_watch.csproj", "{528B0417-AAD9-40A9-9156-D0C5F0395A98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -578,6 +580,10 @@ Global
 		{027E1B9D-FB92-41CD-8595-B10064EEAA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{027E1B9D-FB92-41CD-8595-B10064EEAA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{027E1B9D-FB92-41CD-8595-B10064EEAA77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{528B0417-AAD9-40A9-9156-D0C5F0395A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{528B0417-AAD9-40A9-9156-D0C5F0395A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{528B0417-AAD9-40A9-9156-D0C5F0395A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528B0417-AAD9-40A9-9156-D0C5F0395A98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -653,5 +659,6 @@ Global
 		{65B03A2B-BCF5-494E-A87C-DD4AC2D4F286} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 		{48651C2C-D0A4-4E38-8512-977181B5CAC9} = {FA7A6EB6-4E0C-4E59-B024-6E8E94A2117C}
 		{027E1B9D-FB92-41CD-8595-B10064EEAA77} = {B509D23F-0D4E-42F9-87F5-50CF5E982A75}
+		{528B0417-AAD9-40A9-9156-D0C5F0395A98} = {E9A3E23A-FF49-4F03-B801-36CDA9CCCF9C}
 	EndGlobalSection
 EndGlobal
