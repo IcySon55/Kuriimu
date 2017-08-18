@@ -28,32 +28,27 @@ namespace archive_mt
 
         public override long? FileSize => meta.uncompressedSize & 0x00ffffff;
 
-        public void Write(Stream input, long offset, int compIdent)
+        public void Write(Stream output, long offset, int compIdent)
         {
-            using (var bw = new BinaryWriterX(input, true))
+            using (var bw = new BinaryWriterX(output, true))
             {
-                if (State == ArchiveFileState.Archived)
-                {
-                    meta.offset = (int)offset;
-                    bw.Write((short)(compLvl == CompressionLevel.Optimal ? compIdent : 0x0178));
+                meta.offset = (int)offset;
+                bw.Write((short)(compLvl == CompressionLevel.Optimal ? compIdent : 0x0178));
 
+                if (State == ArchiveFileState.Archived)
                     base.FileData.CopyTo(bw.BaseStream);
-                }
                 else
                 {
-                    meta.offset = (int)offset;
-                    bw.Write((short)(compLvl == CompressionLevel.Optimal ? compIdent : 0x0178));
-
                     byte[] bytes;
+                    var startOffset = bw.BaseStream.Position;
                     using (var ds = new DeflateStream(bw.BaseStream, compLvl, true))
                     {
                         using (var br = new BinaryReaderX(FileData, true))
                             bytes = br.ReadBytes((int)br.BaseStream.Length);
                         ds.Write(bytes, 0, (int)FileData.Length);
                     }
-                    bw.Write(bytes);
 
-                    meta.compressedSize = bytes.Length;
+                    meta.compressedSize = (int)(bw.BaseStream.Position - startOffset) + sizeof(short);
                     meta.uncompressedSize = (int)((meta.uncompressedSize & 0xff000000) | FileData.Length);
                 }
             }
