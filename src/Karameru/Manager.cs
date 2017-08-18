@@ -198,7 +198,7 @@ namespace Karameru
 
         private void tsbBatchArchive_Click(object sender, EventArgs e)
         {
-
+            BatchArchive();
         }
 
         private void tsbKuriimu_Click(object sender, EventArgs e)
@@ -879,16 +879,11 @@ namespace Karameru
 
             if (Directory.Exists(path))
             {
-                var selectedPathRegex = "^" + @"[\\/]?";
-                string[] types = _archiveManagers.Select(x => x.Extension.ToLower()).ToArray();
+                var types = _archiveManagers.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                 List<string> files = new List<string>();
                 foreach (string type in types)
-                {
-                    string[] subTypes = type.Split(';');
-                    foreach (string subType in subTypes)
-                        files.AddRange(Directory.GetFiles(path, subType, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
-                }
+                    files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                 foreach (string file in files)
                 {
@@ -929,11 +924,89 @@ namespace Karameru
                             }
 
                             count++;
+                            currentManager.Unload();
                         }
                     }
                 }
 
                 MessageBox.Show("Batch extract completed successfully. " + count + " archive(s) succesfully extracted.", "Batch Extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void BatchArchive()
+        {
+            var fbd = new FolderBrowserDialog
+            {
+                Description = "Select the source directory containing archive files and corresponding extracted directories...",
+                SelectedPath = Settings.Default.LastBatchDirectory == string.Empty ? Settings.Default.LastDirectory : Settings.Default.LastBatchDirectory,
+                ShowNewFolderButton = false
+            };
+
+            if (fbd.ShowDialog() != DialogResult.OK) return;
+
+            var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+            if (dr == DialogResult.Cancel) return;
+            var browseSubdirectories = dr == DialogResult.Yes;
+
+            Settings.Default.LastBatchDirectory = fbd.SelectedPath;
+            Settings.Default.Save();
+
+            var path = fbd.SelectedPath;
+            var count = 0;
+
+            if (Directory.Exists(path))
+            {
+                var types = _archiveManagers.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
+
+                List<string> files = new List<string>();
+                foreach (string type in types)
+                    files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
+
+                foreach (string file in files)
+                {
+                    if (File.Exists(file))
+                    {
+                        FileInfo fi = new FileInfo(file);
+                        IArchiveManager currentManager = SelectArchiveManager(file, true);
+
+                        if (currentManager != null)
+                        {
+                            var madeChanges = false;
+                            currentManager.Load(file);
+
+                            foreach (var afi in currentManager.Files)
+                            {
+                                var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
+
+                                if (!Directory.Exists(exPath))
+                                    continue;
+                                else
+                                {
+                                    var filePath = Path.Combine(exPath, Path.GetFileName(afi.FileName));
+
+                                    if (File.Exists(filePath))
+                                        try
+                                        {
+                                            afi.FileData = File.OpenRead(filePath);
+                                            afi.State = ArchiveFileState.Replaced;
+                                            madeChanges = true;
+                                        }
+                                        catch (Exception ex) { }
+                                }
+                            }
+
+                            if (madeChanges)
+                            {
+                                count++;
+                                currentManager.Save();
+                            }
+
+                            currentManager.Unload();
+                        }
+                    }
+                }
+
+                MessageBox.Show("Batch archive completed successfully. " + count + " archive(s) succesfully archived.", "Batch Archived", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
