@@ -825,23 +825,21 @@ namespace Kuriimu
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
+                var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+                if (dr == DialogResult.Cancel) return;
+                var browseSubdirectories = dr == DialogResult.Yes;
+
                 string path = fbd.SelectedPath;
                 int fileCount = 0;
 
                 if (Directory.Exists(path))
                 {
-                    string[] types = _textAdapters.Select(x => x.Extension.ToLower()).ToArray();
+                    var types = _textAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                     List<string> files = new List<string>();
                     foreach (string type in types)
-                    {
                         if (type != "*.kup")
-                        {
-                            string[] subTypes = type.Split(';');
-                            foreach (string subType in subTypes)
-                                files.AddRange(Directory.GetFiles(path, subType, SearchOption.AllDirectories));
-                        }
-                    }
+                            files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                     // TODO: Ask how to handle overwrites and backups
 
@@ -908,24 +906,22 @@ namespace Kuriimu
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
+                var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+                if (dr == DialogResult.Cancel) return;
+                var browseSubdirectories = dr == DialogResult.Yes;
+
                 string path = fbd.SelectedPath;
                 int fileCount = 0;
                 int importCount = 0;
 
                 if (Directory.Exists(path))
                 {
-                    string[] types = _textAdapters.Select(x => x.Extension.ToLower()).ToArray();
+                    var types = _textAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                     List<string> files = new List<string>();
                     foreach (string type in types)
-                    {
                         if (type != "*.kup")
-                        {
-                            string[] subTypes = type.Split(';');
-                            foreach (string subType in subTypes)
-                                files.AddRange(Directory.GetFiles(path, subType, SearchOption.AllDirectories));
-                        }
-                    }
+                            files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                     foreach (string file in files)
                     {
