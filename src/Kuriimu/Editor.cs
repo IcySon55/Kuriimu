@@ -273,6 +273,12 @@ namespace Kuriimu
             entryPropertiesToolStripMenuItem_Click(sender, e);
         }
 
+        private void sequenceSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ss = new SequenceSearch();
+            ss.Show();
+        }
+
         private void tsbShowTextPreview_Click(object sender, EventArgs e)
         {
             Settings.Default.ShowTextPreview = !Settings.Default.ShowTextPreview;
@@ -1042,10 +1048,10 @@ namespace Kuriimu
                 txtEdit.SelectAll();
         }
 
-        private void sequenceSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void txtOriginal_KeyDown(object sender, KeyEventArgs e)
         {
-            var ss = new SequenceSearch();
-            ss.Show();
+            if (e.Control & e.KeyCode == Keys.A)
+                txtOriginal.SelectAll();
         }
     }
 }

@@ -666,6 +666,7 @@
             this.txtOriginal.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtOriginal.Size = new System.Drawing.Size(444, 255);
             this.txtOriginal.TabIndex = 4;
+            this.txtOriginal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtOriginal_KeyDown);
             // 
             // tlsOriginal
             // 
