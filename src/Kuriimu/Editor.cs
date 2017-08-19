@@ -273,6 +273,20 @@ namespace Kuriimu
             entryPropertiesToolStripMenuItem_Click(sender, e);
         }
 
+        private void sequenceSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ss = new SequenceSearch();
+            ss.Show();
+        }
+
+        private void tsbShowTextPreview_Click(object sender, EventArgs e)
+        {
+            Settings.Default.ShowTextPreview = !Settings.Default.ShowTextPreview;
+            Settings.Default.Save();
+            tsbShowTextPreview.Checked = Settings.Default.ShowTextPreview;
+            LoadEntries();
+        }
+
         private void sortEntriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _textAdapter.SortEntries = !_textAdapter.SortEntries;
@@ -624,12 +638,10 @@ namespace Kuriimu
             {
                 foreach (TextEntry entry in _entries)
                 {
-                    TreeNode node = new TreeNode(entry.ToString());
+                    TreeNode node = new TreeNode(entry + (Settings.Default.ShowTextPreview ? " - " + entry.EditedText : string.Empty));
                     node.Tag = entry;
                     if (!entry.HasText)
-                    {
                         node.ForeColor = Color.Gray;
-                    }
                     treEntries.Nodes.Add(node);
 
                     if (_textAdapter.EntriesHaveSubEntries)
@@ -740,6 +752,8 @@ namespace Kuriimu
                 tsbEntryProperties.Enabled = itemSelected && _textAdapter.EntriesHaveExtendedProperties;
                 sortEntriesToolStripMenuItem.Enabled = _fileOpen && _textAdapter.CanSortEntries;
                 sortEntriesToolStripMenuItem.Image = _textAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+                tsbShowTextPreview.Enabled = _fileOpen;
+                tsbShowTextPreview.Checked = Settings.Default.ShowTextPreview;
                 tsbSortEntries.Enabled = _fileOpen && _textAdapter.CanSortEntries;
                 tsbSortEntries.Image = _textAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 
@@ -825,23 +839,21 @@ namespace Kuriimu
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
+                var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+                if (dr == DialogResult.Cancel) return;
+                var browseSubdirectories = dr == DialogResult.Yes;
+
                 string path = fbd.SelectedPath;
                 int fileCount = 0;
 
                 if (Directory.Exists(path))
                 {
-                    string[] types = _textAdapters.Select(x => x.Extension.ToLower()).ToArray();
+                    var types = _textAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                     List<string> files = new List<string>();
                     foreach (string type in types)
-                    {
                         if (type != "*.kup")
-                        {
-                            string[] subTypes = type.Split(';');
-                            foreach (string subType in subTypes)
-                                files.AddRange(Directory.GetFiles(path, subType, SearchOption.AllDirectories));
-                        }
-                    }
+                            files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                     // TODO: Ask how to handle overwrites and backups
 
@@ -908,24 +920,22 @@ namespace Kuriimu
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
+                var dr = MessageBox.Show("Search subdirectories?", "", MessageBoxButtons.YesNoCancel);
+                if (dr == DialogResult.Cancel) return;
+                var browseSubdirectories = dr == DialogResult.Yes;
+
                 string path = fbd.SelectedPath;
                 int fileCount = 0;
                 int importCount = 0;
 
                 if (Directory.Exists(path))
                 {
-                    string[] types = _textAdapters.Select(x => x.Extension.ToLower()).ToArray();
+                    var types = _textAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                     List<string> files = new List<string>();
                     foreach (string type in types)
-                    {
                         if (type != "*.kup")
-                        {
-                            string[] subTypes = type.Split(';');
-                            foreach (string subType in subTypes)
-                                files.AddRange(Directory.GetFiles(path, subType, SearchOption.AllDirectories));
-                        }
-                    }
+                            files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                     foreach (string file in files)
                     {
@@ -1021,6 +1031,7 @@ namespace Kuriimu
             previous = _gameHandler.GetKuriimuString(entry.EditedText);
             next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _textAdapter.LineEndings);
             entry.EditedText = _gameHandler.GetRawString(next);
+            treEntries.SelectedNode.Text = entry + (Settings.Default.ShowTextPreview ? " - " + entry.EditedText : string.Empty);
 
             if (next != previous)
             {
@@ -1037,10 +1048,10 @@ namespace Kuriimu
                 txtEdit.SelectAll();
         }
 
-        private void sequenceSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void txtOriginal_KeyDown(object sender, KeyEventArgs e)
         {
-            var ss = new SequenceSearch();
-            ss.Show();
+            if (e.Control & e.KeyCode == Keys.A)
+                txtOriginal.SelectAll();
         }
     }
 }

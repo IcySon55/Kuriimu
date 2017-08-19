@@ -21,30 +21,19 @@ namespace text_gmd
 
         // Information
         public string Name => "GMD";
-
         public string Description => "Game Message Data";
-
         public string Extension => "*.gmd";
-
         public string About => "This is the GMD text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
-        public bool CanSave => false;
-
+        public bool CanSave => true;
         public bool CanAddEntries => false;
-
         public bool CanRenameEntries => false;
-
         public bool CanDeleteEntries => false;
-
         public bool CanSortEntries => false;
-
         public bool EntriesHaveSubEntries => false;
-
         public bool EntriesHaveUniqueNames => true;
-
         public bool EntriesHaveExtendedProperties => false;
 
         public FileInfo FileInfo
@@ -68,7 +57,8 @@ namespace text_gmd
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "GMD";
+                var magic = br.ReadString(4);
+                return magic == "GMD" || magic == "\0DMG";
             }
         }
 
@@ -155,22 +145,15 @@ namespace text_gmd
         }
 
         public IEnumerable<string> NameList => Entries?.Select(o => o.Name);
-
         public string NameFilter => @".*";
-
         public int NameMaxLength => 0;
 
         // Features
         public bool ShowProperties(Icon icon) => false;
-
         public TextEntry NewEntry() => new Entry();
-
         public bool AddEntry(TextEntry entry) => false;
-
         public bool RenameEntry(TextEntry entry, string newName) => false;
-
         public bool DeleteEntry(TextEntry entry) => false;
-
         public bool ShowEntryProperties(TextEntry entry, Icon icon) => false;
 
         // Settings

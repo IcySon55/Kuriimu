@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
-using System.IO;
-using System.Collections.Generic;
 
 namespace text_gmd
 {
@@ -14,70 +15,67 @@ namespace text_gmd
         SPANISH,
         GERMAN,
         ITALIAN
-
     }
 
-    public enum Version : uint
+    public static class Versions
     {
-        Version1 = 0x00010201,
-        Version2 = 0x00010302
+        public static readonly byte[] Version1 = { 0x0, 0x1, 0x2, 0x1 };
+        public static readonly byte[] Version2 = { 0x0, 0x1, 0x3, 0x2 };
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
-        public Magic magic;
-        public Version version;
-        public Language lang;
-        public ulong zero1;
-
-        public uint labelCount;
-        public uint secCount;
-
-        public uint labelSize;
-        public uint secSize;
-
-        public uint nameSize;
+        public Magic Magic;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public byte[] Version;
+        public Language Language;
+        public ulong Zero1;
+        public uint LabelCount;
+        public uint SectionCount;
+        public uint LabelSize;
+        public uint SectionSize;
+        public uint NameSize;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entryv1
+    public class EntryV1
     {
-        public uint id;
-        public uint unk1;
+        public uint ID;
+        public uint Unknown1;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entryv2
+    public class EntryV2
     {
-        public uint id;
-        public uint unk1;
-        public uint unk2;
-        public uint labelOffset; //relative to labelDataOffset
-        public uint zero1;
+        public uint ID;
+        public uint Unknown1;
+        public uint Unknown2;
+        public uint LabelOffset; // Relative to labelDataOffset
+        public uint Zero1;
     }
 
     public class XOR
     {
-        private static String xor1;
-        private static String xor2;
+        private static string XOR1;
+        private static string XOR2;
 
-        public XOR(Version version)
+        public XOR(byte[] version)
         {
-            switch (version)
+            if (version.SequenceEqual(Versions.Version1))
             {
-                case Version.Version1:
-                    xor1 = "fjfajfahajra;tira9tgujagjjgajgoa";
-                    xor2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
-                    break;
-                case Version.Version2:
-                    xor1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
-                    xor2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
-                    break;
-                default:
-                    xor1 = String.Empty;
-                    xor2 = String.Empty;
-                    break;
+                XOR1 = "fjfajfahajra;tira9tgujagjjgajgoa";
+                XOR2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
+            }
+            else if (version.SequenceEqual(Versions.Version2))
+            {
+                XOR1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
+                XOR2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
+            }
+            else
+            {
+                XOR1 = string.Empty;
+                XOR2 = string.Empty;
             }
         }
 
@@ -95,8 +93,8 @@ namespace text_gmd
         {
             for (int index = 0; index < data.Length; ++index)
             {
-                char ch1 = xor1[index % xor1.Length];
-                char ch2 = xor2[index % xor2.Length];
+                char ch1 = XOR1[index % XOR1.Length];
+                char ch2 = XOR2[index % XOR2.Length];
                 data[index] = Convert.ToByte(data[index] ^ ch1 ^ ch2);
             }
 
@@ -107,6 +105,7 @@ namespace text_gmd
     }
 
     #region Entry_Definition
+
     public sealed class Entry : TextEntry
     {
         // Interface
@@ -167,9 +166,9 @@ namespace text_gmd
             return Name == string.Empty ? "" : Name;
         }
     }
+
     #endregion
 
-    #region Label_Definition
     public sealed class Label
     {
         public string Name;
@@ -183,5 +182,4 @@ namespace text_gmd
             TextID = 0;
         }
     }
-    #endregion
 }

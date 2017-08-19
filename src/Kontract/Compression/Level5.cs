@@ -1,12 +1,13 @@
 using System;
 using System.IO;
 using System.Text;
+using Kuriimu.IO;
 
 namespace Kuriimu.Compression
 {
     public class Level5
     {
-        enum Method
+        public enum Method
         {
             NoCompression,
             LZSS,
@@ -41,9 +42,23 @@ namespace Kuriimu.Compression
             }
         }
 
-        public static byte[] Compress(Stream stream, byte method)
+        public static byte[] Compress(Stream stream, Method method)
         {
-            return null;
+            switch (method)
+            {
+                case Method.NoCompression:
+                    var methodSize = (uint)stream.Length << 3;
+                    using (var bw = new BinaryWriterX(new MemoryStream()))
+                    {
+                        bw.Write(methodSize);
+                        stream.Position = 0;
+                        stream.CopyTo(bw.BaseStream);
+                        bw.BaseStream.Position = 0;
+                        return new BinaryReaderX(bw.BaseStream).ReadBytes((int)bw.BaseStream.Length);
+                    }
+                default:
+                    throw new Exception($"Unsupported compression method {method}!");
+            }
         }
     }
 }
