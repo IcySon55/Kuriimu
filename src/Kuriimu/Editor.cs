@@ -273,6 +273,14 @@ namespace Kuriimu
             entryPropertiesToolStripMenuItem_Click(sender, e);
         }
 
+        private void tsbShowTextPreview_Click(object sender, EventArgs e)
+        {
+            Settings.Default.ShowTextPreview = !Settings.Default.ShowTextPreview;
+            Settings.Default.Save();
+            tsbShowTextPreview.Checked = Settings.Default.ShowTextPreview;
+            LoadEntries();
+        }
+
         private void sortEntriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _textAdapter.SortEntries = !_textAdapter.SortEntries;
@@ -624,12 +632,10 @@ namespace Kuriimu
             {
                 foreach (TextEntry entry in _entries)
                 {
-                    TreeNode node = new TreeNode(entry.ToString());
+                    TreeNode node = new TreeNode(entry + (Settings.Default.ShowTextPreview ? " - " + entry.EditedText : string.Empty));
                     node.Tag = entry;
                     if (!entry.HasText)
-                    {
                         node.ForeColor = Color.Gray;
-                    }
                     treEntries.Nodes.Add(node);
 
                     if (_textAdapter.EntriesHaveSubEntries)
@@ -740,6 +746,8 @@ namespace Kuriimu
                 tsbEntryProperties.Enabled = itemSelected && _textAdapter.EntriesHaveExtendedProperties;
                 sortEntriesToolStripMenuItem.Enabled = _fileOpen && _textAdapter.CanSortEntries;
                 sortEntriesToolStripMenuItem.Image = _textAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+                tsbShowTextPreview.Enabled = _fileOpen;
+                tsbShowTextPreview.Checked = Settings.Default.ShowTextPreview;
                 tsbSortEntries.Enabled = _fileOpen && _textAdapter.CanSortEntries;
                 tsbSortEntries.Image = _textAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 
@@ -1017,6 +1025,7 @@ namespace Kuriimu
             previous = _gameHandler.GetKuriimuString(entry.EditedText);
             next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _textAdapter.LineEndings);
             entry.EditedText = _gameHandler.GetRawString(next);
+            treEntries.SelectedNode.Text = entry + (Settings.Default.ShowTextPreview ? " - " + entry.EditedText : string.Empty);
 
             if (next != previous)
             {

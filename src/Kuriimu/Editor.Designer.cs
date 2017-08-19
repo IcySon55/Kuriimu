@@ -51,6 +51,7 @@
             this.tolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.compressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.encryptionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sequenceSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extensionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noExtensionsLoadedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,6 +70,7 @@
             this.tsbEntryDelete = new System.Windows.Forms.ToolStripButton();
             this.tsbEntryProperties = new System.Windows.Forms.ToolStripButton();
             this.tsbSortEntries = new System.Windows.Forms.ToolStripButton();
+            this.tsbShowTextPreview = new System.Windows.Forms.ToolStripButton();
             this.splContent = new System.Windows.Forms.SplitContainer();
             this.splText = new System.Windows.Forms.SplitContainer();
             this.txtEdit = new System.Windows.Forms.TextBox();
@@ -115,7 +117,6 @@
             this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
-            this.hashToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -278,7 +279,7 @@
             this.addEntryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_add;
             this.addEntryToolStripMenuItem.Name = "addEntryToolStripMenuItem";
             this.addEntryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.addEntryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.addEntryToolStripMenuItem.Text = "&Add Entry";
             this.addEntryToolStripMenuItem.Click += new System.EventHandler(this.addEntryToolStripMenuItem_Click);
             // 
@@ -288,7 +289,7 @@
             this.renameEntryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
             this.renameEntryToolStripMenuItem.Name = "renameEntryToolStripMenuItem";
             this.renameEntryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.renameEntryToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.renameEntryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.renameEntryToolStripMenuItem.Text = "&Rename Entry";
             this.renameEntryToolStripMenuItem.Click += new System.EventHandler(this.renameEntryToolStripMenuItem_Click);
             // 
@@ -298,7 +299,7 @@
             this.deleteEntryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_delete;
             this.deleteEntryToolStripMenuItem.Name = "deleteEntryToolStripMenuItem";
             this.deleteEntryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.deleteEntryToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.deleteEntryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.deleteEntryToolStripMenuItem.Text = "&Delete Entry";
             this.deleteEntryToolStripMenuItem.Click += new System.EventHandler(this.deleteEntryToolStripMenuItem_Click);
             // 
@@ -308,14 +309,14 @@
             this.entryPropertiesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_properties;
             this.entryPropertiesToolStripMenuItem.Name = "entryPropertiesToolStripMenuItem";
             this.entryPropertiesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.entryPropertiesToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.entryPropertiesToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.entryPropertiesToolStripMenuItem.Text = "Entry &Properties";
             this.entryPropertiesToolStripMenuItem.Click += new System.EventHandler(this.entryPropertiesToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(255, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(202, 6);
             // 
             // sortEntriesToolStripMenuItem
             // 
@@ -324,7 +325,7 @@
             this.sortEntriesToolStripMenuItem.Name = "sortEntriesToolStripMenuItem";
             this.sortEntriesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.sortEntriesToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.sortEntriesToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.sortEntriesToolStripMenuItem.Text = "&Sort Entries";
             this.sortEntriesToolStripMenuItem.Click += new System.EventHandler(this.sortEntriesToolStripMenuItem_Click);
             // 
@@ -336,7 +337,7 @@
             this.hashToolStripMenuItem,
             this.sequenceSearchToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
-            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
             // 
             // compressionToolStripMenuItem
@@ -351,6 +352,12 @@
             this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
             this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.encryptionToolStripMenuItem.Text = "&Encryption";
+            // 
+            // hashToolStripMenuItem
+            // 
+            this.hashToolStripMenuItem.Name = "hashToolStripMenuItem";
+            this.hashToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.hashToolStripMenuItem.Text = "Hash";
             // 
             // sequenceSearchToolStripMenuItem
             // 
@@ -390,7 +397,7 @@
             // 
             this.gBATempToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_gbatemp;
             this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.gBATempToolStripMenuItem.Text = "GBATemp";
             this.gBATempToolStripMenuItem.Click += new System.EventHandler(this.gBATempToolStripMenuItem_Click);
             // 
@@ -398,21 +405,21 @@
             // 
             this.gitHubToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_git;
             this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
             this.gitHubToolStripMenuItem.Text = "GitHub";
             this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(123, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(125, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Image = global::Kuriimu.Properties.Resources.menu_about;
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
             this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
             this.aboutToolStripMenuItem1.Text = "&About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
@@ -453,7 +460,7 @@
             this.treEntries.FullRowSelect = true;
             this.treEntries.HideSelection = false;
             this.treEntries.Indent = 16;
-            this.treEntries.ItemHeight = 14;
+            this.treEntries.ItemHeight = 16;
             this.treEntries.Location = new System.Drawing.Point(0, 27);
             this.treEntries.Name = "treEntries";
             this.treEntries.ShowLines = false;
@@ -479,7 +486,8 @@
             this.tsbEntryRename,
             this.tsbEntryDelete,
             this.tsbEntryProperties,
-            this.tsbSortEntries});
+            this.tsbSortEntries,
+            this.tsbShowTextPreview});
             this.tlsEntries.Location = new System.Drawing.Point(0, 0);
             this.tlsEntries.Name = "tlsEntries";
             this.tlsEntries.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -547,6 +555,18 @@
             this.tsbSortEntries.Size = new System.Drawing.Size(23, 22);
             this.tsbSortEntries.Text = "Sort Entries";
             this.tsbSortEntries.Click += new System.EventHandler(this.tsbSortEntries_Click);
+            // 
+            // tsbShowTextPreview
+            // 
+            this.tsbShowTextPreview.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbShowTextPreview.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbShowTextPreview.Enabled = false;
+            this.tsbShowTextPreview.Image = global::Kuriimu.Properties.Resources.menu_show_text_preview;
+            this.tsbShowTextPreview.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbShowTextPreview.Name = "tsbShowTextPreview";
+            this.tsbShowTextPreview.Size = new System.Drawing.Size(23, 22);
+            this.tsbShowTextPreview.Text = "Show Text Preview";
+            this.tsbShowTextPreview.Click += new System.EventHandler(this.tsbShowTextPreview_Click);
             // 
             // splContent
             // 
@@ -620,7 +640,7 @@
             // tslText
             // 
             this.tslText.Name = "tslText";
-            this.tslText.Size = new System.Drawing.Size(31, 22);
+            this.tslText.Size = new System.Drawing.Size(32, 22);
             this.tslText.Text = "Text:";
             // 
             // tsbGameSelect
@@ -835,7 +855,7 @@
             // toolStripLabel3
             // 
             this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(65, 22);
+            this.toolStripLabel3.Size = new System.Drawing.Size(66, 22);
             this.toolStripLabel3.Text = "Vacant Lot:";
             // 
             // tlsMain
@@ -1063,12 +1083,6 @@
             this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
             this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // hashToolStripMenuItem
-            // 
-            this.hashToolStripMenuItem.Name = "hashToolStripMenuItem";
-            this.hashToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.hashToolStripMenuItem.Text = "Hash";
-            // 
             // Editor
             // 
             this.AllowDrop = true;
@@ -1216,5 +1230,6 @@
         private System.Windows.Forms.ToolStripMenuItem sequenceSearchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hashToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tsbShowTextPreview;
     }
 }
