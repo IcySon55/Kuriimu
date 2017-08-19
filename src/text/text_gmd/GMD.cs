@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 
@@ -35,18 +36,13 @@ namespace text_gmd
                 Name = br.ReadCStringA();
 
                 // Entries
-                switch (Header.Version)
-                {
-                    case Version.Version1:
-                        EntriesV1 = br.ReadMultiple<EntryV1>((int)Header.LabelCount);
-                        break;
-                    case Version.Version2:
-                        EntriesV2 = br.ReadMultiple<EntryV2>((int)Header.LabelCount);
-                        break;
-                }
+                if (Header.Version.SequenceEqual(Versions.Version1))
+                    EntriesV1 = br.ReadMultiple<EntryV1>((int)Header.LabelCount);
+                else if (Header.Version.SequenceEqual(Versions.Version2))
+                    EntriesV2 = br.ReadMultiple<EntryV2>((int)Header.LabelCount);
 
                 // Unknown Version 2 Section
-                if (Header.Version == Version.Version2)
+                if (Header.Version.SequenceEqual(Versions.Version2))
                 {
                     var bk = br.BaseStream.Position;
                     var temp = br.ReadUInt32();
@@ -64,19 +60,21 @@ namespace text_gmd
                 }
 
                 // Labels
-                for (var i = 0; i < Header.LabelCount; i++) Names.Add(br.ReadCStringA());
+                for (var i = 0; i < Header.LabelCount; i++)
+                    Names.Add(br.ReadCStringA());
 
                 // Text
                 var text = br.ReadBytes((int)Header.SectionSize);
 
-                using (var brt = new BinaryReaderX(new MemoryStream(text)))
+                using (var brt = new BinaryReaderX(new MemoryStream(text), ByteOrder))
                 {
                     var counter = 0;
                     for (var i = 0; i < Header.SectionCount; i++)
                     {
                         var bk = brt.BaseStream.Position;
                         var tmp = brt.ReadByte();
-                        while (tmp != 0) tmp = brt.ReadByte();
+                        while (tmp != 0)
+                            tmp = brt.ReadByte();
                         var textSize = brt.BaseStream.Position - bk;
                         brt.BaseStream.Position = bk;
 
@@ -101,20 +99,16 @@ namespace text_gmd
                 bw.BaseStream.Position = HeaderLength + Header.NameSize + 1;
 
                 // Section Entries
-                switch (Header.Version)
-                {
-                    case Version.Version1:
-                        foreach (var entry in EntriesV1)
-                            bw.WriteStruct(entry);
-                        break;
-                    case Version.Version2:
-                        foreach (var entry in EntriesV2)
-                            bw.WriteStruct(entry);
-                        break;
-                }
+                if (Header.Version.SequenceEqual(Versions.Version1))
+                    foreach (var entry in EntriesV1)
+                        bw.WriteStruct(entry);
+                else if (Header.Version.SequenceEqual(Versions.Version2))
+                    foreach (var entry in EntriesV2)
+                        bw.WriteStruct(entry);
 
                 // Unknown Version 2 Section
-                if (Header.Version == Version.Version2) bw.Write(UnknownV2);
+                if (Header.Version.SequenceEqual(Versions.Version2))
+                    bw.Write(UnknownV2);
 
                 // Labels
                 uint labelSize = 0;
