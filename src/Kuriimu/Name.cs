@@ -3,62 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
 using Kuriimu.Properties;
 
 namespace Kuriimu
 {
     public partial class Name : Form
     {
-        private TextEntry _entry = null;
+        private string _name = null;
         private bool _namesMustBeUnique = false;
         private IEnumerable<string> _nameList = null;
         private string _validNameRegex = ".*";
         private int _maxLength = 0;
         private bool _isNew = false;
 
-        private string _newName = string.Empty;
-        private bool _nameChanged = false;
-
         #region Properties
 
-        public TextEntry Entry
+        public string Entry
         {
-            set { _entry = value; }
+            set => _name = value;
         }
 
         public bool NamesMustBeUnique
         {
-            set { _namesMustBeUnique = value; }
+            set => _namesMustBeUnique = value;
         }
 
         public IEnumerable<string> NameList
         {
-            set { _nameList = value; }
+            set => _nameList = value;
         }
 
         public bool IsNew
         {
-            set { _isNew = value; }
+            set => _isNew = value;
         }
 
-        public string NewName
-        {
-            get { return _newName; }
-        }
+        public string NewName { get; private set; } = string.Empty;
 
-        public bool NameChanged
-        {
-            get { return _nameChanged; }
-        }
+        public bool NameChanged { get; private set; } = false;
 
         #endregion
 
-        public Name(TextEntry entry, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
+        public Name(string name, bool namesMustBeUnique = false, IEnumerable<string> nameList = null, string validNameRegex = ".*", int maxLength = 0, bool isNew = false)
         {
             InitializeComponent();
 
-            _entry = entry;
+            _name = name;
             _namesMustBeUnique = namesMustBeUnique;
             _nameList = nameList;
             _validNameRegex = validNameRegex;
@@ -68,21 +58,18 @@ namespace Kuriimu
 
         private void Name_Load(object sender, EventArgs e)
         {
-            if (_isNew)
-                Text = "Add Entry";
-            else
-                Text = "Rename Entry";
+            Text = _isNew ? "Add Entry" : "Rename Entry";
             Icon = Resources.kuriimu;
 
             txtName.MaxLength = _maxLength == 0 ? int.MaxValue : _maxLength;
-            txtName.Text = _entry.Name;
+            txtName.Text = _name;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            string oldName = _entry.Name.Trim();
+            string oldName = _name.Trim();
             string newName = txtName.Text.Trim();
-            _nameChanged = oldName != newName;
+            NameChanged = oldName != newName;
 
             if (txtName.Text.Trim().Length <= _maxLength || _maxLength == 0)
                 if (Regex.IsMatch(newName, _validNameRegex))
@@ -92,7 +79,7 @@ namespace Kuriimu
                         {
                             if (!_nameList.Contains(newName) || (oldName == newName && !_isNew))
                             {
-                                _newName = newName;
+                                NewName = newName;
                                 DialogResult = DialogResult.OK;
                             }
                             else
@@ -103,7 +90,7 @@ namespace Kuriimu
                     }
                     else
                     {
-                        _newName = newName;
+                        NewName = newName;
                         DialogResult = DialogResult.OK;
                     }
                 else

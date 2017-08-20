@@ -40,14 +40,15 @@ namespace archive_mt
                 Files.AddRange(entries.Select(metadata =>
                 {
                     br.BaseStream.Position = metadata.offset;
-                    var level = br.ReadUInt16();
+                    var level = br.ReadUInt16() == CompressionIdentifier ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
+                    var shift = level != CompressionLevel.NoCompression ? 2 : 0;
 
                     return new MTArcFileInfo
                     {
-                        meta = metadata,
-                        compLvl = level == CompressionIdentifier ? CompressionLevel.Optimal : CompressionLevel.NoCompression,
-                        FileData = new SubStream(br.BaseStream, metadata.offset + 2, metadata.compressedSize - 2),
-                        FileName = metadata.filename + (ArcShared.ExtensionMap.ContainsKey(metadata.extensionHash) ? ArcShared.ExtensionMap[metadata.extensionHash] : ".bin"),
+                        Metadata = metadata,
+                        CompressionLevel = level,
+                        FileData = new SubStream(br.BaseStream, metadata.offset + shift, metadata.compressedSize - shift),
+                        FileName = metadata.filename + (ArcShared.ExtensionMap.ContainsKey(metadata.extensionHash) ? ArcShared.ExtensionMap[metadata.extensionHash] : "." + metadata.extensionHash.ToString("X8")),
                         State = ArchiveFileState.Archived
                     };
                 }));
@@ -66,12 +67,12 @@ namespace archive_mt
                 // Files
                 bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.entryCount * 80, 0x8000) : HeaderLength + Header.entryCount * 80;
                 foreach (var afi in Files)
-                    afi.Write(bw.BaseStream, bw.BaseStream.Position, CompressionIdentifier);
+                    afi.Write(bw.BaseStream, bw.BaseStream.Position, CompressionIdentifier, ByteOrder);
 
                 // Metadata
                 bw.BaseStream.Position = HeaderLength;
                 foreach (var afi in Files)
-                    bw.WriteStruct(afi.meta);
+                    bw.WriteStruct(afi.Metadata);
             }
         }
 
