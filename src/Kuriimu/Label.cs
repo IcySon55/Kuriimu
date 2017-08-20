@@ -11,7 +11,6 @@ namespace Kuriimu
     {
         private string _name;
         private string _color;
-        private bool _namesMustBeUnique = true;
         private IEnumerable<string> _nameList;
         private bool _isNew;
 
@@ -20,11 +19,6 @@ namespace Kuriimu
         public string Entry
         {
             set => _name = value;
-        }
-
-        public bool NamesMustBeUnique
-        {
-            set => _namesMustBeUnique = value;
         }
 
         public IEnumerable<string> NameList
@@ -78,7 +72,7 @@ namespace Kuriimu
             NameChanged = oldName != newName;
 
             var oldColor = _color;
-            var newColor = txtName.Text.Trim();
+            var newColor = ColorTranslator.ToHtml(btnColor.BackColor);
             ColorChanged = oldColor != newColor;
 
             if (_nameList != null)

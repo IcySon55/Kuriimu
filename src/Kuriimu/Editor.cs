@@ -677,7 +677,7 @@ namespace Kuriimu
                     if (_textAdapter.EntriesHaveSubEntries)
                         foreach (var sub in entry.SubEntries)
                         {
-                            var subNode = new TreeNode(sub + (Settings.Default.ShowTextPreview && entry.HasText ? " - " + entry.EditedText : string.Empty), imageIndex, imageIndex) { Tag = sub };
+                            var subNode = new TreeNode(sub + (Settings.Default.ShowTextPreview && sub.HasText ? " - " + sub.EditedText : string.Empty), imageIndex, imageIndex) { Tag = sub };
                             node.Nodes.Add(subNode);
                         }
 
@@ -685,6 +685,7 @@ namespace Kuriimu
                 }
             }
 
+            // TODO: Patch this code so that it works with subentries
             if ((selectedEntry == null || !_entries.Contains(selectedEntry)) && treEntries.Nodes.Count > 0)
                 treEntries.SelectedNode = treEntries.Nodes[0];
             else
@@ -747,11 +748,11 @@ namespace Kuriimu
 
         private void UpdateLabels()
         {
-            if (_lot == null) return;
-            if (_settings.Labels.Count < 0) return;
-
             for (var i = mnuLabels.Items.Count - 1; i > 1; i--)
                 mnuLabels.Items.RemoveAt(i);
+
+            if (_lot == null) return;
+            if (_settings.Labels.Count < 0) return;
 
             imlEntries.Images.Clear();
             imlEntries.Images.Add("0", GenerateColorSquare(SystemColors.Window, 14, 14));
@@ -769,7 +770,11 @@ namespace Kuriimu
 
         private void mnuLabels_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (_lot == null) return;
+            if (_lot == null)
+            {
+                e.Cancel = true;
+                return;
+            }
             var entry = (TextEntry)treEntries.SelectedNode?.Tag;
             if (!entry.HasText) return;
             var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
