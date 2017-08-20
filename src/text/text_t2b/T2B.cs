@@ -5,6 +5,7 @@ using Kuriimu.Kontract;
 using Kuriimu.IO;
 using Kuriimu.Compression;
 using System.Linq;
+using System.Text;
 
 namespace text_t2b
 {
@@ -14,6 +15,8 @@ namespace text_t2b
 
         public Header header;
         public List<StringEntry> entries = new List<StringEntry>();
+        public List<uint> offsets = new List<uint>();
+        byte[] sig;
 
         public T2B(string filename)
         {
@@ -62,7 +65,6 @@ namespace text_t2b
 
                 //Text
                 var id = 0;
-                var offsets = new List<uint>();
                 foreach (var entry in entries)
                 {
                     foreach (var data in entry.data)
@@ -87,6 +89,10 @@ namespace text_t2b
                         }
                     }
                 }
+
+                //signature
+                br.BaseStream.Position = (br.BaseStream.Position + 0xf) & ~0xf;
+                sig = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
             }
         }
 
@@ -94,7 +100,50 @@ namespace text_t2b
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
             {
+                var sjis = Encoding.GetEncoding("SJIS");
 
+                //Update entries
+                uint relOffset = 0;
+                var count = 1;
+                foreach (var label in Labels)
+                {
+                    if (count < offsets.Count)
+                    {
+                        uint byteCount = (uint)sjis.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
+
+                        foreach (var entry in entries)
+                            foreach (var data in entry.data)
+                                if (data.type == 0 && data.value == offsets[count]) data.value = relOffset + byteCount;
+
+                        relOffset += byteCount;
+                        count++;
+                    }
+                }
+
+                //Header
+                header.stringSecSize = (int)(relOffset + 0xf) & ~0xf;
+                bw.WriteStruct(header);
+
+                //Entries
+                foreach (var entry in entries)
+                {
+                    bw.Write(entry.entryTypeID);
+                    bw.Write(entry.entryLength);
+                    bw.Write(entry.typeMask);
+                    foreach (var data in entry.data) bw.Write(data.value);
+                }
+                bw.WriteAlignment(0x10, 0xff);
+
+                //Text
+                foreach (var label in Labels)
+                {
+                    bw.Write(sjis.GetBytes(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")));
+                    bw.Write((byte)0);
+                }
+                bw.WriteAlignment(0x10, 0xff);
+
+                //Signature
+                bw.Write(sig);
             }
         }
     }

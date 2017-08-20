@@ -240,6 +240,9 @@
   <ItemGroup>
     <None Include="images\search.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-show-text-preview.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
