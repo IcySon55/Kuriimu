@@ -86,6 +86,8 @@
     <Compile Include="IO\SubStream.cs" />
     <Compile Include="Kup\KUP.cs" />
     <Compile Include="Kup\KupUser.cs" />
+    <Compile Include="Kup\Settings.cs" />
+    <Compile Include="Kup\Lot.cs" />
     <Compile Include="ListItem.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
