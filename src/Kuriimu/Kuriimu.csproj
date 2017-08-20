@@ -98,6 +98,12 @@
     <Compile Include="Editor.Designer.cs">
       <DependentUpon>Editor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Label.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Label.Designer.cs">
+      <DependentUpon>Label.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search.cs">
       <SubType>Form</SubType>
@@ -144,6 +150,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Label.resx">
+      <DependentUpon>Label.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Search.resx">
       <DependentUpon>Search.cs</DependentUpon>
@@ -205,6 +214,10 @@
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>Kontract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\text\text_tt_bin\text_ttbin.csproj">
+      <Project>{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}</Project>
+      <Name>text_ttbin</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -239,6 +252,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="images\search.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-show-text-preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-paste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-label.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-label-remove.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

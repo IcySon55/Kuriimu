@@ -35,21 +35,16 @@ namespace text_gmd
                 Name = br.ReadCStringA();
 
                 // Entries
-                switch (Header.Version)
-                {
-                    case Version.Version1:
-                        EntriesV1 = br.ReadMultiple<EntryV1>((int)Header.LabelCount);
-                        break;
-                    case Version.Version2:
-                        EntriesV2 = br.ReadMultiple<EntryV2>((int)Header.LabelCount);
-                        break;
-                }
+                if (Header.Version == Versions.Version1)
+                    EntriesV1 = br.ReadMultiple<EntryV1>((int)Header.LabelCount);
+                else if (Header.Version == Versions.Version2)
+                    EntriesV2 = br.ReadMultiple<EntryV2>((int)Header.LabelCount);
 
                 // Unknown Version 2 Section
-                if (Header.Version == Version.Version2)
+                if (Header.Version == Versions.Version2)
                 {
                     var bk = br.BaseStream.Position;
-                    uint temp = br.ReadUInt32();
+                    var temp = br.ReadUInt32();
                     while (temp < 0x100000 || temp == 0xffffffff) temp = br.ReadUInt32();
                     br.BaseStream.Position -= 4;
 
@@ -64,30 +59,21 @@ namespace text_gmd
                 }
 
                 // Labels
-                for (int i = 0; i < Header.LabelCount; i++) Names.Add(br.ReadCStringA());
+                for (var i = 0; i < Header.LabelCount; i++)
+                    Names.Add(br.ReadCStringA());
 
                 // Text
-                long dataOffset = 0;
-                switch (Header.Version)
-                {
-                    case Version.Version1:
-                        dataOffset = HeaderLength + Name.Length + 1 + Header.LabelCount * EntryV1Length + Header.LabelSize;
-                        break;
-                    case Version.Version2:
-                        dataOffset = HeaderLength + Name.Length + 1 + Header.LabelCount * EntryV2Length + UnknownV2.Length + Header.LabelSize;
-                        break;
-                }
+                var text = br.ReadBytes((int)Header.SectionSize);
 
-                byte[] text = br.ReadBytes((int)Header.SectionSize);
-
-                using (var brt = new BinaryReaderX(new MemoryStream(text)))
+                using (var brt = new BinaryReaderX(new MemoryStream(text), ByteOrder))
                 {
-                    int counter = 0;
-                    for (int i = 0; i < Header.SectionCount; i++)
+                    var counter = 0;
+                    for (var i = 0; i < Header.SectionCount; i++)
                     {
                         var bk = brt.BaseStream.Position;
-                        byte tmp = brt.ReadByte();
-                        while (tmp != 0) tmp = brt.ReadByte();
+                        var tmp = brt.ReadByte();
+                        while (tmp != 0)
+                            tmp = brt.ReadByte();
                         var textSize = brt.BaseStream.Position - bk;
                         brt.BaseStream.Position = bk;
 
@@ -107,27 +93,25 @@ namespace text_gmd
 
         public void Save(string filename)
         {
-            using (var bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (var bw = new BinaryWriterX(File.OpenWrite(filename), ByteOrder))
             {
                 bw.BaseStream.Position = HeaderLength + Header.NameSize + 1;
 
                 // Section Entries
-                switch (Header.Version)
-                {
-                    case Version.Version1:
-                        for (int i = 0; i < EntriesV1.Count; i++) bw.WriteStruct(EntriesV1[i]);
-                        break;
-                    case Version.Version2:
-                        for (int i = 0; i < EntriesV2.Count; i++) bw.WriteStruct(EntriesV2[i]);
-                        break;
-                }
+                if (Header.Version == Versions.Version1)
+                    foreach (var entry in EntriesV1)
+                        bw.WriteStruct(entry);
+                else if (Header.Version == Versions.Version2)
+                    foreach (var entry in EntriesV2)
+                        bw.WriteStruct(entry);
 
                 // Unknown Version 2 Section
-                if (Header.Version == Version.Version2) bw.Write(UnknownV2);
+                if (Header.Version == Versions.Version2)
+                    bw.Write(UnknownV2);
 
                 // Labels
                 uint labelSize = 0;
-                for (int i = 0; i < Header.LabelCount; i++)
+                for (var i = 0; i < Header.LabelCount; i++)
                 {
                     bw.WriteASCII(Names[i]);
                     bw.Write((byte)0);
@@ -136,10 +120,10 @@ namespace text_gmd
                 Header.LabelSize = labelSize;
 
                 // Sections
-                List<byte> text = new List<byte>();
-                for (int i = 0; i < Labels.Count; i++)
+                var text = new List<byte>();
+                foreach (var label in Labels)
                 {
-                    text.AddRange(Encoding.UTF8.GetBytes(Labels[i].Text));
+                    text.AddRange(Encoding.UTF8.GetBytes(label.Text));
                     text.Add(0);
                 }
                 Header.SectionSize = (uint)text.Count;

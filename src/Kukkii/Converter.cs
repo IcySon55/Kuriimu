@@ -418,10 +418,7 @@ namespace Kukkii
                 GenerateThumbnailBackground();
 
             gfx.DrawImageUnscaled(_thumbnailBackground, 0, 0, _thumbnailBackground.Width, _thumbnailBackground.Height);
-            if (ratio != 1.0f)
-                gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            else
-                gfx.InterpolationMode = InterpolationMode.Default;
+            gfx.InterpolationMode = ratio != 1.0f ? InterpolationMode.HighQualityBicubic : InterpolationMode.Default;
             gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
 
             return thumb;

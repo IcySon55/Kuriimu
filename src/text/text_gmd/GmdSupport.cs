@@ -16,7 +16,7 @@ namespace text_gmd
         ITALIAN
     }
 
-    public enum Version : uint
+    public enum Versions : uint
     {
         Version1 = 0x00010201,
         Version2 = 0x00010302
@@ -26,7 +26,7 @@ namespace text_gmd
     public class Header
     {
         public Magic Magic;
-        public Version Version;
+        public Versions Version;
         public Language Language;
         public ulong Zero1;
         public uint LabelCount;
@@ -55,24 +55,24 @@ namespace text_gmd
 
     public class XOR
     {
-        private static String XOR1;
-        private static String XOR2;
+        private static string XOR1;
+        private static string XOR2;
 
-        public XOR(Version version)
+        public XOR(Versions version)
         {
             switch (version)
             {
-                case Version.Version1:
+                case Versions.Version1:
                     XOR1 = "fjfajfahajra;tira9tgujagjjgajgoa";
                     XOR2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
                     break;
-                case Version.Version2:
+                case Versions.Version2:
                     XOR1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
                     XOR2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
                     break;
                 default:
-                    XOR1 = String.Empty;
-                    XOR2 = String.Empty;
+                    XOR1 = string.Empty;
+                    XOR2 = string.Empty;
                     break;
             }
         }
