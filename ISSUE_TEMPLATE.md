@@ -1,5 +1,6 @@
 Console: 
 Format extension(s): 
+Type: [text | image | archive]
 Original game name: 
 
 First 8 byte of file(s):
