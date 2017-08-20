@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
 
@@ -17,18 +16,17 @@ namespace text_gmd
         ITALIAN
     }
 
-    public static class Versions
+    public enum Versions : uint
     {
-        public static readonly byte[] Version1 = { 0x0, 0x1, 0x2, 0x1 };
-        public static readonly byte[] Version2 = { 0x0, 0x1, 0x3, 0x2 };
+        Version1 = 0x00010201,
+        Version2 = 0x00010302
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
         public Magic Magic;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public byte[] Version;
+        public Versions Version;
         public Language Language;
         public ulong Zero1;
         public uint LabelCount;
@@ -60,22 +58,22 @@ namespace text_gmd
         private static string XOR1;
         private static string XOR2;
 
-        public XOR(byte[] version)
+        public XOR(Versions version)
         {
-            if (version.SequenceEqual(Versions.Version1))
+            switch (version)
             {
-                XOR1 = "fjfajfahajra;tira9tgujagjjgajgoa";
-                XOR2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
-            }
-            else if (version.SequenceEqual(Versions.Version2))
-            {
-                XOR1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
-                XOR2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
-            }
-            else
-            {
-                XOR1 = string.Empty;
-                XOR2 = string.Empty;
+                case Versions.Version1:
+                    XOR1 = "fjfajfahajra;tira9tgujagjjgajgoa";
+                    XOR2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
+                    break;
+                case Versions.Version2:
+                    XOR1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
+                    XOR2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
+                    break;
+                default:
+                    XOR1 = string.Empty;
+                    XOR2 = string.Empty;
+                    break;
             }
         }
 

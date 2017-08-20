@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 
@@ -36,13 +35,13 @@ namespace text_gmd
                 Name = br.ReadCStringA();
 
                 // Entries
-                if (Header.Version.SequenceEqual(Versions.Version1))
+                if (Header.Version == Versions.Version1)
                     EntriesV1 = br.ReadMultiple<EntryV1>((int)Header.LabelCount);
-                else if (Header.Version.SequenceEqual(Versions.Version2))
+                else if (Header.Version == Versions.Version2)
                     EntriesV2 = br.ReadMultiple<EntryV2>((int)Header.LabelCount);
 
                 // Unknown Version 2 Section
-                if (Header.Version.SequenceEqual(Versions.Version2))
+                if (Header.Version == Versions.Version2)
                 {
                     var bk = br.BaseStream.Position;
                     var temp = br.ReadUInt32();
@@ -99,15 +98,15 @@ namespace text_gmd
                 bw.BaseStream.Position = HeaderLength + Header.NameSize + 1;
 
                 // Section Entries
-                if (Header.Version.SequenceEqual(Versions.Version1))
+                if (Header.Version == Versions.Version1)
                     foreach (var entry in EntriesV1)
                         bw.WriteStruct(entry);
-                else if (Header.Version.SequenceEqual(Versions.Version2))
+                else if (Header.Version == Versions.Version2)
                     foreach (var entry in EntriesV2)
                         bw.WriteStruct(entry);
 
                 // Unknown Version 2 Section
-                if (Header.Version.SequenceEqual(Versions.Version2))
+                if (Header.Version == Versions.Version2)
                     bw.Write(UnknownV2);
 
                 // Labels
