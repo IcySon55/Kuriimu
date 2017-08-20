@@ -80,8 +80,8 @@ namespace archive_mt
         {
             _stream?.Dispose();
             foreach (var afi in Files)
-                if (afi.State != ArchiveFileState.Archived && afi.FileData != null)
-                    afi.FileData.Dispose();
+                if (afi.State != ArchiveFileState.Archived)
+                    afi.FileData?.Dispose();
             _stream = null;
         }
     }

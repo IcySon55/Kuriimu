@@ -76,13 +76,13 @@ namespace archive_aatri.aatri
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 _aatri.Save(File.Create(incFilename), File.Create(datFilename));
-                _aatri.Dispose();
+                _aatri.Close();
             }
             else
             {
                 // Create the temp files
                 _aatri.Save(File.Create(incFilename + ".tmp"), File.Create(datFilename + ".tmp"));
-                _aatri.Dispose();
+                _aatri.Close();
                 // Delete the originals
                 FileInfo.Delete();
                 File.Delete(datFilename);
@@ -97,7 +97,7 @@ namespace archive_aatri.aatri
 
         public void Unload()
         {
-            _aatri?.Dispose();
+            _aatri?.Close();
         }
 
         // Files

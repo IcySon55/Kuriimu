@@ -66,13 +66,13 @@ namespace archive_irarc
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 _irarc.Save(File.Create(irlstFilename), File.Create(irarcFilename));
-                _irarc.Dispose();
+                _irarc.Close();
             }
             else
             {
                 // Create the temp files
                 _irarc.Save(File.Create(irlstFilename + ".tmp"), File.Create(irarcFilename + ".tmp"));
-                _irarc.Dispose();
+                _irarc.Close();
                 // Delete the originals
                 FileInfo.Delete();
                 File.Delete(irarcFilename);
@@ -87,7 +87,7 @@ namespace archive_irarc
 
         public void Unload()
         {
-            _irarc?.Dispose();
+            _irarc?.Close();
         }
 
         // Files

@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Kuriimu.Kontract;
 using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace archive_irarc
 {
-    public sealed class IRARC : IDisposable
+    public sealed class IRARC
     {
         public List<IRARCFileInfo> Files;
         private Stream _stream = null;
@@ -42,9 +41,12 @@ namespace archive_irarc
             }
         }
 
-        public void Dispose()
+        public void Close()
         {
             _stream?.Dispose();
+            foreach (var afi in Files)
+                if (afi.State != ArchiveFileState.Archived)
+                    afi.FileData?.Dispose();
             _stream = null;
         }
     }

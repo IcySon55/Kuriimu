@@ -89,13 +89,13 @@ namespace archive_aatri.aabin
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 _aabin.Save(File.Create(filename));
-                _aabin.Dispose();
+                _aabin.Close();
             }
             else
             {
                 // Create the temp files
                 _aabin.Save(File.Create(filename + ".tmp"));
-                _aabin.Dispose();
+                _aabin.Close();
                 // Delete the originals
                 FileInfo.Delete();
                 File.Delete(filename);
@@ -109,7 +109,7 @@ namespace archive_aatri.aabin
 
         public void Unload()
         {
-            _aabin?.Dispose();
+            _aabin?.Close();
         }
 
         // Files
