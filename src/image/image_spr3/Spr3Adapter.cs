@@ -4,20 +4,21 @@ using System.IO;
 using System.Linq;
 using Kuriimu.IO;
 using Kuriimu.Kontract;
+using image_nintendo;
 
-namespace image_nintendo.CTPK
+namespace image_spr3
 {
-    public sealed class CtpkAdapter : IImageAdapter
+    public sealed class Spr3Adapter : IImageAdapter
     {
-        private CTPK _ctpk;
+        private SPR3 _spr3;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
-        public string Name => "CTPK";
-        public string Description => "CTR Texture PacKage";
-        public string Extension => "*.ctpk;*.amt";
-        public string About => "This is the CTPK image adapter for Kukkii.";
+        public string Name => "SPR3";
+        public string Description => "SPR3";
+        public string Extension => "*.spr3";
+        public string About => "This is the SPR3 image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -31,8 +32,8 @@ namespace image_nintendo.CTPK
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "CTPK";
+                if (br.BaseStream.Length < 0xc) return false;
+                return br.PeekString(0x8, 4) == "SPR3";
             }
         }
 
@@ -42,8 +43,9 @@ namespace image_nintendo.CTPK
 
             if (FileInfo.Exists)
             {
-                _ctpk = new CTPK(File.OpenRead(FileInfo.FullName));
-                _bitmaps = _ctpk.bmps.Select(o => new CtpkBitmapInfo { Bitmap = o.bmp, Format = o.format }).ToList<BitmapInfo>();
+                using (var br = new BinaryReaderX(FileInfo.OpenRead()))
+                    _spr3 = new SPR3(FileInfo.FullName);
+                _bitmaps = _spr3.ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o.bmp }).ToList();
             }
         }
 
@@ -52,8 +54,9 @@ namespace image_nintendo.CTPK
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _ctpk.bmps = _bitmaps.Select(o => new BitmapClass { bmp = o.Bitmap }).ToList();
-            _ctpk.Save(File.OpenRead(FileInfo.FullName), false);
+            _spr3.ctpk.bmps = _bitmaps.Select(o => new image_nintendo.CTPK.BitmapClass { bmp = o.Bitmap }).ToList();
+
+            _spr3.Save(FileInfo.FullName);
         }
 
         // Bitmaps
