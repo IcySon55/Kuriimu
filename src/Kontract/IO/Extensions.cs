@@ -55,6 +55,9 @@ namespace Kuriimu.IO
                 // Ignore static fields
                 if (field.IsStatic) continue;
 
+                if (fieldType.BaseType == typeof(Enum))
+                    fieldType = fieldType.GetFields()[0].FieldType;
+
                 // Swap bytes only for the following types (incomplete just like BinaryReaderX is)
                 if (fieldType == typeof(short) || fieldType == typeof(ushort) ||
                     fieldType == typeof(int) || fieldType == typeof(uint) ||
