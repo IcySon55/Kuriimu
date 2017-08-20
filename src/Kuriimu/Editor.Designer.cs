@@ -63,6 +63,9 @@
             this.pnlMain = new System.Windows.Forms.Panel();
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.treEntries = new System.Windows.Forms.TreeView();
+            this.mnuLabels = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsEntries = new System.Windows.Forms.ToolStrip();
             this.tslEntries = new System.Windows.Forms.ToolStripLabel();
             this.tsbEntryAdd = new System.Windows.Forms.ToolStripButton();
@@ -93,8 +96,20 @@
             this.tslPage = new System.Windows.Forms.ToolStripLabel();
             this.tsbNextPage = new System.Windows.Forms.ToolStripButton();
             this.tsbHandlerSettings = new System.Windows.Forms.ToolStripButton();
+            this.tabLot = new System.Windows.Forms.TabControl();
+            this.tabNotes = new System.Windows.Forms.TabPage();
+            this.txtLotNotes = new System.Windows.Forms.TextBox();
+            this.tabScreenshots = new System.Windows.Forms.TabPage();
+            this.treLotScreenshots = new System.Windows.Forms.TreeView();
+            this.tlsLotScreenshots = new System.Windows.Forms.ToolStrip();
+            this.tsbScreenshotAdd = new System.Windows.Forms.ToolStripButton();
+            this.tsbScreenshotRename = new System.Windows.Forms.ToolStripButton();
+            this.tsbScreenshotPaste = new System.Windows.Forms.ToolStripButton();
+            this.tsbScreenshotDelete = new System.Windows.Forms.ToolStripButton();
             this.tlsHexView = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.tsbLotCreate = new System.Windows.Forms.ToolStripButton();
+            this.tsbLotDelete = new System.Windows.Forms.ToolStripButton();
             this.tlsMain = new System.Windows.Forms.ToolStrip();
             this.tsbNew = new System.Windows.Forms.ToolStripButton();
             this.tsbOpen = new System.Windows.Forms.ToolStripButton();
@@ -117,12 +132,14 @@
             this.tslFontSize = new System.Windows.Forms.ToolStripLabel();
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
+            this.imlScreenshots = new System.Windows.Forms.ImageList(this.components);
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
             this.splMain.Panel1.SuspendLayout();
             this.splMain.Panel2.SuspendLayout();
             this.splMain.SuspendLayout();
+            this.mnuLabels.SuspendLayout();
             this.tlsEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splContent)).BeginInit();
             this.splContent.Panel1.SuspendLayout();
@@ -141,6 +158,10 @@
             this.pnlPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).BeginInit();
             this.tlsPreview.SuspendLayout();
+            this.tabLot.SuspendLayout();
+            this.tabNotes.SuspendLayout();
+            this.tabScreenshots.SuspendLayout();
+            this.tlsLotScreenshots.SuspendLayout();
             this.tlsHexView.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.SuspendLayout();
@@ -456,6 +477,7 @@
             // 
             // treEntries
             // 
+            this.treEntries.ContextMenuStrip = this.mnuLabels;
             this.treEntries.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treEntries.FullRowSelect = true;
             this.treEntries.HideSelection = false;
@@ -470,10 +492,37 @@
             this.treEntries.TabIndex = 4;
             this.treEntries.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterCollapse);
             this.treEntries.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treEntries_AfterSelect);
+            this.treEntries.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treEntries_NodeMouseClick);
             this.treEntries.DoubleClick += new System.EventHandler(this.treEntries_DoubleClick);
             this.treEntries.Enter += new System.EventHandler(this.treEntries_Enter);
             this.treEntries.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treEntries_KeyDown);
             this.treEntries.Leave += new System.EventHandler(this.treEntries_Leave);
+            // 
+            // mnuLabels
+            // 
+            this.mnuLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newLabelToolStripMenuItem,
+            this.removeLabelToolStripMenuItem});
+            this.mnuLabels.Name = "mnuLabels";
+            this.mnuLabels.Size = new System.Drawing.Size(149, 48);
+            this.mnuLabels.Opening += new System.ComponentModel.CancelEventHandler(this.mnuLabels_Opening);
+            // 
+            // newLabelToolStripMenuItem
+            // 
+            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
+            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
+            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newLabelToolStripMenuItem.Text = "New Label...";
+            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
+            // 
+            // removeLabelToolStripMenuItem
+            // 
+            this.removeLabelToolStripMenuItem.Enabled = false;
+            this.removeLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label_remove;
+            this.removeLabelToolStripMenuItem.Name = "removeLabelToolStripMenuItem";
+            this.removeLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeLabelToolStripMenuItem.Text = "Remove Label";
+            this.removeLabelToolStripMenuItem.Click += new System.EventHandler(this.removeLabelToolStripMenuItem_Click);
             // 
             // tlsEntries
             // 
@@ -701,6 +750,7 @@
             // 
             // splPreview.Panel2
             // 
+            this.splPreview.Panel2.Controls.Add(this.tabLot);
             this.splPreview.Panel2.Controls.Add(this.tlsHexView);
             this.splPreview.Size = new System.Drawing.Size(892, 317);
             this.splPreview.SplitterDistance = 442;
@@ -840,13 +890,131 @@
             this.tsbHandlerSettings.Text = "Handler Settings";
             this.tsbHandlerSettings.Click += new System.EventHandler(this.tsbHandlerSettings_Click);
             // 
+            // tabLot
+            // 
+            this.tabLot.Controls.Add(this.tabNotes);
+            this.tabLot.Controls.Add(this.tabScreenshots);
+            this.tabLot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabLot.Enabled = false;
+            this.tabLot.Location = new System.Drawing.Point(0, 27);
+            this.tabLot.Name = "tabLot";
+            this.tabLot.SelectedIndex = 0;
+            this.tabLot.Size = new System.Drawing.Size(444, 290);
+            this.tabLot.TabIndex = 5;
+            // 
+            // tabNotes
+            // 
+            this.tabNotes.Controls.Add(this.txtLotNotes);
+            this.tabNotes.Location = new System.Drawing.Point(4, 22);
+            this.tabNotes.Name = "tabNotes";
+            this.tabNotes.Padding = new System.Windows.Forms.Padding(3, 5, 5, 4);
+            this.tabNotes.Size = new System.Drawing.Size(436, 264);
+            this.tabNotes.TabIndex = 0;
+            this.tabNotes.Text = "Notes";
+            this.tabNotes.UseVisualStyleBackColor = true;
+            // 
+            // txtLotNotes
+            // 
+            this.txtLotNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtLotNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.txtLotNotes.Location = new System.Drawing.Point(3, 5);
+            this.txtLotNotes.Multiline = true;
+            this.txtLotNotes.Name = "txtLotNotes";
+            this.txtLotNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtLotNotes.Size = new System.Drawing.Size(428, 255);
+            this.txtLotNotes.TabIndex = 0;
+            this.txtLotNotes.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtLotNotes_KeyUp);
+            // 
+            // tabScreenshots
+            // 
+            this.tabScreenshots.Controls.Add(this.treLotScreenshots);
+            this.tabScreenshots.Controls.Add(this.tlsLotScreenshots);
+            this.tabScreenshots.Location = new System.Drawing.Point(4, 22);
+            this.tabScreenshots.Name = "tabScreenshots";
+            this.tabScreenshots.Padding = new System.Windows.Forms.Padding(3, 3, 5, 4);
+            this.tabScreenshots.Size = new System.Drawing.Size(436, 264);
+            this.tabScreenshots.TabIndex = 1;
+            this.tabScreenshots.Text = "Screenshots";
+            this.tabScreenshots.UseVisualStyleBackColor = true;
+            // 
+            // treLotScreenshots
+            // 
+            this.treLotScreenshots.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treLotScreenshots.FullRowSelect = true;
+            this.treLotScreenshots.HideSelection = false;
+            this.treLotScreenshots.Location = new System.Drawing.Point(3, 30);
+            this.treLotScreenshots.Name = "treLotScreenshots";
+            this.treLotScreenshots.ShowLines = false;
+            this.treLotScreenshots.ShowPlusMinus = false;
+            this.treLotScreenshots.ShowRootLines = false;
+            this.treLotScreenshots.Size = new System.Drawing.Size(428, 230);
+            this.treLotScreenshots.TabIndex = 2;
+            // 
+            // tlsLotScreenshots
+            // 
+            this.tlsLotScreenshots.AutoSize = false;
+            this.tlsLotScreenshots.BackColor = System.Drawing.Color.Transparent;
+            this.tlsLotScreenshots.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tlsLotScreenshots.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsbScreenshotAdd,
+            this.tsbScreenshotRename,
+            this.tsbScreenshotPaste,
+            this.tsbScreenshotDelete});
+            this.tlsLotScreenshots.Location = new System.Drawing.Point(3, 3);
+            this.tlsLotScreenshots.Name = "tlsLotScreenshots";
+            this.tlsLotScreenshots.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.tlsLotScreenshots.Size = new System.Drawing.Size(428, 27);
+            this.tlsLotScreenshots.TabIndex = 4;
+            // 
+            // tsbScreenshotAdd
+            // 
+            this.tsbScreenshotAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbScreenshotAdd.Enabled = false;
+            this.tsbScreenshotAdd.Image = global::Kuriimu.Properties.Resources.menu_add;
+            this.tsbScreenshotAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbScreenshotAdd.Name = "tsbScreenshotAdd";
+            this.tsbScreenshotAdd.Size = new System.Drawing.Size(23, 22);
+            this.tsbScreenshotAdd.Text = "Add Screenshot";
+            // 
+            // tsbScreenshotRename
+            // 
+            this.tsbScreenshotRename.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbScreenshotRename.Enabled = false;
+            this.tsbScreenshotRename.Image = global::Kuriimu.Properties.Resources.menu_field_properties;
+            this.tsbScreenshotRename.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbScreenshotRename.Name = "tsbScreenshotRename";
+            this.tsbScreenshotRename.Size = new System.Drawing.Size(23, 22);
+            this.tsbScreenshotRename.Text = "Rename Screenshot";
+            // 
+            // tsbScreenshotPaste
+            // 
+            this.tsbScreenshotPaste.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbScreenshotPaste.Enabled = false;
+            this.tsbScreenshotPaste.Image = global::Kuriimu.Properties.Resources.menu_paste;
+            this.tsbScreenshotPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbScreenshotPaste.Name = "tsbScreenshotPaste";
+            this.tsbScreenshotPaste.Size = new System.Drawing.Size(23, 22);
+            this.tsbScreenshotPaste.Text = "Paste Screenshot";
+            // 
+            // tsbScreenshotDelete
+            // 
+            this.tsbScreenshotDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbScreenshotDelete.Enabled = false;
+            this.tsbScreenshotDelete.Image = global::Kuriimu.Properties.Resources.menu_delete;
+            this.tsbScreenshotDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbScreenshotDelete.Name = "tsbScreenshotDelete";
+            this.tsbScreenshotDelete.Size = new System.Drawing.Size(23, 22);
+            this.tsbScreenshotDelete.Text = "Delete Screenshot";
+            // 
             // tlsHexView
             // 
             this.tlsHexView.AutoSize = false;
             this.tlsHexView.BackColor = System.Drawing.Color.Transparent;
             this.tlsHexView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tlsHexView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel3});
+            this.toolStripLabel3,
+            this.tsbLotCreate,
+            this.tsbLotDelete});
             this.tlsHexView.Location = new System.Drawing.Point(0, 0);
             this.tlsHexView.Name = "tlsHexView";
             this.tlsHexView.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -856,8 +1024,31 @@
             // toolStripLabel3
             // 
             this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(66, 22);
-            this.toolStripLabel3.Text = "Vacant Lot:";
+            this.toolStripLabel3.Size = new System.Drawing.Size(27, 22);
+            this.toolStripLabel3.Text = "Lot:";
+            // 
+            // tsbLotCreate
+            // 
+            this.tsbLotCreate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbLotCreate.Enabled = false;
+            this.tsbLotCreate.Image = global::Kuriimu.Properties.Resources.menu_add;
+            this.tsbLotCreate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbLotCreate.Name = "tsbLotCreate";
+            this.tsbLotCreate.Size = new System.Drawing.Size(23, 22);
+            this.tsbLotCreate.Text = "Create Lot";
+            this.tsbLotCreate.Click += new System.EventHandler(this.tsbLotCreate_Click);
+            // 
+            // tsbLotDelete
+            // 
+            this.tsbLotDelete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbLotDelete.Enabled = false;
+            this.tsbLotDelete.Image = global::Kuriimu.Properties.Resources.menu_delete;
+            this.tsbLotDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbLotDelete.Name = "tsbLotDelete";
+            this.tsbLotDelete.Size = new System.Drawing.Size(23, 22);
+            this.tsbLotDelete.Text = "Delete Lot";
+            this.tsbLotDelete.Visible = false;
+            this.tsbLotDelete.Click += new System.EventHandler(this.tsbLotDelete_Click);
             // 
             // tlsMain
             // 
@@ -1084,6 +1275,12 @@
             this.imlEntries.ImageSize = new System.Drawing.Size(14, 14);
             this.imlEntries.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // imlScreenshots
+            // 
+            this.imlScreenshots.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
+            this.imlScreenshots.ImageSize = new System.Drawing.Size(96, 64);
+            this.imlScreenshots.TransparentColor = System.Drawing.Color.Transparent;
+            // 
             // Editor
             // 
             this.AllowDrop = true;
@@ -1108,6 +1305,7 @@
             this.splMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
             this.splMain.ResumeLayout(false);
+            this.mnuLabels.ResumeLayout(false);
             this.tlsEntries.ResumeLayout(false);
             this.tlsEntries.PerformLayout();
             this.splContent.Panel1.ResumeLayout(false);
@@ -1133,6 +1331,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbxPreview)).EndInit();
             this.tlsPreview.ResumeLayout(false);
             this.tlsPreview.PerformLayout();
+            this.tabLot.ResumeLayout(false);
+            this.tabNotes.ResumeLayout(false);
+            this.tabNotes.PerformLayout();
+            this.tabScreenshots.ResumeLayout(false);
+            this.tlsLotScreenshots.ResumeLayout(false);
+            this.tlsLotScreenshots.PerformLayout();
             this.tlsHexView.ResumeLayout(false);
             this.tlsHexView.PerformLayout();
             this.tlsMain.ResumeLayout(false);
@@ -1232,5 +1436,21 @@
         private System.Windows.Forms.ToolStripMenuItem encryptionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hashToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tsbShowTextPreview;
+        private System.Windows.Forms.TabControl tabLot;
+        private System.Windows.Forms.TabPage tabNotes;
+        private System.Windows.Forms.TabPage tabScreenshots;
+        private System.Windows.Forms.TextBox txtLotNotes;
+        private System.Windows.Forms.TreeView treLotScreenshots;
+        private System.Windows.Forms.ImageList imlScreenshots;
+        private System.Windows.Forms.ToolStrip tlsLotScreenshots;
+        private System.Windows.Forms.ToolStripButton tsbScreenshotAdd;
+        private System.Windows.Forms.ToolStripButton tsbScreenshotPaste;
+        private System.Windows.Forms.ToolStripButton tsbScreenshotDelete;
+        private System.Windows.Forms.ToolStripButton tsbScreenshotRename;
+        private System.Windows.Forms.ToolStripButton tsbLotCreate;
+        private System.Windows.Forms.ToolStripButton tsbLotDelete;
+        private System.Windows.Forms.ContextMenuStrip mnuLabels;
+        private System.Windows.Forms.ToolStripMenuItem newLabelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeLabelToolStripMenuItem;
     }
 }

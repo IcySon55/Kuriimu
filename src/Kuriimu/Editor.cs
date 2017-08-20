@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
@@ -21,6 +22,10 @@ namespace Kuriimu
         private IList<Bitmap> _gameHandlerPages = new List<Bitmap>();
         private bool _fileOpen;
         private bool _hasChanges;
+        private KuriimuSettings _settings;
+
+        // Lot
+        private Lot _lot;
 
         private List<ITextAdapter> _textAdapters;
         private List<IGameHandler> _gameHandlers;
@@ -38,6 +43,24 @@ namespace Kuriimu
             _textAdapters = PluginLoader<ITextAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "text*.dll").ToList();
             _gameHandlers = Tools.LoadGameHandlers(Settings.Default.PluginDirectory, tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
             _extensions = PluginLoader<IExtension>.LoadPlugins(Settings.Default.PluginDirectory, "ext*.dll").ToList();
+
+            // Load Persist
+            var settingsPath = Path.Combine(Application.StartupPath, "Kuriimu.settings");
+            if (File.Exists(settingsPath))
+                try
+                {
+                    _settings = KuriimuSettings.Load(settingsPath);
+                }
+                catch (Exception e)
+                {
+                    _settings = new KuriimuSettings();
+                    _settings.Save(settingsPath);
+                }
+            else
+            {
+                _settings = new KuriimuSettings();
+                _settings.Save(settingsPath);
+            }
 
             // Load passed in file
             if (args.Length > 0 && File.Exists(args[0]))
@@ -191,7 +214,7 @@ namespace Kuriimu
             {
                 TextEntry entry = _textAdapter.NewEntry();
 
-                Name name = new Name(entry, _textAdapter.EntriesHaveUniqueNames, _textAdapter.NameList, _textAdapter.NameFilter, _textAdapter.NameMaxLength, true);
+                Name name = new Name(entry.Name, _textAdapter.EntriesHaveUniqueNames, _textAdapter.NameList, _textAdapter.NameFilter, _textAdapter.NameMaxLength, true);
 
                 if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
                 {
@@ -217,7 +240,7 @@ namespace Kuriimu
             {
                 TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
 
-                Name name = new Name(entry, _textAdapter.EntriesHaveUniqueNames, _textAdapter.NameList, _textAdapter.NameFilter, _textAdapter.NameMaxLength);
+                Name name = new Name(entry.Name, _textAdapter.EntriesHaveUniqueNames, _textAdapter.NameList, _textAdapter.NameFilter, _textAdapter.NameMaxLength);
 
                 if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
                 {
@@ -451,6 +474,7 @@ namespace Kuriimu
                     tempAdapter.Load(filename);
 
                     _textAdapter = tempAdapter;
+                    _lot = File.Exists(_textAdapter.FileInfo.FullName + ".lot") ? Lot.Load(_textAdapter.FileInfo.FullName + ".lot") : null;
                     _fileOpen = true;
                     _hasChanges = false;
 
@@ -468,8 +492,9 @@ namespace Kuriimu
                         _gameHandler = (IGameHandler)tsbGameSelect.DropDownItems[0].Tag;
 
                     LoadEntries();
-                    UpdateTextView();
-                    UpdatePreview();
+                    UpdateLabels();
+                    //UpdateTextView();
+                    //UpdatePreview();
                     UpdateForm();
                 }
 
@@ -509,6 +534,7 @@ namespace Kuriimu
             try
             {
                 _textAdapter.Save(saveAs ? _textAdapter.FileInfo?.FullName : string.Empty);
+                _lot?.Save(_textAdapter.FileInfo.FullName + ".lot");
                 _hasChanges = false;
                 //LoadEntries();
                 UpdateForm();
@@ -636,19 +662,22 @@ namespace Kuriimu
             treEntries.Nodes.Clear();
             if (_entries != null)
             {
-                foreach (TextEntry entry in _entries)
+                foreach (var entry in _entries)
                 {
-                    TreeNode node = new TreeNode(entry + (Settings.Default.ShowTextPreview ? " - " + entry.EditedText : string.Empty));
-                    node.Tag = entry;
+                    var imageIndex = 0;
+
+                    if (_lot != null)
+                        imageIndex = _settings.Labels.FindIndex(l => l.Name == _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).Label) + 1;
+
+                    var node = new TreeNode(entry + (Settings.Default.ShowTextPreview && entry.HasText ? " - " + entry.EditedText : string.Empty), imageIndex, imageIndex) { Tag = entry };
                     if (!entry.HasText)
                         node.ForeColor = Color.Gray;
                     treEntries.Nodes.Add(node);
 
                     if (_textAdapter.EntriesHaveSubEntries)
-                        foreach (TextEntry sub in entry.SubEntries)
+                        foreach (var sub in entry.SubEntries)
                         {
-                            TreeNode subNode = new TreeNode(sub.ToString());
-                            subNode.Tag = sub;
+                            var subNode = new TreeNode(sub + (Settings.Default.ShowTextPreview && entry.HasText ? " - " + entry.EditedText : string.Empty), imageIndex, imageIndex) { Tag = sub };
                             node.Nodes.Add(subNode);
                         }
 
@@ -694,7 +723,7 @@ namespace Kuriimu
 
         private void UpdatePreview()
         {
-            TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
             _gameHandlerPages = _gameHandler.GeneratePreviews(entry);
             SetPage(0);
 
@@ -702,6 +731,176 @@ namespace Kuriimu
                 pbxPreview.Image = _gameHandlerPages[_page];
             else
                 pbxPreview.Image = null;
+        }
+
+        // Lot
+        private void UpdateLot()
+        {
+            if (_lot == null) return;
+
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            if (!entry.HasText) return;
+
+            txtLotNotes.Text = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).Notes;
+            UpdateScreenshotList();
+        }
+
+        private void UpdateLabels()
+        {
+            if (_lot == null) return;
+            if (_settings.Labels.Count < 0) return;
+
+            for (var i = mnuLabels.Items.Count - 1; i > 1; i--)
+                mnuLabels.Items.RemoveAt(i);
+
+            imlEntries.Images.Clear();
+            imlEntries.Images.Add("0", GenerateColorSquare(SystemColors.Window, 14, 14));
+            if (_settings.Labels.Count > 0)
+                mnuLabels.Items.Add(new ToolStripSeparator());
+            foreach (var label in _settings.Labels)
+            {
+                imlEntries.Images.Add((_settings.Labels.IndexOf(label) + 1).ToString(), GenerateColorSquare(ColorTranslator.FromHtml(label.Color), 14, 14));
+                var tsiLabel = new ToolStripMenuItem(label.Name, GenerateColorSquare(ColorTranslator.FromHtml(label.Color)), tsiSetLabel_Click) {Tag = label};
+                mnuLabels.Items.Add(tsiLabel);
+
+                // TODO: Edit and Delete for Labels
+            }
+        }
+
+        private void mnuLabels_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_lot == null) return;
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            if (!entry.HasText) return;
+            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+
+            removeLabelToolStripMenuItem.Enabled = lotEntry.Label != null && lotEntry.Label != string.Empty;
+        }
+
+        private void newLabelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_settings == null) return;
+
+            var lbl = new LabelForm(string.Empty, ColorTranslator.ToHtml(Color.Black), _settings.Labels.Select(o => o.Name).ToList(), true);
+
+            if (lbl.ShowDialog() == DialogResult.OK && (lbl.NameChanged || lbl.ColorChanged))
+            {
+                var label = new Kontract.Label(lbl.NewName, lbl.NewColor);
+                _settings.Labels.Add(label);
+                _settings.Save(Path.Combine(Application.StartupPath, "Kuriimu.settings"));
+                UpdateLabels();
+
+                var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+                if (!entry.HasText) return;
+                var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+                lotEntry.Label = label.Name; var newIndex = _settings.Labels.IndexOf(label) + 1;
+
+                if (newIndex == treEntries.SelectedNode.ImageIndex) return;
+                treEntries.SelectedNode.ImageIndex = newIndex;
+                treEntries.SelectedNode.SelectedImageIndex = newIndex;
+                _hasChanges = true;
+                UpdateForm();
+            }
+        }
+
+        private void removeLabelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            if (!entry.HasText) return;
+            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+
+            var previousLabel = lotEntry.Label;
+            lotEntry.Label = string.Empty;
+            var newIndex = 0;
+
+            if (lotEntry.Label == previousLabel) return;
+            treEntries.SelectedNode.ImageIndex = newIndex;
+            treEntries.SelectedNode.SelectedImageIndex = newIndex;
+            _hasChanges = true;
+            UpdateForm();
+        }
+
+        private void tsiSetLabel_Click(object sender, EventArgs e)
+        {
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            if (!entry.HasText) return;
+            var label = (Kontract.Label)((ToolStripItem)sender).Tag;
+            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+
+            lotEntry.Label = label.Name;
+            var newIndex = _settings.Labels.IndexOf(label) + 1;
+
+            if (newIndex == treEntries.SelectedNode.ImageIndex) return;
+            treEntries.SelectedNode.ImageIndex = newIndex;
+            treEntries.SelectedNode.SelectedImageIndex = newIndex;
+            _hasChanges = true;
+            UpdateForm();
+        }
+
+        private Bitmap GenerateColorSquare(Color color, int width = 16, int height = 16)
+        {
+            var square = new Bitmap(width, height, PixelFormat.Format32bppRgb);
+            var gfx = Graphics.FromImage(square);
+            gfx.FillRectangle(new SolidBrush(color), new Rectangle(new Point(0, 0), square.Size));
+            return square;
+        }
+
+        private void UpdateScreenshotList()
+        {
+            if (_lot == null) return;
+
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            if (!entry.HasText) return;
+
+            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+
+            treLotScreenshots.BeginUpdate();
+            treLotScreenshots.Nodes.Clear();
+            imlScreenshots.Images.Clear();
+            imlScreenshots.TransparentColor = Color.Transparent;
+            treLotScreenshots.ItemHeight = imlScreenshots.ImageSize.Height + 6;
+
+            for (var i = 0; i < lotEntry.Screenshots.Count; i++)
+            {
+                imlScreenshots.Images.Add(i.ToString(), GenerateThumbnail(lotEntry.Screenshots[i].Shot));
+                treLotScreenshots.Nodes.Add(new TreeNode
+                {
+                    Text = lotEntry.Screenshots[i].Name,
+                    Tag = i,
+                    ImageKey = i.ToString(),
+                    SelectedImageKey = i.ToString()
+                });
+            }
+
+            treLotScreenshots.EndUpdate();
+        }
+
+        private Bitmap GenerateThumbnail(Bitmap input)
+        {
+            var thumbWidth = imlScreenshots.ImageSize.Width;
+            var thumbHeight = imlScreenshots.ImageSize.Height;
+            var thumb = new Bitmap(thumbWidth, thumbHeight, PixelFormat.Format24bppRgb);
+            var gfx = Graphics.FromImage(thumb);
+
+            gfx.CompositingQuality = CompositingQuality.HighSpeed;
+            gfx.PixelOffsetMode = PixelOffsetMode.Default;
+            gfx.SmoothingMode = SmoothingMode.HighSpeed;
+            gfx.InterpolationMode = InterpolationMode.Default;
+
+            var wRatio = (float)input.Width / thumbWidth;
+            var hRatio = (float)input.Height / thumbHeight;
+            var ratio = wRatio >= hRatio ? wRatio : hRatio;
+
+            if (input.Width <= thumbWidth && input.Height <= thumbHeight)
+                ratio = 1.0f;
+
+            var size = new Size((int)Math.Min(input.Width / ratio, thumbWidth), (int)Math.Min(input.Height / ratio, thumbHeight));
+            var pos = new Point(thumbWidth / 2 - size.Width / 2, thumbHeight / 2 - size.Height / 2);
+
+            gfx.InterpolationMode = ratio != 1.0f ? InterpolationMode.HighQualityBicubic : InterpolationMode.Default;
+            gfx.DrawImage(input, pos.X, pos.Y, size.Width, size.Height);
+
+            return thumb;
         }
 
         private void UpdateForm()
@@ -792,8 +991,24 @@ namespace Kuriimu
                 tsbGameSelect.Enabled = itemSelected;
             }
 
+            // Lot
+            var _lotExists = _lot != null;
+            tsbLotCreate.Enabled = _fileOpen && !_lotExists;
+            tsbLotCreate.Visible = !_lotExists;
+            tsbLotDelete.Enabled = _fileOpen && _lotExists;
+            tsbLotDelete.Visible = _lotExists;
+            tabLot.Enabled = _lotExists;
+
+            if (_lotExists)
+                treEntries.ImageList = imlEntries;
+            else
+                treEntries.ImageList = null;
+
             // Kukki
             tsbKukki.Enabled = File.Exists(Path.Combine(Application.StartupPath, "kukkii.exe"));
+
+            // Karameru
+            tsbKarameru.Enabled = File.Exists(Path.Combine(Application.StartupPath, "karameru.exe"));
         }
 
         private string FileName()
@@ -992,6 +1207,7 @@ namespace Kuriimu
         {
             UpdateTextView();
             UpdatePreview();
+            UpdateLot();
             UpdateForm();
         }
 
@@ -1004,6 +1220,11 @@ namespace Kuriimu
         private void treEntries_DoubleClick(object sender, EventArgs e)
         {
             tsbEntryProperties_Click(sender, e);
+        }
+
+        private void treEntries_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            treEntries.SelectedNode = e.Node;
         }
 
         private void treEntries_AfterCollapse(object sender, TreeViewEventArgs e)
@@ -1052,6 +1273,36 @@ namespace Kuriimu
         {
             if (e.Control & e.KeyCode == Keys.A)
                 txtOriginal.SelectAll();
+        }
+
+        // Lot
+        private void tsbLotCreate_Click(object sender, EventArgs e)
+        {
+            _lot = new Lot();
+            _lot.Populate(_entries);
+            _lot.Save(_textAdapter.FileInfo.FullName + ".lot");
+            UpdateLabels();
+            UpdateForm();
+        }
+
+        private void tsbLotDelete_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtLotNotes_KeyUp(object sender, KeyEventArgs e)
+        {
+            TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
+
+            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+
+            if (txtLotNotes.Text != lotEntry.Notes)
+            {
+                lotEntry.Notes = txtLotNotes.Text;
+                _hasChanges = true;
+            }
+
+            UpdateForm();
         }
     }
 }
