@@ -15,12 +15,12 @@ namespace archive_cdar
         {
             get
             {
-                if (State != ArchiveFileState.Archived) return base.FileData;
+                if (State != ArchiveFileState.Archived || entry.decompSize == 0) return base.FileData;
                 return new MemoryStream(ZLib.Decompress(base.FileData));
             }
         }
 
-        public override long? FileSize => entry.decompSize;
+        public override long? FileSize => (entry.decompSize == 0) ? entry.compSize : entry.decompSize;
 
         public void Write(Stream input, uint offset)
         {
@@ -35,13 +35,24 @@ namespace archive_cdar
                 }
                 else
                 {
-                    entry.offset = offset;
-                    entry.decompSize = (uint)base.FileData.Length;
-                    var comp = ZLib.Compress(base.FileData);
-                    entry.compSize = (uint)comp.Length;
-                    bw.Write(comp);
+                    if (entry.decompSize == 0)
+                    {
+                        entry.offset = offset;
+                        entry.compSize = (uint)base.FileData.Length;
+                        base.FileData.CopyTo(bw.BaseStream);
 
-                    bw.WriteAlignment();
+                        bw.WriteAlignment();
+                    }
+                    else
+                    {
+                        entry.offset = offset;
+                        entry.decompSize = (uint)base.FileData.Length;
+                        var comp = ZLib.Compress(base.FileData);
+                        entry.compSize = (uint)comp.Length;
+                        bw.Write(comp);
+
+                        bw.WriteAlignment();
+                    }
                 }
             }
         }
