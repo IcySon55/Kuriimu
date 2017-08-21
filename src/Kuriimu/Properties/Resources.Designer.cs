@@ -323,6 +323,16 @@ namespace Kuriimu.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_labels {
+            get {
+                object obj = ResourceManager.GetObject("menu_labels", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_manage {
             get {
                 object obj = ResourceManager.GetObject("menu_manage", resourceCulture);

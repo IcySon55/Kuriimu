@@ -271,6 +271,9 @@
   <ItemGroup>
     <None Include="images\menu-set.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-labels.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

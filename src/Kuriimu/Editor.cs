@@ -751,7 +751,10 @@ namespace Kuriimu
 
         private void UpdateLabels()
         {
-            for (var i = mnuLabels.Items.Count - 1; i > 1; i--)
+            // Clear Labels
+            for (var i = tsbManageLabels.DropDownItems.Count - 1; i > 0; i--)
+                tsbManageLabels.DropDownItems.RemoveAt(i);
+            for (var i = mnuLabels.Items.Count - 1; i > 0; i--)
                 mnuLabels.Items.RemoveAt(i);
 
             if (_lot == null) return;
@@ -759,22 +762,31 @@ namespace Kuriimu
 
             imlEntries.Images.Clear();
             imlEntries.Images.Add("0", GenerateColorSquare(SystemColors.Window, 14, 14));
+
             if (_settings.Labels.Count > 0)
+            {
+                tsbManageLabels.DropDownItems.Add(new ToolStripSeparator());
                 mnuLabels.Items.Add(new ToolStripSeparator());
+            }
+
             foreach (var label in _settings.Labels)
             {
+                // Images
                 imlEntries.Images.Add((_settings.Labels.IndexOf(label) + 1).ToString(), GenerateColorSquare(ColorTranslator.FromHtml(label.Color), 14, 14));
-                var tsiLabel = new ToolStripMenuItem(label.Name, GenerateColorSquare(ColorTranslator.FromHtml(label.Color)));
-                mnuLabels.Items.Add(tsiLabel);
 
-                var tsiLabelSet = new ToolStripMenuItem("Set " + label.Name, Resources.menu_set, tsiSetLabel_Click) { Tag = label };
-                tsiLabel.DropDownItems.Add(tsiLabelSet);
+                // Manage
+                var tsiLabel = new ToolStripMenuItem(label.Name, GenerateColorSquare(ColorTranslator.FromHtml(label.Color)));
+                tsbManageLabels.DropDownItems.Add(tsiLabel);
 
                 var tsiLabelEdit = new ToolStripMenuItem("Edit " + label.Name, Resources.menu_edit, tsiEditLabel_Click) { Tag = label };
                 tsiLabel.DropDownItems.Add(tsiLabelEdit);
 
                 var tsiLabelDelete = new ToolStripMenuItem("Delete " + label.Name, Resources.menu_delete, tsiDeleteLabel_Click) { Tag = label };
                 tsiLabel.DropDownItems.Add(tsiLabelDelete);
+
+                // Set
+                var tsiSetLabel = new ToolStripMenuItem(label.Name, GenerateColorSquare(ColorTranslator.FromHtml(label.Color)), tsiSetLabel_Click) { Tag = label };
+                mnuLabels.Items.Add(tsiSetLabel);
             }
         }
 
@@ -795,24 +807,14 @@ namespace Kuriimu
         {
             if (_settings == null) return;
 
-            var lbl = new LabelForm(string.Empty, ColorTranslator.ToHtml(Color.Black), _settings.Labels.Select(o => o.Name).ToList(), true);
+            var lblForm = new LabelForm(string.Empty, ColorTranslator.ToHtml(Color.Black), _settings.Labels.Select(o => o.Name).ToList(), true);
 
-            if (lbl.ShowDialog() == DialogResult.OK && (lbl.NameChanged || lbl.ColorChanged))
+            if (lblForm.ShowDialog() == DialogResult.OK && (lblForm.NameChanged || lblForm.ColorChanged))
             {
-                var label = new Kontract.Label(lbl.NewName, lbl.NewColor);
+                var label = new Kontract.Label(lblForm.NewName, lblForm.NewColor);
                 _settings.Labels.Add(label);
                 _settings.Save(Path.Combine(Application.StartupPath, "Kuriimu.settings"));
                 UpdateLabels();
-
-                var entry = (TextEntry)treEntries.SelectedNode?.Tag;
-                var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
-                lotEntry.Label = label.Name; var newIndex = _settings.Labels.IndexOf(label) + 1;
-
-                if (newIndex == treEntries.SelectedNode.ImageIndex) return;
-                treEntries.SelectedNode.ImageIndex = newIndex;
-                treEntries.SelectedNode.SelectedImageIndex = newIndex;
-                _hasChanges = true;
-                UpdateForm();
             }
         }
 
@@ -853,17 +855,17 @@ namespace Kuriimu
             if (_settings == null) return;
             var label = (Kontract.Label)((ToolStripItem)sender).Tag;
 
-            var lbl = new LabelForm(label.Name, label.Color, _settings.Labels.Select(o => o.Name).ToList());
+            var lblForm = new LabelForm(label.Name, label.Color, _settings.Labels.Select(o => o.Name).ToList());
 
-            if (lbl.ShowDialog() == DialogResult.OK && (lbl.NameChanged || lbl.ColorChanged))
+            if (lblForm.ShowDialog() == DialogResult.OK && (lblForm.NameChanged || lblForm.ColorChanged))
             {
                 var previousLabel = label.Name;
-                label.Name = lbl.NewName;
-                label.Color = lbl.NewColor;
+                label.Name = lblForm.NewName;
+                label.Color = lblForm.NewColor;
                 _settings.Save(Path.Combine(Application.StartupPath, "Kuriimu.settings"));
                 UpdateLabels();
 
-                if (lbl.NameChanged)
+                if (lblForm.NameChanged)
                     foreach (var entry in _entries)
                     {
                         var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
@@ -893,7 +895,7 @@ namespace Kuriimu
             if (_settings == null) return;
             var label = (Kontract.Label)((ToolStripItem)sender).Tag;
 
-            if (MessageBox.Show($"Are you sure you want to delete the {label.Name} label?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            if (MessageBox.Show($"Are you sure you want to delete the {label.Name} label?", "Confirm Label Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             foreach (var entry in _entries)
             {
@@ -1010,19 +1012,16 @@ namespace Kuriimu
         {
             Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_textAdapter != null ? " - " + _textAdapter.Description + " Adapter (" + _textAdapter.Name + ")" : string.Empty);
 
-            TextEntry entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
 
-            if (_fileOpen)
-                tslEntries.Text = (_textAdapter.Entries?.Count() + " Entries").Trim();
-            else
-                tslEntries.Text = "Entries";
+            tslEntries.Text = _fileOpen ? (_textAdapter.Entries?.Count() + " Entries").Trim() : "Entries";
 
             if (_textAdapter != null)
             {
-                bool itemSelected = _fileOpen && treEntries.SelectedNode != null;
-                bool canAdd = _fileOpen && _textAdapter.CanAddEntries;
-                bool canRename = itemSelected && _textAdapter.CanRenameEntries && entry.ParentEntry == null;
-                bool canDelete = itemSelected && _textAdapter.CanDeleteEntries && entry.ParentEntry == null;
+                var itemSelected = _fileOpen && treEntries.SelectedNode != null;
+                var canAdd = _fileOpen && _textAdapter.CanAddEntries;
+                var canRename = itemSelected && _textAdapter.CanRenameEntries && entry.ParentEntry == null;
+                var canDelete = itemSelected && _textAdapter.CanDeleteEntries && entry.ParentEntry == null;
 
                 splMain.Enabled = _fileOpen;
                 splContent.Enabled = _fileOpen;
@@ -1054,13 +1053,14 @@ namespace Kuriimu
                 tsbEntryProperties.Enabled = itemSelected && _textAdapter.EntriesHaveExtendedProperties;
                 sortEntriesToolStripMenuItem.Enabled = _fileOpen && _textAdapter.CanSortEntries;
                 sortEntriesToolStripMenuItem.Image = _textAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
+                tsbManageLabels.Enabled = _fileOpen;
                 tsbShowTextPreview.Enabled = _fileOpen;
                 tsbShowTextPreview.Checked = Settings.Default.ShowTextPreview;
                 tsbSortEntries.Enabled = _fileOpen && _textAdapter.CanSortEntries;
                 tsbSortEntries.Image = _textAdapter.SortEntries ? Resources.menu_sorted : Resources.menu_unsorted;
 
                 // Preview
-                tsbPreviewEnabled.Enabled = _gameHandler != null ? _gameHandler.HandlerCanGeneratePreviews : false;
+                tsbPreviewEnabled.Enabled = _gameHandler?.HandlerCanGeneratePreviews ?? false;
                 tsbPreviewEnabled.Image = Settings.Default.PreviewEnabled ? Resources.menu_preview_visible : Resources.menu_preview_invisible;
                 tsbPreviewEnabled.Text = Settings.Default.PreviewEnabled ? "Disable Preview" : "Enable Preview";
                 tsbPreviewSave.Enabled = Settings.Default.PreviewEnabled && _gameHandler.HandlerCanGeneratePreviews && _gameHandlerPages != null && _gameHandlerPages.Count > 0;
@@ -1127,25 +1127,25 @@ namespace Kuriimu
 
         private void tsbImportKUP_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Import KUP...";
-            ofd.InitialDirectory = Settings.Default.LastDirectory;
-            ofd.Filter = "Kuriimu Archive (*.kup)|*.kup";
+            //OpenFileDialog ofd = new OpenFileDialog();
+            //ofd.Title = "Import KUP...";
+            //ofd.InitialDirectory = Settings.Default.LastDirectory;
+            //ofd.Filter = "Kuriimu Archive (*.kup)|*.kup";
 
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    //var bmp = (Bitmap)Image.FromFile(filename);
-                    //_imageAdapter.Bitmap = bmp;
-                    UpdatePreview();
-                    //MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            //if (ofd.ShowDialog() == DialogResult.OK)
+            //{
+            //    try
+            //    {
+            //        //var bmp = (Bitmap)Image.FromFile(filename);
+            //        //_imageAdapter.Bitmap = bmp;
+            //        UpdatePreview();
+            //        //MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        MessageBox.Show(ex.ToString(), ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    }
+            //}
         }
 
         private void tsbBatchExportKUP_Click(object sender, EventArgs e)
@@ -1348,9 +1348,9 @@ namespace Kuriimu
         // Text
         private void txtEdit_KeyUp(object sender, KeyEventArgs e)
         {
-            TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
-            string next = string.Empty;
-            string previous = string.Empty;
+            var entry = (TextEntry)treEntries.SelectedNode.Tag;
+            var previous = string.Empty;
+            var next = string.Empty;
 
             previous = _gameHandler.GetKuriimuString(entry.EditedText);
             next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _textAdapter.LineEndings);
@@ -1370,6 +1370,9 @@ namespace Kuriimu
         {
             if (e.Control & e.KeyCode == Keys.A)
                 txtEdit.SelectAll();
+
+            if (e.Control & (e.KeyCode != Keys.V && e.KeyCode != Keys.C && e.KeyCode != Keys.X && e.KeyCode != Keys.Z && e.KeyCode != Keys.Left && e.KeyCode != Keys.Right))
+                e.SuppressKeyPress = true;
         }
 
         private void txtOriginal_KeyDown(object sender, KeyEventArgs e)
@@ -1390,7 +1393,10 @@ namespace Kuriimu
 
         private void tsbLotDelete_Click(object sender, EventArgs e)
         {
-
+            if (MessageBox.Show($"Are you sure you want to delete the lot for {_textAdapter.FileInfo.Name}?\r\nAll labels, notes, and screenshots will be deleted.", "Confirm Lot Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            _lot = null;
+            File.Delete(_textAdapter.FileInfo.FullName + ".lot");
+            UpdateForm();
         }
 
         private void txtLotNotes_KeyUp(object sender, KeyEventArgs e)
@@ -1406,6 +1412,10 @@ namespace Kuriimu
             }
 
             UpdateForm();
+        }
+
+        private void txtEdit_KeyPress(object sender, KeyPressEventArgs e)
+        {
         }
     }
 }
