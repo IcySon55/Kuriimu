@@ -12,10 +12,9 @@ namespace text_gmd
 {
     public class GmdAdapter : ITextAdapter
     {
-        private FileInfo _fileInfo = null;
-        private GMD _gmd = null;
-        private GMD _gmdBackup = null;
-        private List<Entry> _entries = null;
+        private GMD _gmd;
+        private GMD _gmdBackup;
+        private List<Entry> _entries;
 
         #region Properties
 
@@ -36,19 +35,9 @@ namespace text_gmd
         public bool EntriesHaveUniqueNames => true;
         public bool EntriesHaveExtendedProperties => false;
 
-        public FileInfo FileInfo
-        {
-            get
-            {
-                return _fileInfo;
-            }
-            set
-            {
-                _fileInfo = value;
-            }
-        }
+        public FileInfo FileInfo { get; set; }
 
-        public string LineEndings => "\n";
+        public string LineEndings => "\r\n";
 
         #endregion
 
@@ -66,27 +55,23 @@ namespace text_gmd
         {
             LoadResult result = LoadResult.Success;
 
-            _fileInfo = new FileInfo(filename);
+            FileInfo = new FileInfo(filename);
             _entries = null;
 
-            if (_fileInfo.Exists)
+            if (FileInfo.Exists)
             {
-                _gmd = new GMD(_fileInfo.FullName);
+                _gmd = new GMD(FileInfo.OpenRead());
 
-                string backupFilePath = _fileInfo.FullName + ".bak";
+                var backupFilePath = FileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
+                    _gmdBackup = new GMD(File.OpenRead(backupFilePath));
+                else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    _gmdBackup = new GMD(backupFilePath);
-                }
-                else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    File.Copy(_fileInfo.FullName, backupFilePath);
-                    _gmdBackup = new GMD(backupFilePath);
+                    File.Copy(FileInfo.FullName, backupFilePath);
+                    _gmdBackup = new GMD(File.OpenRead(backupFilePath));
                 }
                 else
-                {
                     _gmdBackup = null;
-                }
             }
             else
                 result = LoadResult.FileNotFound;
@@ -99,11 +84,11 @@ namespace text_gmd
             SaveResult result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
-                _fileInfo = new FileInfo(filename);
+                FileInfo = new FileInfo(filename);
 
             try
             {
-                _gmd.Save(_fileInfo.FullName);
+                _gmd.Save(FileInfo.Create());
             }
             catch (Exception)
             {
@@ -125,15 +110,9 @@ namespace text_gmd
                     foreach (Label label in _gmd.Labels)
                     {
                         if (_gmdBackup == null)
-                        {
-                            Entry entry = new Entry(label);
-                            _entries.Add(entry);
-                        }
+                            _entries.Add(new Entry(label));
                         else
-                        {
-                            Entry entry = new Entry(label, _gmdBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID));
-                            _entries.Add(entry);
-                        }
+                            _entries.Add(new Entry(label, _gmdBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID)));
                     }
                 }
 
