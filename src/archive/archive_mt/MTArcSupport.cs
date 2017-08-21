@@ -4,8 +4,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kuriimu.Compression;
 using Kuriimu.IO;
+using Kuriimu.Kontract;
 
 namespace archive_mt
 {
@@ -13,78 +14,75 @@ namespace archive_mt
     {
         public FileMetadata Metadata { get; set; }
         public CompressionLevel CompressionLevel { get; set; }
+        public Systems System { get; set; }
 
         public override Stream FileData
         {
             get
             {
                 if (State != ArchiveFileState.Archived || CompressionLevel == CompressionLevel.NoCompression) return base.FileData;
-                var ms = new MemoryStream();
-                using (var ds = new DeflateStream(base.FileData, CompressionMode.Decompress, true))
-                    ds.CopyTo(ms);
-                return ms;
+                return new MemoryStream(ZLib.Decompress(base.FileData));
             }
         }
 
-        public override long? FileSize => Metadata.uncompressedSize & 0x00ffffff;
+        public override long? FileSize => System == Systems.CTR ? Metadata.UncompressedSize & 0x00FFFFFF : Metadata.UncompressedSize >> 3;
 
-        public void Write(Stream output, long offset, int compIdent, ByteOrder byteOrder)
+        public void Write(Stream output, long offset, int compressionIdentifier, ByteOrder byteOrder)
         {
             using (var bw = new BinaryWriterX(output, true, byteOrder))
             {
-                Metadata.offset = (int)offset;
+                Metadata.Offset = (int)offset;
 
                 if (State == ArchiveFileState.Archived)
-                {
-                    if (CompressionLevel != CompressionLevel.NoCompression)
-                        bw.Write((short)(CompressionLevel == CompressionLevel.Optimal ? compIdent : 0x0178));
                     base.FileData.CopyTo(bw.BaseStream);
-                }
                 else
                 {
                     if (CompressionLevel != CompressionLevel.NoCompression)
                     {
-                        var position = bw.BaseStream.Position;
-                        bw.Write((short)(CompressionLevel == CompressionLevel.Optimal ? compIdent : 0x0178));
+                        var ms = new MemoryStream();
+                        using (var cibw = new BinaryWriterX(ms, byteOrder))
+                            cibw.Write((short)compressionIdentifier);
 
-                        using (var ds = new DeflateStream(bw.BaseStream, CompressionLevel, true))
-                        {
-                            byte[] bytes;
-                            using (var br = new BinaryReaderX(FileData, true, byteOrder))
-                                bytes = br.ReadBytes((int)br.BaseStream.Length);
-                            ds.Write(bytes, 0, (int)FileData.Length);
-                        }
+                        var bytes = ZLib.Compress(FileData, ms.ToArray(), CompressionLevel, true);
+                        bw.Write(bytes);
 
-                        Metadata.compressedSize = (int)(bw.BaseStream.Position - position);
-                        Metadata.uncompressedSize = (int)((Metadata.uncompressedSize & 0xff000000) | FileData.Length);
+                        Metadata.CompressedSize = bytes.Length;
                     }
                     else
                     {
                         FileData.CopyTo(bw.BaseStream);
-                        Metadata.compressedSize = (int)FileData.Length;
+                        Metadata.CompressedSize = (int)FileData.Length;
                     }
+
+                    Metadata.UncompressedSize = System == Systems.CTR ? (int)(FileData.Length & 0xFF000000) : (int)(FileData.Length << 3);
                 }
             }
         }
     }
 
+    public enum Systems
+    {
+        CTR,
+        PS3
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
-        public Magic magic;
-        public short version;
-        public short entryCount;
+        public Magic Magic;
+        public short Version;
+        public short EntryCount;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class FileMetadata
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string filename;
-        public uint extensionHash;
-        public int compressedSize;
-        public int uncompressedSize;
-        public int offset;
+        public string FileName;
+        public uint ExtensionHash;
+        public int CompressedSize;
+        public int UncompressedSize;
+        public int Offset;
     }
 }
 
