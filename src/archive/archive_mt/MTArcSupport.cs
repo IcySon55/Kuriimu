@@ -14,7 +14,7 @@ namespace archive_mt
     {
         public FileMetadata Metadata { get; set; }
         public CompressionLevel CompressionLevel { get; set; }
-        public Systems System { get; set; }
+        public Platform System { get; set; }
 
         public override Stream FileData
         {
@@ -25,7 +25,7 @@ namespace archive_mt
             }
         }
 
-        public override long? FileSize => System == Systems.CTR ? Metadata.UncompressedSize & 0x00FFFFFF : Metadata.UncompressedSize >> 3;
+        public override long? FileSize => System == Platform.CTR ? Metadata.UncompressedSize & 0x00FFFFFF : Metadata.UncompressedSize >> 3;
 
         public void Write(Stream output, long offset, ByteOrder byteOrder)
         {
@@ -49,13 +49,13 @@ namespace archive_mt
                         Metadata.CompressedSize = (int)FileData.Length;
                     }
 
-                    Metadata.UncompressedSize = System == Systems.CTR ? (int)(FileData.Length & 0xFF000000) : (int)(FileData.Length << 3);
+                    Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0xFF000000) : (int)(FileData.Length << 3);
                 }
             }
         }
     }
 
-    public enum Systems
+    public enum Platform
     {
         CTR,
         PS3

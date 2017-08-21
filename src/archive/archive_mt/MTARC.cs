@@ -16,7 +16,7 @@ namespace archive_mt
         private Header Header;
         private int HeaderLength = 12;
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
-        private Systems System;
+        private Platform System;
 
         public MTARC(Stream input)
         {
@@ -28,7 +28,7 @@ namespace archive_mt
                 {
                     br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
                     HeaderLength = 8;
-                    System = Systems.PS3;
+                    System = Platform.PS3;
                 }
 
                 // Header
@@ -40,7 +40,7 @@ namespace archive_mt
                 Files.AddRange(entries.Select(metadata =>
                 {
                     br.BaseStream.Position = metadata.Offset;
-                    var level = (System == Systems.CTR ? metadata.CompressedSize != (metadata.UncompressedSize & 0x00FFFFFF) : metadata.CompressedSize != (metadata.UncompressedSize >> 3)) ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
+                    var level = (System == Platform.CTR ? metadata.CompressedSize != (metadata.UncompressedSize & 0x00FFFFFF) : metadata.CompressedSize != (metadata.UncompressedSize >> 3)) ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
 
                     return new MTArcFileInfo
                     {
