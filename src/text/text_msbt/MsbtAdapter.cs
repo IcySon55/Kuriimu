@@ -85,9 +85,9 @@ namespace text_msbt
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-                _msbt.Save(FileInfo.Create());
             try
             {
+                _msbt.Save(FileInfo.Create());
             }
             catch (Exception)
             {
