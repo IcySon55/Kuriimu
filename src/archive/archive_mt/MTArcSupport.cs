@@ -35,7 +35,11 @@ namespace archive_mt
                 Metadata.offset = (int)offset;
 
                 if (State == ArchiveFileState.Archived)
+                {
+                    if (CompressionLevel != CompressionLevel.NoCompression)
+                        bw.Write((short)(CompressionLevel == CompressionLevel.Optimal ? compIdent : 0x0178));
                     base.FileData.CopyTo(bw.BaseStream);
+                }
                 else
                 {
                     if (CompressionLevel != CompressionLevel.NoCompression)
