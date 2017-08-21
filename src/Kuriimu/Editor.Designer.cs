@@ -64,7 +64,6 @@
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.treEntries = new System.Windows.Forms.TreeView();
             this.mnuLabels = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsEntries = new System.Windows.Forms.ToolStrip();
             this.tslEntries = new System.Windows.Forms.ToolStripLabel();
@@ -74,6 +73,7 @@
             this.tsbEntryProperties = new System.Windows.Forms.ToolStripButton();
             this.tsbSortEntries = new System.Windows.Forms.ToolStripButton();
             this.tsbShowTextPreview = new System.Windows.Forms.ToolStripButton();
+            this.tsbManageLabels = new System.Windows.Forms.ToolStripDropDownButton();
             this.splContent = new System.Windows.Forms.SplitContainer();
             this.splText = new System.Windows.Forms.SplitContainer();
             this.txtEdit = new System.Windows.Forms.TextBox();
@@ -133,6 +133,7 @@
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
             this.imlScreenshots = new System.Windows.Forms.ImageList(this.components);
+            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -501,19 +502,10 @@
             // mnuLabels
             // 
             this.mnuLabels.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newLabelToolStripMenuItem,
             this.removeLabelToolStripMenuItem});
             this.mnuLabels.Name = "mnuLabels";
-            this.mnuLabels.Size = new System.Drawing.Size(149, 48);
+            this.mnuLabels.Size = new System.Drawing.Size(149, 26);
             this.mnuLabels.Opening += new System.ComponentModel.CancelEventHandler(this.mnuLabels_Opening);
-            // 
-            // newLabelToolStripMenuItem
-            // 
-            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
-            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
-            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
-            this.newLabelToolStripMenuItem.Text = "New Label...";
-            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
             // 
             // removeLabelToolStripMenuItem
             // 
@@ -536,7 +528,8 @@
             this.tsbEntryDelete,
             this.tsbEntryProperties,
             this.tsbSortEntries,
-            this.tsbShowTextPreview});
+            this.tsbShowTextPreview,
+            this.tsbManageLabels});
             this.tlsEntries.Location = new System.Drawing.Point(0, 0);
             this.tlsEntries.Name = "tlsEntries";
             this.tlsEntries.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
@@ -617,6 +610,19 @@
             this.tsbShowTextPreview.Text = "Show Text Preview";
             this.tsbShowTextPreview.Click += new System.EventHandler(this.tsbShowTextPreview_Click);
             // 
+            // tsbManageLabels
+            // 
+            this.tsbManageLabels.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tsbManageLabels.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbManageLabels.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newLabelToolStripMenuItem});
+            this.tsbManageLabels.Enabled = false;
+            this.tsbManageLabels.Image = global::Kuriimu.Properties.Resources.menu_labels;
+            this.tsbManageLabels.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbManageLabels.Name = "tsbManageLabels";
+            this.tsbManageLabels.Size = new System.Drawing.Size(29, 22);
+            this.tsbManageLabels.Text = "Show Text Preview";
+            // 
             // splContent
             // 
             this.splContent.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -670,6 +676,7 @@
             this.txtEdit.Size = new System.Drawing.Size(442, 255);
             this.txtEdit.TabIndex = 0;
             this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyDown);
+            this.txtEdit.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtEdit_KeyPress);
             this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
             // 
             // tlsEdit
@@ -1281,6 +1288,14 @@
             this.imlScreenshots.ImageSize = new System.Drawing.Size(96, 64);
             this.imlScreenshots.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // newLabelToolStripMenuItem
+            // 
+            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
+            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
+            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newLabelToolStripMenuItem.Text = "New Label...";
+            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
+            // 
             // Editor
             // 
             this.AllowDrop = true;
@@ -1450,7 +1465,8 @@
         private System.Windows.Forms.ToolStripButton tsbLotCreate;
         private System.Windows.Forms.ToolStripButton tsbLotDelete;
         private System.Windows.Forms.ContextMenuStrip mnuLabels;
-        private System.Windows.Forms.ToolStripMenuItem newLabelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeLabelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton tsbManageLabels;
+        private System.Windows.Forms.ToolStripMenuItem newLabelToolStripMenuItem;
     }
 }
