@@ -511,7 +511,7 @@
             // 
             this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
             this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
-            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.newLabelToolStripMenuItem.Text = "New Label...";
             this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
             // 
@@ -520,7 +520,7 @@
             this.removeLabelToolStripMenuItem.Enabled = false;
             this.removeLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label_remove;
             this.removeLabelToolStripMenuItem.Name = "removeLabelToolStripMenuItem";
-            this.removeLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.removeLabelToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.removeLabelToolStripMenuItem.Text = "Remove Label";
             this.removeLabelToolStripMenuItem.Click += new System.EventHandler(this.removeLabelToolStripMenuItem_Click);
             // 
@@ -907,7 +907,7 @@
             this.tabNotes.Controls.Add(this.txtLotNotes);
             this.tabNotes.Location = new System.Drawing.Point(4, 22);
             this.tabNotes.Name = "tabNotes";
-            this.tabNotes.Padding = new System.Windows.Forms.Padding(3, 5, 5, 4);
+            this.tabNotes.Padding = new System.Windows.Forms.Padding(1, 3, 3, 2);
             this.tabNotes.Size = new System.Drawing.Size(436, 264);
             this.tabNotes.TabIndex = 0;
             this.tabNotes.Text = "Notes";
@@ -917,11 +917,11 @@
             // 
             this.txtLotNotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtLotNotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.txtLotNotes.Location = new System.Drawing.Point(3, 5);
+            this.txtLotNotes.Location = new System.Drawing.Point(1, 3);
             this.txtLotNotes.Multiline = true;
             this.txtLotNotes.Name = "txtLotNotes";
             this.txtLotNotes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLotNotes.Size = new System.Drawing.Size(428, 255);
+            this.txtLotNotes.Size = new System.Drawing.Size(432, 259);
             this.txtLotNotes.TabIndex = 0;
             this.txtLotNotes.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtLotNotes_KeyUp);
             // 
@@ -931,7 +931,7 @@
             this.tabScreenshots.Controls.Add(this.tlsLotScreenshots);
             this.tabScreenshots.Location = new System.Drawing.Point(4, 22);
             this.tabScreenshots.Name = "tabScreenshots";
-            this.tabScreenshots.Padding = new System.Windows.Forms.Padding(3, 3, 5, 4);
+            this.tabScreenshots.Padding = new System.Windows.Forms.Padding(1, 3, 3, 2);
             this.tabScreenshots.Size = new System.Drawing.Size(436, 264);
             this.tabScreenshots.TabIndex = 1;
             this.tabScreenshots.Text = "Screenshots";
@@ -942,12 +942,12 @@
             this.treLotScreenshots.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treLotScreenshots.FullRowSelect = true;
             this.treLotScreenshots.HideSelection = false;
-            this.treLotScreenshots.Location = new System.Drawing.Point(3, 30);
+            this.treLotScreenshots.Location = new System.Drawing.Point(1, 30);
             this.treLotScreenshots.Name = "treLotScreenshots";
             this.treLotScreenshots.ShowLines = false;
             this.treLotScreenshots.ShowPlusMinus = false;
             this.treLotScreenshots.ShowRootLines = false;
-            this.treLotScreenshots.Size = new System.Drawing.Size(428, 230);
+            this.treLotScreenshots.Size = new System.Drawing.Size(432, 232);
             this.treLotScreenshots.TabIndex = 2;
             // 
             // tlsLotScreenshots
@@ -960,10 +960,10 @@
             this.tsbScreenshotRename,
             this.tsbScreenshotPaste,
             this.tsbScreenshotDelete});
-            this.tlsLotScreenshots.Location = new System.Drawing.Point(3, 3);
+            this.tlsLotScreenshots.Location = new System.Drawing.Point(1, 3);
             this.tlsLotScreenshots.Name = "tlsLotScreenshots";
             this.tlsLotScreenshots.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.tlsLotScreenshots.Size = new System.Drawing.Size(428, 27);
+            this.tlsLotScreenshots.Size = new System.Drawing.Size(432, 27);
             this.tlsLotScreenshots.TabIndex = 4;
             // 
             // tsbScreenshotAdd
