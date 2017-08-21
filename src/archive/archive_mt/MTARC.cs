@@ -16,7 +16,7 @@ namespace archive_mt
         private Header Header;
         private int HeaderLength = 12;
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
-        private ushort CompressionIdentifier = 0x9C78;
+        private Systems System;
 
         public MTARC(Stream input)
         {
@@ -28,7 +28,7 @@ namespace archive_mt
                 {
                     br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
                     HeaderLength = 8;
-                    CompressionIdentifier = 0x6881;
+                    System = Systems.PS3;
                 }
 
                 // Header
@@ -40,13 +40,13 @@ namespace archive_mt
                 Files.AddRange(entries.Select(metadata =>
                 {
                     br.BaseStream.Position = metadata.Offset;
-                    var level = br.ReadUInt16() == CompressionIdentifier ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
+                    var level = (System == Systems.CTR ? metadata.CompressedSize != (metadata.UncompressedSize & 0x00FFFFFF) : metadata.CompressedSize != (metadata.UncompressedSize >> 3)) ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
 
                     return new MTArcFileInfo
                     {
                         Metadata = metadata,
                         CompressionLevel = level,
-                        System = br.ByteOrder == ByteOrder.LittleEndian ? Systems.CTR : Systems.PS3,
+                        System = System,
                         FileData = new SubStream(br.BaseStream, metadata.Offset, metadata.CompressedSize),
                         FileName = metadata.FileName + (ArcShared.ExtensionMap.ContainsKey(metadata.ExtensionHash) ? ArcShared.ExtensionMap[metadata.ExtensionHash] : "." + metadata.ExtensionHash.ToString("X8")),
                         State = ArchiveFileState.Archived
@@ -67,7 +67,7 @@ namespace archive_mt
                 // Files
                 bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * 80, 0x8000) : HeaderLength + Header.EntryCount * 80;
                 foreach (var afi in Files)
-                    afi.Write(bw.BaseStream, bw.BaseStream.Position, CompressionIdentifier, ByteOrder);
+                    afi.Write(bw.BaseStream, bw.BaseStream.Position, ByteOrder);
 
                 // Metadata
                 bw.BaseStream.Position = HeaderLength;

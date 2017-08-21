@@ -27,7 +27,7 @@ namespace archive_mt
 
         public override long? FileSize => System == Systems.CTR ? Metadata.UncompressedSize & 0x00FFFFFF : Metadata.UncompressedSize >> 3;
 
-        public void Write(Stream output, long offset, int compressionIdentifier, ByteOrder byteOrder)
+        public void Write(Stream output, long offset, ByteOrder byteOrder)
         {
             using (var bw = new BinaryWriterX(output, true, byteOrder))
             {
@@ -39,13 +39,8 @@ namespace archive_mt
                 {
                     if (CompressionLevel != CompressionLevel.NoCompression)
                     {
-                        var ms = new MemoryStream();
-                        using (var cibw = new BinaryWriterX(ms, byteOrder))
-                            cibw.Write((short)compressionIdentifier);
-
-                        var bytes = ZLib.Compress(FileData, ms.ToArray(), CompressionLevel, true);
+                        var bytes = ZLib.Compress(FileData, CompressionLevel, true);
                         bw.Write(bytes);
-
                         Metadata.CompressedSize = bytes.Length;
                     }
                     else
