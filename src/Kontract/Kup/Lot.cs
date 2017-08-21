@@ -29,10 +29,14 @@ namespace Kuriimu.Kontract
         {
             foreach (var entry in entries)
             {
-                if (!entry.HasText) continue;
-
-                var lotEntry = new LotEntry {Entry = entry.Name};
+                var lotEntry = new LotEntry { Entry = entry.Name };
                 LotEntries.Add(lotEntry);
+
+                foreach (var subEntry in entry.SubEntries)
+                {
+                    var lotSubEntry = new LotEntry { Entry = subEntry.Name };
+                    lotEntry.LotSubEntries.Add(lotSubEntry);
+                }
             }
         }
 
@@ -88,9 +92,14 @@ namespace Kuriimu.Kontract
         [XmlElement("screenshot")]
         public List<Screenshot> Screenshots { get; set; }
 
+        [XmlArray("lotSubEntries")]
+        [XmlArrayItem("lotSubEntry")]
+        public List<LotEntry> LotSubEntries { get; set; }
+
         public LotEntry()
         {
             Screenshots = new List<Screenshot>();
+            LotSubEntries = new List<LotEntry>();
         }
     }
 

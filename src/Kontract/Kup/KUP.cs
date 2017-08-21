@@ -113,6 +113,7 @@ namespace Kuriimu.Kontract
                 xmlSettings.Encoding = Encoding.UTF8;
                 xmlSettings.Indent = true;
                 xmlSettings.NewLineOnAttributes = false;
+                xmlSettings.NewLineHandling = NewLineHandling.Entitize;
                 xmlSettings.IndentChars = "	";
                 xmlSettings.CheckCharacters = false;
 

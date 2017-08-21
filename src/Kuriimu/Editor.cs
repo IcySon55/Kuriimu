@@ -669,7 +669,7 @@ namespace Kuriimu
                     if (_lot != null)
                         imageIndex = _settings.Labels.FindIndex(l => l.Name == _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).Label) + 1;
 
-                    var node = new TreeNode(entry + (Settings.Default.ShowTextPreview && entry.HasText ? " - " + entry.EditedText : string.Empty), imageIndex, imageIndex) { Tag = entry };
+                    var node = new TreeNode(entry + (Settings.Default.ShowTextPreview && entry.HasText ? " - " + entry.EditedText : string.Empty), imageIndex, imageIndex) { Tag = entry, Name = entry.ToString() };
                     if (!entry.HasText)
                         node.ForeColor = Color.Gray;
                     treEntries.Nodes.Add(node);
@@ -677,7 +677,10 @@ namespace Kuriimu
                     if (_textAdapter.EntriesHaveSubEntries)
                         foreach (var sub in entry.SubEntries)
                         {
-                            var subNode = new TreeNode(sub + (Settings.Default.ShowTextPreview && sub.HasText ? " - " + sub.EditedText : string.Empty), imageIndex, imageIndex) { Tag = sub };
+                            if (_lot != null)
+                                imageIndex = _settings.Labels.FindIndex(l => l.Name == _lot.LotEntries.FirstOrDefault(o => o.Entry == sub.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == sub.Name).Label) + 1;
+
+                            var subNode = new TreeNode(sub + (Settings.Default.ShowTextPreview && sub.HasText ? " - " + sub.EditedText : string.Empty), imageIndex, imageIndex) { Tag = sub, Name = sub.ToString() };
                             node.Nodes.Add(subNode);
                         }
 
@@ -742,7 +745,7 @@ namespace Kuriimu
             var entry = (TextEntry)treEntries.SelectedNode?.Tag;
             if (!entry.HasText) return;
 
-            txtLotNotes.Text = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).Notes;
+            txtLotNotes.Text = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).Notes : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name).Notes;
             UpdateScreenshotList();
         }
 
@@ -761,23 +764,29 @@ namespace Kuriimu
             foreach (var label in _settings.Labels)
             {
                 imlEntries.Images.Add((_settings.Labels.IndexOf(label) + 1).ToString(), GenerateColorSquare(ColorTranslator.FromHtml(label.Color), 14, 14));
-                var tsiLabel = new ToolStripMenuItem(label.Name, GenerateColorSquare(ColorTranslator.FromHtml(label.Color)), tsiSetLabel_Click) {Tag = label};
+                var tsiLabel = new ToolStripMenuItem(label.Name, GenerateColorSquare(ColorTranslator.FromHtml(label.Color)));
                 mnuLabels.Items.Add(tsiLabel);
 
-                // TODO: Edit and Delete for Labels
+                var tsiLabelSet = new ToolStripMenuItem("Set " + label.Name, Resources.menu_set, tsiSetLabel_Click) { Tag = label };
+                tsiLabel.DropDownItems.Add(tsiLabelSet);
+
+                var tsiLabelEdit = new ToolStripMenuItem("Edit " + label.Name, Resources.menu_edit, tsiEditLabel_Click) { Tag = label };
+                tsiLabel.DropDownItems.Add(tsiLabelEdit);
+
+                var tsiLabelDelete = new ToolStripMenuItem("Delete " + label.Name, Resources.menu_delete, tsiDeleteLabel_Click) { Tag = label };
+                tsiLabel.DropDownItems.Add(tsiLabelDelete);
             }
         }
 
         private void mnuLabels_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (_lot == null)
+            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
+            if (_lot == null || !entry.HasText)
             {
                 e.Cancel = true;
                 return;
             }
-            var entry = (TextEntry)treEntries.SelectedNode?.Tag;
-            if (!entry.HasText) return;
-            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+            var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
 
             removeLabelToolStripMenuItem.Enabled = lotEntry.Label != null && lotEntry.Label != string.Empty;
         }
@@ -796,8 +805,7 @@ namespace Kuriimu
                 UpdateLabels();
 
                 var entry = (TextEntry)treEntries.SelectedNode?.Tag;
-                if (!entry.HasText) return;
-                var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+                var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
                 lotEntry.Label = label.Name; var newIndex = _settings.Labels.IndexOf(label) + 1;
 
                 if (newIndex == treEntries.SelectedNode.ImageIndex) return;
@@ -811,8 +819,7 @@ namespace Kuriimu
         private void removeLabelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var entry = (TextEntry)treEntries.SelectedNode?.Tag;
-            if (!entry.HasText) return;
-            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+            var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
 
             var previousLabel = lotEntry.Label;
             lotEntry.Label = string.Empty;
@@ -828,9 +835,8 @@ namespace Kuriimu
         private void tsiSetLabel_Click(object sender, EventArgs e)
         {
             var entry = (TextEntry)treEntries.SelectedNode?.Tag;
-            if (!entry.HasText) return;
             var label = (Kontract.Label)((ToolStripItem)sender).Tag;
-            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+            var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
 
             lotEntry.Label = label.Name;
             var newIndex = _settings.Labels.IndexOf(label) + 1;
@@ -839,6 +845,98 @@ namespace Kuriimu
             treEntries.SelectedNode.ImageIndex = newIndex;
             treEntries.SelectedNode.SelectedImageIndex = newIndex;
             _hasChanges = true;
+            UpdateForm();
+        }
+
+        private void tsiEditLabel_Click(object sender, EventArgs e)
+        {
+            if (_settings == null) return;
+            var label = (Kontract.Label)((ToolStripItem)sender).Tag;
+
+            var lbl = new LabelForm(label.Name, label.Color, _settings.Labels.Select(o => o.Name).ToList());
+
+            if (lbl.ShowDialog() == DialogResult.OK && (lbl.NameChanged || lbl.ColorChanged))
+            {
+                var previousLabel = label.Name;
+                label.Name = lbl.NewName;
+                label.Color = lbl.NewColor;
+                _settings.Save(Path.Combine(Application.StartupPath, "Kuriimu.settings"));
+                UpdateLabels();
+
+                if (lbl.NameChanged)
+                    foreach (var entry in _entries)
+                    {
+                        var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+                        if (lotEntry.Label == previousLabel)
+                        {
+                            lotEntry.Label = label.Name;
+                            _hasChanges = true;
+                        }
+
+                        foreach (var sub in entry.SubEntries)
+                        {
+                            var lotSubEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == sub.Name);
+                            if (lotSubEntry.Label == previousLabel)
+                            {
+                                lotSubEntry.Label = label.Name;
+                                _hasChanges = true;
+                            }
+                        }
+                    }
+
+                UpdateForm();
+            }
+        }
+
+        private void tsiDeleteLabel_Click(object sender, EventArgs e)
+        {
+            if (_settings == null) return;
+            var label = (Kontract.Label)((ToolStripItem)sender).Tag;
+
+            if (MessageBox.Show($"Are you sure you want to delete the {label.Name} label?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+
+            foreach (var entry in _entries)
+            {
+                var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+                if (lotEntry.Label == label.Name)
+                {
+                    lotEntry.Label = string.Empty;
+
+                    var nodes = treEntries.Nodes.Find(entry.Name, false);
+                    foreach (var sNode in nodes)
+                    {
+                        sNode.ImageIndex = 0;
+                        sNode.SelectedImageIndex = 0;
+                    }
+                    _hasChanges = true;
+                }
+
+                foreach (var sub in entry.SubEntries)
+                {
+                    var lotSubEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == sub.Name);
+                    if (lotSubEntry.Label == label.Name)
+                    {
+                        lotSubEntry.Label = string.Empty;
+
+                        var pNodes = treEntries.Nodes.Find(entry.Name, false);
+                        foreach (var pNode in pNodes)
+                        {
+                            var cNodes = pNode.Nodes.Find(sub.Name, false);
+                            foreach (var cNode in cNodes)
+                            {
+                                cNode.ImageIndex = 0;
+                                cNode.SelectedImageIndex = 0;
+                            }
+                        }
+                        _hasChanges = true;
+                    }
+                }
+            }
+
+            _settings.Labels.Remove(label);
+            _settings.Save(Path.Combine(Application.StartupPath, "Kuriimu.settings"));
+            UpdateLabels();
+
             UpdateForm();
         }
 
@@ -857,7 +955,7 @@ namespace Kuriimu
             var entry = (TextEntry)treEntries.SelectedNode?.Tag;
             if (!entry.HasText) return;
 
-            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+            var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
 
             treLotScreenshots.BeginUpdate();
             treLotScreenshots.Nodes.Clear();
@@ -1299,7 +1397,7 @@ namespace Kuriimu
         {
             TextEntry entry = (TextEntry)treEntries.SelectedNode.Tag;
 
-            var lotEntry = _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name);
+            var lotEntry = !entry.IsSubEntry ? _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.Name) : _lot.LotEntries.FirstOrDefault(o => o.Entry == entry.ParentEntry.Name).LotSubEntries.FirstOrDefault(o => o.Entry == entry.Name);
 
             if (txtLotNotes.Text != lotEntry.Notes)
             {

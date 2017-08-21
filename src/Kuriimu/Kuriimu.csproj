@@ -265,6 +265,12 @@
   <ItemGroup>
     <None Include="images\menu-label-remove.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-set.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
