@@ -62,16 +62,25 @@ namespace Kuriimu.Kontract
 
     public sealed class Label
     {
+        [XmlAttribute("id")]
+        public string ID { get; set; }
+
         [XmlAttribute("name")]
         public string Name { get; set; }
 
         [XmlAttribute("color")]
         public string Color { get; set; }
 
-        public Label() { }
+        public Label()
+        {
+            ID = Guid.NewGuid().ToString();
+            Name = string.Empty;
+            Color = string.Empty;
+        }
 
         public Label(string name, string color)
         {
+            ID = Guid.NewGuid().ToString();
             Name = name;
             Color = color;
         }

@@ -83,8 +83,8 @@ namespace Kuriimu.Kontract
         [XmlAttribute("entry")]
         public string Entry { get; set; }
 
-        [XmlAttribute("label")]
-        public string Label { get; set; }
+        [XmlAttribute("labelID")]
+        public string LabelID { get; set; }
 
         [XmlElement("notes")]
         public string Notes { get; set; }
@@ -98,6 +98,9 @@ namespace Kuriimu.Kontract
 
         public LotEntry()
         {
+            Entry = string.Empty;
+            LabelID = string.Empty;
+            Notes = string.Empty;
             Screenshots = new List<Screenshot>();
             LotSubEntries = new List<LotEntry>();
         }
@@ -109,14 +112,14 @@ namespace Kuriimu.Kontract
         public string Name { get; set; }
 
         [XmlText]
-        public string ShotBase64 { get; set; }
+        public string BitmapBase64 { get; set; }
 
         [XmlIgnore]
-        public Bitmap Shot
+        public Bitmap Bitmap
         {
             get
             {
-                var bytes = Convert.FromBase64String(ShotBase64);
+                var bytes = Convert.FromBase64String(BitmapBase64);
                 using (var ms = new MemoryStream())
                 {
                     ms.Write(bytes, 0, bytes.Length);
@@ -129,9 +132,15 @@ namespace Kuriimu.Kontract
                 {
                     value.Save(ms, ImageFormat.Png);
                     var bytes = ms.ToArray();
-                    ShotBase64 = Convert.ToBase64String(bytes);
+                    BitmapBase64 = Convert.ToBase64String(bytes);
                 }
             }
+        }
+
+        public Screenshot()
+        {
+            Name = string.Empty;
+            BitmapBase64 = string.Empty;
         }
     }
 }
