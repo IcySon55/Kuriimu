@@ -19,11 +19,13 @@ namespace Kuriimu.UI
             tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
 
-            // CriWare
+            // Level5
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.Level5.ToString(), null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.Level5;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.Level5;
 
             // GZip
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.GZip.ToString(), null));
@@ -225,6 +227,9 @@ namespace Kuriimu.UI
                 using (var outFs = new BinaryWriterX(saveFile))
                     switch (tsi.Tag)
                     {
+                        case Compression.Level5:
+                            outFs.Write(Level5.Compress(openFile, Level5.Method.NoCompression));
+                            break;
                         /*case Compression.L5LZSS:
                             outFs.Write(Level5.Compress(openFile, 1));
                             break;
