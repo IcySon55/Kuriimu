@@ -73,14 +73,26 @@ namespace text_kbd
         public string Name;
         public string Text;
         public int TextID;
+        public TextClass textEntry;
 
         public Label()
         {
             Name = string.Empty;
             Text = string.Empty;
             TextID = 0;
+            textEntry = null;
         }
     }
     #endregion
 
+    public class TextClass
+    {
+        public uint entryOffset;
+        public ushort ident;
+
+        public uint textOffset;
+
+        public byte[] inlineData;
+        public byte[] postData;
+    }
 }

@@ -67,7 +67,16 @@ namespace text_kbd
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return false;
+                try
+                {
+                    var obj = new KBD(br.BaseStream);
+                }
+                catch
+                {
+                    return false;
+                }
+
+                return true;
             }
         }
 
@@ -80,17 +89,17 @@ namespace text_kbd
 
             if (_fileInfo.Exists)
             {
-                _kbd = new KBD(_fileInfo.FullName);
+                _kbd = new KBD(File.OpenRead(_fileInfo.FullName));
 
                 string backupFilePath = _fileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
                 {
-                    _kbdBackup = new KBD(backupFilePath);
+                    _kbdBackup = new KBD(File.OpenRead(backupFilePath));
                 }
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     File.Copy(_fileInfo.FullName, backupFilePath);
-                    _kbdBackup = new KBD(backupFilePath);
+                    _kbdBackup = new KBD(File.OpenRead(backupFilePath));
                 }
                 else
                 {
