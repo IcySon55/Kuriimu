@@ -32,7 +32,7 @@ namespace archive_cdar
                 if (State == ArchiveFileState.Archived)
                 {
                     base.FileData.CopyTo(bw.BaseStream);
-                    bw.WriteAlignment(new Random().Next());
+                    bw.WriteAlignment(0x10, (byte)new Random().Next());
                 }
                 else
                 {
@@ -42,7 +42,7 @@ namespace archive_cdar
                         entry.compSize = (uint)base.FileData.Length;
                         base.FileData.CopyTo(bw.BaseStream);
 
-                        bw.WriteAlignment(new Random().Next());
+                        bw.WriteAlignment(0x10, (byte)new Random().Next());
                     }
                     else
                     {
@@ -52,7 +52,7 @@ namespace archive_cdar
                         entry.compSize = (uint)comp.Length;
                         bw.Write(comp);
 
-                        bw.WriteAlignment(new Random().Next());
+                        bw.WriteAlignment(0x10, (byte)new Random().Next());
                     }
                 }
             }
