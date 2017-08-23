@@ -42,7 +42,7 @@ namespace image_nintendo.CTPK
 
             if (FileInfo.Exists)
             {
-                _ctpk = new CTPK(File.OpenRead(FileInfo.FullName));
+                _ctpk = new CTPK(FileInfo.OpenRead());
                 _bitmaps = _ctpk.bmps.Select(o => new CtpkBitmapInfo { Bitmap = o.bmp, Format = o.format }).ToList<BitmapInfo>();
             }
         }
@@ -53,7 +53,7 @@ namespace image_nintendo.CTPK
                 FileInfo = new FileInfo(filename);
 
             _ctpk.bmps = _bitmaps.Select(o => new BitmapClass { bmp = o.Bitmap }).ToList();
-            _ctpk.Save(File.OpenRead(FileInfo.FullName), false);
+            _ctpk.Save(FileInfo.Create(), false);
         }
 
         // Bitmaps
