@@ -22,38 +22,45 @@ namespace text_zds
                 header = br.ReadStruct<Header>();
 
                 //Entries
-                /*var entries = new List<TextClass>();
-                for (int i = 0; i < header.entryCount; i++)
-                {
-                    entries.Add(new TextClass
-                    {
-                        labelOffset = br.ReadUInt32(),
-                        textOffset = br.ReadUInt32()
-                    });
-                    br.BaseStream.Position += 8;
-                }
+                var entries = br.ReadMultiple<TextClass>((int)header.entryCount);
 
                 //Text
-                for (int i = 0; i < entries.Count; i++)
+                if (header.unk3 == 0x00040002)
                 {
-                    int labelSize = (int)((entries[i].textOffset - 1) - entries[i].labelOffset);
-                    var textSize = (i + 1 == entries.Count) ?
-                        (int)((br.BaseStream.Length - 1) - entries[i].textOffset) :
-                        (int)((entries[i + 1].labelOffset - 1) - entries[i].textOffset);
-
-                    br.BaseStream.Position = entries[i].labelOffset;
-                    var label = br.ReadString(labelSize, Encoding.UTF8);
-                    br.BaseStream.Position = entries[i].textOffset;
-                    var text = br.ReadString(textSize, Encoding.UTF8);
-
-                    Labels.Add(new Label
+                    for (int i = 0; i < entries.Count; i++)
                     {
-                        Text = text,
-                        Name = label,
-                        TextID = i,
-                        textEntry = entries[i]
-                    });
-                }*/
+                        var size = (i + 1 == entries.Count) ? (uint)(br.BaseStream.Length - 1) - entries[i].offset1 : (entries[i + 1].offset1 - 1) - entries[i].offset1;
+                        br.BaseStream.Position = entries[i].offset1;
+
+                        Labels.Add(new Label
+                        {
+                            Text = br.ReadString((int)size, Encoding.UTF8),
+                            TextID = i,
+                            textEntry = entries[i],
+                            Name = $"text{i:00000000}"
+                        });
+                    }
+                }
+                else if (header.unk3 == 0x00040001)
+                {
+                    for (int i = 0; i < entries.Count; i++)
+                    {
+                        var labelSize = (entries[i].offset2 - 1) - entries[i].offset1;
+                        br.BaseStream.Position = entries[i].offset1;
+                        var label = br.ReadString((int)labelSize, Encoding.UTF8);
+
+                        var textSize = (i + 1 == entries.Count) ? (uint)(br.BaseStream.Length - 1) - entries[i].offset2 : (entries[i + 1].offset1 - 1) - entries[i].offset2;
+                        br.BaseStream.Position = entries[i].offset2;
+
+                        Labels.Add(new Label
+                        {
+                            Text = br.ReadString((int)textSize, Encoding.UTF8),
+                            TextID = i,
+                            textEntry = entries[i],
+                            Name = label
+                        });
+                    }
+                }
             }
         }
 

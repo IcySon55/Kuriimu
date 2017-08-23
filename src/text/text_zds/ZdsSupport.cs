@@ -81,7 +81,6 @@ namespace text_zds
             Name = string.Empty;
             Text = string.Empty;
             TextID = 0;
-            textEntry = null;
         }
     }
     #endregion
@@ -107,7 +106,8 @@ namespace text_zds
         public uint unk5;
     }
 
-    public class TextClass
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct TextClass
     {
         public uint offset1;
         public uint offset2;
