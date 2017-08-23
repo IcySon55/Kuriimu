@@ -10,7 +10,7 @@ using Kuriimu.IO;
 
 namespace text_kbd
 {
-    public sealed class JmsgAdapter : ITextAdapter
+    public sealed class KbdAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
         private KBD _kbd = null;
