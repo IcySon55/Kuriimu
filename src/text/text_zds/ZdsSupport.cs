@@ -74,7 +74,6 @@ namespace text_zds
         public string Name;
         public string Text;
         public int TextID;
-        public TextClass textEntry;
 
         public Label()
         {
