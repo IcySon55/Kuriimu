@@ -68,6 +68,7 @@ namespace Cetera.Archive
             //[".bflyt"] = 0x4,
             //[".bflan"] = 0x4,
             [".bflim"] = 0x80,
+            [".ctpk"] = 0x80,
             [".bffnt"] = 0x2000,
         };
 

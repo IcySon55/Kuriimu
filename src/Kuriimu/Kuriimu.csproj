@@ -214,10 +214,6 @@
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>Kontract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\text\text_tt_bin\text_ttbin.csproj">
-      <Project>{3E3B6B95-B073-44B9-BF3A-54A7FE172A50}</Project>
-      <Name>text_ttbin</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
