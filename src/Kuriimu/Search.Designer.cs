@@ -51,7 +51,7 @@
             // 
             // txtFindText
             // 
-            this.txtFindText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtFindText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFindText.Location = new System.Drawing.Point(74, 10);
             this.txtFindText.Margin = new System.Windows.Forms.Padding(4);
@@ -99,8 +99,8 @@
             // 
             // lstResults
             // 
-            this.lstResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.lstResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstResults.FormattingEnabled = true;
             this.lstResults.IntegralHeight = false;
@@ -128,7 +128,7 @@
             this.tslResultCount.Size = new System.Drawing.Size(469, 17);
             this.tslResultCount.Spring = true;
             // 
-            // frmSearch
+            // Search
             // 
             this.AcceptButton = this.btnFindText;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -146,7 +146,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(500, 400);
-            this.Name = "frmSearch";
+            this.Name = "Search";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Find";
             this.Load += new System.EventHandler(this.frmSearch_Load);

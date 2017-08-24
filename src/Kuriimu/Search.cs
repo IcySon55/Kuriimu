@@ -31,7 +31,10 @@ namespace Kuriimu
 
         private void btnFindText_Click(object sender, EventArgs e)
         {
-            Find();
+            if(txtFindText.Focused)
+                Find();
+            else
+                lstResults_DoubleClick(lstResults, EventArgs.Empty);
 
             if (lstResults.Items.Count == 0)
                 MessageBox.Show("Could not find \"" + txtFindText.Text + "\".", "Find", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -39,14 +42,14 @@ namespace Kuriimu
 
         private void Find()
         {
-            List<TextEntry> matches = new List<TextEntry>();
+            var matches = new List<TextEntry>();
 
             lstResults.BeginUpdate();
 
             lstResults.Items.Clear();
             if (txtFindText.Text.Trim() != string.Empty && Entries != null)
             {
-                foreach (TextEntry entry in Entries)
+                foreach (var entry in Entries)
                 {
                     if (chkMatchCase.Checked)
                     {
@@ -59,17 +62,17 @@ namespace Kuriimu
                             lstResults.Items.Add(new ListItem(entry.ToString(), entry));
                     }
 
-                    foreach (TextEntry subEntry in entry.SubEntries)
+                    foreach (var subEntry in entry.SubEntries)
                     {
                         if (chkMatchCase.Checked)
                         {
                             if (subEntry.EditedText.Contains(txtFindText.Text) || subEntry.OriginalText.Contains(txtFindText.Text) || subEntry.Name.Contains(txtFindText.Text))
-                                lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
+                                lstResults.Items.Add(new ListItem(entry + "/" + subEntry, subEntry));
                         }
                         else
                         {
                             if (subEntry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
-                                lstResults.Items.Add(new ListItem(entry.ToString() + "/" + subEntry.ToString(), subEntry));
+                                lstResults.Items.Add(new ListItem(entry + "/" + subEntry, subEntry));
                         }
                     }
                 }
@@ -99,11 +102,9 @@ namespace Kuriimu
 
         private void lstResults_DoubleClick(object sender, EventArgs e)
         {
-            if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
-            {
-                Selected = (TextEntry)((ListItem)lstResults.SelectedItem).Value;
-                DialogResult = DialogResult.OK;
-            }
+            if (lstResults.Items.Count <= 0 || lstResults.SelectedIndex < 0) return;
+            Selected = (TextEntry)((ListItem)lstResults.SelectedItem).Value;
+            DialogResult = DialogResult.OK;
         }
 
         private void lstResults_SelectedIndexChanged(object sender, EventArgs e)
