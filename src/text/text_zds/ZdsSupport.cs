@@ -97,21 +97,9 @@ namespace text_zds
     public struct Header
     {
         public uint entryCount;
-        public uint unk1;
-        public uint headerSize;
+        public ushort entrySize;
+        public ushort structEntryCount;
+        public uint structOffset;
         public uint entryOffset;
-        public uint unk2;
-        public uint unk3;
-        public uint unk4;
-        public uint unk5;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct TextClass
-    {
-        public uint offset1;
-        public uint offset2;
-        public uint unk1;
-        public uint unk2;
     }
 }

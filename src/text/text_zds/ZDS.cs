@@ -13,6 +13,9 @@ namespace text_zds
         public PartitionHeader partHeader;
         public Header header;
 
+        public List<uint> structure = new List<uint>();
+        public List<List<byte[]>> entries = new List<List<byte[]>>();
+
         public ZDS(Stream input)
         {
             using (var br = new BinaryReaderX(input))
@@ -21,11 +24,24 @@ namespace text_zds
                 partHeader = br.ReadStruct<PartitionHeader>();
                 header = br.ReadStruct<Header>();
 
-                //Entries
-                var entries = br.ReadMultiple<TextClass>((int)header.entryCount);
+                //Struct
+                structure = br.ReadMultiple<uint>(header.structEntryCount);
 
-                //Text
-                if (header.unk3 == 0x00040002)
+                //Entries
+                for (int i = 0; i < header.entryCount; i++)
+                {
+                    entries.Add(new List<byte[]>());
+                    br.BaseStream.Position = header.entryOffset + i * header.entrySize;
+
+                    for (int j = 0; j < header.structEntryCount; j++)
+                    {
+                        var size = (j + 1 == header.structEntryCount) ? header.entrySize - (structure[j] >> 16) : (structure[j + 1] >> 16) - (structure[j] >> 16);
+                        entries[i].Add(br.ReadBytes((int)size));
+                    }
+                }
+
+                //if Text exists
+                /*if (header.unk3 == 0x00040002)
                 {
                     for (int i = 0; i < entries.Count; i++)
                     {
@@ -60,7 +76,7 @@ namespace text_zds
                             Name = label
                         });
                     }
-                }
+                }*/
             }
         }
 
