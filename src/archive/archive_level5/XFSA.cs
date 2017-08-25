@@ -22,9 +22,10 @@ namespace archive_level5.XFSA
         List<FileEntry> entries = new List<FileEntry>();
         List<string> fileNames = new List<string>();
 
-        public XFSA(string filename)
+        public XFSA(Stream input)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
+            _stream = input;
+            using (var br = new BinaryReaderX(input, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();

@@ -47,7 +47,7 @@ namespace archive_level5.XFSA
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _xfsa = new XFSA(FileInfo.FullName);
+                _xfsa = new XFSA(File.OpenRead(FileInfo.FullName));
         }
 
         public void Save(string filename = "")
