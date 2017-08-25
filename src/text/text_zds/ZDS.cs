@@ -41,6 +41,36 @@ namespace text_zds
                 }
 
                 //if Text exists
+                var offsets = new List<uint>();
+                if (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    var id = 0;
+                    var labelCount = 0;
+                    var textCount = 0;
+                    foreach (var entry in entries)
+                    {
+                        var count = 0;
+                        foreach (var byteA in entry)
+                        {
+                            if (byteA.Length == 4)
+                            {
+                                var offset = new BinaryReaderX(new MemoryStream(byteA)).ReadUInt32();
+                                if (!offsets.Contains(offset))
+                                {
+                                    offsets.Add(offset);
+                                    br.BaseStream.Position = offset;
+                                    Labels.Add(new Label
+                                    {
+                                        TextID = id++,
+                                        Name = (count == 1) ? $"Label{labelCount++:000}" : $"Text{textCount++:000}",
+                                        Text = Encoding.UTF8.GetString(GetStringBytes(br.BaseStream))
+                                    });
+                                }
+                            }
+                            count++;
+                        }
+                    }
+                }
                 /*if (header.unk3 == 0x00040002)
                 {
                     for (int i = 0; i < entries.Count; i++)
@@ -77,6 +107,23 @@ namespace text_zds
                         });
                     }
                 }*/
+            }
+        }
+
+        public byte[] GetStringBytes(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                var result = new List<byte>();
+
+                var val = br.ReadByte();
+                while (val != 0)
+                {
+                    result.Add(val);
+                    val = br.ReadByte();
+                }
+
+                return result.ToArray();
             }
         }
 
