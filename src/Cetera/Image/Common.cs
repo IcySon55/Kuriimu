@@ -156,7 +156,7 @@ namespace Cetera.Image
                             {
                                 return new DXT.PixelData { Alpha = br.ReadBytes(8), Block = br.ReadBytes(8) };
                             });
-                            break;
+                            continue;
                         case Format.L4:
                             b = g = r = br.ReadNibble() * 17;
                             break;
