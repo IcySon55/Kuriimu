@@ -65,7 +65,8 @@ namespace archive_mt
                 if (ByteOrder == ByteOrder.LittleEndian) bw.Write(0);
 
                 // Files
-                bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * 80, 0x8000) : HeaderLength + Header.EntryCount * 80;
+                //bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * 80, 0x8000) : HeaderLength + Header.EntryCount * 80;
+                bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? (HeaderLength + Header.EntryCount * 80 + 0xff) & ~0xff : HeaderLength + Header.EntryCount * 80;
                 foreach (var afi in Files)
                     afi.Write(bw.BaseStream, bw.BaseStream.Position, ByteOrder);
 
