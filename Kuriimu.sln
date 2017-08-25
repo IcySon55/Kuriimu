@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "src\Kuriimu\Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -111,6 +111,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_miitopia_3ds", "src\ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Karameru", "src\Karameru\Karameru.csproj", "{F069B9AB-356C-4ED6-AF84-2EAB83B5D55F}"
 	ProjectSection(ProjectDependencies) = postProject
+		{5D72870E-440F-4BC2-BC3F-01525F138FA7} = {5D72870E-440F-4BC2-BC3F-01525F138FA7}
 		{F4A0F911-C1F7-429A-96D3-F943280BFDD3} = {F4A0F911-C1F7-429A-96D3-F943280BFDD3}
 		{D88E4112-20CE-4C8D-9998-300BC7C01573} = {D88E4112-20CE-4C8D-9998-300BC7C01573}
 		{7E0E6B1D-36D4-47C1-B7B6-447E31AF81A6} = {7E0E6B1D-36D4-47C1-B7B6-447E31AF81A6}
@@ -301,6 +302,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_tarc", "src\archive\archive_tarc\archive_tarc.csproj", "{9A67AFB6-CE53-4864-8642-52AE101B945B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_zlib", "src\archive\archive_zlib\archive_zlib.csproj", "{91A4B6BB-81EF-4FD4-91C5-2850D81E7909}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_bam", "src\archive\archive_bam\archive_bam.csproj", "{5D72870E-440F-4BC2-BC3F-01525F138FA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -676,6 +679,10 @@ Global
 		{91A4B6BB-81EF-4FD4-91C5-2850D81E7909}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91A4B6BB-81EF-4FD4-91C5-2850D81E7909}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91A4B6BB-81EF-4FD4-91C5-2850D81E7909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D72870E-440F-4BC2-BC3F-01525F138FA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D72870E-440F-4BC2-BC3F-01525F138FA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D72870E-440F-4BC2-BC3F-01525F138FA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D72870E-440F-4BC2-BC3F-01525F138FA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -765,6 +772,7 @@ Global
 		{D922A319-1E44-4FBA-9509-518F96C7B481} = {B509D23F-0D4E-42F9-87F5-50CF5E982A75}
 		{9A67AFB6-CE53-4864-8642-52AE101B945B} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 		{91A4B6BB-81EF-4FD4-91C5-2850D81E7909} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
+		{5D72870E-440F-4BC2-BC3F-01525F138FA7} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED651E5D-29BA-4588-933B-F512BBB01EE3}
