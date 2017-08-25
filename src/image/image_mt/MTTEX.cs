@@ -10,17 +10,27 @@ namespace image_mt
 {
     class MTTEX
     {
+        public List<Bitmap> Bitmaps = new List<Bitmap>();
         private const int MinHeight = 8;
 
-        public Header Header { get; set; }
+        private Header Header;
         public HeaderInfo HeaderInfo { get; set; }
-        public ImageSettings Settings = new ImageSettings();
-        public List<Bitmap> Bitmaps = new List<Bitmap>();
+        private ImageSettings Settings = new ImageSettings();
+        private ByteOrder ByteOrder = ByteOrder.LittleEndian;
 
         public MTTEX(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
+                // Set endianess
+                if (br.PeekString() == "\0XET")
+                {
+                    br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
+                    //HeaderLength = 8;
+                    //System = Platform.PS3;
+                }
+
+                // Header
                 Header = br.ReadStruct<Header>();
                 HeaderInfo = new HeaderInfo
                 {
@@ -41,6 +51,11 @@ namespace image_mt
 
                 var mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
+                if (Settings.Format == Cetera.Image.Format.DXT5)
+                {
+                    Settings.ZOrder = false;
+                    Settings.TileSize = 4;
+                }
 
                 for (var i = 0; i < mipMaps.Count; i++)
                 {
