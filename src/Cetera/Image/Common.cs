@@ -13,7 +13,10 @@ namespace Cetera.Image
         RGBA8888, RGB888,
         RGBA5551, RGB565, RGBA4444,
         LA88, HL88, L8, A8, LA44,
-        L4, A4, ETC1, ETC1A4
+        L4, A4, ETC1, ETC1A4,
+
+        // PS3
+        DXT1, DXT5
     }
 
     public enum Orientation : byte
@@ -85,6 +88,7 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
+                var dxtdecoder = new DXT.Decoder();
 
                 while (true)
                 {
@@ -147,6 +151,9 @@ namespace Cetera.Image
                                 return new ETC1.PixelData { Alpha = alpha, Block = br.ReadStruct<ETC1.Block>() };
                             });
                             continue;
+                        case Format.DXT5:
+                            yield return dxtdecoder.Get(() => new DXT.PixelData { Alpha = br.ReadBytes(8), Block = br.ReadBytes(8) });
+                            break;
                         case Format.L4:
                             b = g = r = br.ReadNibble() * 17;
                             break;
