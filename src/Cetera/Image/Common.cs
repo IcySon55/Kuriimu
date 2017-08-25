@@ -152,7 +152,10 @@ namespace Cetera.Image
                             });
                             continue;
                         case Format.DXT5:
-                            yield return dxtdecoder.Get(() => new DXT.PixelData { Alpha = br.ReadBytes(8), Block = br.ReadBytes(8) });
+                            yield return dxtdecoder.Get(() =>
+                            {
+                                return new DXT.PixelData { Alpha = br.ReadBytes(8), Block = br.ReadBytes(8) };
+                            });
                             break;
                         case Format.L4:
                             b = g = r = br.ReadNibble() * 17;
