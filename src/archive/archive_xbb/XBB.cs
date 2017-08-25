@@ -94,6 +94,9 @@ namespace archive_xbb
         public void Close()
         {
             _stream?.Dispose();
+            foreach (var afi in Files)
+                if (afi.State != ArchiveFileState.Archived)
+                    afi.FileData?.Dispose();
             _stream = null;
         }
     }

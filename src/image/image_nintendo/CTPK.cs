@@ -15,9 +15,9 @@ namespace image_nintendo.CTPK
 
         public List<BitmapClass> bmps = new List<BitmapClass>();
 
-        public CTPK(string filename)
+        public CTPK(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
+            using (BinaryReaderX br = new BinaryReaderX(input))
             {
                 //Header
                 header = br.ReadStruct<Header>();
@@ -85,9 +85,9 @@ namespace image_nintendo.CTPK
             }
         }
 
-        public void Save(string filename)
+        public void Save(Stream input, bool leaveOpen)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(input, leaveOpen))
             {
                 //check original sizes
                 CheckOriginalSizes();

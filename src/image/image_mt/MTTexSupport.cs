@@ -6,6 +6,7 @@ namespace image_mt
 {
     public enum Format : byte
     {
+        // 3DS
         RGBA4444 = 0x01,
         RGBA5551 = 0x02,
         RGBA8888 = 0x03,
@@ -16,7 +17,10 @@ namespace image_mt
         A4 = 0x0E,
         L4 = 0x0F,
         L8 = 0x10,
-        RGB888 = 0x11
+        RGB888 = 0x11,
+
+        // PS3
+        DXT5 = 0x2A
     }
 
     // This particual enum is questionable as the data space for it is only 4-bits (maybe)

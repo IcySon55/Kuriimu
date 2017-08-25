@@ -8,7 +8,7 @@ using Kuriimu.IO;
 
 namespace archive_hpi_hpb
 {
-    public sealed class HPIHPB : IDisposable
+    public sealed class HPIHPB
     {
         public List<HpiHpbAfi> Files;
 
@@ -77,9 +77,12 @@ namespace archive_hpi_hpb
             }
         }
 
-        public void Dispose()
+        public void Close()
         {
             _stream?.Dispose();
+            foreach (var afi in Files)
+                if (afi.State != ArchiveFileState.Archived)
+                    afi.FileData?.Dispose();
             _stream = null;
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Kuriimu.IO;
 
@@ -23,9 +22,9 @@ namespace text_gmd
         private List<EntryV2> EntriesV2 = new List<EntryV2>();
         private List<String> Names = new List<String>();
 
-        public GMD(string filename)
+        public GMD(Stream input)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(input))
             {
                 // Set endianess
                 if (br.PeekString() == "\0DMG")
@@ -36,13 +35,13 @@ namespace text_gmd
                 Name = br.ReadCStringA();
 
                 // Entries
-                if (Header.Version.SequenceEqual(Versions.Version1))
+                if (Header.Version == Versions.Version1)
                     EntriesV1 = br.ReadMultiple<EntryV1>((int)Header.LabelCount);
-                else if (Header.Version.SequenceEqual(Versions.Version2))
+                else if (Header.Version == Versions.Version2)
                     EntriesV2 = br.ReadMultiple<EntryV2>((int)Header.LabelCount);
 
                 // Unknown Version 2 Section
-                if (Header.Version.SequenceEqual(Versions.Version2))
+                if (Header.Version == Versions.Version2)
                 {
                     var bk = br.BaseStream.Position;
                     var temp = br.ReadUInt32();
@@ -92,22 +91,22 @@ namespace text_gmd
             }
         }
 
-        public void Save(string filename)
+        public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(File.OpenWrite(filename), ByteOrder))
+            using (var bw = new BinaryWriterX(output, ByteOrder))
             {
                 bw.BaseStream.Position = HeaderLength + Header.NameSize + 1;
 
                 // Section Entries
-                if (Header.Version.SequenceEqual(Versions.Version1))
+                if (Header.Version == Versions.Version1)
                     foreach (var entry in EntriesV1)
                         bw.WriteStruct(entry);
-                else if (Header.Version.SequenceEqual(Versions.Version2))
+                else if (Header.Version == Versions.Version2)
                     foreach (var entry in EntriesV2)
                         bw.WriteStruct(entry);
 
                 // Unknown Version 2 Section
-                if (Header.Version.SequenceEqual(Versions.Version2))
+                if (Header.Version == Versions.Version2)
                     bw.Write(UnknownV2);
 
                 // Labels
@@ -121,14 +120,13 @@ namespace text_gmd
                 Header.LabelSize = labelSize;
 
                 // Sections
-                var text = new List<byte>();
+                var textStart = bw.BaseStream.Position;
                 foreach (var label in Labels)
                 {
-                    text.AddRange(Encoding.UTF8.GetBytes(label.Text));
-                    text.Add(0);
+                    bw.Write(Encoding.UTF8.GetBytes(label.Text));
+                    bw.Write((byte)0);
                 }
-                Header.SectionSize = (uint)text.Count;
-                bw.Write(text.ToArray());
+                Header.SectionSize = (uint)(bw.BaseStream.Position - textStart);
 
                 // Header
                 bw.BaseStream.Position = 0;

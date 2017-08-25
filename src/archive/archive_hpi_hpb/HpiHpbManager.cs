@@ -79,13 +79,13 @@ namespace archive_hpi_hpb
             if (!string.IsNullOrWhiteSpace(filename))
             {
                 _hpihpb.Save(File.Create(hpiFilename), File.Create(hpbFilename));
-                _hpihpb.Dispose();
+                _hpihpb.Close();
             }
             else
             {
                 // Create the temp files
                 _hpihpb.Save(File.Create(hpiFilename + ".tmp"), File.Create(hpbFilename + ".tmp"));
-                _hpihpb.Dispose();
+                _hpihpb.Close();
                 // Delete the originals
                 FileInfo.Delete();
                 File.Delete(hpbFilename);
@@ -100,7 +100,7 @@ namespace archive_hpi_hpb
 
         public void Unload()
         {
-            _hpihpb?.Dispose();
+            _hpihpb?.Close();
         }
 
         // Files

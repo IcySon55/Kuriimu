@@ -18,9 +18,10 @@ namespace archive_level5.XPCK
         List<FileInfoEntry> entries = new List<FileInfoEntry>();
         byte[] compNameTable;
 
-        public XPCK(string filename)
+        public XPCK(Stream input)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
+            _stream = input;
+            using (var br = new BinaryReaderX(input, true))
             {
                 //Header
                 header = br.ReadStruct<Header>();

@@ -33,7 +33,8 @@ namespace image_mt
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(3) == "TEX";
+                var magic = br.ReadString(4);
+                return magic == "TEX" || magic == "\0XET";
             }
         }
 

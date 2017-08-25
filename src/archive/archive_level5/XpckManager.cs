@@ -47,7 +47,7 @@ namespace archive_level5.XPCK
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _xpck = new XPCK(FileInfo.FullName);
+                _xpck = new XPCK(File.OpenRead(FileInfo.FullName));
         }
 
         public void Save(string filename = "")

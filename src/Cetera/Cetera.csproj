@@ -59,6 +59,7 @@
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Hash\XbbHash.cs" />
+    <Compile Include="Image\DXT.cs" />
     <Compile Include="IO\Extensions.cs" />
     <Compile Include="Font\BCFNT.cs" />
     <Compile Include="Image\BXLIM.cs" />

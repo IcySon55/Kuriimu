@@ -978,21 +978,17 @@ namespace Karameru
                             {
                                 var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
 
-                                if (!Directory.Exists(exPath))
-                                    continue;
-                                else
-                                {
-                                    var filePath = Path.Combine(exPath, Path.GetFileName(afi.FileName));
+                                if (!Directory.Exists(exPath)) continue;
+                                var filePath = Path.Combine(exPath, Path.GetFileName(afi.FileName));
 
-                                    if (File.Exists(filePath))
-                                        try
-                                        {
-                                            afi.FileData = File.OpenRead(filePath);
-                                            afi.State = ArchiveFileState.Replaced;
-                                            madeChanges = true;
-                                        }
-                                        catch (Exception ex) { }
+                                if (!File.Exists(filePath)) continue;
+                                try
+                                {
+                                    afi.FileData = File.OpenRead(filePath);
+                                    afi.State = ArchiveFileState.Replaced;
+                                    madeChanges = true;
                                 }
+                                catch (Exception ex) { }
                             }
 
                             if (madeChanges)

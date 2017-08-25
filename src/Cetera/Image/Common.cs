@@ -13,7 +13,10 @@ namespace Cetera.Image
         RGBA8888, RGB888,
         RGBA5551, RGB565, RGBA4444,
         LA88, HL88, L8, A8, LA44,
-        L4, A4, ETC1, ETC1A4
+        L4, A4, ETC1, ETC1A4,
+
+        // PS3
+        DXT1, DXT5
     }
 
     public enum Orientation : byte
@@ -32,6 +35,7 @@ namespace Cetera.Image
         public Orientation Orientation { get; set; } = Orientation.Default;
         public bool PadToPowerOf2 { get; set; } = true;
         public bool ZOrder { get; set; } = true;
+        public int TileSize { get; set; } = 8;
 
         /// <summary>
         /// This is currently a hack
@@ -84,6 +88,7 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
+                var dxtdecoder = new DXT.Decoder();
 
                 while (true)
                 {
@@ -146,6 +151,9 @@ namespace Cetera.Image
                                 return new ETC1.PixelData { Alpha = alpha, Block = br.ReadStruct<ETC1.Block>() };
                             });
                             continue;
+                        case Format.DXT5:
+                            yield return dxtdecoder.Get(() => new DXT.PixelData { Alpha = br.ReadBytes(8), Block = br.ReadBytes(8) });
+                            break;
                         case Format.L4:
                             b = g = r = br.ReadNibble() * 17;
                             break;
@@ -170,22 +178,33 @@ namespace Cetera.Image
                 strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
             }
             int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
+
+            //stride TileSize
+            var tileSize = 0;
+            if (settings.ZOrder)
+                tileSize = 2 << (int)(Math.Log(((settings.TileSize + 7) & ~7) - 1, 2));
+            else
+                tileSize = settings.TileSize;
+            int powTileSize = (int)Math.Pow(tileSize, 2);
+
             for (int i = 0; i < strideWidth * strideHeight; i++)
             {
+                //in == order inside a tile
+                //out == order of tiles themselves
                 int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
                 if (settings.ZOrder)
                 {
-                    x_out = (i / 64 % (stride / 8)) * 8;
-                    y_out = (i / 64 / (stride / 8)) * 8;
-                    x_in = (i / 4 & 4) | (i / 2 & 2) | (i & 1);
-                    y_in = (i / 8 & 4) | (i / 4 & 2) | (i / 2 & 1);
+                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+                    x_in = ZOrderX(tileSize, i);
+                    y_in = ZOrderY(tileSize, i);
                 }
                 else
                 {
-                    x_out = (i / 64 % (stride / 8)) * 8;
-                    y_out = (i / 64 / (stride / 8)) * 8;
-                    x_in = i % 64 % 8;
-                    y_in = i % 64 / 8;
+                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+                    x_in = i % powTileSize % tileSize;
+                    y_in = i % powTileSize / tileSize;
                 }
 
                 switch (settings.Orientation)
@@ -206,6 +225,34 @@ namespace Cetera.Image
                         throw new NotSupportedException($"Unknown orientation format {settings.Orientation}");
                 }
             }
+        }
+        static int ZOrderX(int tileSize, int count)
+        {
+            var div = tileSize / 2;
+            var x_in = count / div & div;
+
+            while (div > 1)
+            {
+                div /= 2;
+                x_in |= count / div & div;
+            }
+
+            return x_in;
+        }
+        static int ZOrderY(int tileSize, int count)
+        {
+            var div = tileSize;
+            var div2 = tileSize / 2;
+            var y_in = count / div & div2;
+
+            while (div2 > 1)
+            {
+                div /= 2;
+                div2 /= 2;
+                y_in |= count / div & div2;
+            }
+
+            return y_in;
         }
 
         public static Bitmap Load(byte[] tex, ImageSettings settings)
