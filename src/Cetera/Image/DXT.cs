@@ -67,35 +67,35 @@ namespace Cetera.Image
                             // Alpha
                             if (acode == 0)
                                 a = alpha0;
-                            if (acode == 1)
+                            else if (acode == 1)
                                 a = alpha1;
-                            if (alpha0 > alpha1 && acode == 2)
+                            else if (alpha0 > alpha1 && acode == 2)
                                 a = (6 * alpha0 + 1 * alpha1) / 7;
-                            if (alpha0 > alpha1 && acode == 3)
+                            else if (alpha0 > alpha1 && acode == 3)
                                 a = (5 * alpha0 + 2 * alpha1) / 7;
-                            if (alpha0 > alpha1 && acode == 4)
+                            else if (alpha0 > alpha1 && acode == 4)
                                 a = (4 * alpha0 + 3 * alpha1) / 7;
-                            if (alpha0 > alpha1 && acode == 5)
+                            else if (alpha0 > alpha1 && acode == 5)
                                 a = (3 * alpha0 + 4 * alpha1) / 7;
-                            if (alpha0 > alpha1 && acode == 6)
+                            else if (alpha0 > alpha1 && acode == 6)
                                 a = (2 * alpha0 + 5 * alpha1) / 7;
-                            if (alpha0 > alpha1 && acode == 7)
+                            else if (alpha0 > alpha1 && acode == 7)
                                 a = (1 * alpha0 + 6 * alpha1) / 7;
 
-                            if (alpha0 <= alpha1 && acode == 2)
+                            else if (alpha0 <= alpha1 && acode == 2)
                                 a = (4 * alpha0 + 1 * alpha1) / 5;
-                            if (alpha0 <= alpha1 && acode == 3)
+                            else if (alpha0 <= alpha1 && acode == 3)
                                 a = (3 * alpha0 + 2 * alpha1) / 5;
-                            if (alpha0 <= alpha1 && acode == 4)
+                            else if (alpha0 <= alpha1 && acode == 4)
                                 a = (2 * alpha0 + 3 * alpha1) / 5;
-                            if (alpha0 <= alpha1 && acode == 5)
+                            else if (alpha0 <= alpha1 && acode == 5)
                                 a = (1 * alpha0 + 4 * alpha1) / 5;
-                            if (alpha0 <= alpha1 && acode == 6)
+                            else if (alpha0 <= alpha1 && acode == 6)
                                 a = 0;
-                            if (alpha0 <= alpha1 && acode == 7)
+                            else if (alpha0 <= alpha1 && acode == 7)
                                 a = 255;
 
-                            // Colors 1
+                            // Colors
                             if (code == 0)
                             {
                                 r = RGB0.R;
