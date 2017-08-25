@@ -8,155 +8,193 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kukkii.Properties {
-    
-    
+namespace Kukkii.Properties
+{
+
+
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
+    {
+
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-        
-        public static Settings Default {
-            get {
+
+        public static Settings Default
+        {
+            get
+            {
                 return defaultInstance;
             }
         }
-        
+
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Kukkii")]
-        public string ApplicationName {
-            get {
+        public string ApplicationName
+        {
+            get
+            {
                 return ((string)(this["ApplicationName"]));
             }
         }
-        
+
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("plugins")]
-        public string PluginDirectory {
-            get {
+        public string PluginDirectory
+        {
+            get
+            {
                 return ((string)(this["PluginDirectory"]));
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastDirectory {
-            get {
+        public string LastDirectory
+        {
+            get
+            {
                 return ((string)(this["LastDirectory"]));
             }
-            set {
+            set
+            {
                 this["LastDirectory"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastBatchDirectory {
-            get {
+        public string LastBatchDirectory
+        {
+            get
+            {
                 return ((string)(this["LastBatchDirectory"]));
             }
-            set {
+            set
+            {
                 this["LastBatchDirectory"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Silver")]
-        public global::System.Drawing.Color GridColor1 {
-            get {
+        public global::System.Drawing.Color GridColor1
+        {
+            get
+            {
                 return ((global::System.Drawing.Color)(this["GridColor1"]));
             }
-            set {
+            set
+            {
                 this["GridColor1"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("White")]
-        public global::System.Drawing.Color GridColor2 {
-            get {
+        public global::System.Drawing.Color GridColor2
+        {
+            get
+            {
                 return ((global::System.Drawing.Color)(this["GridColor2"]));
             }
-            set {
+            set
+            {
                 this["GridColor2"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool BatchScanSubdirectories {
-            get {
+        public bool BatchScanSubdirectories
+        {
+            get
+            {
                 return ((bool)(this["BatchScanSubdirectories"]));
             }
-            set {
+            set
+            {
                 this["BatchScanSubdirectories"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("96")]
-        public int ThumbnailWidth {
-            get {
+        public int ThumbnailWidth
+        {
+            get
+            {
                 return ((int)(this["ThumbnailWidth"]));
             }
-            set {
+            set
+            {
                 this["ThumbnailWidth"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("64")]
-        public int ThumbnailHeight {
-            get {
+        public int ThumbnailHeight
+        {
+            get
+            {
                 return ((int)(this["ThumbnailHeight"]));
             }
-            set {
+            set
+            {
                 this["ThumbnailHeight"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public decimal OpenRawWidth {
-            get {
+        public decimal OpenRawWidth
+        {
+            get
+            {
                 return ((decimal)(this["OpenRawWidth"]));
             }
-            set {
+            set
+            {
                 this["OpenRawWidth"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("16")]
-        public decimal OpenRawHeight {
-            get {
+        public decimal OpenRawHeight
+        {
+            get
+            {
                 return ((decimal)(this["OpenRawHeight"]));
             }
-            set {
+            set
+            {
                 this["OpenRawHeight"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("RGBA8888")]
-        public string OpenRawFormat {
-            get {
+        public string OpenRawFormat
+        {
+            get
+            {
                 return ((string)(this["OpenRawFormat"]));
             }
-            set {
+            set
+            {
                 this["OpenRawFormat"] = value;
             }
         }
@@ -178,24 +216,45 @@ namespace Kukkii.Properties {
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public decimal OpenTileSize
+        {
+            get
+            {
+                return ((decimal)(this["OpenTileSize"]));
+            }
+            set
+            {
+                this["OpenTileSize"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("None")]
-        public global::Cyotek.Windows.Forms.ImageBoxBorderStyle ImageBorderStyle {
-            get {
+        public global::Cyotek.Windows.Forms.ImageBoxBorderStyle ImageBorderStyle
+        {
+            get
+            {
                 return ((global::Cyotek.Windows.Forms.ImageBoxBorderStyle)(this["ImageBorderStyle"]));
             }
-            set {
+            set
+            {
                 this["ImageBorderStyle"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Black")]
-        public global::System.Drawing.Color ImageBorderColor {
-            get {
+        public global::System.Drawing.Color ImageBorderColor
+        {
+            get
+            {
                 return ((global::System.Drawing.Color)(this["ImageBorderColor"]));
             }
-            set {
+            set
+            {
                 this["ImageBorderColor"] = value;
             }
         }

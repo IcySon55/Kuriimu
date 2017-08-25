@@ -51,6 +51,10 @@ namespace Kukkii
 
             zorderCheck.Checked = Settings.Default.OpenZOrder;
 
+            tileSize.ValueChanged -= tileSize_ValueChanged;
+            tileSize.Value = Settings.Default.OpenTileSize;
+            tileSize.ValueChanged += tileSize_ValueChanged;
+
             UpdatePreview();
         }
 
@@ -64,6 +68,7 @@ namespace Kukkii
                 settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
                 settings.ZOrder = zorderCheck.Checked;
                 settings.PadToPowerOf2 = false;
+                settings.TileSize = (int)tileSize.Value;
 
                 imbPreview.Image = Common.Load(File.ReadAllBytes(_filename), settings);
             }
@@ -116,6 +121,13 @@ namespace Kukkii
         private void zorderChecked_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.OpenZOrder = zorderCheck.Checked;
+            Settings.Default.Save();
+            UpdatePreview();
+        }
+
+        private void tileSize_ValueChanged(object sender, EventArgs e)
+        {
+            Settings.Default.OpenTileSize = tileSize.Value;
             Settings.Default.Save();
             UpdatePreview();
         }
