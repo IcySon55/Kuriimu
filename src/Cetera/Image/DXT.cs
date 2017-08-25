@@ -33,8 +33,8 @@ namespace Cetera.Image
                     var alphaIndices = (ulong)(alpha[2] + 256 * (alpha[3] + 256 * (alpha[4] + 256 * (alpha[5] + 256 * (alpha[6] + 256 * alpha[7])))));
 
                     var acodes = new List<byte>();
-                    for (var i = 0; i < 48; i += 2)
-                        acodes.Add((byte)((alphaIndices >> i) & 0x3));
+                    for (var i = 0; i < 48; i += 3)
+                        acodes.Add((byte)((alphaIndices >> i) & 0x7));
 
                     // Color Bytes
                     var color = data.Block;
