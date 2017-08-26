@@ -155,7 +155,7 @@ namespace Cetera.Image
                         case Format.DXT5:
                             yield return dxtdecoder.Get(() =>
                             {
-                                DXT.format = (DXT.Format)Enum.Parse(typeof(Format), format.ToString());
+                                DXT.format = (DXT.Format)Enum.Parse(typeof(DXT.Format), format.ToString());
                                 var alpha2 = (format == Format.DXT5) ? br.ReadBytes(8) : new byte[8];
                                 return new DXT.PixelData { Alpha = alpha2, Block = br.ReadBytes(8) };
                             });
