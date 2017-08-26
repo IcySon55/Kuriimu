@@ -10,6 +10,12 @@ namespace Cetera.Image
         static List<byte> alphaLookup;
         static List<Color> colorLookup;
 
+        public enum Format
+        {
+            DXT1, DXT5
+        }
+
+        public static Format format;
         public struct PixelData
         {
             public byte[] Alpha { get; set; }
@@ -70,18 +76,21 @@ namespace Cetera.Image
                 {
                     var data = func();
 
-                    // Alpha Bytes
-                    var alpha = data.Alpha;
-
-                    //Alpha Lookup
-                    CreateAlphaLookupTable(alpha[0], alpha[1]);
-
-                    //Alpha bit codes
-                    var alphaIndices = (((((ulong)alpha[7] << 8 | alpha[6]) << 8 | alpha[5]) << 8 | alpha[4]) << 8 | alpha[3]) << 8 | alpha[2];
+                    //If DXT5, then Alpha
                     var acodes = new List<byte>();
-                    for (var i = 0; i < 48; i += 3)
-                        acodes.Add((byte)((alphaIndices >> i) & 0x7));
+                    if (format == Format.DXT5)
+                    {
+                        // Alpha Bytes
+                        var alpha = data.Alpha;
 
+                        //Alpha Lookup
+                        CreateAlphaLookupTable(alpha[0], alpha[1]);
+
+                        //Alpha bit codes
+                        var alphaIndices = (((((ulong)alpha[7] << 8 | alpha[6]) << 8 | alpha[5]) << 8 | alpha[4]) << 8 | alpha[3]) << 8 | alpha[2];
+                        for (var i = 0; i < 48; i += 3)
+                            acodes.Add((byte)((alphaIndices >> i) & 0x7));
+                    }
 
 
                     // Color Bytes
@@ -101,13 +110,17 @@ namespace Cetera.Image
                     for (var y = 0; y < 4; y++)
                         for (var x = 0; x < 4; x++)
                         {
-                            var acode = acodes[y * 4 + x];
-                            var code = codes[y * 4 + x];
+                            int a = 255;
 
-                            // Alpha
-                            int a = alphaLookup[acode];
+                            // Alpha, if DXT5
+                            if (format == Format.DXT5)
+                            {
+                                var acode = acodes[y * 4 + x];
+                                a = alphaLookup[acode];
+                            }
 
                             // Colors
+                            var code = codes[y * 4 + x];
                             int r = colorLookup[code].R;
                             int g = colorLookup[code].G;
                             int b = colorLookup[code].B;
