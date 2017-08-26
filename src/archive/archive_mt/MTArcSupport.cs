@@ -49,7 +49,7 @@ namespace archive_mt
                         Metadata.CompressedSize = (int)FileData.Length;
                     }
 
-                    Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0xFF000000) : (int)(FileData.Length << 3);
+                    Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0x00FFFFFF) : (int)(FileData.Length << 3);
                 }
             }
         }
@@ -284,6 +284,7 @@ public static class ArcShared
         [0x285A13D9] = ".vzo",
         [0x4323D83A] = ".stex",
         [0x6A5CDD23] = ".occ",
+        [0x62440501] = ".lmd",
 
         // E.X. Troopers - These are not working
         [GetHash("BCP")] = ".bcp", // 0x6EEAD597
