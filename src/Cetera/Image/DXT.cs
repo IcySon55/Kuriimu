@@ -77,7 +77,7 @@ namespace Cetera.Image
                     CreateAlphaLookupTable(alpha[0], alpha[1]);
 
                     //Alpha bit codes
-                    var alphaIndices = (ulong)(((((alpha[7] << 8 | alpha[6]) << 8 | alpha[5]) << 8 | alpha[4]) << 8 | alpha[3]) << 8 | alpha[2]);
+                    var alphaIndices = (((((ulong)alpha[7] << 8 | alpha[6]) << 8 | alpha[5]) << 8 | alpha[4]) << 8 | alpha[3]) << 8 | alpha[2];
                     var acodes = new List<byte>();
                     for (var i = 0; i < 48; i += 3)
                         acodes.Add((byte)((alphaIndices >> i) & 0x7));
