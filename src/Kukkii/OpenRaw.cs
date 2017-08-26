@@ -131,5 +131,28 @@ namespace Kukkii
             Settings.Default.Save();
             UpdatePreview();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var sfd = new SaveFileDialog()
+            {
+                InitialDirectory = Settings.Default.LastDirectory,
+                FileName = Path.Combine(Path.GetDirectoryName(_filename), Path.GetFileNameWithoutExtension(_filename) + ".raw"),
+                Filter = "Raw Image Data (*.raw)|*.raw"
+            };
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                var settings = new ImageSettings();
+                settings.Width = (int)numWidth.Value;
+                settings.Height = (int)numHeight.Value;
+                settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
+                settings.ZOrder = zorderCheck.Checked;
+                settings.PadToPowerOf2 = false;
+                settings.TileSize = (int)tileSize.Value;
+
+                var imgSave = Common.Save((Bitmap)imbPreview.Image, settings);
+                using (var bw = new BinaryWriterX(File.Create(sfd.FileName))) bw.Write(imgSave);
+            }
+        }
     }
 }

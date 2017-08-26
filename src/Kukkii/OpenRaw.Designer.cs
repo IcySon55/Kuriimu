@@ -41,6 +41,7 @@
             this.zorderCheck = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tileSize = new System.Windows.Forms.NumericUpDown();
+            this.btnRaw = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tileSize)).BeginInit();
@@ -239,11 +240,24 @@
             0});
             this.tileSize.ValueChanged += new System.EventHandler(this.tileSize_ValueChanged);
             // 
+            // btnRaw
+            // 
+            this.btnRaw.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRaw.Location = new System.Drawing.Point(270, 374);
+            this.btnRaw.Margin = new System.Windows.Forms.Padding(4);
+            this.btnRaw.Name = "btnRaw";
+            this.btnRaw.Size = new System.Drawing.Size(101, 23);
+            this.btnRaw.TabIndex = 23;
+            this.btnRaw.Text = "Save as RAW";
+            this.btnRaw.UseVisualStyleBackColor = true;
+            this.btnRaw.Click += new System.EventHandler(this.button1_Click);
+            // 
             // OpenRaw
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(384, 471);
+            this.Controls.Add(this.btnRaw);
             this.Controls.Add(this.tileSize);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.zorderCheck);
@@ -283,5 +297,6 @@
         private System.Windows.Forms.CheckBox zorderCheck;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown tileSize;
+        private System.Windows.Forms.Button btnRaw;
     }
 }
