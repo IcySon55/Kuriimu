@@ -35,12 +35,12 @@ namespace Cetera.Image
                 if (alpha0 > alpha1)
                 {
                     for (int i = 6, j = 1; i > 0; i--, j++)
-                        alphaLookup.Add((byte)((float)i / 7 * alpha0 + (float)j / 7 * alpha1));
+                        alphaLookup.Add((byte)((i * alpha0 + j * alpha1) / 7));
                 }
                 else
                 {
                     for (int i = 4, j = 1; i > 0; i--, j++)
-                        alphaLookup.Add((byte)((float)i / 5 * alpha0 + (float)j / 5 * alpha1));
+                        alphaLookup.Add((byte)((i * alpha0 + j * alpha1) / 5));
                     alphaLookup.Add(0);
                     alphaLookup.Add(255);
                 }
@@ -59,9 +59,9 @@ namespace Cetera.Image
 
                 for (int i = 2, j = 1; i > 0; i--, j++)
                     colorLookup.Add(Color.FromArgb(255,
-                        (int)((float)i / 3 * color_0.R + (float)j / 3 * color_1.R),
-                        (int)((float)i / 3 * color_0.G + (float)j / 3 * color_1.G),
-                        (int)((float)i / 3 * color_0.B + (float)j / 3 * color_1.B)));
+                        ((i * color_0.R + j * color_1.R) / 3),
+                        ((i * color_0.G + j * color_1.G) / 3),
+                        ((i * color_0.B + j * color_1.B) / 3)));
             }
 
             public Color Get(Func<PixelData> func)
@@ -77,7 +77,7 @@ namespace Cetera.Image
                     CreateAlphaLookupTable(alpha[0], alpha[1]);
 
                     //Alpha bit codes
-                    var alphaIndices = (ulong)(((((alpha[5] << 8 | alpha[6]) << 8 | alpha[7]) << 8 | alpha[2]) << 8 | alpha[3]) << 8 | alpha[4]);
+                    var alphaIndices = (ulong)(((((alpha[7] << 8 | alpha[6]) << 8 | alpha[5]) << 8 | alpha[4]) << 8 | alpha[3]) << 8 | alpha[2]);
                     var acodes = new List<byte>();
                     for (var i = 0; i < 48; i += 3)
                         acodes.Add((byte)((alphaIndices >> i) & 0x7));
