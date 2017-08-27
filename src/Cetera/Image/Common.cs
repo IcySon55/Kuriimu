@@ -147,17 +147,17 @@ namespace Cetera.Image
                         case Format.ETC1A4:
                             yield return etc1decoder.Get(() =>
                             {
-                                var alpha = (format == Format.ETC1A4) ? br.ReadUInt64() : ulong.MaxValue;
-                                return new ETC1.PixelData { Alpha = alpha, Block = br.ReadStruct<ETC1.Block>() };
+                                var etc1Alpha = format == Format.ETC1A4 ? br.ReadUInt64() : ulong.MaxValue;
+                                return new ETC1.PixelData { Alpha = etc1Alpha, Block = br.ReadStruct<ETC1.Block>() };
                             });
                             continue;
                         case Format.DXT1:
                         case Format.DXT5:
                             yield return dxtdecoder.Get(() =>
                             {
-                                DXT.format = (DXT.Format)Enum.Parse(typeof(DXT.Format), format.ToString());
-                                var alpha2 = (format == Format.DXT5) ? br.ReadBytes(8) : new byte[8];
-                                return new DXT.PixelData { Alpha = alpha2, Block = br.ReadBytes(8) };
+                                dxtdecoder.Format = (DXT.Formats)Enum.Parse(typeof(DXT.Formats), format.ToString());
+                                var dxt5Alpha = format == Format.DXT5 ? br.ReadBytes(8) : new byte[8];
+                                return new DXT.PixelData { Alpha = dxt5Alpha, Block = br.ReadBytes(8) };
                             });
                             continue;
                         case Format.L4:
