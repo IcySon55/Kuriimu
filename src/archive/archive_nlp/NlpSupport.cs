@@ -12,16 +12,16 @@ namespace archive_nlp
     public class Header
     {
         // 0x800 padding used in archive
-        public uint unk1;
+        public uint packFileCount;
         public uint unk2;
         public uint unk3;
         public uint unk4;
         public uint fileCount;
-        public uint entryTable1Size;
+        public uint entryTable1EndOffset;
         public uint unk5;
         public uint unk6;
         public uint unk7;
-        public uint entryTable2Size;
+        public uint entryTable2EndOffset;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -47,5 +47,20 @@ namespace archive_nlp
     {
         public uint unk1;
         public uint id;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class PACKHeader
+    {
+        //offsets are relative to the PACK section
+        public Magic magic;
+        public ushort unk1;
+        public ushort packFileCount;
+        public uint stringSizeOffset;
+        public uint stringOffset;
+        public uint fileOffset;
+        public uint unk2;
+        public uint packSize;
+        public uint zero1;
     }
 }

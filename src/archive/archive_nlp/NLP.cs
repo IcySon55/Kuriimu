@@ -32,6 +32,25 @@ namespace archive_nlp
 
                 //Files
                 br.BaseStream.Position = fileOffset;
+                var count = 0;
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    var packOffset = br.BaseStream.Position;
+                    var packHeader = br.ReadStruct<PACKHeader>();
+
+                    if (packHeader.magic != "PACK")
+                        br.BaseStream.Position = br.BaseStream.Position;
+
+                    Files.Add(new NLPFileInfo
+                    {
+                        State = ArchiveFileState.Archived,
+                        FileName = $"{count++:0000}.pack",
+                        FileData = new SubStream(br.BaseStream, packOffset, packHeader.packSize)
+                    });
+
+                    br.BaseStream.Position += (packHeader.packSize - 0x20);
+                    br.BaseStream.Position = (br.BaseStream.Position + 0x7ff) & ~0x7ff;
+                }
             }
         }
 

@@ -31,7 +31,7 @@ namespace archive_nlp
 
         public bool Identify(string filename)
         {
-            return false;
+            return filename.Contains("img.bin");
         }
 
         public void Load(string filename)
