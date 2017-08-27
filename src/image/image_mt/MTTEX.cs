@@ -70,18 +70,20 @@ namespace image_mt
 
         private Bitmap CapcomTransform(Bitmap orig)
         {
+            // currently trying out YCbCr:
+            // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+            var attr = new ImageAttributes();
+            attr.SetColorMatrix(new ColorMatrix(new[] {
+                    new[] { 1.402f,-0.71414f, 0,      0, 0f },
+                    new[] { 0,      0,        0,      1, 0f },
+                    new[] { 0,     -0.34414f, 1.772f, 0, 0f },
+                    new[] { 1,      1,        1,      0, 0f },
+                    new[] {-0.676f, 0.51046f,-0.855f, 0, 1f }
+                }));
+
             var transformed = new Bitmap(orig.Width, orig.Height);
             using (var g = Graphics.FromImage(transformed))
-            {
-                var attr = new ImageAttributes();
-                attr.SetColorMatrix(new ColorMatrix(new[]{
-                    new[]{1,0,-1,0,0f},
-                    new[]{0,0,0,1,0f},
-                    new[]{-1,0,1,0,0f},
-                    new[]{1,1,1,0,0f},
-                    new[]{0,0,0,0,1f}}));
                 g.DrawImage(orig, new Rectangle(0, 0, orig.Width, orig.Height), 0, 0, orig.Width, orig.Height, GraphicsUnit.Pixel, attr);
-            }
             return transformed;
         }
 
