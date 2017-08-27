@@ -40,7 +40,7 @@ namespace text_t2b
 
                     //cultivate data
                     var mask = entry.typeMask.Reverse().ToList();
-                    for (int j = 0; j < 3; j++)
+                    for (int j = 0; j < mask.Count; j++)
                     {
                         for (int count = 0; count < 8; count += 2)
                         {
@@ -78,7 +78,7 @@ namespace text_t2b
                                     br.BaseStream.Position = header.stringSecOffset + data.value;
                                     Labels.Add(new Label
                                     {
-                                        Text = br.ReadCStringSJIS().Replace("\\n", "\n"),
+                                        Text = Encoding.UTF8.GetString(GetStringBytes(br.BaseStream)).Replace("\\n", "\n"),
                                         TextID = id,
                                         Name = $"text{id++:0000}",
                                         relOffset = data.value
@@ -96,32 +96,48 @@ namespace text_t2b
             }
         }
 
+        public byte[] GetStringBytes(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                var result = new List<byte>();
+                var byteT = br.ReadByte();
+                while (byteT != 0)
+                {
+                    result.Add(byteT);
+                    byteT = br.ReadByte();
+                }
+
+                return result.ToArray();
+            }
+        }
+
         public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
             {
-                var sjis = Encoding.GetEncoding("SJIS");
+                var utf8 = Encoding.UTF8;
 
                 //Update entries
                 uint relOffset = 0;
                 var count = 1;
                 foreach (var label in Labels)
                 {
+                    uint byteCount = (uint)utf8.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
+
                     if (count < offsets.Count)
                     {
-                        uint byteCount = (uint)sjis.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
-
                         foreach (var entry in entries)
                             foreach (var data in entry.data)
                                 if (data.type == 0 && data.value == offsets[count]) data.value = relOffset + byteCount;
-
-                        relOffset += byteCount;
-                        count++;
                     }
+
+                    relOffset += byteCount;
+                    count++;
                 }
 
                 //Header
-                header.stringSecSize = (int)(relOffset + 0xf) & ~0xf;
+                header.stringSecSize = (int)(relOffset);
                 bw.WriteStruct(header);
 
                 //Entries
@@ -137,7 +153,7 @@ namespace text_t2b
                 //Text
                 foreach (var label in Labels)
                 {
-                    bw.Write(sjis.GetBytes(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")));
+                    bw.Write(utf8.GetBytes(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")));
                     bw.Write((byte)0);
                 }
                 bw.WriteAlignment(0x10, 0xff);
