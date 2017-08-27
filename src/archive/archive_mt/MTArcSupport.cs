@@ -285,6 +285,7 @@ public static class ArcShared
         [0x4323D83A] = ".stex",
         [0x6A5CDD23] = ".occ",
         [0x62440501] = ".lmd",
+        [0x3516C3D2] = ".lfd",
 
         // E.X. Troopers - These are not working
         [GetHash("BCP")] = ".bcp", // 0x6EEAD597
