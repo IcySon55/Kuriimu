@@ -27,6 +27,7 @@ namespace image_mt
     public enum AlphaChannelFlags : byte
     {
         Normal = 0x0,
+        AlphaAsGreen = 0x02,
         Unknown1 = 0x03,
         Unknown2 = 0x04,
         Mixed = 0x08,
