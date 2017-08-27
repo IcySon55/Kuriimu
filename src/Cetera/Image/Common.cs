@@ -149,7 +149,7 @@ namespace Cetera.Image
                         case Format.ETC1A4:
                             yield return etc1decoder.Get(() =>
                             {
-                                var etc1Alpha = format == Format.ETC1A4 ? br.ReadUInt64() : 0;
+                                var etc1Alpha = format == Format.ETC1A4 ? br.ReadUInt64() : ulong.MaxValue;
                                 return new ETC1.PixelData { Alpha = etc1Alpha, Block = br.ReadStruct<ETC1.Block>() };
                             });
                             continue;
