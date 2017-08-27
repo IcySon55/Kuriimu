@@ -89,6 +89,8 @@ namespace Cetera.Image
             {
                 var etc1decoder = new ETC1.Decoder();
                 var dxtdecoder = new DXT.Decoder();
+                if (format == Format.DXT1) dxtdecoder.Format = DXT.Formats.DXT1;
+                else if (format == Format.DXT5) dxtdecoder.Format = DXT.Formats.DXT5;
 
                 while (true)
                 {
@@ -147,17 +149,16 @@ namespace Cetera.Image
                         case Format.ETC1A4:
                             yield return etc1decoder.Get(() =>
                             {
-                                var alpha = (format == Format.ETC1A4) ? br.ReadUInt64() : ulong.MaxValue;
-                                return new ETC1.PixelData { Alpha = alpha, Block = br.ReadStruct<ETC1.Block>() };
+                                var etc1Alpha = format == Format.ETC1A4 ? br.ReadUInt64() : ulong.MaxValue;
+                                return new ETC1.PixelData { Alpha = etc1Alpha, Block = br.ReadStruct<ETC1.Block>() };
                             });
                             continue;
                         case Format.DXT1:
                         case Format.DXT5:
                             yield return dxtdecoder.Get(() =>
                             {
-                                DXT.format = (DXT.Format)Enum.Parse(typeof(DXT.Format), format.ToString());
-                                var alpha2 = (format == Format.DXT5) ? br.ReadBytes(8) : new byte[8];
-                                return new DXT.PixelData { Alpha = alpha2, Block = br.ReadBytes(8) };
+                                var dxt5Alpha = format == Format.DXT5 ? br.ReadUInt64() : 0;
+                                return (dxt5Alpha, br.ReadUInt64());
                             });
                             continue;
                         case Format.L4:

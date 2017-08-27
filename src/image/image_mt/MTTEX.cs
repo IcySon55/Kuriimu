@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using Cetera.Image;
@@ -24,11 +25,7 @@ namespace image_mt
             {
                 // Set endianess
                 if (br.PeekString() == "\0XET")
-                {
                     br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
-                    //HeaderLength = 8;
-                    //System = Platform.PS3;
-                }
 
                 // Header
                 Header = br.ReadStruct<Header>();
@@ -62,9 +59,32 @@ namespace image_mt
                     var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     Settings.Width = HeaderInfo.Width >> i;
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, MinHeight);
-                    Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
+
+                    if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.AlphaAsGreen)
+                        Bitmaps.Add(CapcomTransform(Common.Load(br.ReadBytes(texDataSize), Settings)));
+                    else
+                        Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
             }
+        }
+
+        private Bitmap CapcomTransform(Bitmap orig)
+        {
+            // currently trying out YCbCr:
+            // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+            var attr = new ImageAttributes();
+            attr.SetColorMatrix(new ColorMatrix(new[] {
+                    new[] { 1.402f,-0.71414f, 0,      0, 0f },
+                    new[] { 0,      0,        0,      1, 0f },
+                    new[] { 0,     -0.34414f, 1.772f, 0, 0f },
+                    new[] { 1,      1,        1,      0, 0f },
+                    new[] {-0.676f, 0.51046f,-0.855f, 0, 1f }
+                }));
+
+            var transformed = new Bitmap(orig.Width, orig.Height);
+            using (var g = Graphics.FromImage(transformed))
+                g.DrawImage(orig, new Rectangle(0, 0, orig.Width, orig.Height), 0, 0, orig.Width, orig.Height, GraphicsUnit.Pixel, attr);
+            return transformed;
         }
 
         public void Save(Stream output)
