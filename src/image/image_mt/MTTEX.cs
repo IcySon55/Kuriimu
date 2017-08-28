@@ -60,26 +60,40 @@ namespace image_mt
                     Settings.Width = HeaderInfo.Width >> i;
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, MinHeight);
 
-                    if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.AlphaAsGreen)
-                        Bitmaps.Add(CapcomTransform(Common.Load(br.ReadBytes(texDataSize), Settings)));
+                    if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
+                        Bitmaps.Add(CapcomTransform(Common.Load(br.ReadBytes(texDataSize), Settings), TransformDirection.ToProperColors));
                     else
                         Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
             }
         }
 
-        private Bitmap CapcomTransform(Bitmap orig)
+        private Bitmap CapcomTransform(Bitmap orig, TransformDirection direction)
         {
             // currently trying out YCbCr:
             // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
             var attr = new ImageAttributes();
-            attr.SetColorMatrix(new ColorMatrix(new[] {
-                    new[] { 1.402f,-0.71414f, 0,      0, 0f },
-                    new[] { 0,      0,        0,      1, 0f },
-                    new[] { 0,     -0.34414f, 1.772f, 0, 0f },
-                    new[] { 1,      1,        1,      0, 0f },
-                    new[] {-0.676f, 0.51046f,-0.855f, 0, 1f }
-                }));
+            switch (direction)
+            {
+                case TransformDirection.ToProperColors:
+                    attr.SetColorMatrix(new ColorMatrix(new[] {
+                        new[] { 1.402f,-0.71414f, 0,      0, 0f },
+                        new[] { 0,      0,        0,      1, 0f },
+                        new[] { 0,     -0.34414f, 1.772f, 0, 0f },
+                        new[] { 1,      1,        1,      0, 0f },
+                        new[] {-0.676f, 0.51046f,-0.855f, 0, 1f }
+                    }));
+                    break;
+                case TransformDirection.ToOptimizedColors:
+                    attr.SetColorMatrix(new ColorMatrix(new[] {
+                        new[] { 0.50000f, 0f,-0.16874f, 0.29900f, 0f },
+                        new[] {-0.41869f, 0f,-0.33126f, 0.58700f, 0f },
+                        new[] {-0.08131f, 0f, 0.50000f, 0.11400f, 0f },
+                        new[] { 0,        1,  0,        0,        0f },
+                        new[] { 0.54477f, 0f, 0.09778f,-0.08666f, 1f }
+                    }));
+                    break;
+            }
 
             var transformed = new Bitmap(orig.Width, orig.Height);
             using (var g = Graphics.FromImage(transformed))
