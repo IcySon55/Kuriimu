@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
 
-namespace archive_nlp
+namespace archive_nlp.NLP
 {
     public class NLPFileInfo : ArchiveFileInfo
     {

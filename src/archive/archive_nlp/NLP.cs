@@ -3,7 +3,7 @@ using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace archive_nlp
+namespace archive_nlp.NLP
 {
     public class NLP
     {

@@ -2,20 +2,21 @@
 using System.Drawing;
 using System.IO;
 using Kuriimu.Kontract;
+using Kuriimu.IO;
 
-namespace archive_nlp.NLP
+namespace archive_nlp.PACK
 {
-    public class NlpManager : IArchiveManager
+    public class PackManager : IArchiveManager
     {
-        private NLP _nlp = null;
+        private PACK _pack = null;
 
         #region Properties
 
         // Information
-        public string Name => "NLP";
-        public string Description => "New Love Plus Archive";
+        public string Name => "PACK";
+        public string Description => "New Love Plus PACK Archive";
         public string Extension => "*.bin";
-        public string About => "This is the NLP archive manager for Karameru.";
+        public string About => "This is the PACK archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -31,7 +32,10 @@ namespace archive_nlp.NLP
 
         public bool Identify(string filename)
         {
-            return filename.Contains("img.bin");
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            {
+                return br.ReadString(4) == "PACK";
+            }
         }
 
         public void Load(string filename)
@@ -39,7 +43,7 @@ namespace archive_nlp.NLP
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _nlp = new NLP(FileInfo.OpenRead());
+                _pack = new PACK(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -50,14 +54,14 @@ namespace archive_nlp.NLP
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _nlp.Save(FileInfo.Create());
-                _nlp.Close();
+                _pack.Save(FileInfo.Create());
+                _pack.Close();
             }
             else
             {
                 // Create the temp file
-                _nlp.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _nlp.Close();
+                _pack.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _pack.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -70,11 +74,11 @@ namespace archive_nlp.NLP
 
         public void Unload()
         {
-            _nlp?.Close();
+            _pack?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _nlp.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _pack.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 
