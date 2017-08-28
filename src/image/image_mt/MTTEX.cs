@@ -61,16 +61,22 @@ namespace image_mt
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, MinHeight);
 
                     if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
-                        Bitmaps.Add(CapcomTransform(Common.Load(br.ReadBytes(texDataSize), Settings), TransformDirection.ToProperColors));
+                    {
+                        var bytes = br.ReadBytes(texDataSize);
+                        //Common.Load(bytes, Settings).Save(@"C:\output_raw.png", ImageFormat.Png);
+                        Bitmaps.Add(CapcomTransform(Common.Load(bytes, Settings), TransformDirection.ToProperColors));
+                    }
                     else
                         Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
+
+                    //CapcomTransform(Bitmaps[0], TransformDirection.ToOptimizedColors).Save(@"C:\output_wolram.png", ImageFormat.Png);
                 }
             }
         }
 
         private Bitmap CapcomTransform(Bitmap orig, TransformDirection direction)
         {
-            // currently trying out YCbCr:
+            // Currently trying out YCbCr:
             // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
             var attr = new ImageAttributes();
             switch (direction)
@@ -86,11 +92,11 @@ namespace image_mt
                     break;
                 case TransformDirection.ToOptimizedColors:
                     attr.SetColorMatrix(new ColorMatrix(new[] {
-                        new[] { 0.50000f, 0f,-0.16874f, 0.29900f, 0f },
-                        new[] {-0.41869f, 0f,-0.33126f, 0.58700f, 0f },
-                        new[] {-0.08131f, 0f, 0.50000f, 0.11400f, 0f },
-                        new[] { 0,        1,  0,        0,        0f },
-                        new[] { 0.54477f, 0f, 0.09778f,-0.08666f, 1f }
+                        new[] { 0.499999f,  0f,-0.168736f, 0.299001f,     0f },
+                        new[] {-0.418686f,  0f,-0.331263f, 0.586998f,     0f },
+                        new[] {-0.0813131f, 0f, 0.499999f, 0.114001f,     0f },
+                        new[] { 0,          1,  0,         0,             0f },
+                        new[] { 0.4822f,    0f, 0.48253f, -0.0000439169f, 1f }
                     }));
                     break;
             }
