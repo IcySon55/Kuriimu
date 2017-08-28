@@ -10,6 +10,8 @@ namespace archive_nlp
         public List<NLPFileInfo> Files = new List<NLPFileInfo>();
         private Stream _stream = null;
 
+        public int blockSize = 0x800;
+
         public NLP(Stream input)
         {
             _stream = input;
@@ -17,39 +19,36 @@ namespace archive_nlp
             {
                 //Header
                 var header = br.ReadStruct<Header>();
-                uint entryTable1Offset = (uint)((br.BaseStream.Position + 0x7ff) & ~0x7ff);
+                int entryTable1Offset = blockSize;
 
                 //EntryTable1
                 br.BaseStream.Position = entryTable1Offset;
-                var entries1 = br.ReadMultiple<Entry>((int)header.fileCount);
+                var metaInfEntries = br.ReadMultiple<MetaInfEntry>((int)header.entryCount);
                 var entryTable2Offset = br.BaseStream.Position;
 
                 //EntryTable2
                 br.BaseStream.Position = entryTable2Offset;
-                var entry2Header = br.ReadStruct<Entry2Header>();
-                var entries2 = br.ReadMultiple<Entry2>((int)entry2Header.entryCount);
+                var blockOffsetHeader = br.ReadStruct<BlockOffsetHeader>();
+                var blockOffsetEntries = br.ReadMultiple<BlockOffsetEntry>((int)blockOffsetHeader.entryCount);
                 var fileOffset = (br.BaseStream.Position + 0x7ff) & ~0x7ff;
 
                 //Files
-                br.BaseStream.Position = fileOffset;
-                var count = 0;
-                while (br.BaseStream.Position < br.BaseStream.Length)
+                for (int i = 0; i < blockOffsetEntries.Count; i++)
                 {
-                    var packOffset = br.BaseStream.Position;
+                    var packOffset = blockSize + blockOffsetEntries[i].blockOffset * blockSize;
+                    br.BaseStream.Position = packOffset;
                     var packHeader = br.ReadStruct<PACKHeader>();
-
-                    if (packHeader.magic != "PACK")
-                        br.BaseStream.Position = br.BaseStream.Position;
 
                     Files.Add(new NLPFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = $"{count++:0000}.pack",
-                        FileData = new SubStream(br.BaseStream, packOffset, packHeader.packSize)
+                        FileName = $"{blockOffsetEntries[i].id:0000}.bin",
+                        FileData = new SubStream(br.BaseStream,
+                            packOffset,
+                            (packHeader.magic == "PACK") ?
+                                packHeader.compSize : (i + 1 == blockOffsetEntries.Count) ?
+                                    br.BaseStream.Length - packOffset : (blockOffsetEntries[i + 1].blockOffset * blockSize + blockSize) - packOffset)
                     });
-
-                    br.BaseStream.Position += (packHeader.packSize - 0x20);
-                    br.BaseStream.Position = (br.BaseStream.Position + 0x7ff) & ~0x7ff;
                 }
             }
         }

@@ -12,10 +12,10 @@ namespace archive_nlp
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "archive_nlp Archive";
-        public string Extension => "*.ext";
-        public string About => "This is the archive_nlp archive manager for Karameru.";
+        public string Name => "NLP";
+        public string Description => "New Love Plus Archive";
+        public string Extension => "*.bin";
+        public string About => "This is the NLP archive manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
@@ -23,7 +23,7 @@ namespace archive_nlp
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 

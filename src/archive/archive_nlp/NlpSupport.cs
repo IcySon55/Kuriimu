@@ -12,41 +12,41 @@ namespace archive_nlp
     public class Header
     {
         // 0x800 padding used in archive
-        public uint packFileCount;
-        public uint unk2;
+        public uint unk1;
+        public uint dataBlockOffset;
         public uint unk3;
         public uint unk4;
-        public uint fileCount;
-        public uint entryTable1EndOffset;
+        public uint entryCount;
+        public uint metaInfEndOffset;
         public uint unk5;
         public uint unk6;
         public uint unk7;
-        public uint entryTable2EndOffset;
+        public uint BlockTableEndOffset;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entry
+    public class MetaInfEntry
     {
         public Magic magic;
-        public uint unk1;
-        public uint unk2;
-        public uint unk3;
+        public uint zero1;
+        public uint fileOffsetInPAK;
+        public uint decompSize;
         public uint unk4;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entry2Header
+    public class BlockOffsetHeader
     {
-        public uint unk1;
+        public uint zero1;
         public uint entryCount;
-        public uint unk2;
+        public uint unk1;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Entry2
+    public class BlockOffsetEntry
     {
-        public uint unk1;
         public uint id;
+        public uint blockOffset;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -59,8 +59,8 @@ namespace archive_nlp
         public uint stringSizeOffset;
         public uint stringOffset;
         public uint fileOffset;
-        public uint unk2;
-        public uint packSize;
+        public uint decompSize;
+        public uint compSize;
         public uint zero1;
     }
 }
