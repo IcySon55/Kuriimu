@@ -14,7 +14,8 @@ namespace archive_mt
         private Stream _stream;
 
         private Header Header;
-        private int HeaderLength = 12;
+        private int HeaderLength = 0xC;
+        private const int EntryLength = 0x50;
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
         private Platform System;
 
@@ -65,8 +66,18 @@ namespace archive_mt
                 if (ByteOrder == ByteOrder.LittleEndian) bw.Write(0);
 
                 // Files
-                //bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * 80, 0x8000) : HeaderLength + Header.EntryCount * 80;
-                bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? (HeaderLength + Header.EntryCount * 80 + 0xff) & ~0xff : HeaderLength + Header.EntryCount * 80;
+                switch (Header.Version)
+                {
+                    case 0x10:
+                        bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * EntryLength, 0x8000) : HeaderLength + Header.EntryCount * EntryLength;
+                        break;
+                    case 0x11:
+                        bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? (HeaderLength + Header.EntryCount * EntryLength + 0xff) & ~0xff : HeaderLength + Header.EntryCount * EntryLength;
+                        break;
+                    default:
+                        bw.BaseStream.Position = HeaderLength + Header.EntryCount * EntryLength;
+                        break;
+                }
                 foreach (var afi in Files)
                     afi.Write(bw.BaseStream, bw.BaseStream.Position, ByteOrder);
 
