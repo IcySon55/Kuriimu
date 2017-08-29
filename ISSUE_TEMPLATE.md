@@ -1,7 +1,8 @@
+Issue: [plugin request | bug report | feature request]
 Console: 
 Format extension(s): 
 Type: [text | image | archive]
-Original game name: 
+Game Name: 
 
 First 8 byte of file(s):
 <extension> - [bytes in hex] - [bytes in ASCII]
