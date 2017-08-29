@@ -39,10 +39,12 @@ namespace archive_nlp.NLP
                     br.BaseStream.Position = packOffset;
                     var packHeader = br.ReadStruct<PACKHeader>();
 
+                    var ext = (packHeader.magic == "PACK") ? ".pack" : ".bin";
+
                     Files.Add(new NLPFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = $"{blockOffsetEntries[i].id:0000}.bin",
+                        FileName = $"{blockOffsetEntries[i].id:0000}{ext}",
                         FileData = new SubStream(br.BaseStream,
                             packOffset,
                             (packHeader.magic == "PACK") ?

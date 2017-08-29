@@ -15,7 +15,7 @@ namespace archive_nlp.PACK
         // Information
         public string Name => "PACK";
         public string Description => "New Love Plus PACK Archive";
-        public string Extension => "*.bin";
+        public string Extension => "*.pack";
         public string About => "This is the PACK archive manager for Karameru.";
 
         // Feature Support
@@ -24,7 +24,7 @@ namespace archive_nlp.PACK
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
