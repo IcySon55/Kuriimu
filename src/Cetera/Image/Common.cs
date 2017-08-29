@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using Cetera.Image.BCn;
 using Kuriimu.IO;
 
 namespace Cetera.Image
@@ -88,9 +89,7 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
-                var dxtdecoder = new DXT.Decoder();
-                if (format == Format.DXT1) dxtdecoder.Format = DXT.Formats.DXT1;
-                else if (format == Format.DXT5) dxtdecoder.Format = DXT.Formats.DXT5;
+                var dxtdecoder = new DXT.Decoder(format == Format.DXT1 ? DXT.Formats.DXT1 : DXT.Formats.DXT5);
 
                 while (true)
                 {
@@ -295,6 +294,7 @@ namespace Cetera.Image
 
             var ms = new MemoryStream();
             var etc1encoder = new ETC1.Encoder();
+            var dxtencoder = new DXT.Encoder(settings.Format == Format.DXT1 ? DXT.Formats.DXT1 : DXT.Formats.DXT5);
 
             using (var bw = new BinaryWriterX(ms))
             {
@@ -355,6 +355,14 @@ namespace Cetera.Image
                             {
                                 if (settings.Format == Format.ETC1A4) bw.Write(data.Alpha);
                                 bw.WriteStruct(data.Block);
+                            });
+                            break;
+                        case Format.DXT1:
+                        case Format.DXT5:
+                            dxtencoder.Set(color, data =>
+                            {
+                                if (settings.Format == Format.DXT5) bw.Write(data.alpha);
+                                bw.Write(data.block);
                             });
                             break;
                         case Format.L4:

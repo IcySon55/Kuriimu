@@ -22,6 +22,11 @@ namespace Cetera.Image
 
             private Color GetRGB565(ushort val) => Color.FromArgb(255, (val >> 11) * 33 / 4, (val >> 5) % 64 * 65 / 16, (val % 32) * 33 / 4);
 
+            public Decoder(Formats format = Formats.DXT1)
+            {
+                Format = format;
+            }
+
             public Color Get(Func<(ulong alpha, ulong block)> func)
             {
                 if (!queue.Any())
@@ -51,6 +56,45 @@ namespace Cetera.Image
                     }
                 }
                 return queue.Dequeue();
+            }
+        }
+
+        public class Encoder
+        {
+            List<Color> queue = new List<Color>();
+            public Formats Format { get; set; }
+
+            public Encoder(Formats format = Formats.DXT1)
+            {
+                Format = format;
+            }
+
+            public void Set(Color c, Action<(ulong alpha, ulong block)> func)
+            {
+                queue.Add(c);
+                if (queue.Count == 16)
+                {
+                    // Alpha
+                    ulong outAlpha = 0;
+                    if (Format == Formats.DXT5)
+                    {
+                        var alpahEncoder = new BCn.BC4BlockEncoder();
+                        alpahEncoder.LoadBlock(queue.Select(clr => (float)clr.A).ToArray());
+                        outAlpha = alpahEncoder.EncodeUnsigned().PackedValue;
+                    }
+
+                    // Color
+                    var colorEncoder = new BCn.BC1BlockEncoder();
+                    colorEncoder.LoadBlock(
+                        queue.Select(clr => (float)clr.R).ToArray(),
+                        queue.Select(clr => (float)clr.G).ToArray(),
+                        queue.Select(clr => (float)clr.B).ToArray()
+                    );
+                    var outColor = colorEncoder.Encode().PackedValue;
+
+                    func((outAlpha, outColor));
+                    queue.Clear();
+                }
             }
         }
     }

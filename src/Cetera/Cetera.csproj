@@ -59,6 +59,15 @@
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Hash\XbbHash.cs" />
+    <Compile Include="Image\BCn\BC1BlockEncoder.cs" />
+    <Compile Include="Image\BCn\BC2ABlockEncoder.cs" />
+    <Compile Include="Image\BCn\BC4BlockEncoder.cs" />
+    <Compile Include="Image\BCn\BCnImage.cs" />
+    <Compile Include="Image\BCn\Blocks.cs" />
+    <Compile Include="Image\BCn\FloatImage.cs" />
+    <Compile Include="Image\BCn\Helpers.cs" />
+    <Compile Include="Image\BCn\ImageEncoder.cs" />
+    <Compile Include="Image\BCn\ImageEncodingHelper.cs" />
     <Compile Include="Image\DXT.cs" />
     <Compile Include="IO\Extensions.cs" />
     <Compile Include="Font\BCFNT.cs" />
@@ -82,6 +91,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Image\BCn\BCnReadme.md" />
     <None Include="Resources\cbf_std.bcfnt.gz" />
     <None Include="Resources\ltn16.gzf" />
     <None Include="Resources\sys8.qbf" />
@@ -91,6 +101,9 @@
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>Kontract</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Image\BCn\BCnLicense.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
