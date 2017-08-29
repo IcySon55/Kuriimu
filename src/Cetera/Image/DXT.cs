@@ -79,16 +79,16 @@ namespace Cetera.Image
                     if (Format == Formats.DXT5)
                     {
                         var alphaEncoder = new BCn.BC4BlockEncoder();
-                        alphaEncoder.LoadBlock(queue.Select(clr => (float)clr.A).ToArray());
+                        alphaEncoder.LoadBlock(queue.Select(clr => clr.A / 255f).ToArray());
                         outAlpha = alphaEncoder.EncodeUnsigned().PackedValue;
                     }
 
                     // Color
                     var colorEncoder = new BCn.BC1BlockEncoder();
                     colorEncoder.LoadBlock(
-                        queue.Select(clr => (float)clr.R).ToArray(),
-                        queue.Select(clr => (float)clr.G).ToArray(),
-                        queue.Select(clr => (float)clr.B).ToArray()
+                        queue.Select(clr => clr.R / 255f).ToArray(),
+                        queue.Select(clr => clr.G / 255f).ToArray(),
+                        queue.Select(clr => clr.B / 255f).ToArray()
                     );
                     var outColor = colorEncoder.Encode().PackedValue;
 
