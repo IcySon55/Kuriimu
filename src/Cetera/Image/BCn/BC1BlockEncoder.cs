@@ -152,7 +152,7 @@ namespace Cetera.Image.BCn
         /// <param name="rowPitch">The number of array elements between rows.</param>
         /// <param name="colPitch">The number of array elements between pixels within a row.</param>
         public void LoadAlphaMask(
-            float[] aValues, int aIndex, float alphaRef = 0.5F,
+            float[] aValues, int aIndex = 0, float alphaRef = 0.5F,
             int rowPitch = 4, int colPitch = 1)
         {
             alphaMask = 0;
