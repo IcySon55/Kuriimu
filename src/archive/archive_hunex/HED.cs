@@ -86,7 +86,7 @@ namespace archive_hunex
                 Files = Entries.Select(o => new HEDFileInfo
                 {
                     Entry = o,
-                    FileName = String.Format("{0}-{1}.mzx", o.Name, o.Suffix),
+                    FileName = String.Format("{0}-{1}{2}", o.Name, o.Suffix, o.Extension),
                     FileData = new SubStream(mrgStream, o.Offset, o.Size),
                     State = ArchiveFileState.Archived
                 }).ToList();

@@ -12,13 +12,15 @@ namespace archive_hunex
     public class HEDFileEntry
     {
         public string Name;
+        public string Extension;
         public string Suffix;
         public int Offset;
         public long Size;
 
         public HEDFileEntry(BinaryReaderX blob, string name, string suffix)
         {
-            Name = name;
+            Name = Path.GetFileNameWithoutExtension(name);
+            Extension = Path.GetExtension(name) == "" ? ".mxz" : Path.GetExtension(name);
             Suffix = suffix;
 
             if (blob.BaseStream.Length == 8)
@@ -59,12 +61,6 @@ namespace archive_hunex
     {
         private BinaryReaderX br = null;
 
-        // NOTE: This uses CP-1252 mainly due to certain NAM files containing
-        // malformed strings that seemingly don't fit any code page, the usage of
-        // CP-1252 is mostly for handling these errors silently, as most text should
-        // conform to Shift-JIS otherwise.
-        private const int codePage = 1252;
-
         public string BaseTerm;
         public uint Length;
         public uint Total;
@@ -98,7 +94,7 @@ namespace archive_hunex
         private void checkIndex()
         {
             byte[] bstr = br.ReadBytes(0x7);
-            string str = Encoding.GetEncoding(codePage).GetString(bstr);
+            string str = Encoding.GetEncoding(932).GetString(bstr);
 
             if (str == "MRG.NAM")
             {
@@ -139,10 +135,19 @@ namespace archive_hunex
 
         private string readString(byte[] bstr)
         {
-            // Trim trailing null bytes.
-            byte[] trimmed = trimArray(bstr);
+            string str = "";
 
-            return Encoding.GetEncoding(codePage).GetString(trimmed);
+            // If CP-932 fails, fallback to CP-1252
+            try
+            {
+                str = Encoding.GetEncoding(932).GetString(bstr).Replace("\r\n", "").Trim('\x00');
+            }
+            catch
+            {
+                str = Encoding.GetEncoding(1252).GetString(bstr).Replace("\r\n", "").Trim('\x00');
+            }
+
+            return str;
         }
 
         private byte[] getNameWithIndex(int index)
@@ -159,18 +164,6 @@ namespace archive_hunex
             {
                 return new byte[] { 0x0 };
             }
-        }
-
-        private byte[] trimArray(byte[] arr)
-        {
-            int len = arr.Length - 1;
-            while (arr[len] == 0)
-                --len;
-
-            byte[] output = new byte[len + 1];
-            Array.Copy(arr, output, len + 1);
-
-            return output;
         }
 
         public string GetName(int index)
