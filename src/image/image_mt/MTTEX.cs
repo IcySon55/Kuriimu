@@ -117,7 +117,12 @@ namespace image_mt
                 bw.WriteStruct(Header);
 
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
-                var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
+                var bitmaps = new List<byte[]>();
+
+                if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
+                    bitmaps = Bitmaps.Select(bmp => Common.Save(CapcomTransform(bmp, TransformDirection.ToOptimizedColors), Settings)).ToList();
+                else
+                    bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
                 var offset = 0;
                 foreach (var bitmap in bitmaps)
