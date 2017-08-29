@@ -46,13 +46,15 @@ namespace image_mt
                     Unknown3 = (int)((Header.Block3 >> 16) & 0xFFFF)
                 };
 
-                var mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
+                Settings.PadToPowerOf2 = false;
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
-                if (Settings.Format == Cetera.Image.Format.DXT5)
+                if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5)
                 {
                     Settings.ZOrder = false;
                     Settings.TileSize = 4;
                 }
+
+                var mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
 
                 for (var i = 0; i < mipMaps.Count; i++)
                 {
@@ -109,7 +111,7 @@ namespace image_mt
 
         public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(output))
+            using (var bw = new BinaryWriterX(output, ByteOrder))
             {
                 Header.Block1 = (uint)(HeaderInfo.Version | (HeaderInfo.Unknown1 << 12) | (HeaderInfo.Unused1 << 24) | ((int)HeaderInfo.AlphaChannelFlags << 28));
                 Header.Block2 = (uint)(HeaderInfo.MipMapCount | (HeaderInfo.Width << 6) | (HeaderInfo.Height << 19));
@@ -124,6 +126,7 @@ namespace image_mt
                 else
                     bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
+                // Mipmaps
                 var offset = 0;
                 foreach (var bitmap in bitmaps)
                 {
