@@ -78,9 +78,9 @@ namespace Cetera.Image
                     ulong outAlpha = 0;
                     if (Format == Formats.DXT5)
                     {
-                        var alpahEncoder = new BCn.BC4BlockEncoder();
-                        alpahEncoder.LoadBlock(queue.Select(clr => (float)clr.A).ToArray());
-                        outAlpha = alpahEncoder.EncodeUnsigned().PackedValue;
+                        var alphaEncoder = new BCn.BC4BlockEncoder();
+                        alphaEncoder.LoadBlock(queue.Select(clr => (float)clr.A).ToArray());
+                        outAlpha = alphaEncoder.EncodeUnsigned().PackedValue;
                     }
 
                     // Color
