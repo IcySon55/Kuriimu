@@ -46,6 +46,8 @@ namespace image_mt
                     Unknown3 = (int)((Header.Block3 >> 16) & 0xFFFF)
                 };
 
+                // @todo: Consider whether the following settings make more sense if conditioned by the ByteOrder (or Platform)
+
                 Settings.PadToPowerOf2 = false;
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
                 if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5)
@@ -62,51 +64,42 @@ namespace image_mt
                     Settings.Width = HeaderInfo.Width >> i;
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, MinHeight);
 
-                    if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
+                    if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
                     {
-                        var bytes = br.ReadBytes(texDataSize);
+                        Settings.PixelShader = ToProperColors;
+                        //var bytes = br.ReadBytes(texDataSize);
                         //Common.Load(bytes, Settings).Save(@"C:\output_raw.png", ImageFormat.Png);
-                        Bitmaps.Add(CapcomTransform(Common.Load(bytes, Settings), TransformDirection.ToProperColors));
+                        //Bitmaps.Add(CapcomTransform(Common.Load(bytes, Settings), TransformDirection.ToProperColors));
                     }
-                    else
-                        Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
+
+                    Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
 
                     //CapcomTransform(Bitmaps[0], TransformDirection.ToOptimizedColors).Save(@"C:\output_wolram.png", ImageFormat.Png);
                 }
             }
         }
 
-        private Bitmap CapcomTransform(Bitmap orig, TransformDirection direction)
-        {
-            // Currently trying out YCbCr:
-            // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
-            var attr = new ImageAttributes();
-            switch (direction)
-            {
-                case TransformDirection.ToProperColors:
-                    attr.SetColorMatrix(new ColorMatrix(new[] {
-                        new[] { 1.402f,-0.71414f, 0,      0, 0f },
-                        new[] { 0,      0,        0,      1, 0f },
-                        new[] { 0,     -0.34414f, 1.772f, 0, 0f },
-                        new[] { 1,      1,        1,      0, 0f },
-                        new[] {-0.676f, 0.51046f,-0.855f, 0, 1f }
-                    }));
-                    break;
-                case TransformDirection.ToOptimizedColors:
-                    attr.SetColorMatrix(new ColorMatrix(new[] {
-                        new[] { 0.499999f,  0f,-0.168736f, 0.299001f,     0f },
-                        new[] {-0.418686f,  0f,-0.331263f, 0.586998f,     0f },
-                        new[] {-0.0813131f, 0f, 0.499999f, 0.114001f,     0f },
-                        new[] { 0,          1,  0,         0,             0f },
-                        new[] { 0.4822f,    0f, 0.48253f, -0.0000439169f, 1f }
-                    }));
-                    break;
-            }
+        // Currently trying out YCbCr:
+        // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
+        private static int Clamp(double n) => (int)Math.Max(0, Math.Min(n, 255));
+        private const int CbCrThreshold = 123; // usually 128, but 123 seems to work better here
 
-            var transformed = new Bitmap(orig.Width, orig.Height);
-            using (var g = Graphics.FromImage(transformed))
-                g.DrawImage(orig, new Rectangle(0, 0, orig.Width, orig.Height), 0, 0, orig.Width, orig.Height, GraphicsUnit.Pixel, attr);
-            return transformed;
+        private Color ToProperColors(Color c)
+        {
+            var (A, Y, Cb, Cr) = (c.G, c.A, c.B - CbCrThreshold, c.R - CbCrThreshold);
+            return Color.FromArgb(A,
+                Clamp(Y + 1.402 * Cr),
+                Clamp(Y - 0.344136 * Cb - 0.714136 * Cr),
+                Clamp(Y + 1.772 * Cb));
+        }
+
+        private Color ToOptimisedColors(Color c)
+        {
+            var (A, Y, Cb, Cr) = (c.A,
+                0.299 * c.R + 0.587 * c.G + 0.114 * c.B,
+                CbCrThreshold - 0.168736 * c.R - 0.331264 * c.G + 0.5 * c.B,
+                CbCrThreshold + 0.5 * c.R - 0.418688 * c.G - 0.081312 * c.B);
+            return Color.FromArgb(Clamp(Y), Clamp(Cr), c.A, Clamp(Cb));
         }
 
         public void Save(Stream output)
@@ -119,12 +112,12 @@ namespace image_mt
                 bw.WriteStruct(Header);
 
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
-                var bitmaps = new List<byte[]>();
 
-                if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5 && HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
-                    bitmaps = Bitmaps.Select(bmp => Common.Save(CapcomTransform(bmp, TransformDirection.ToOptimizedColors), Settings)).ToList();
-                else
-                    bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
+                // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
+
+                if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
+                    Settings.PixelShader = ToOptimisedColors;
+                var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
                 // Mipmaps
                 var offset = 0;

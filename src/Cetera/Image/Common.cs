@@ -37,6 +37,7 @@ namespace Cetera.Image
         public bool PadToPowerOf2 { get; set; } = true;
         public bool ZOrder { get; set; } = true;
         public int TileSize { get; set; } = 8;
+        public Func<Color, Color> PixelShader { get; set; }
 
         /// <summary>
         /// This is currently a hack
@@ -278,7 +279,9 @@ namespace Cetera.Image
                     int x = pair.Item1.X, y = pair.Item1.Y;
                     if (0 <= x && x < width && 0 <= y && y < height)
                     {
-                        ptr[data.Stride * y / 4 + x] = pair.Item2.ToArgb();
+                        var color = pair.Item2;
+                        if (settings.PixelShader != null) color = settings.PixelShader(color);
+                        ptr[data.Stride * y / 4 + x] = color.ToArgb();
                     }
                 }
             }
@@ -304,7 +307,7 @@ namespace Cetera.Image
                     int y = Clamp(point.Y, 0, bmp.Height);
 
                     var color = bmp.GetPixel(x, y);
-                    //if (color.A == 0) color = default(Color); // daigasso seems to need this
+                    if (settings.PixelShader != null) color = settings.PixelShader(color);
 
                     switch (settings.Format)
                     {
