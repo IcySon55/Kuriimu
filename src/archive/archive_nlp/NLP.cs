@@ -12,23 +12,33 @@ namespace archive_nlp.NLP
 
         public int blockSize = 0x800;
 
+        public Header header;
+        public BlockOffsetHeader blockOffsetHeader;
+
         public NLP(Stream input)
         {
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
                 //Header
-                var header = br.ReadStruct<Header>();
+                header = br.ReadStruct<Header>();
                 int entryTable1Offset = blockSize;
 
                 //EntryTable1
                 br.BaseStream.Position = entryTable1Offset;
-                var metaInfEntries = br.ReadMultiple<MetaInfEntry>((int)header.entryCount);
+                var metaInfs = br.ReadMultiple<MetaInf>((int)header.entryCount);
+                var metaInfEntries = new List<MetaInfEntry>();
+                uint id = 0;
+                foreach (var inf in metaInfs) metaInfEntries.Add(new MetaInfEntry
+                {
+                    metaInf = inf,
+                    id = id++
+                });
                 var entryTable2Offset = br.BaseStream.Position;
 
                 //EntryTable2
                 br.BaseStream.Position = entryTable2Offset;
-                var blockOffsetHeader = br.ReadStruct<BlockOffsetHeader>();
+                blockOffsetHeader = br.ReadStruct<BlockOffsetHeader>();
                 var blockOffsetEntries = br.ReadMultiple<BlockOffsetEntry>((int)blockOffsetHeader.entryCount);
                 var fileOffset = (br.BaseStream.Position + 0x7ff) & ~0x7ff;
 
@@ -49,7 +59,9 @@ namespace archive_nlp.NLP
                             packOffset,
                             (packHeader.magic == "PACK") ?
                                 packHeader.compSize : (i + 1 == blockOffsetEntries.Count) ?
-                                    br.BaseStream.Length - packOffset : (blockOffsetEntries[i + 1].blockOffset * blockSize + blockSize) - packOffset)
+                                    br.BaseStream.Length - packOffset : (blockOffsetEntries[i + 1].blockOffset * blockSize + blockSize) - packOffset),
+                        metaInfEntry = metaInfEntries.Find(x => x.id == blockOffsetEntries[i].id),
+                        offsetEntry = blockOffsetEntries[i]
                     });
                 }
             }
@@ -59,7 +71,35 @@ namespace archive_nlp.NLP
         {
             using (var bw = new BinaryWriterX(output))
             {
+                //Files
+                var dataOffset = header.dataBlockOffset * blockSize + blockSize;
+                bw.BaseStream.Position = dataOffset;
+                var offset = dataOffset;
+                foreach (var file in Files)
+                    offset = file.Write(bw.BaseStream, (uint)offset, (uint)blockSize);
 
+                //MetaInfEntries
+                bw.BaseStream.Position = blockSize;
+                for (int i = 0; i < header.entryCount; i++)
+                    if (Files.Find(x => x.metaInfEntry.id == i) != null)
+                        bw.WriteStruct(Files.Find(x => x.metaInfEntry.id == i).metaInfEntry.metaInf);
+                    else
+                        bw.WriteStruct(new MetaInf
+                        {
+                            magic = "\0\0\0\0",
+                            zero1 = 0,
+                            unk4 = 0x8000000,
+                            decompSize = 0,
+                            fileOffsetInPAK = 0
+                        });
+
+                //BlockOffsets
+                bw.WriteStruct(blockOffsetHeader);
+                foreach (var file in Files) bw.WriteStruct(file.offsetEntry);
+
+                //Header
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
             }
         }
 

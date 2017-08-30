@@ -1,11 +1,43 @@
 ﻿using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
+using System.IO;
+using Kuriimu.IO;
 
 namespace archive_nlp.NLP
 {
     public class NLPFileInfo : ArchiveFileInfo
     {
+        public MetaInfEntry metaInfEntry;
+        public BlockOffsetEntry offsetEntry;
 
+        public uint Write(Stream input, uint offset, uint blockSize)
+        {
+            using (var bw = new BinaryWriterX(input, true))
+            {
+                bw.BaseStream.Position = offset;
+
+                if (State != ArchiveFileState.Archived)
+                {
+                    if (metaInfEntry.metaInf.magic == "PAK ")
+                    {
+                        using (var pack = new BinaryReaderX(base.FileData, true))
+                        {
+                            var header = pack.ReadStruct<PACKHeader>();
+                            pack.BaseStream.Position = 0;
+                            metaInfEntry.metaInf.decompSize = header.decompSize;
+                            metaInfEntry.metaInf.fileOffsetInPAK = header.fileOffset;
+                        }
+                    }
+                }
+
+                offsetEntry.blockOffset = (offset - blockSize) / blockSize;
+
+                base.FileData.CopyTo(bw.BaseStream);
+                bw.WriteAlignment((int)blockSize);
+
+                return (uint)((offset + base.FileData.Length + (blockSize - 1)) & ~(blockSize - 1));
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -25,13 +57,19 @@ namespace archive_nlp.NLP
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class MetaInfEntry
+    public class MetaInf
     {
         public Magic magic;
         public uint zero1;
         public uint fileOffsetInPAK;
         public uint decompSize;
         public uint unk4;
+    }
+
+    public class MetaInfEntry
+    {
+        public MetaInf metaInf;
+        public uint id;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
