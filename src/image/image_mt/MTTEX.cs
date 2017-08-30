@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using Cetera.Image;
@@ -32,7 +31,7 @@ namespace image_mt
                 HeaderInfo = new HeaderInfo
                 {
                     // Block 1
-                    Version = (int)(Header.Block1 & 0xFFF),
+                    Version = (Version)(Header.Block1 & 0xFFF),
                     Unknown1 = (int)((Header.Block1 >> 12) & 0xFFF),
                     Unused1 = (int)((Header.Block1 >> 24) & 0xF),
                     AlphaChannelFlags = (AlphaChannelFlags)((Header.Block1 >> 28) & 0xF),
@@ -65,16 +64,9 @@ namespace image_mt
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, MinHeight);
 
                     if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
-                    {
                         Settings.PixelShader = ToProperColors;
-                        //var bytes = br.ReadBytes(texDataSize);
-                        //Common.Load(bytes, Settings).Save(@"C:\output_raw.png", ImageFormat.Png);
-                        //Bitmaps.Add(CapcomTransform(Common.Load(bytes, Settings), TransformDirection.ToProperColors));
-                    }
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
-
-                    //CapcomTransform(Bitmaps[0], TransformDirection.ToOptimizedColors).Save(@"C:\output_wolram.png", ImageFormat.Png);
                 }
             }
         }
@@ -106,7 +98,7 @@ namespace image_mt
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
             {
-                Header.Block1 = (uint)(HeaderInfo.Version | (HeaderInfo.Unknown1 << 12) | (HeaderInfo.Unused1 << 24) | ((int)HeaderInfo.AlphaChannelFlags << 28));
+                Header.Block1 = (uint)((int)HeaderInfo.Version | (HeaderInfo.Unknown1 << 12) | (HeaderInfo.Unused1 << 24) | ((int)HeaderInfo.AlphaChannelFlags << 28));
                 Header.Block2 = (uint)(HeaderInfo.MipMapCount | (HeaderInfo.Width << 6) | (HeaderInfo.Height << 19));
                 Header.Block3 = (uint)(HeaderInfo.Unknown2 | ((int)HeaderInfo.Format << 8) | (HeaderInfo.Unknown3 << 16));
                 bw.WriteStruct(Header);
@@ -120,7 +112,7 @@ namespace image_mt
                 var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
                 // Mipmaps
-                var offset = 0;
+                var offset = HeaderInfo.Version == Version.v154 ? 20 : 0;
                 foreach (var bitmap in bitmaps)
                 {
                     bw.Write(offset);
