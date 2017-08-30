@@ -58,15 +58,15 @@ namespace image_level5.imgc
                     int entry = table.ReadUInt16();
                     if (entry == 0xFFFF)
                     {
-                        for (int j = 0; j < 64 * header.bitDepth / 8; j++)
+                        for (int j = 0; j < 64 * Common.GetBitDepth(ImageSettings.ConvertFormat(header.imageFormat)) / 8; j++)
                         {
                             ms.WriteByte(0);
                         }
                     }
                     else
                     {
-                        tex.BaseStream.Position = entry * (64 * header.bitDepth / 8);
-                        for (int j = 0; j < 64 * header.bitDepth / 8; j++)
+                        tex.BaseStream.Position = entry * (64 * Common.GetBitDepth(ImageSettings.ConvertFormat(header.imageFormat)) / 8);
+                        for (int j = 0; j < 64 * Common.GetBitDepth(ImageSettings.ConvertFormat(header.imageFormat)) / 8; j++)
                         {
                             ms.WriteByte(tex.ReadByte());
                         }
@@ -100,7 +100,7 @@ namespace image_level5.imgc
 
                 //tile table
                 List<short> table;
-                byte[] importPic = Deflate(pic, out table);
+                byte[] importPic = Deflate(pic, ImageSettings.ConvertFormat(header.imageFormat), out table);
 
                 header.width = (short)bitmap.Width;
                 header.height = (short)bitmap.Height;
@@ -118,19 +118,22 @@ namespace image_level5.imgc
             }
         }
 
-        public static byte[] Deflate(byte[] pic, out List<short> table)
+        public static byte[] Deflate(byte[] pic, Cetera.Image.Format format, out List<short> table)
         {
             table = new List<short>();
             List<byte[]> parts = new List<byte[]>();
             byte[] result = new byte[header.width * header.height * header.bitDepth / 8];
 
-            using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(pic)))
+            using (var br = new BinaryReaderX(new MemoryStream(pic)))
             {
                 for (int i = 0; i < header.width * header.height / 64; i++)
                 {
-                    byte[] tmp = br.ReadBytes(64 * header.bitDepth / 8);
+                    byte[] tmp = br.ReadBytes(64 * Common.GetBitDepth(format) / 8);
                     bool found = false;
                     int count = 0;
+                    if (parts.Count == 0x1c8)
+                        count = 0;
+
                     while (found == false && count < parts.Count)
                     {
                         if (tmp.SequenceEqual(parts[count]))
