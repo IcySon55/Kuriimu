@@ -63,6 +63,9 @@
     <Compile Include="Garc4Support.cs" />
     <Compile Include="GarManager.cs" />
     <Compile Include="GarSupport.cs" />
+    <Compile Include="NARC.cs" />
+    <Compile Include="NarcManager.cs" />
+    <Compile Include="NarcSupport.cs" />
     <Compile Include="NDSFS.cs" />
     <Compile Include="NdsfsManager.cs" />
     <Compile Include="NdsfsSupport.cs" />
