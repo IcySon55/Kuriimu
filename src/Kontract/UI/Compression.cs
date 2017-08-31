@@ -38,16 +38,16 @@ namespace Kuriimu.UI
             // Huffman
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Huffman", null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[2];
-            //tsb2.DropDownItems.Add(new ToolStripMenuItem("4bit", null));
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("4bit", null));
             tsb3.DropDownItems.Add(new ToolStripMenuItem("8bit", null));
 
-            //tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
-            //tsb3.DropDownItems[0].Tag = Compression.Huff4;
-            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
-            //tsb3.DropDownItems[1].Tag = Compression.Huff4;
-
             tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[0];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.Huff4;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.Huff4;
+
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[1];
             tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb4.DropDownItems[0].Tag = Compression.Huff8;
             tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
