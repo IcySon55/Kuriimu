@@ -66,16 +66,21 @@ namespace Kuriimu.Compression
         public static byte[] Compress(Stream input, int num_bits)
         {
             if (input.Length > 0xFFFFFF)
-                throw new ArgumentException("File too big");
+                throw new ArgumentException("File too big", nameof(input));
 
-            //if (num_bits != 8)
-            // throw new NotImplementedException("Only 8 bits is currently supported");
+            if (num_bits != 8 && num_bits != 4)
+                throw new ArgumentException($"{num_bits} Bits aren't supported!", nameof(num_bits));
 
             var inData = new byte[input.Length];
             input.Read(inData, 0, (int)input.Length);
 
+            // @todo: swap the nibble order depending on compression needs
+            //        - this is currently for Nintendo (0x24 header) order, i.e. most significant nibble first
+            if (num_bits == 4)
+                inData = inData.SelectMany(b => new[] { (byte)(b / 16), (byte)(b % 16) }).ToArray();
+
             // Get frequencies
-            var freq = GetFrequencies(inData, num_bits);
+            var freq = inData.GroupBy(b => b).Select(g => new Node { freqCount = g.Count(), code = g.Key }).ToList();
 
             // Add a stub entry in the special case that there's only one item
             if (freq.Count == 1) freq.Add(new Node { code = (byte)(inData[0] + 1) });
@@ -112,7 +117,7 @@ namespace Kuriimu.Compression
             using (var bw = new BinaryWriterX(new MemoryStream()))
             {
                 // Write header
-                bw.Write((inData.Length << 8) | 0x20 | num_bits);
+                bw.Write(((int)input.Length << 8) | 0x20 | num_bits);
                 bw.Write((byte)lst.Count);
 
                 // Write Huffman tree
@@ -125,7 +130,6 @@ namespace Kuriimu.Compression
 
                 // Write bits to stream
                 int data = 0, setbits = 0;
-                inData = SplitData(inData, num_bits);
                 foreach (var bit in inData.SelectMany(b => codes[b]))
                 {
                     data = data * 2 + bit - '0';
@@ -145,64 +149,6 @@ namespace Kuriimu.Compression
 
             public IEnumerable<Tuple<byte, string>> GetHuffCodes(string seed) =>
                 children?.SelectMany((child, i) => child.GetHuffCodes(seed + i)) ?? new[] { Tuple.Create(code, seed) };
-        }
-
-        public static List<Node> GetFrequencies(byte[] inData, int num_bits)
-        {
-            if (num_bits == 8)
-                return inData.GroupBy(b => b).Select(g => new Node { freqCount = g.Count(), code = g.Key }).ToList();
-
-            if (num_bits == 4)
-            {
-                var freq = new List<Node>();
-                var symbCount = inData.Length * 2;
-                using (var br = new BinaryReaderX(new MemoryStream(inData)))
-                    for (int i = 0; i < symbCount; i++)
-                    {
-                        var symb = br.ReadNibble();
-                        if (freq.Find(x => x.code == symb) == null)
-                        {
-                            freq.Add(new Node { freqCount = 1, code = (byte)symb });
-                        }
-                        else
-                        {
-                            freq.Find(x => x.code == symb).freqCount++;
-                        }
-                    }
-
-                return freq;
-            }
-            else
-            {
-                throw new Exception($"{num_bits} Bits aren't supported!");
-            }
-        }
-
-        public static byte[] SplitData(byte[] inData, int num_bits)
-        {
-            if (num_bits == 8)
-                return inData;
-
-            if (num_bits == 4)
-            {
-                var result = new List<byte>();
-                using (var br = new BinaryReaderX(new MemoryStream(inData)))
-                    for (int i = 0; i < inData.Length * 2; i++)
-                    {
-                        result.Add((byte)br.ReadNibble());
-                        if (i % 2 == 1)
-                        {
-                            var help = result[result.Count - 1];
-                            result[result.Count - 1] = result[result.Count - 2];
-                            result[result.Count - 2] = help;
-                        }
-                    }
-                return result.ToArray();
-            }
-            else
-            {
-                throw new Exception($"{num_bits} Bits aren't supported!");
-            }
         }
     }
 }
