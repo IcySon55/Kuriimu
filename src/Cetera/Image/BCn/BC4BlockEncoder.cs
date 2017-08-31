@@ -182,8 +182,8 @@ namespace Cetera.Image.BCn
             float vMin, vMax;
             if (isSixPointInterp)
             {
-                vMin = rangeMax;
-                vMax = rangeMin;
+                vMin = rangeMin;
+                vMax = rangeMax;
 
                 for (int i = 0; i < values.Length; i++)
                 {
