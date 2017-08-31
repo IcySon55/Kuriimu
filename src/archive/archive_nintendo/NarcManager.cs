@@ -13,10 +13,10 @@ namespace archive_nintendo.NARC
         #region Properties
 
         // Information
-        public string Name => "CTPK";
-        public string Description => "CTR Texture PacKage";
-        public string Extension => "*.ctpk";
-        public string About => "This is the CTPK archive manager for Karameru.";
+        public string Name => "NARC";
+        public string Description => "Nintendo ARChive";
+        public string Extension => "*.narc";
+        public string About => "This is the NARC manager for Karameru.";
 
         // Feature Support
         public bool ArchiveHasExtendedProperties => false;
