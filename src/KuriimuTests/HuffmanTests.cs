@@ -13,6 +13,9 @@ namespace KuriimuTests
         {
             var bytes2 = Decompress(new MemoryStream(Compress(new MemoryStream(bytes), 8)), 8);
             Assert.IsTrue(bytes.SequenceEqual(bytes2));
+
+            var bytes3 = Decompress(new MemoryStream(Compress(new MemoryStream(bytes), 4)), 4);
+            Assert.IsTrue(bytes.SequenceEqual(bytes3));
         }
 
         [TestMethod]
