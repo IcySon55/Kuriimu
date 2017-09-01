@@ -112,7 +112,6 @@ namespace Kuriimu.Compression
             using (var bw = new BinaryWriterX(new MemoryStream()))
             {
                 // Write header
-                bw.Write(((int)input.Length << 8) | 0x20 | num_bits);
                 bw.Write((byte)lst.Count);
 
                 // Write Huffman tree

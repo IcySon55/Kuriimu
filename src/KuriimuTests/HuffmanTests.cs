@@ -33,7 +33,7 @@ namespace KuriimuTests
         [TestMethod]
         public void HundredZeroesTest() => Test(new byte[100]);
 
-        [TestMethod] // This test will be much much much more difficult to fix than the ones above
+        [TestMethod]
         public void AllBytesTest() => Test(Enumerable.Range(0, 256).Select(n => (byte)n).ToArray());
     }
 }
