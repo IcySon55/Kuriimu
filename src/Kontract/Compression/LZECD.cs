@@ -40,5 +40,10 @@ namespace Kuriimu.Compression
                 return lst.ToArray();
             }
         }
+
+        public static byte[] Compress(Stream input)
+        {
+            return null;
+        }
     }
 }

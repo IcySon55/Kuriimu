@@ -63,6 +63,8 @@
     <Compile Include="Compression\HuffSupport.cs" />
     <Compile Include="Compression\LZ10.cs" />
     <Compile Include="Compression\LZ11.cs" />
+    <Compile Include="Compression\LZ4.cs" />
+    <Compile Include="Compression\LZ60.cs" />
     <Compile Include="Compression\LZ77.cs" />
     <Compile Include="Compression\LZECD.cs" />
     <Compile Include="Compression\LZSS.cs" />

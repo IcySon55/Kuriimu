@@ -137,7 +137,7 @@ namespace Kuriimu.Compression
 
         public static byte[] Decompress(Stream instream)
         {
-            byte[] input = instream.StructToBytes();
+            byte[] input = new BinaryReaderX(instream, true).ReadBytes((int)instream.Length);
 
             if (input == null) throw new ArgumentNullException(nameof(input));
 
@@ -178,7 +178,7 @@ namespace Kuriimu.Compression
 
         public static byte[] Compress(Stream instream)
         {
-            byte[] input = instream.StructToBytes();
+            byte[] input = new BinaryReaderX(instream, true).ReadBytes((int)instream.Length);
 
             if (input == null) throw new ArgumentNullException(nameof(input));
             if (input.Length <= 8) return null;
@@ -284,6 +284,6 @@ namespace Kuriimu.Compression
                 } while ((mask >>= 1) != 0);
             }
 
-        }     
+        }
     }
 }

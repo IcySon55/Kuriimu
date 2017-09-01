@@ -151,12 +151,7 @@ namespace Kuriimu.Compression
                 currentBlockLength = 0;
             }
 
-            // write the RLE marker and the decompressed size
-            outstream.WriteByte(0x30);
             int compLen = compressedData.Count;
-            outstream.WriteByte((byte)(inLength & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 8) & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 16) & 0xFF));
 
             // write the compressed data
             outstream.Write(compressedData.ToArray(), 0, compLen);
