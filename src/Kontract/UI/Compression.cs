@@ -13,7 +13,118 @@ namespace Kuriimu.UI
             ToolStripMenuItem tsb2;
             ToolStripMenuItem tsb3;
             ToolStripMenuItem tsb4;
+            ToolStripMenuItem tsb5;
             tsb.DropDownItems.Clear();
+
+            //--------General---------
+            tsb.DropDownItems.Add(new ToolStripMenuItem("General", null));
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
+            //  GZip
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("GZip", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.GZip;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.GZip;
+            //  ZLib
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("ZLib", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[1];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.ZLib;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.ZLib;
+
+            //-------Nintendo---------
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Nintendo", null));
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
+
+            //  Compress
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Compress", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ10", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[0];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.NLZ10;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.NLZ10;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ11", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[1];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.NLZ11;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.NLZ11;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ60", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[2];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.NLZ60;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.NLZ60;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ77", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[3];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.LZ77;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.LZ77;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[4];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.RevLZ77;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.RevLZ77;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Huffman", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[5];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("4Bit", null));
+            tsb5 = (ToolStripMenuItem)tsb4.DropDownItems[0];
+            tsb5.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb5.DropDownItems[0].Tag = Compression.NHuff4;
+            tsb5.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb5.DropDownItems[1].Tag = Compression.NHuff4;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("8Bit", null));
+            tsb5 = (ToolStripMenuItem)tsb4.DropDownItems[1];
+            tsb5.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb5.DropDownItems[0].Tag = Compression.NHuff8;
+            tsb5.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb5.DropDownItems[1].Tag = Compression.NHuff8;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("RLE", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[6];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.NRLE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.NRLE;
+
+            //  Decompress
+            //tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            //tsb3.DropDownItems[1].Tag = Compression.Nintendo;
+
+            //  LZ10
+            /*tsb2.DropDownItems.Add(new ToolStripMenuItem("LZ10", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.ZLib;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.ZLib;
+
+            //  Decompress
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb2.DropDownItems[0].Tag = Compression;
+            //    LZ77
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ77", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[0];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.LZ77;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.LZ77;
+            //    RevLZ77
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[1];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.RevLZ77;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.RevLZ77;
+
+            //  Huffman
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Huffman", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
 
             //3DS
             tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
@@ -120,7 +231,7 @@ namespace Kuriimu.UI
             tsb2.DropDownItems.Add(new ToolStripMenuItem(Compression.LZSSVLE.ToString(), null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
-            tsb3.DropDownItems[0].Tag = Compression.LZSSVLE;
+            tsb3.DropDownItems[0].Tag = Compression.LZSSVLE;*/
         }
 
         public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile)
@@ -172,25 +283,22 @@ namespace Kuriimu.UI
                         case Compression.GZip:
                             outFs.Write(GZip.Decompress(openFile));
                             break;
-                        case Compression.Huff4:
+                        case Compression.NHuff4:
                             outFs.Write(Huffman.Decompress(openFile, 4));
                             break;
-                        case Compression.Huff8:
+                        case Compression.NHuff8:
                             outFs.Write(Huffman.Decompress(openFile, 8));
                             break;
-                        case Compression.LZ10:
+                        case Compression.NLZ10:
                             outFs.Write(LZ10.Decompress(openFile));
                             break;
-                        case Compression.LZ11:
+                        case Compression.NLZ11:
                             outFs.Write(LZ11.Decompress(openFile));
                             break;
                         case Compression.LZ77:
                             outFs.Write(LZ77.Decompress(openFile));
                             break;
-                        case Compression.LZSS:
-                            outFs.Write(LZSS.Decompress(openFile, LZSS.GetDecompressedSize(openFile)));
-                            break;
-                        case Compression.LZSSVLE:
+                        case Compression.LZ10VLE:
                             outFs.Write(LZSSVLE.Decompress(openFile));
                             break;
                         case Compression.RevLZ77:
@@ -199,7 +307,7 @@ namespace Kuriimu.UI
                         case Compression.LZECD:
                             outFs.Write(LZECD.Decompress(openFile));
                             break;
-                        case Compression.RLE:
+                        case Compression.NRLE:
                             outFs.Write(RLE.Decompress(openFile));
                             break;
                         case Compression.ZLib:
@@ -245,16 +353,16 @@ namespace Kuriimu.UI
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
                             break;
-                        case Compression.Huff4:
+                        case Compression.NHuff4:
                             outFs.Write(Huffman.Compress(openFile, 4));
                             break;
-                        case Compression.Huff8:
+                        case Compression.NHuff8:
                             outFs.Write(Huffman.Compress(openFile, 8));
                             break;
-                        case Compression.LZ10:
+                        case Compression.NLZ10:
                             outFs.Write(LZ10.Compress(openFile));
                             break;
-                        case Compression.LZ11:
+                        case Compression.NLZ11:
                             outFs.Write(LZ11.Compress(openFile));
                             break;
                         /*case Compression.LZSS:
@@ -263,7 +371,7 @@ namespace Kuriimu.UI
                         case Compression.RevLZ77:
                             outFs.Write(RevLZ77.Compress(openFile));
                             break;
-                        case Compression.RLE:
+                        case Compression.NRLE:
                             outFs.Write(RLE.Compress(openFile));
                             break;
                         case Compression.ZLib:
@@ -281,23 +389,28 @@ namespace Kuriimu.UI
 
         public enum Compression : short
         {
+            ZLib,
+            GZip,
+
             Level5,
+            Nintendo,
+
             L5Huff4,
             L5Huff8,
-            L5LZSS,
+            L5LZ10,
             L5RLE,
-            GZip,
-            Huff4,
-            Huff8,
-            LZ10,
-            LZ11,
+
+            NLZ10,
+            NLZ11,
+            NLZ60,
+            NHuff4,
+            NHuff8,
+            NRLE,
+
             LZ77,
             RevLZ77,
-            LZSS,
-            LZSSVLE,
+            LZ10VLE,
             LZECD,
-            RLE,
-            ZLib
         }
     }
 }
