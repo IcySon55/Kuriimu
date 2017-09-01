@@ -7,12 +7,12 @@ using System.Text;
 
 namespace archive_zlib
 {
-    public class ZLibSupport
+    public class ZLIB
     {
         public List<ZLIBFileInfo> Files = new List<ZLIBFileInfo>();
         private Stream _stream = null;
 
-        public ZLibSupport(Stream input)
+        public ZLIB(Stream input)
         {
             _stream = input;
             using (var br = new BinaryReaderX(input, true, ByteOrder.BigEndian))

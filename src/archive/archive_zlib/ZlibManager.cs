@@ -10,7 +10,7 @@ namespace archive_zlib
 {
     public class ZlibManager : IArchiveManager
     {
-        private ZLibSupport _zlib = null;
+        private ZLIB _zlib = null;
 
         #region Properties
 
