@@ -8,20 +8,10 @@ namespace Kuriimu.Compression
 {
     public class RLE
     {
-        public static byte[] Decompress(Stream instream, long decompressedLength=0)
+        public static byte[] Decompress(Stream instream, long decompressedLength)
         {
             using (var br = new BinaryReaderX(instream, true))
             {
-                var version = br.ReadByte();
-                if (version==0x30)
-                {
-                    br.BaseStream.Position--;
-                    decompressedLength = br.ReadUInt32() >> 8;
-                } else
-                {
-                    br.BaseStream.Position--;
-                }
-
                 var result = new List<byte>();
 
                 while (true)

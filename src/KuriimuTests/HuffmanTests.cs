@@ -11,10 +11,10 @@ namespace KuriimuTests
     {
         static void Test(byte[] bytes)
         {
-            var bytes2 = Decompress(new MemoryStream(Compress(new MemoryStream(bytes), 8)), 8);
+            var bytes2 = Decompress(new MemoryStream(Compress(new MemoryStream(bytes), 8)), 8, bytes.Length);
             Assert.IsTrue(bytes.SequenceEqual(bytes2));
 
-            var bytes3 = Decompress(new MemoryStream(Compress(new MemoryStream(bytes), 4)), 4);
+            var bytes3 = Decompress(new MemoryStream(Compress(new MemoryStream(bytes), 4)), 4, bytes.Length);
             Assert.IsTrue(bytes.SequenceEqual(bytes3));
         }
 

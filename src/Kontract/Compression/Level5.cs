@@ -30,11 +30,11 @@ namespace Kuriimu.Compression
                     case Method.NoCompression:
                         return br.ReadBytes(size);
                     case Method.LZ10:
-                        return LZSS.Decompress(br.BaseStream, size);
+                        return LZ10.Decompress(br.BaseStream, size);
                     case Method.Huffman4Bit:
                     case Method.Huffman8Bit:
                         int num_bits = method == Method.Huffman4Bit ? 4 : 8;
-                        return Huffman.Decompress(br.BaseStream, num_bits, ByteOrder.LittleEndian, size);
+                        return Huffman.Decompress(br.BaseStream, num_bits, size, ByteOrder.LittleEndian);
                     case Method.RLE:
                         return RLE.Decompress(br.BaseStream, size);
                     default:

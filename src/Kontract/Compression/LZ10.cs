@@ -8,7 +8,7 @@ namespace Kuriimu.Compression
 {
     public class LZ10
     {
-        public static byte[] Decompress(Stream instream)
+        public static byte[] Decompress(Stream instream, int decompressedSize)
         {
             #region format definition from GBATEK/NDSTEK
             /*  Data header (32bit)
@@ -31,13 +31,6 @@ namespace Kuriimu.Compression
             Stream outstream = new MemoryStream();
 
             long readBytes = 0;
-
-            instream.ReadByte();
-
-            byte[] sizeBytes = new byte[3];
-            instream.Read(sizeBytes, 0, 3);
-            int decompressedSize = sizeBytes[0] | (sizeBytes[1] << 8) | (sizeBytes[2] << 16);
-            readBytes += 4;
 
             // the maximum 'DISP-1' is 0xFFF.
             int bufferLength = 0x1000;
@@ -129,13 +122,6 @@ namespace Kuriimu.Compression
                 outstream.Flush();
             }
 
-            /*if (readBytes < inLength)
-            {
-                // the input may be 4-byte aligned.
-                if ((readBytes ^ (readBytes & 3)) + 4 < inLength)
-                    throw new Exception("Too much input: " + readBytes.ToString() + ", " + inLength.ToString());
-            }*/
-
             outstream.Position = 0;
             return new BinaryReaderX(outstream).ReadBytes(decompressedSize);
         }
@@ -148,22 +134,13 @@ namespace Kuriimu.Compression
             long inLength = instream.Length;
             Stream outstream = new MemoryStream();
 
-            if (inLength > 0xFFFFFF)
-                throw new Exception("Input too large!");
-
             // save the input data in an array to prevent having to go back and forth in a file
             byte[] indata = new byte[inLength];
             int numReadBytes = instream.Read(indata, 0, (int)inLength);
             if (numReadBytes != inLength)
                 throw new Exception("Input too short!");
 
-            // write the compression header first
-            outstream.WriteByte(0x10);
-            outstream.WriteByte((byte)(inLength & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 8) & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 16) & 0xFF));
-
-            int compressedLength = 4;
+            int compressedLength = 0;
 
             fixed (byte* instart = &indata[0])
             {

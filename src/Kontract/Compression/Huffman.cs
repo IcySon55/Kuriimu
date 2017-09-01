@@ -9,7 +9,7 @@ namespace Kuriimu.Compression
     public class Huffman
     {
         //Huffman 4bit/8bit
-        public static byte[] Decompress(Stream input, int num_bits, ByteOrder byteOrder = ByteOrder.LittleEndian, long decompressedLength = 0)
+        public static byte[] Decompress(Stream input, int num_bits, long decompressedLength, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
             using (var br = new BinaryReaderX(input, true))
             {
@@ -59,9 +59,6 @@ namespace Kuriimu.Compression
 
         public static byte[] Compress(Stream input, int num_bits, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            if (input.Length > 0xFFFFFF)
-                throw new ArgumentException("File too big", nameof(input));
-
             if (num_bits != 8 && num_bits != 4)
                 throw new ArgumentException($"{num_bits} Bits aren't supported!", nameof(num_bits));
 

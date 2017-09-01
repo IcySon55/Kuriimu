@@ -6,12 +6,11 @@ namespace Kuriimu.Compression
 {
     public class LZ11
     {
-        public static byte[] Decompress(Stream stream)
+        public static byte[] Decompress(Stream stream, int decompSize)
         {
             using (BinaryReaderX br = new BinaryReaderX(stream, true))
             {
-                uint length = br.ReadUInt32() >> 8;
-                byte[] result = new byte[length];
+                byte[] result = new byte[decompSize];
                 int dstoffset = 0;
 
                 while (true)
@@ -54,7 +53,7 @@ namespace Kuriimu.Compression
                             }
                         }
 
-                        if (dstoffset >= length) return result;
+                        if (dstoffset >= decompSize) return result;
                         header <<= 1;
                     }
                 }
@@ -69,22 +68,13 @@ namespace Kuriimu.Compression
             long inLength = instream.Length;
             Stream outstream = new MemoryStream();
 
-            if (inLength > 0xFFFFFF)
-                throw new Exception("Input too large!");
-
             // save the input data in an array to prevent having to go back and forth in a file
             byte[] indata = new byte[inLength];
             int numReadBytes = instream.Read(indata, 0, (int)inLength);
             if (numReadBytes != inLength)
                 throw new Exception("Stream too short!");
 
-            // write the compression header first
-            outstream.WriteByte(0x11);
-            outstream.WriteByte((byte)(inLength & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 8) & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 16) & 0xFF));
-
-            int compressedLength = 4;
+            int compressedLength = 0;
 
             fixed (byte* instart = &indata[0])
             {
