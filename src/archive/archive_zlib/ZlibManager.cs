@@ -54,7 +54,7 @@ namespace archive_zlib
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _zlib = new ZLibSupport(FileInfo.OpenRead());
+                _zlib = new ZLIB(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
