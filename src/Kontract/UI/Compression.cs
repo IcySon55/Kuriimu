@@ -65,6 +65,12 @@ namespace Kuriimu.UI
             //    RevLZ77
             tsb3.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null, Compress));
             tsb3.DropDownItems[6].Tag = Compression.RevLZ77;
+            //    LZOvl
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Compress));
+            tsb3.DropDownItems[7].Tag = Compression.LZOvl;
+            //    Yaz0
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null, Compress));
+            tsb3.DropDownItems[8].Tag = Compression.Yaz0;
 
             //  Decompress
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null));
@@ -78,6 +84,13 @@ namespace Kuriimu.UI
             //    RevLZ77
             tsb3.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null, Decompress));
             tsb3.DropDownItems[2].Tag = Compression.RevLZ77;
+            //    LZOvl
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Decompress));
+            tsb3.DropDownItems[3].Tag = Compression.LZOvl;
+            //    Yaz0
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null, Decompress));
+            tsb3.DropDownItems[4].Tag = Compression.Yaz0;
+
 
             //-------Level 5---------
             tsb.DropDownItems.Add(new ToolStripMenuItem("Level 5", null));
@@ -179,6 +192,12 @@ namespace Kuriimu.UI
                         case Compression.RevLZ77:
                             outFs.Write(RevLZ77.Decompress(openFile));
                             break;
+                        case Compression.LZOvl:
+                            outFs.Write(LZOvl.Decompress(openFile));
+                            break;
+                        case Compression.Yaz0:
+                            outFs.Write(Yaz0.Decompress(openFile));
+                            break;
                         case Compression.LZECD:
                             outFs.Write(LZECD.Decompress(openFile));
                             break;
@@ -249,6 +268,12 @@ namespace Kuriimu.UI
                         case Compression.RevLZ77:
                             outFs.Write(RevLZ77.Compress(openFile));
                             break;
+                        case Compression.LZOvl:
+                            outFs.Write(LZOvl.Compress(openFile));
+                            break;
+                        case Compression.Yaz0:
+                            outFs.Write(Yaz0.Compress(openFile));
+                            break;
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
                             break;
@@ -287,8 +312,11 @@ namespace Kuriimu.UI
 
             LZ77,
             RevLZ77,
+            LZOvl,
             LZ10VLE,
             LZECD,
+
+            Yaz0
         }
     }
 }

@@ -67,11 +67,13 @@
     <Compile Include="Compression\LZ60.cs" />
     <Compile Include="Compression\LZ77.cs" />
     <Compile Include="Compression\LZECD.cs" />
+    <Compile Include="Compression\LZOvl.cs" />
     <Compile Include="Compression\LZSS.cs" />
     <Compile Include="Compression\LZSSVLE.cs" />
     <Compile Include="Compression\Nintendo.cs" />
     <Compile Include="Compression\RevLZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
+    <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />

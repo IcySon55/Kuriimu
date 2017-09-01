@@ -19,7 +19,7 @@ namespace KuriimuTests
     {
         enum Method : byte
         {
-            LZ10, LZ11, LZ60, LZ77, RevLZ77, LZ4, LZECD
+            LZ10, LZ11, LZ60, LZ77, RevLZ77, LZ4, LZECD, LZOvl
         }
 
         static void Test(byte[] bytes, Method method)
@@ -54,6 +54,10 @@ namespace KuriimuTests
                     break;
                 case Method.LZECD:
                     bytes2 = LZECD.Decompress(new MemoryStream(LZECD.Compress(new MemoryStream(bytes))));
+                    Assert.IsTrue(bytes.SequenceEqual(bytes2));
+                    break;
+                case Method.LZOvl:
+                    bytes2 = LZOvl.Decompress(new MemoryStream(LZOvl.Compress(new MemoryStream(bytes))));
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
             }
@@ -149,5 +153,18 @@ namespace KuriimuTests
 
         [TestMethod]
         public void AllBytesLZECDTest() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.LZECD);
+
+        //LZOvl
+        [TestMethod]
+        public void AsciiHelloWorldLZOvlTest() => Test(Encoding.ASCII.GetBytes("hello world"), Method.LZOvl);
+
+        [TestMethod]
+        public void UnicodeHelloWorldLZOvlTest() => Test(Encoding.Unicode.GetBytes("hello world"), Method.LZOvl);
+
+        [TestMethod]
+        public void HundredZeroesLZOvlTest() => Test(new byte[100], Method.LZOvl);
+
+        [TestMethod]
+        public void AllBytesLZOvlTest() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.LZOvl);
     }
 }
