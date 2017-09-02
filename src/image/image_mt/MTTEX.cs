@@ -65,10 +65,6 @@ namespace image_mt
 
                     if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
                         Settings.PixelShader = ToProperColors;
-                    if (HeaderInfo.Format == Format.DXT1)
-                        texDataSize = Math.Max(texDataSize, 8);
-                    if (HeaderInfo.Format == Format.DXT5)
-                        texDataSize = Math.Max(texDataSize, 16);
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
