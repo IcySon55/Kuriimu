@@ -15,6 +15,7 @@ namespace image_mt
 
         private Header Header;
         public HeaderInfo HeaderInfo { get; set; }
+        private int HeaderLength = 0x10;
         private ImageSettings Settings = new ImageSettings();
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
 
@@ -49,7 +50,7 @@ namespace image_mt
 
                 Settings.PadToPowerOf2 = false;
                 Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
-                if (Settings.Format == Cetera.Image.Format.DXT1 || Settings.Format == Cetera.Image.Format.DXT5)
+                if (Settings.Format.ToString().Contains("DXT"))
                 {
                     Settings.ZOrder = false;
                     Settings.TileSize = 4;
@@ -63,7 +64,7 @@ namespace image_mt
                     Settings.Width = HeaderInfo.Width >> i;
                     Settings.Height = HeaderInfo.Height >> i;
 
-                    if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
+                    if (HeaderInfo.Version == Version.v154 && HeaderInfo.Format == Format.DXT5)
                         Settings.PixelShader = ToProperColors;
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
@@ -107,18 +108,19 @@ namespace image_mt
 
                 // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
 
-                if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
+                if (HeaderInfo.Version == Version.v154 && HeaderInfo.Format == Format.DXT5)
                     Settings.PixelShader = ToOptimisedColors;
                 var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
                 // Mipmaps
-                var offset = HeaderInfo.Version == Version.v154 ? 20 : 0;
+                var offset = HeaderInfo.Version == Version.v154 ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
                 foreach (var bitmap in bitmaps)
                 {
                     bw.Write(offset);
                     offset += bitmap.Length;
                 }
 
+                // Bitmaps
                 foreach (var bitmap in bitmaps)
                     bw.Write(bitmap);
             }

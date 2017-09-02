@@ -17,7 +17,7 @@ namespace Cetera.Image
         L4, A4, ETC1, ETC1A4,
 
         // PS3
-        DXT1, DXT5
+        DXT1, DXT3, DXT5
     }
 
     public enum Orientation : byte
@@ -90,7 +90,7 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
-                var dxtdecoder = new DXT.Decoder(format == Format.DXT1 ? DXT.Formats.DXT1 : DXT.Formats.DXT5);
+                var dxtdecoder = new DXT.Decoder((DXT.Formats)Enum.Parse(typeof(DXT.Formats), format.ToString()));
 
                 while (true)
                 {
@@ -154,11 +154,12 @@ namespace Cetera.Image
                             });
                             continue;
                         case Format.DXT1:
+                        case Format.DXT3:
                         case Format.DXT5:
                             yield return dxtdecoder.Get(() =>
                             {
                                 if (br.BaseStream.Position == br.BaseStream.Length) return (0, 0);
-                                var dxt5Alpha = format == Format.DXT5 ? br.ReadUInt64() : 0;
+                                var dxt5Alpha = format == Format.DXT3 || format == Format.DXT5 ? br.ReadUInt64() : 0;
                                 return (dxt5Alpha, br.ReadUInt64());
                             });
                             continue;

@@ -9,7 +9,7 @@ namespace Cetera.Image
     {
         public enum Formats
         {
-            DXT1, DXT5
+            DXT1, DXT3, DXT5
         }
 
         public class Decoder
@@ -40,18 +40,28 @@ namespace Cetera.Image
                     for (int i = 0; i < 16; i++)
                     {
                         var code = (int)(alpha >> 16 + 3 * i) & 7;
-                        var alp = Format == Formats.DXT1 ? 255
-                                : code == 0 ? a0
-                                : code == 1 ? a1
-                                : a0 > a1 ? Interpolate(a0, a1, 8 - code, 7)
-                                : code < 6 ? Interpolate(a0, a1, 6 - code, 5)
-                                : code % 2 * 255;
+                        var alp = 255;
+                        if (Format == Formats.DXT3)
+                        {
+                            // TODO: Fix broken DXT3 alpha Neobeo!
+                            // The DXT3 images might be using yet another color mess thing, maybe
+                            code = (int)(alpha >> (4 * i)) & 0xF;
+                            alp = 255;
+                        }
+                        else if (Format == Formats.DXT5)
+                        {
+                            alp = code == 0 ? a0
+                            : code == 1 ? a1
+                            : a0 > a1 ? Interpolate(a0, a1, 8 - code, 7)
+                            : code < 6 ? Interpolate(a0, a1, 6 - code, 5)
+                            : code % 2 * 255;
+                        }
                         code = (int)(block >> 32 + 2 * i) & 3;
                         var clr = code == 0 ? c0
-                                : code == 1 ? c1
-                                : Format == Formats.DXT5 || color0 > color1 ? InterpolateColor(c0, c1, 4 - code, 3)
-                                : code == 2 ? InterpolateColor(c0, c1, 1, 2)
-                                : Color.Black;
+                            : code == 1 ? c1
+                            : Format == Formats.DXT5 || color0 > color1 ? InterpolateColor(c0, c1, 4 - code, 3)
+                            : code == 2 ? InterpolateColor(c0, c1, 1, 2)
+                            : Color.Black;
                         queue.Enqueue(Color.FromArgb(alp, clr));
                     }
                 }

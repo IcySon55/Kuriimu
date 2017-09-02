@@ -20,7 +20,8 @@ namespace image_mt
         RGB888 = 0x11,
 
         // PS3
-        DXT1 = 19,
+        DXT1 = 0x13,
+        DXT3 = 0x21,
         DXT5 = 0x2A
     }
 
