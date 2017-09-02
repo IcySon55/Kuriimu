@@ -56,7 +56,7 @@ namespace Kuriimu.Compression
                 throw new Exception("File too big to be compressed with Nintendo compression!");
 
             var res = new List<byte>();
-            res.AddRange(new byte[] { (byte)method, (byte)((input.Length & 0xff) << 16), (byte)((input.Length >> 8 & 0xff) << 8), (byte)(input.Length >> 16 & 0xff) });
+            res.AddRange(new byte[] { (byte)method, (byte)(input.Length & 0xff), (byte)(input.Length >> 8 & 0xff), (byte)(input.Length >> 16 & 0xff) });
 
             switch (method)
             {
