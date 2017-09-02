@@ -38,7 +38,7 @@ namespace image_mt
                     // Block 2
                     MipMapCount = (int)(Header.Block2 & 0x3F),
                     Width = (int)((Header.Block2 >> 6) & 0x1FFF),
-                    Height = (int)((Header.Block2 >> 19) & 0x1FFF),
+                    Height = Math.Max((int)((Header.Block2 >> 19) & 0x1FFF), MinHeight),
                     // Block 3
                     Unknown2 = (int)(Header.Block3 & 0xFF),
                     Format = (Format)((Header.Block3 >> 8) & 0xFF),
@@ -61,10 +61,14 @@ namespace image_mt
                 {
                     var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     Settings.Width = HeaderInfo.Width >> i;
-                    Settings.Height = Math.Max(HeaderInfo.Height >> i, MinHeight);
+                    Settings.Height = HeaderInfo.Height >> i;
 
                     if (HeaderInfo.AlphaChannelFlags == AlphaChannelFlags.YCbCrTransform)
                         Settings.PixelShader = ToProperColors;
+                    if (HeaderInfo.Format == Format.DXT1)
+                        texDataSize = Math.Max(texDataSize, 8);
+                    if (HeaderInfo.Format == Format.DXT5)
+                        texDataSize = Math.Max(texDataSize, 16);
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
