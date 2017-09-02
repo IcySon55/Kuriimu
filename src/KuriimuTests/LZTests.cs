@@ -49,7 +49,7 @@ namespace KuriimuTests
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.LZ4:
-                    bytes2 = LZ4.Decompress(new MemoryStream(LZ4.Compress(new MemoryStream(bytes))), bytes.Length);
+                    bytes2 = LZ4.Decompress(new MemoryStream(LZ4.Compress(new MemoryStream(bytes))));
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.LZECD:
