@@ -157,6 +157,7 @@ namespace Cetera.Image
                         case Format.DXT5:
                             yield return dxtdecoder.Get(() =>
                             {
+                                if (br.BaseStream.Position == br.BaseStream.Length) return (0, 0);
                                 var dxt5Alpha = format == Format.DXT5 ? br.ReadUInt64() : 0;
                                 return (dxt5Alpha, br.ReadUInt64());
                             });
