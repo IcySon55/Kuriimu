@@ -32,6 +32,13 @@ namespace Kuriimu.UI
             tsb3.DropDownItems[0].Tag = Compression.ZLib;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.ZLib;
+            //  LZ4
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("LZ4", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[2];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.LZ4;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.LZ4;
 
             //-------Nintendo---------
             tsb.DropDownItems.Add(new ToolStripMenuItem("Nintendo", null));
@@ -195,6 +202,9 @@ namespace Kuriimu.UI
                         case Compression.LZOvl:
                             outFs.Write(LZOvl.Decompress(openFile));
                             break;
+                        case Compression.LZ4:
+                            outFs.Write(Kuriimu.Compression.LZ4.Decompress(openFile));
+                            break;
                         case Compression.Yaz0:
                             outFs.Write(Yaz0.Decompress(openFile));
                             break;
@@ -271,6 +281,9 @@ namespace Kuriimu.UI
                         case Compression.LZOvl:
                             outFs.Write(LZOvl.Compress(openFile));
                             break;
+                        case Compression.LZ4:
+                            outFs.Write(Kuriimu.Compression.LZ4.Compress(openFile));
+                            break;
                         case Compression.Yaz0:
                             outFs.Write(Yaz0.Compress(openFile));
                             break;
@@ -313,6 +326,7 @@ namespace Kuriimu.UI
             LZ77,
             RevLZ77,
             LZOvl,
+            LZ4,
             LZ10VLE,
             LZECD,
 

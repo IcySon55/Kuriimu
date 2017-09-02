@@ -36,6 +36,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LZ4">
+      <HintPath>..\..\LZ4.dll</HintPath>
+    </Reference>
     <Reference Include="Security.Cryptography">
       <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
     </Reference>

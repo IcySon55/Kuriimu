@@ -41,6 +41,17 @@ namespace Kuriimu.IO
         public List<T> ReadMultiple<T>(int count, Func<int, T> func) => Enumerable.Range(0, count).Select(func).ToList();
         public List<T> ReadMultiple<T>(int count) => Enumerable.Range(0, count).Select(_ => ReadStruct<T>()).ToList();
 
+        public byte[] ReadAllBytes()
+        {
+            var startOffset = base.BaseStream.Position;
+
+            base.BaseStream.Position = 0;
+            var output = base.ReadBytes((int)base.BaseStream.Length);
+            base.BaseStream.Position = startOffset;
+
+            return output;
+        }
+
         public override short ReadInt16()
         {
             if (ByteOrder == ByteOrder.LittleEndian)
