@@ -8,20 +8,10 @@ namespace Kuriimu.Compression
 {
     public class RLE
     {
-        public static byte[] Decompress(Stream instream, long decompressedLength=0)
+        public static byte[] Decompress(Stream instream, long decompressedLength)
         {
             using (var br = new BinaryReaderX(instream, true))
             {
-                var version = br.ReadByte();
-                if (version==0x30)
-                {
-                    br.BaseStream.Position--;
-                    decompressedLength = br.ReadUInt32() >> 8;
-                } else
-                {
-                    br.BaseStream.Position--;
-                }
-
                 var result = new List<byte>();
 
                 while (true)
@@ -161,12 +151,7 @@ namespace Kuriimu.Compression
                 currentBlockLength = 0;
             }
 
-            // write the RLE marker and the decompressed size
-            outstream.WriteByte(0x30);
             int compLen = compressedData.Count;
-            outstream.WriteByte((byte)(inLength & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 8) & 0xFF));
-            outstream.WriteByte((byte)((inLength >> 16) & 0xFF));
 
             // write the compressed data
             outstream.Write(compressedData.ToArray(), 0, compLen);

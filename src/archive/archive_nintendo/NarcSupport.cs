@@ -5,7 +5,7 @@ namespace archive_nintendo.NARC
 {
     public class NARCFileInfo : ArchiveFileInfo
     {
-
+        public FATEntry entry;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

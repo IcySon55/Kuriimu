@@ -164,7 +164,7 @@ namespace Cetera.Font
                 if (_usesGlgr)
                 {
                     var compSize = br.ReadInt32();
-                    var t = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8);
+                    var t = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8, 0);
                     return t;
                 }
                 return br.ReadBytes(tglp.sheet_size);
@@ -206,7 +206,7 @@ namespace Cetera.Font
                     for (int i = 0; i < tglp.num_sheets; i++)
                     {
                         var compSize = br.ReadInt32();
-                        var decomp = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8);
+                        var decomp = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8, 0);
                         bmps[i] = Image.Common.Load(decomp, new ImageSettings
                         {
                             Width = width,
