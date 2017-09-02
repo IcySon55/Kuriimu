@@ -76,6 +76,7 @@
     <Compile Include="Compression\Nintendo.cs" />
     <Compile Include="Compression\RevLZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
+    <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Hash\Crc32.cs" />

@@ -11,7 +11,7 @@ namespace KuriimuTests
     {
         enum Method : byte
         {
-            RLE, Yaz0
+            RLE, Yaz0, Yay0
         }
 
         static void Test(byte[] bytes, Method method)
@@ -26,6 +26,10 @@ namespace KuriimuTests
                     break;
                 case Method.Yaz0:
                     bytes2 = Yaz0.Decompress(new MemoryStream(Yaz0.Compress(new MemoryStream(bytes))));
+                    Assert.IsTrue(bytes.SequenceEqual(bytes2));
+                    break;
+                case Method.Yay0:
+                    bytes2 = Yay0.Decompress(new MemoryStream(Yay0.Compress(new MemoryStream(bytes))));
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
             }
@@ -56,5 +60,18 @@ namespace KuriimuTests
 
         [TestMethod]
         public void AllBytesYaz0Test() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.Yaz0);
+
+        //Yay0
+        [TestMethod]
+        public void AsciiHelloWorldYay0Test() => Test(Encoding.ASCII.GetBytes("hello world"), Method.Yay0);
+
+        [TestMethod]
+        public void UnicodeHelloWorldYay0Test() => Test(Encoding.Unicode.GetBytes("hello world"), Method.Yay0);
+
+        [TestMethod]
+        public void HundredZeroesYay0Test() => Test(new byte[100], Method.Yay0);
+
+        [TestMethod]
+        public void AllBytesYay0Test() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.Yay0);
     }
 }

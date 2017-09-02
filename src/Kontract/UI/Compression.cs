@@ -75,9 +75,12 @@ namespace Kuriimu.UI
             //    LZOvl
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Compress));
             tsb3.DropDownItems[7].Tag = Compression.LZOvl;
+            //    Yay0
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null, Compress));
+            tsb3.DropDownItems[8].Tag = Compression.Yay0;
             //    Yaz0
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null, Compress));
-            tsb3.DropDownItems[8].Tag = Compression.Yaz0;
+            tsb3.DropDownItems[9].Tag = Compression.Yaz0;
 
             //  Decompress
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null));
@@ -94,9 +97,12 @@ namespace Kuriimu.UI
             //    LZOvl
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Decompress));
             tsb3.DropDownItems[3].Tag = Compression.LZOvl;
+            //    Yay0
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null, Decompress));
+            tsb3.DropDownItems[4].Tag = Compression.Yay0;
             //    Yaz0
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null, Decompress));
-            tsb3.DropDownItems[4].Tag = Compression.Yaz0;
+            tsb3.DropDownItems[5].Tag = Compression.Yaz0;
 
 
             //-------Level 5---------
@@ -205,6 +211,9 @@ namespace Kuriimu.UI
                         case Compression.LZ4:
                             outFs.Write(Kuriimu.Compression.LZ4.Decompress(openFile));
                             break;
+                        case Compression.Yay0:
+                            outFs.Write(Yay0.Decompress(openFile));
+                            break;
                         case Compression.Yaz0:
                             outFs.Write(Yaz0.Decompress(openFile));
                             break;
@@ -284,6 +293,9 @@ namespace Kuriimu.UI
                         case Compression.LZ4:
                             outFs.Write(Kuriimu.Compression.LZ4.Compress(openFile));
                             break;
+                        case Compression.Yay0:
+                            outFs.Write(Yay0.Compress(openFile));
+                            break;
                         case Compression.Yaz0:
                             outFs.Write(Yaz0.Compress(openFile));
                             break;
@@ -330,7 +342,8 @@ namespace Kuriimu.UI
             LZ10VLE,
             LZECD,
 
-            Yaz0
+            Yaz0,
+            Yay0
         }
     }
 }
