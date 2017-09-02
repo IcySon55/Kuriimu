@@ -19,7 +19,7 @@ namespace KuriimuTests
     {
         enum Method : byte
         {
-            LZ10, LZ11, LZ60, LZ77, RevLZ77, LZ4, LZECD, LZOvl
+            LZ10, LZ11, LZ60, LZ77, RevLZ77, LZ4, LZECD, LZOvl, MIO0
         }
 
         static void Test(byte[] bytes, Method method)
@@ -58,6 +58,10 @@ namespace KuriimuTests
                     break;
                 case Method.LZOvl:
                     bytes2 = LZOvl.Decompress(new MemoryStream(LZOvl.Compress(new MemoryStream(bytes))));
+                    Assert.IsTrue(bytes.SequenceEqual(bytes2));
+                    break;
+                case Method.MIO0:
+                    bytes2 = MIO0.Decompress(new MemoryStream(MIO0.Compress(new MemoryStream(bytes))));
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
             }
@@ -166,5 +170,18 @@ namespace KuriimuTests
 
         [TestMethod]
         public void AllBytesLZOvlTest() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.LZOvl);
+
+        //MIO0
+        [TestMethod]
+        public void AsciiHelloWorldMIO0Test() => Test(Encoding.ASCII.GetBytes("hello world"), Method.MIO0);
+
+        [TestMethod]
+        public void UnicodeHelloWorldMIO0Test() => Test(Encoding.Unicode.GetBytes("hello world"), Method.MIO0);
+
+        [TestMethod]
+        public void HundredZeroesMIO0Test() => Test(new byte[100], Method.MIO0);
+
+        [TestMethod]
+        public void AllBytesMIO0Test() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.MIO0);
     }
 }
