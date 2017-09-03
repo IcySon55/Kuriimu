@@ -1,19 +1,43 @@
 using System.Runtime.InteropServices;
 using Kuriimu.Kontract;
+using System;
+using System.IO;
+using Kuriimu.IO;
 
 namespace archive_level5.XPCK
 {
     public class XPCKFileInfo : ArchiveFileInfo
     {
         public FileInfoEntry Entry;
+
+        public Tuple<int, int> Write(Stream input, int dataOffset, int relOffset)
+        {
+            using (var bw = new BinaryWriterX(input, true))
+            {
+                bw.BaseStream.Position = dataOffset;
+                FileData.CopyTo(bw.BaseStream);
+                if (bw.BaseStream.Position % 4 > 0) bw.WriteAlignment(4);
+                else bw.WritePadding(4);
+
+                Entry.tmp = (ushort)(((relOffset + 0x3 & ~0x3) >> 2) & 0xffff);
+                Entry.tmpZ = (byte)((((relOffset + 0x3 & ~0x3) >> 2) & 0xff0000) >> 16);
+                Entry.tmp2 = (ushort)(FileSize & 0xffff);
+                Entry.tmp2Z = (byte)((FileSize & 0xff0000) >> 16);
+
+                dataOffset = (bw.BaseStream.Position % 4 > 0) ? (int)(dataOffset + FileSize + 0x3) & ~0x3 : (int)(dataOffset + FileSize + 4);
+                relOffset = (bw.BaseStream.Position % 4 > 0) ? (int)(relOffset + FileSize + 0x3) & ~0x3 : (int)(relOffset + FileSize + 4);
+
+                return new Tuple<int, int>(dataOffset, relOffset);
+            }
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Header
     {
         public Magic magic;
-        public byte fileCount;
-        public byte unk1;
+        public byte fc1;
+        public byte fc2;
         ushort tmp1;
         ushort tmp2;
         ushort tmp3;
@@ -21,6 +45,7 @@ namespace archive_level5.XPCK
         ushort tmp5;
         public uint tmp6;
 
+        public ushort fileCount => (ushort)((fc2 & 0xf) << 8 | fc1);
         public ushort fileInfoOffset => (ushort)(tmp1 << 2);
         public ushort filenameTableOffset => (ushort)(tmp2 << 2);
         public ushort dataOffset => (ushort)(tmp3 << 2);
