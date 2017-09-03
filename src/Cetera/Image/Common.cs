@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using Cetera.Image.BCn;
 using Kuriimu.IO;
 
 namespace Cetera.Image
@@ -300,7 +299,8 @@ namespace Cetera.Image
 
             var ms = new MemoryStream();
             var etc1encoder = new ETC1.Encoder();
-            var dxtencoder = new DXT.Encoder(settings.Format == Format.DXT1 ? DXT.Formats.DXT1 : DXT.Formats.DXT5);
+            Enum.TryParse<DXT.Formats>(settings.Format.ToString(), false, out var dxtFormat);
+            var dxtencoder = new DXT.Encoder(dxtFormat);
 
             using (var bw = new BinaryWriterX(ms))
             {

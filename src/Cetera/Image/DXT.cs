@@ -45,8 +45,7 @@ namespace Cetera.Image
                         {
                             // TODO: Fix broken DXT3 alpha Neobeo!
                             // The DXT3 images might be using yet another color mess thing, maybe
-                            code = (int)(alpha >> (4 * i)) & 0xF;
-                            alp = 255;
+                            alp = ((int)(alpha >> (4 * i)) & 0xF) * 17;
                         }
                         else if (Format == Formats.DXT5)
                         {

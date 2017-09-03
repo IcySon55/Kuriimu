@@ -21,8 +21,10 @@ namespace image_mt
 
         // PS3
         DXT1 = 0x13,
-        DXT3 = 0x21,
-        DXT5 = 0x2A
+        DXT3,
+        DXT5 = 0x17,
+        DXT5Other = 0x21,
+        DXT5YCbCr = 0x2A
     }
 
     public enum Version

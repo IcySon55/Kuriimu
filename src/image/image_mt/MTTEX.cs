@@ -48,10 +48,11 @@ namespace image_mt
 
                 // @todo: Consider whether the following settings make more sense if conditioned by the ByteOrder (or Platform)
 
-                Settings.PadToPowerOf2 = false;
-                Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
+                var format = HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
+                Settings.Format = ImageSettings.ConvertFormat(format);
                 if (Settings.Format.ToString().Contains("DXT"))
                 {
+                    Settings.PadToPowerOf2 = false;
                     Settings.ZOrder = false;
                     Settings.TileSize = 4;
                 }
@@ -64,7 +65,9 @@ namespace image_mt
                     Settings.Width = HeaderInfo.Width >> i;
                     Settings.Height = HeaderInfo.Height >> i;
 
-                    if (HeaderInfo.Version == Version.v154 && HeaderInfo.Format == Format.DXT5)
+                    if (HeaderInfo.Format == Format.DXT5Other)
+                        Settings.PixelShader = ToNoAlpha;
+                    else if (HeaderInfo.Format == Format.DXT5YCbCr)
                         Settings.PixelShader = ToProperColors;
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
@@ -76,6 +79,11 @@ namespace image_mt
         // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
         private static int Clamp(double n) => (int)Math.Max(0, Math.Min(n, 255));
         private const int CbCrThreshold = 123; // usually 128, but 123 seems to work better here
+
+        private Color ToNoAlpha(Color c)
+        {
+            return Color.FromArgb(255, c.R, c.G, c.B);
+        }
 
         private Color ToProperColors(Color c)
         {
@@ -108,8 +116,9 @@ namespace image_mt
 
                 // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
 
-                if (HeaderInfo.Version == Version.v154 && HeaderInfo.Format == Format.DXT5)
+                if (HeaderInfo.Format == Format.DXT5YCbCr)
                     Settings.PixelShader = ToOptimisedColors;
+
                 var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
                 // Mipmaps
