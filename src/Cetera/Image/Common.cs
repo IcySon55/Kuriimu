@@ -90,7 +90,8 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
-                var dxtdecoder = new DXT.Decoder((DXT.Formats)Enum.Parse(typeof(DXT.Formats), format.ToString()));
+                Enum.TryParse<DXT.Formats>(format.ToString(), false, out var dxtFormat);
+                var dxtdecoder = new DXT.Decoder(dxtFormat);
 
                 while (true)
                 {
