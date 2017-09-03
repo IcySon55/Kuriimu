@@ -23,8 +23,10 @@ namespace image_mt
         DXT1 = 0x13,
         DXT3,
         DXT5 = 0x17,
-        DXT5Other = 0x21,
-        DXT5YCbCr = 0x2A
+        DXT1_Remap = 0x19,
+        DXT5_B = 0x21,
+        DXT5_C = 0x27,
+        DXT5_YCbCr = 0x2A
     }
 
     public enum Version

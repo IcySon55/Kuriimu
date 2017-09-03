@@ -48,7 +48,7 @@ namespace image_mt
 
                 // @todo: Consider whether the following settings make more sense if conditioned by the ByteOrder (or Platform)
 
-                var format = HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
+                var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
                 Settings.Format = ImageSettings.ConvertFormat(format);
                 if (Settings.Format.ToString().Contains("DXT"))
                 {
@@ -65,9 +65,9 @@ namespace image_mt
                     Settings.Width = HeaderInfo.Width >> i;
                     Settings.Height = HeaderInfo.Height >> i;
 
-                    if (HeaderInfo.Format == Format.DXT5Other)
+                    if (HeaderInfo.Format == Format.DXT5_B)
                         Settings.PixelShader = ToNoAlpha;
-                    else if (HeaderInfo.Format == Format.DXT5YCbCr)
+                    else if (HeaderInfo.Format == Format.DXT5_YCbCr)
                         Settings.PixelShader = ToProperColors;
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
@@ -116,7 +116,7 @@ namespace image_mt
 
                 // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
 
-                if (HeaderInfo.Format == Format.DXT5YCbCr)
+                if (HeaderInfo.Format == Format.DXT5_YCbCr)
                     Settings.PixelShader = ToOptimisedColors;
 
                 var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
