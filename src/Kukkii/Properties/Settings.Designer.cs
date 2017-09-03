@@ -231,6 +231,21 @@ namespace Kukkii.Properties
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Default")]
+        public string OpenRawOrientation
+        {
+            get
+            {
+                return ((string)(this["OpenRawOrientation"]));
+            }
+            set
+            {
+                this["OpenRawOrientation"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("None")]
         public global::Cyotek.Windows.Forms.ImageBoxBorderStyle ImageBorderStyle
         {

@@ -55,6 +55,13 @@ namespace Kukkii
             tileSize.Value = Settings.Default.OpenTileSize;
             tileSize.ValueChanged += tileSize_ValueChanged;
 
+            cmbOrientation.SelectedIndexChanged -= cmbOrientation_SelectedIndexChanged;
+            cmbOrientation.DisplayMember = "Text";
+            cmbOrientation.ValueMember = "Value";
+            cmbOrientation.DataSource = Enum.GetNames(typeof(Cetera.Image.Orientation)).Select(o => new ListItem(o, o)).ToList();
+            cmbOrientation.SelectedIndex = Enum.GetNames(typeof(Cetera.Image.Orientation)).ToList().IndexOf(Settings.Default.OpenRawOrientation);
+            cmbOrientation.SelectedIndexChanged += cmbOrientation_SelectedIndexChanged;
+
             UpdatePreview();
         }
 
@@ -69,6 +76,7 @@ namespace Kukkii
                 settings.ZOrder = zorderCheck.Checked;
                 settings.PadToPowerOf2 = false;
                 settings.TileSize = (int)tileSize.Value;
+                settings.Orientation = (Cetera.Image.Orientation)Enum.Parse(typeof(Cetera.Image.Orientation), cmbOrientation.SelectedValue.ToString());
 
                 imbPreview.Image = Common.Load(File.ReadAllBytes(_filename), settings);
             }
@@ -149,10 +157,18 @@ namespace Kukkii
                 settings.ZOrder = zorderCheck.Checked;
                 settings.PadToPowerOf2 = false;
                 settings.TileSize = (int)tileSize.Value;
+                settings.Orientation = (Cetera.Image.Orientation)Enum.Parse(typeof(Cetera.Image.Orientation), cmbOrientation.SelectedValue.ToString());
 
                 var imgSave = Common.Save((Bitmap)imbPreview.Image, settings);
                 using (var bw = new BinaryWriterX(File.Create(sfd.FileName))) bw.Write(imgSave);
             }
+        }
+
+        private void cmbOrientation_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Settings.Default.OpenRawOrientation = cmbOrientation.SelectedValue.ToString();
+            Settings.Default.Save();
+            UpdatePreview();
         }
     }
 }

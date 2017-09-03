@@ -42,6 +42,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.tileSize = new System.Windows.Forms.NumericUpDown();
             this.btnRaw = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cmbOrientation = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tileSize)).BeginInit();
@@ -57,7 +59,7 @@
             this.imbPreview.GridColor = System.Drawing.Color.Silver;
             this.imbPreview.Location = new System.Drawing.Point(12, 12);
             this.imbPreview.Name = "imbPreview";
-            this.imbPreview.Size = new System.Drawing.Size(360, 280);
+            this.imbPreview.Size = new System.Drawing.Size(360, 276);
             this.imbPreview.TabIndex = 7;
             // 
             // cmbFormat
@@ -65,7 +67,7 @@
             this.cmbFormat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cmbFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbFormat.FormattingEnabled = true;
-            this.cmbFormat.Location = new System.Drawing.Point(81, 378);
+            this.cmbFormat.Location = new System.Drawing.Point(101, 374);
             this.cmbFormat.Margin = new System.Windows.Forms.Padding(4);
             this.cmbFormat.Name = "cmbFormat";
             this.cmbFormat.Size = new System.Drawing.Size(149, 21);
@@ -76,7 +78,7 @@
             // 
             this.lblName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.lblName.Location = new System.Drawing.Point(11, 319);
+            this.lblName.Location = new System.Drawing.Point(31, 317);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(63, 22);
             this.lblName.TabIndex = 11;
@@ -87,7 +89,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.label1.Location = new System.Drawing.Point(11, 347);
+            this.label1.Location = new System.Drawing.Point(31, 345);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(63, 22);
             this.label1.TabIndex = 12;
@@ -98,7 +100,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.label2.Location = new System.Drawing.Point(11, 376);
+            this.label2.Location = new System.Drawing.Point(31, 374);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(63, 22);
             this.label2.TabIndex = 13;
@@ -108,7 +110,7 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(271, 405);
+            this.btnSave.Location = new System.Drawing.Point(271, 431);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(101, 23);
@@ -121,7 +123,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(271, 436);
+            this.btnCancel.Location = new System.Drawing.Point(271, 462);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(101, 23);
@@ -138,7 +140,7 @@
             0,
             0,
             0});
-            this.numWidth.Location = new System.Drawing.Point(81, 321);
+            this.numWidth.Location = new System.Drawing.Point(101, 317);
             this.numWidth.Margin = new System.Windows.Forms.Padding(4);
             this.numWidth.Maximum = new decimal(new int[] {
             2048,
@@ -163,7 +165,7 @@
             0,
             0,
             0});
-            this.numHeight.Location = new System.Drawing.Point(81, 349);
+            this.numHeight.Location = new System.Drawing.Point(101, 345);
             this.numHeight.Margin = new System.Windows.Forms.Padding(4);
             this.numHeight.Maximum = new decimal(new int[] {
             2048,
@@ -186,7 +188,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFilename.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblFilename.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.lblFilename.Location = new System.Drawing.Point(12, 295);
+            this.lblFilename.Location = new System.Drawing.Point(12, 291);
             this.lblFilename.Name = "lblFilename";
             this.lblFilename.Size = new System.Drawing.Size(360, 22);
             this.lblFilename.TabIndex = 18;
@@ -196,7 +198,7 @@
             // 
             this.zorderCheck.AutoSize = true;
             this.zorderCheck.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
-            this.zorderCheck.Location = new System.Drawing.Point(81, 436);
+            this.zorderCheck.Location = new System.Drawing.Point(101, 461);
             this.zorderCheck.Name = "zorderCheck";
             this.zorderCheck.Size = new System.Drawing.Size(73, 20);
             this.zorderCheck.TabIndex = 20;
@@ -208,7 +210,7 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-            this.label3.Location = new System.Drawing.Point(11, 406);
+            this.label3.Location = new System.Drawing.Point(31, 405);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(63, 22);
             this.label3.TabIndex = 21;
@@ -223,7 +225,7 @@
             0,
             0,
             0});
-            this.tileSize.Location = new System.Drawing.Point(81, 409);
+            this.tileSize.Location = new System.Drawing.Point(101, 405);
             this.tileSize.Margin = new System.Windows.Forms.Padding(4);
             this.tileSize.Maximum = new decimal(new int[] {
             2048,
@@ -243,7 +245,7 @@
             // btnRaw
             // 
             this.btnRaw.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRaw.Location = new System.Drawing.Point(270, 374);
+            this.btnRaw.Location = new System.Drawing.Point(270, 400);
             this.btnRaw.Margin = new System.Windows.Forms.Padding(4);
             this.btnRaw.Name = "btnRaw";
             this.btnRaw.Size = new System.Drawing.Size(101, 23);
@@ -252,11 +254,36 @@
             this.btnRaw.UseVisualStyleBackColor = true;
             this.btnRaw.Click += new System.EventHandler(this.button1_Click);
             // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.label4.Location = new System.Drawing.Point(11, 433);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 22);
+            this.label4.TabIndex = 25;
+            this.label4.Text = "Orientation:";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // cmbOrientation
+            // 
+            this.cmbOrientation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cmbOrientation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOrientation.FormattingEnabled = true;
+            this.cmbOrientation.Location = new System.Drawing.Point(101, 433);
+            this.cmbOrientation.Margin = new System.Windows.Forms.Padding(4);
+            this.cmbOrientation.Name = "cmbOrientation";
+            this.cmbOrientation.Size = new System.Drawing.Size(149, 21);
+            this.cmbOrientation.TabIndex = 24;
+            this.cmbOrientation.SelectedIndexChanged += new System.EventHandler(this.cmbOrientation_SelectedIndexChanged);
+            // 
             // OpenRaw
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(384, 471);
+            this.ClientSize = new System.Drawing.Size(384, 497);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.cmbOrientation);
             this.Controls.Add(this.btnRaw);
             this.Controls.Add(this.tileSize);
             this.Controls.Add(this.label3);
@@ -298,5 +325,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown tileSize;
         private System.Windows.Forms.Button btnRaw;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cmbOrientation;
     }
 }
