@@ -123,10 +123,10 @@ namespace image_level5.imgc
                 header.imgDataSize = importPic.Length + 4;
                 bw.WriteStruct(header);
 
-                bw.Write(Level5.Compress(table, Level5.Method.NoCompression));
+                bw.Write(Level5.Compress(table, Level5.Method.LZ10));
 
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
-                bw.Write(Level5.Compress(new MemoryStream(importPic), Level5.Method.NoCompression));
+                bw.Write(Level5.Compress(new MemoryStream(importPic), Level5.Method.LZ10));
             }
         }
 
