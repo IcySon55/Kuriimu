@@ -15,7 +15,7 @@ namespace image_level5.imgc
         RGBA8888, RGBA4444,
         RGBA5551, RGB888, RGB565,
         LA88 = 11, LA44, L8, HL88, A8,
-        L4 = 26, A4, ETC1A4, ETC1
+        L4 = 26, A4, ETC1, ETC1A4
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
