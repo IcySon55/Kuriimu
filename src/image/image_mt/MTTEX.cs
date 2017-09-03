@@ -62,8 +62,8 @@ namespace image_mt
                 for (var i = 0; i < mipMaps.Count; i++)
                 {
                     var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
-                    Settings.Width = HeaderInfo.Width >> i;
-                    Settings.Height = HeaderInfo.Height >> i;
+                    Settings.Width = Math.Max(HeaderInfo.Width >> i, 2);
+                    Settings.Height = Math.Max(HeaderInfo.Height >> i, 2);
 
                     if (HeaderInfo.Format == Format.DXT5_B)
                         Settings.PixelShader = ToNoAlpha;
