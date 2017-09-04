@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -49,7 +48,7 @@ namespace Kukkii
             cmbFormat.SelectedIndex = Enum.GetNames(typeof(Format)).ToList().IndexOf(Settings.Default.OpenRawFormat);
             cmbFormat.SelectedIndexChanged += cmbPixelFormat_SelectedIndexChanged;
 
-            zorderCheck.Checked = Settings.Default.OpenZOrder;
+            chkZOrder.Checked = Settings.Default.OpenZOrder;
 
             tileSize.ValueChanged -= tileSize_ValueChanged;
             tileSize.Value = Settings.Default.OpenTileSize;
@@ -73,7 +72,7 @@ namespace Kukkii
                 settings.Width = (int)numWidth.Value;
                 settings.Height = (int)numHeight.Value;
                 settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
-                settings.ZOrder = zorderCheck.Checked;
+                settings.ZOrder = chkZOrder.Checked;
                 settings.PadToPowerOf2 = false;
                 settings.TileSize = (int)tileSize.Value;
                 settings.Orientation = (Cetera.Image.Orientation)Enum.Parse(typeof(Cetera.Image.Orientation), cmbOrientation.SelectedValue.ToString());
@@ -114,21 +113,22 @@ namespace Kukkii
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            var sfd = new SaveFileDialog()
+            var sfd = new SaveFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
                 FileName = Path.Combine(Path.GetDirectoryName(_filename), Path.GetFileNameWithoutExtension(_filename) + ".png"),
                 Filter = "Portable Network Graphics (*.png)|*.png"
             };
+
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 imbPreview.Image.Save(sfd.FileName, ImageFormat.Png);
             }
         }
 
-        private void zorderChecked_CheckedChanged(object sender, EventArgs e)
+        private void chkZOrder_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Default.OpenZOrder = zorderCheck.Checked;
+            Settings.Default.OpenZOrder = chkZOrder.Checked;
             Settings.Default.Save();
             UpdatePreview();
         }
@@ -140,28 +140,30 @@ namespace Kukkii
             UpdatePreview();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnSaveRaw_Click(object sender, EventArgs e)
         {
-            var sfd = new SaveFileDialog()
+            var sfd = new SaveFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
                 FileName = Path.Combine(Path.GetDirectoryName(_filename), Path.GetFileNameWithoutExtension(_filename) + ".raw"),
                 Filter = "Raw Image Data (*.raw)|*.raw"
             };
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                var settings = new ImageSettings();
-                settings.Width = (int)numWidth.Value;
-                settings.Height = (int)numHeight.Value;
-                settings.Format = (Format)Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString());
-                settings.ZOrder = zorderCheck.Checked;
-                settings.PadToPowerOf2 = false;
-                settings.TileSize = (int)tileSize.Value;
-                settings.Orientation = (Cetera.Image.Orientation)Enum.Parse(typeof(Cetera.Image.Orientation), cmbOrientation.SelectedValue.ToString());
 
-                var imgSave = Common.Save((Bitmap)imbPreview.Image, settings);
-                using (var bw = new BinaryWriterX(File.Create(sfd.FileName))) bw.Write(imgSave);
-            }
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            var settings = new ImageSettings
+            {
+                Width = (int) numWidth.Value,
+                Height = (int) numHeight.Value,
+                Format = (Format) Enum.Parse(typeof(Format), cmbFormat.SelectedValue.ToString()),
+                ZOrder = chkZOrder.Checked,
+                PadToPowerOf2 = false,
+                TileSize = (int) tileSize.Value,
+                Orientation = (Cetera.Image.Orientation) Enum.Parse(typeof(Cetera.Image.Orientation), cmbOrientation.SelectedValue.ToString())
+            };
+
+            var imgSave = Common.Save((Bitmap)imbPreview.Image, settings);
+            using (var bw = new BinaryWriterX(File.Create(sfd.FileName))) bw.Write(imgSave);
         }
 
         private void cmbOrientation_SelectedIndexChanged(object sender, EventArgs e)
