@@ -16,7 +16,6 @@ namespace image_level5.imgc
         public static byte[] entryStart = null;
 
         static bool editMode = false;
-
         static Level5.Method tableComp;
         static Level5.Method picComp;
 
@@ -28,8 +27,8 @@ namespace image_level5.imgc
                 header = br.ReadStruct<Header>();
                 if (header.imageFormat == Format.ETC1 && header.bitDepth == 8)
                 {
-                    header.imageFormat = Format.ETC1A4;
                     editMode = true;
+                    header.imageFormat = Format.ETC1A4;
                 }
 
                 //get tile table
@@ -139,6 +138,7 @@ namespace image_level5.imgc
 
                 //Image
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
+                header.imageFormat = (editMode) ? Format.ETC1 : header.imageFormat;
                 comp = Level5.Compress(new MemoryStream(importPic), picComp);
                 bw.Write(comp);
                 header.imgDataSize = comp.Length;
