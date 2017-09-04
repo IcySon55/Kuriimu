@@ -15,6 +15,11 @@ namespace image_level5.imgc
         public static Header header;
         public static byte[] entryStart = null;
 
+        static bool editMode = false;
+
+        static Level5.Method tableComp;
+        static Level5.Method picComp;
+
         public static Bitmap Load(Stream input)
         {
             using (var br = new BinaryReaderX(input))
@@ -22,15 +27,22 @@ namespace image_level5.imgc
                 //Header
                 header = br.ReadStruct<Header>();
                 if (header.imageFormat == Format.ETC1 && header.bitDepth == 8)
+                {
                     header.imageFormat = Format.ETC1A4;
+                    editMode = true;
+                }
 
                 //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
-                byte[] table = Level5.Decompress(new MemoryStream(br.ReadBytes(header.tableSize1)));
+                var tableC = br.ReadBytes(header.tableSize1);
+                tableComp = (Level5.Method)(tableC[0] & 0x7);
+                byte[] table = Level5.Decompress(new MemoryStream(tableC));
 
                 //get image data
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
-                byte[] tex = Level5.Decompress(new MemoryStream(br.ReadBytes(header.imgDataSize)));
+                var texC = br.ReadBytes(header.imgDataSize);
+                picComp = (Level5.Method)(texC[0] & 0x7);
+                byte[] tex = Level5.Decompress(new MemoryStream(texC));
 
                 //order pic blocks by table
                 byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
@@ -118,15 +130,22 @@ namespace image_level5.imgc
                 var table = new MemoryStream();
                 byte[] importPic = Deflate(pic, ImageSettings.ConvertFormat(header.imageFormat), out table);
 
-                header.tableSize1 = (int)table.Length + 4;
+                //Table
+                bw.BaseStream.Position = 0x48;
+                var comp = Level5.Compress(table, tableComp);
+                bw.Write(comp);
+                header.tableSize1 = comp.Length + 4;
                 header.tableSize2 = (header.tableSize1 + 3) & ~3;
-                header.imgDataSize = importPic.Length + 4;
-                bw.WriteStruct(header);
 
-                bw.Write(Level5.Compress(table, Level5.Method.LZ10));
-
+                //Image
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
-                bw.Write(Level5.Compress(new MemoryStream(importPic), Level5.Method.LZ10));
+                comp = Level5.Compress(new MemoryStream(importPic), picComp);
+                bw.Write(comp);
+                header.imgDataSize = comp.Length + 4;
+
+                //Header
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
             }
         }
 
