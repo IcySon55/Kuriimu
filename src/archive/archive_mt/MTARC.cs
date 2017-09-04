@@ -13,7 +13,10 @@ namespace archive_mt
         public List<MTArcFileInfo> Files = new List<MTArcFileInfo>();
         private Stream _stream;
 
+        private HFSHeader HFSHeader;
+        private HFSFooter HFSFooter;
         private Header Header;
+        private long HFSHeaderLength;
         private int HeaderLength = 0xC;
         private const int EntryLength = 0x50;
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
@@ -25,11 +28,18 @@ namespace archive_mt
             using (var br = new BinaryReaderX(input, true, ByteOrder))
             {
                 // Set endianess
-                if (br.PeekString() == "\0CRA")
+                if (br.PeekString() == "\0CRA" || br.PeekString() == "\0SFH")
                 {
                     br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
                     HeaderLength = 8;
                     System = Platform.PS3;
+                }
+
+                // SFHHeader
+                if (br.PeekString() == "\0SFH")
+                {
+                    HFSHeader = br.ReadStruct<HFSHeader>();
+                    HFSHeaderLength = HFSHeader.Type == 0 ? 0x20000 : 0x10;
                 }
 
                 // Header
@@ -40,19 +50,27 @@ namespace archive_mt
                 var entries = br.ReadMultiple<FileMetadata>(Header.EntryCount);
                 Files.AddRange(entries.Select(metadata =>
                 {
-                    br.BaseStream.Position = metadata.Offset;
+                    br.BaseStream.Position = metadata.Offset + HFSHeaderLength;
                     var level = (System == Platform.CTR ? metadata.CompressedSize != (metadata.UncompressedSize & 0x00FFFFFF) : metadata.CompressedSize != (metadata.UncompressedSize >> 3)) ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
+                    br.BaseStream.Position += metadata.CompressedSize;
 
                     return new MTArcFileInfo
                     {
                         Metadata = metadata,
                         CompressionLevel = level,
                         System = System,
-                        FileData = new SubStream(br.BaseStream, metadata.Offset, metadata.CompressedSize),
+                        FileData = new SubStream(br.BaseStream, metadata.Offset + HFSHeaderLength, metadata.CompressedSize),
                         FileName = metadata.FileName + (ArcShared.ExtensionMap.ContainsKey(metadata.ExtensionHash) ? ArcShared.ExtensionMap[metadata.ExtensionHash] : "." + metadata.ExtensionHash.ToString("X8")),
                         State = ArchiveFileState.Archived
                     };
                 }));
+
+                // HFSFooter
+                if (HFSHeader != null)
+                {
+                    br.SeekAlignment();
+                    HFSFooter = br.ReadStruct<HFSFooter>();
+                }
             }
         }
 
@@ -60,6 +78,10 @@ namespace archive_mt
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
             {
+                // HFSHeader
+                if (HFSHeader != null)
+                    bw.WriteStruct(HFSHeader);
+
                 // Header
                 Header.EntryCount = (short)Files.Count;
                 bw.WriteStruct(Header);
@@ -69,20 +91,27 @@ namespace archive_mt
                 switch (Header.Version)
                 {
                     case 0x10:
-                        bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * EntryLength, 0x8000) : HeaderLength + Header.EntryCount * EntryLength;
+                        bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HFSHeaderLength + HeaderLength + Header.EntryCount * EntryLength, 0x8000) : HFSHeaderLength + HeaderLength + Header.EntryCount * EntryLength;
                         break;
                     case 0x11:
-                        bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? (HeaderLength + Header.EntryCount * EntryLength + 0xff) & ~0xff : HeaderLength + Header.EntryCount * EntryLength;
+                        bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? (HFSHeaderLength + HeaderLength + Header.EntryCount * EntryLength + 0xff) & ~0xff : HFSHeaderLength + HeaderLength + Header.EntryCount * EntryLength;
                         break;
                     default:
-                        bw.BaseStream.Position = HeaderLength + Header.EntryCount * EntryLength;
+                        bw.BaseStream.Position = HFSHeaderLength + HeaderLength + Header.EntryCount * EntryLength;
                         break;
                 }
                 foreach (var afi in Files)
-                    afi.Write(bw.BaseStream, bw.BaseStream.Position, ByteOrder);
+                    afi.Write(bw.BaseStream, bw.BaseStream.Position - (int)HFSHeaderLength, ByteOrder);
+
+                // HFSFooter
+                if (HFSFooter != null)
+                {
+                    bw.WriteAlignment();
+                    bw.WriteStruct(HFSFooter);
+                }
 
                 // Metadata
-                bw.BaseStream.Position = HeaderLength;
+                bw.BaseStream.Position = HFSHeaderLength + HeaderLength;
                 foreach (var afi in Files)
                     bw.WriteStruct(afi.Metadata);
             }

@@ -62,6 +62,23 @@ namespace archive_mt
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class HFSHeader
+    {
+        public Magic Magic;
+        public short Version;
+        public short Type;
+        public int FileSize;
+        public int Padding;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class HFSFooter
+    {
+        public ulong Hash1;
+        public ulong Hash2;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
         public Magic Magic;
