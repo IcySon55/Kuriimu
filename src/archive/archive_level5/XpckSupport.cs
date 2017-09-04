@@ -10,24 +10,22 @@ namespace archive_level5.XPCK
     {
         public FileInfoEntry Entry;
 
-        public Tuple<int, int> Write(Stream input, int dataOffset, int relOffset)
+        public int Write(Stream input, int absDataOffset, int baseDataOffset)
         {
             using (var bw = new BinaryWriterX(input, true))
             {
-                bw.BaseStream.Position = dataOffset;
+                bw.BaseStream.Position = absDataOffset;
                 FileData.CopyTo(bw.BaseStream);
                 if (bw.BaseStream.Position % 4 > 0) bw.WriteAlignment(4);
                 else bw.WritePadding(4);
 
-                Entry.tmp = (ushort)(((relOffset + 0x3 & ~0x3) >> 2) & 0xffff);
-                Entry.tmpZ = (byte)((((relOffset + 0x3 & ~0x3) >> 2) & 0xff0000) >> 16);
+                var relOffset = absDataOffset - baseDataOffset;
+                Entry.tmp = (ushort)((relOffset >> 2) & 0xffff);
+                Entry.tmpZ = (byte)(((relOffset >> 2) & 0xff0000) >> 16);
                 Entry.tmp2 = (ushort)(FileSize & 0xffff);
                 Entry.tmp2Z = (byte)((FileSize & 0xff0000) >> 16);
 
-                dataOffset = (bw.BaseStream.Position % 4 > 0) ? (int)(dataOffset + FileSize + 0x3) & ~0x3 : (int)(dataOffset + FileSize + 4);
-                relOffset = (bw.BaseStream.Position % 4 > 0) ? (int)(relOffset + FileSize + 0x3) & ~0x3 : (int)(relOffset + FileSize + 4);
-
-                return new Tuple<int, int>(dataOffset, relOffset);
+                return (bw.BaseStream.Position % 4 > 0) ? (int)(absDataOffset + FileSize + 0x3) & ~0x3 : (int)(absDataOffset + FileSize + 4);
             }
         }
     }

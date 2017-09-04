@@ -59,13 +59,10 @@ namespace archive_level5.XPCK
 
                 //Files
                 var files = Files.OrderBy(x => x.Entry.fileOffset).ToList();
-                var relOffset = 0;
                 var dataOffset = absDataOffset;
                 foreach (var file in files)
                 {
-                    var res = file.Write(bw.BaseStream, dataOffset, relOffset);
-                    dataOffset = res.Item1;
-                    relOffset = res.Item2;
+                    dataOffset=file.Write(bw.BaseStream, dataOffset, absDataOffset);
                 }
 
                 //Entries
