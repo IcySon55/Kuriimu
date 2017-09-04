@@ -141,7 +141,7 @@ namespace image_level5.imgc
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
                 comp = Level5.Compress(new MemoryStream(importPic), picComp);
                 bw.Write(comp);
-                header.imgDataSize = comp.Length + 4;
+                header.imgDataSize = comp.Length;
 
                 //Header
                 bw.BaseStream.Position = 0;
