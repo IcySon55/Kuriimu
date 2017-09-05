@@ -57,7 +57,7 @@ namespace image_xi.ANMC
                 FileInfo = new FileInfo(filename);
 
             _anmc = _bitmaps[0].Bitmap;
-            ANMC.Save(FileInfo.FullName, _anmc);
+            ANMC.Save(File.Create(FileInfo.FullName));
         }
 
         // Bitmaps

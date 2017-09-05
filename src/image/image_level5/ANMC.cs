@@ -29,7 +29,15 @@ namespace image_xi.ANMC
 
                 //seems to part the files in sub parts for better grouping
                 //Subparts
-                var subParts = br.ReadMultiple<SubPart>(tables[1].entryCount);
+                var subParts = new List<SubPart>();
+                for (int i = 0; i < tables[1].entryCount; i++)
+                {
+                    subParts.Add(new SubPart
+                    {
+                        subPart = br.ReadStruct<SubPartT>(),
+                        floats = br.ReadMultiple<float>(0x33).ToArray()
+                    });
+                }
 
                 //Unknown table; Size == 0 until now
 
@@ -37,7 +45,15 @@ namespace image_xi.ANMC
                 var unk1 = br.ReadMultiple<ulong>(tables[3].entryCount);
 
                 //infoMeta1 - Position ingame?
-                var inforMeta1 = br.ReadMultiple<InfoMeta1>(tables[4].entryCount);
+                var infoMeta1 = new List<InfoMeta1>();
+                for (int i = 0; i < tables[4].entryCount; i++)
+                {
+                    infoMeta1.Add(new InfoMeta1
+                    {
+                        infoMeta = br.ReadStruct<InfoMeta1T>(),
+                        floats = br.ReadMultiple<float>(0xa).ToArray()
+                    });
+                }
 
                 //nameHashes
                 var hashes = br.ReadMultiple<uint>(tables[5].entryCount);

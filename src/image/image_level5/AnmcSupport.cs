@@ -44,29 +44,35 @@ namespace image_xi.ANMC
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct SubPart
+    public struct SubPartT
     {
         public uint nameHash;
         public uint nameOffset;
         public uint unk1;
         public uint const1;
         public uint refHash;    //Hash of filename; e.g. FileMeta
+    }
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x33)]
-        public float[] Floats;
+    public class SubPart
+    {
+        public SubPartT subPart;
+        public float[] floats;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InfoMeta1
+    public struct InfoMeta1T
     {
         public uint subPartHash;    //Hash of name of subPart
         public uint nameOffset;
         public uint unk1;
         public uint subPartHash2;   //again
         public uint unkHash;    //Hash of name in previous yet unkown table; e.g. tables[3]
+    }
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0xa)]
-        public float[] Floats;
+    public class InfoMeta1
+    {
+        public InfoMeta1T infoMeta;
+        public float[] floats;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
