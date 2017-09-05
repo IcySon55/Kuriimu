@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ANMC.cs" />
+    <Compile Include="AnmcAdapter.cs" />
+    <Compile Include="AnmcSupport.cs" />
     <Compile Include="IMGA.cs" />
     <Compile Include="ImgaAdapter.cs" />
     <Compile Include="ImgaSupport.cs" />
