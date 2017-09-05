@@ -6,17 +6,29 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
 using Kuriimu.IO;
+using Cetera.Hash;
 
 namespace image_xi.ANMC
 {
     class ANMC
     {
+        public static Dictionary<string, uint> hashName = new Dictionary<string, uint>();
+
         public static Bitmap Load(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
                 //Header
                 var header = br.ReadStruct<Header>();
+
+                //HashName Dictionary
+                br.BaseStream.Position = header.stringOffset;
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    var name = br.ReadCStringA();
+                    try { hashName.Add(name, Crc32.Create(name)); } catch { }
+                }
+                br.BaseStream.Position = 0x14;
 
                 //Tables
                 var tmp = br.ReadStruct<Entry>();
@@ -59,7 +71,26 @@ namespace image_xi.ANMC
                 var hashes = br.ReadMultiple<uint>(tables[5].entryCount);
 
                 //InfoMeta2
+                var infoMeta2 = new List<InfoMeta2>();
+                for (int i = 0; i < tables[6].entryCount; i++)
+                {
+                    infoMeta2.Add(new InfoMeta2
+                    {
+                        infoMeta = br.ReadStruct<InfoMeta2T>(),
+                        floats = br.ReadMultiple<float>(0x6).ToArray()
+                    });
+                }
 
+                //InfoMeta3
+                var infoMeta3 = new List<InfoMeta3>();
+                for (int i = 0; i < tables[6].entryCount; i++)
+                {
+                    infoMeta3.Add(new InfoMeta3
+                    {
+                        infoMeta = br.ReadStruct<InfoMeta3T>(),
+                        floats = br.ReadMultiple<float>(0xa).ToArray()
+                    });
+                }
 
                 return null;
             }

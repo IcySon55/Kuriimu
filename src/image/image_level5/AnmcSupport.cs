@@ -76,13 +76,30 @@ namespace image_xi.ANMC
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InfoMeta2
+    public struct InfoMeta2T
     {
         public uint hash;
-        public ushort nameOffset;
         public ushort unk1;
+        public ushort unk2;
+    }
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x6)]
-        public float[] Floats;
+    public class InfoMeta2
+    {
+        public InfoMeta2T infoMeta;
+        public float[] floats;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct InfoMeta3T
+    {
+        public uint hash;
+        public ushort unk1;
+        public ushort unk2;
+    }
+
+    public class InfoMeta3
+    {
+        public InfoMeta3T infoMeta;
+        public float[] floats;
     }
 }
