@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Kuriimu.Kontract;
+using System.Runtime.InteropServices;
 
 namespace tt.text_ttbin
 {
@@ -85,4 +86,30 @@ namespace tt.text_ttbin
         }
     }
     #endregion
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Header
+    {
+        public uint unk1;
+        public uint dataOffset;
+        public uint dataLength;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct EditorStruct
+    {
+        public uint entryOffset;
+        public uint ID;
+        public ushort endingFlag;
+        public ushort filling;
+    }
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct TextStruct
+    {
+        public uint entryOffset;
+        public uint ID;
+        public uint unk1;
+        public uint unk2;
+        public uint unk3;
+    }
 }
