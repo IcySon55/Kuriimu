@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DG2.cs" />
+    <Compile Include="Dg2Manager.cs" />
+    <Compile Include="Dg2Support.cs" />
     <Compile Include="DPK4.cs" />
     <Compile Include="DpkSupport.cs" />
     <Compile Include="DpkManager.cs" />
