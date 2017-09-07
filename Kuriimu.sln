@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.14
@@ -210,6 +210,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_heroes", "src\text\tex
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{58D89148-3260-44C1-AC5C-1FDE25809710}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		get_git_info.ps1 = get_git_info.ps1
 		LICENSE.md = LICENSE.md
 		LZ4.dll = LZ4.dll
