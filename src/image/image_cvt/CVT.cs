@@ -23,7 +23,7 @@ namespace image_cvt
                 {
                     Width = Header.Width,
                     Height = Header.Height,
-                    Format = ImageSettings.ConvertFormat(Format.ETC1A4),
+                    Format = ImageSettings.ConvertFormat(Header.Format),
                     PadToPowerOf2 = false
                 };
 

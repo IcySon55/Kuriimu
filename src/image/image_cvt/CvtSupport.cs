@@ -7,14 +7,14 @@ namespace image_cvt
     public enum Format : short
     {
         ETC1A4 = 0x1006
-    };
+    }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {
         public ushort Magic;
-        public ushort Width;
-        public ushort Height;
+        public short Width;
+        public short Height;
         public Format Format;
         public int Unknown1;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
