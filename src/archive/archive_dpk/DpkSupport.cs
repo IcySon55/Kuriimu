@@ -1,4 +1,4 @@
-﻿namespace archive_dpk
+﻿namespace archive_dpk.DPK4
 {
     public class Header
     {

@@ -4,7 +4,7 @@ using System.IO;
 using Kuriimu.Kontract;
 using Kuriimu.IO;
 
-namespace archive_dpk
+namespace archive_dpk.DPK4
 {
     public class DpkManager : IArchiveManager
     {
