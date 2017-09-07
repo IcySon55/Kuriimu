@@ -71,7 +71,7 @@ namespace image_level5.imgc
                 var tmp = table.ReadUInt16();
                 table.BaseStream.Position = 0;
                 var entryLength = 2;
-                if (tmp * (64 * bitDepth / 8) > table.BaseStream.Length)
+                if (tmp == 0x453)
                 {
                     entryStart = table.ReadBytes(8);
                     entryLength = 4;
@@ -80,8 +80,8 @@ namespace image_level5.imgc
                 var ms = new MemoryStream();
                 for (int i = (int)table.BaseStream.Position; i < tableLength; i += entryLength)
                 {
-                    int entry = (entryLength == 2) ? table.ReadUInt16() : table.ReadInt32();
-                    if (entry == 0xFFFF)
+                    uint entry = (entryLength == 2) ? table.ReadUInt16() : table.ReadUInt32();
+                    if (entry == 0xFFFF || entry == 0xFFFFFFFF)
                     {
                         for (int j = 0; j < 64 * bitDepth / 8; j++)
                         {
