@@ -15,21 +15,21 @@ namespace archive_nlp.PACK
         {
             get
             {
-                if (State != ArchiveFileState.Archived) return base.FileData;
+                if (State != ArchiveFileState.Archived || Entry.entry.compSize == 0 || Entry.entry.compSize == Entry.entry.decompSize) return base.FileData;
                 return new MemoryStream(ZLib.Decompress(base.FileData));
             }
         }
 
         public override long? FileSize => Entry.entry.decompSize;
 
-        public Tuple<uint, uint> Write(Stream input, uint compOffset, uint uncompOffset)
+        public Tuple<uint, uint> Write(Stream input, uint compOffset, uint decompOffset)
         {
             using (var bw = new BinaryWriterX(input, true))
             {
                 if (base.FileData.Length > 0)
                 {
-                    Entry.entry.compOffset = compOffset;
-                    Entry.entry.decompOffset = uncompOffset;
+                    if (Entry.entry.compOffset != 0) Entry.entry.compOffset = compOffset;
+                    Entry.entry.decompOffset = decompOffset;
                 }
 
                 if (State == ArchiveFileState.Archived)
@@ -41,16 +41,24 @@ namespace archive_nlp.PACK
                 {
                     if (base.FileData.Length > 0)
                     {
-                        var comp = ZLib.Compress(base.FileData);
+                        byte[] comp;
+                        if (Entry.entry.compSize != 0 && Entry.entry.compSize != Entry.entry.decompSize)
+                            comp = ZLib.Compress(base.FileData);
+                        else
+                            comp = new BinaryReaderX(base.FileData, true).ReadAllBytes();
                         bw.Write(comp);
                         bw.WriteAlignment();
 
-                        Entry.entry.compSize = (uint)comp.Length;
+                        if (Entry.entry.compSize != 0) Entry.entry.compSize = (uint)comp.Length;
                         Entry.entry.decompSize = (uint)base.FileData.Length;
                     }
                 }
 
-                return new Tuple<uint, uint>(compOffset + Entry.entry.compSize, uncompOffset + Entry.entry.decompSize);
+                return new Tuple<uint, uint>(
+                    (Entry.entry.compOffset == 0) ?
+                        Entry.entry.decompOffset + Entry.entry.decompSize :
+                        Entry.entry.compOffset + Entry.entry.compSize,
+                    decompOffset + Entry.entry.decompSize);
             }
         }
     }

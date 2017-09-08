@@ -12,6 +12,7 @@ namespace archive_nlp.PACK
         private Stream _stream = null;
 
         public PACKHeader header;
+        public byte[] names;
 
         public PACK(Stream input)
         {
@@ -29,12 +30,8 @@ namespace archive_nlp.PACK
                 var stringOffsets = br.ReadMultiple<int>(header.packFileCount);
 
                 //Strings
-                var names = new List<string>();
-                foreach (var offset in stringOffsets)
-                {
-                    br.BaseStream.Position = header.stringOffset + offset;
-                    names.Add(br.ReadCStringA());
-                }
+                br.BaseStream.Position = header.stringOffset;
+                names = br.ReadBytes((int)(header.stringOffOffset - br.BaseStream.Position));
 
                 //FileEntry
                 var fileEntries = new List<FileEntry>();
@@ -48,13 +45,21 @@ namespace archive_nlp.PACK
                 //Files
                 for (int i = 0; i < header.packFileCount; i++)
                 {
-                    Files.Add(new PACKFileInfo
+                    using (var name = new BinaryReaderX(new MemoryStream(names)))
                     {
-                        State = ArchiveFileState.Archived,
-                        FileName = names[i],
-                        FileData = new SubStream(br.BaseStream, entries[i].compOffset, entries[i].compSize),
-                        Entry = fileEntries[i]
-                    });
+                        name.BaseStream.Position = stringOffsets[i];
+                        var readName = name.ReadCStringA();
+                        Files.Add(new PACKFileInfo
+                        {
+                            State = ArchiveFileState.Archived,
+                            FileName = (entries[i].magic == "TEX ") ? readName.Remove(readName.Length - 1) : readName,
+                            FileData = new SubStream(
+                                br.BaseStream,
+                                (entries[i].compOffset == 0) ? entries[i].decompOffset : entries[i].compOffset,
+                                (entries[i].compSize == 0) ? entries[i].decompSize : entries[i].compSize),
+                            Entry = fileEntries[i]
+                        });
+                    }
                 }
             }
         }
@@ -63,25 +68,22 @@ namespace archive_nlp.PACK
         {
             using (var bw = new BinaryWriterX(output))
             {
-                var dataOffset = header.fileOffset;
+                var dataOffset = (uint)(0x20 + Files.Count * 0x20 + ((names.Length + 0xf) & ~0xf) + ((Files.Count * 0x4 + 0xf) & ~0xf));
                 bw.BaseStream.Position = dataOffset;
 
                 //Files
                 var compOffset = dataOffset;
-                var uncompOffset = dataOffset;
+                var decompOffset = dataOffset;
                 foreach (var file in Files)
                 {
-                    var res = file.Write(bw.BaseStream, compOffset, uncompOffset);
+                    var res = file.Write(bw.BaseStream, compOffset, decompOffset);
                     compOffset = (uint)((res.Item1 + 0xf) & ~0xf);
-                    uncompOffset = (uint)((res.Item2 + 0xf) & ~0xf);
+                    decompOffset = (uint)((res.Item2 + 0xf) & ~0xf);
                 }
 
                 //Names
-                foreach (var file in Files)
-                {
-                    bw.BaseStream.Position = header.stringOffset + file.Entry.nameOffset;
-                    bw.Write(Encoding.ASCII.GetBytes(file.FileName));
-                }
+                bw.BaseStream.Position = header.stringOffset;
+                bw.Write(names);
 
                 //NameOffsets
                 bw.BaseStream.Position = header.stringOffOffset;
