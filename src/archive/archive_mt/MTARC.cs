@@ -38,8 +38,8 @@ namespace archive_mt
                     System = Platform.PS3;
                 }
 
-                // SFHHeader
-                if (br.PeekString() == "\0SFH")
+                // HFSHeader
+                if (br.PeekString() == "HFS" || br.PeekString() == "\0SFH")
                 {
                     HFSHeader = br.ReadStruct<HFSHeader>();
                     HFSHeaderLength = HFSHeader.Type == 0 ? 0x20000 : 0x10;
@@ -47,7 +47,13 @@ namespace archive_mt
 
                 // Header
                 Header = br.ReadStruct<Header>();
-                if (ByteOrder == ByteOrder.LittleEndian) br.ReadInt32();
+                switch (Header.Version)
+                {
+                    case 0x7:
+                        HeaderLength = 8;
+                        break;
+                }
+                if (ByteOrder == ByteOrder.LittleEndian && Header.Version != 7) br.ReadInt32();
 
                 // Files
                 var entries = br.ReadMultiple<FileMetadata>(Header.EntryCount);
@@ -91,11 +97,12 @@ namespace archive_mt
                 // Header
                 Header.EntryCount = (short)Files.Count;
                 bw.WriteStruct(Header);
-                if (ByteOrder == ByteOrder.LittleEndian) bw.Write(0);
+                if (ByteOrder == ByteOrder.LittleEndian && Header.Version != 7) bw.Write(0);
 
                 // Files
                 switch (Header.Version)
                 {
+                    case 0x7:
                     case 0x10:
                         bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * EntryLength, 0x8000) : HeaderLength + Header.EntryCount * EntryLength;
                         break;
