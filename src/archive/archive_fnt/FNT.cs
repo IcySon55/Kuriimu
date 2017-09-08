@@ -39,7 +39,7 @@ namespace archive_fnt
                     Files.Add(new FntFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = $"{i:x8}" + extension,
+                        FileName = $"{i:00000000}" + extension,
                         FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].size)
                     });
                 }
@@ -50,7 +50,7 @@ namespace archive_fnt
         {
             using (var bw = new BinaryWriterX(output))
             {
-                var dataOffset = Files.Count*4 + 8;
+                var dataOffset = Files.Count * 4 + 8;
                 dataOffset = (dataOffset + 0x7f) & ~0x7f;
                 var dataOffsetTmp = dataOffset;
 
@@ -64,7 +64,7 @@ namespace archive_fnt
                 bw.Write(dataOffsetTmp);
 
                 //FileData
-                for (int i=0;i<Files.Count;i++)
+                for (int i = 0; i < Files.Count; i++)
                 {
                     bw.BaseStream.Position = dataOffset;
                     Files[i].FileData.CopyTo(bw.BaseStream);
