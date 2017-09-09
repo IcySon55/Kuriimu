@@ -27,6 +27,8 @@ namespace archive_nlp.PACK
 
                 //stringOffsets
                 br.BaseStream.Position = header.stringOffOffset;
+                var pointers = br.ReadBytes(header.packFileCount * 4);
+                br.BaseStream.Position = header.stringOffOffset;
                 var stringOffsets = br.ReadMultiple<int>(header.packFileCount);
 
                 //Strings
@@ -57,7 +59,9 @@ namespace archive_nlp.PACK
                                 br.BaseStream,
                                 (entries[i].compOffset == 0) ? entries[i].decompOffset : entries[i].compOffset,
                                 (entries[i].compSize == 0) ? entries[i].decompSize : entries[i].compSize),
-                            Entry = fileEntries[i]
+                            Entry = fileEntries[i],
+                            names = (fileEntries[i].entry.magic == "TEXI") ? names : null,
+                            pointers = (fileEntries[i].entry.magic == "TEXI") ? pointers : null,
                         });
                     }
                 }
