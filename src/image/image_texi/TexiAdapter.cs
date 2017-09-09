@@ -22,7 +22,7 @@ namespace image_texi
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
