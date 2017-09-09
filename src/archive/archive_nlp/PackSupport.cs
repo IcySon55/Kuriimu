@@ -135,8 +135,8 @@ namespace archive_nlp.PACK
                     br.BaseStream.Position = bk;
 
                     output.Add(ParseSERIParameter(
-                        namesB.BaseStream,
                         br.BaseStream,
+                        namesB.BaseStream,
                         pointers,
                         type,
                         name,
@@ -320,7 +320,7 @@ namespace archive_nlp.PACK
         }
         #endregion
 
-        public SERIParameter ParseSERIParameter(Stream names, Stream fileData, byte[] pointers, string type, string name, int valueOffset, int valuesOffset)
+        public SERIParameter ParseSERIParameter(Stream fileData, Stream names, byte[] pointers, string type, string name, int valueOffset, int valuesOffset)
         {
             switch (type)
             {
@@ -457,58 +457,64 @@ namespace archive_nlp.PACK
 
                                 return new IntegerArray(name, IntArray);
                         }
-                    /*case 'b': //Of Boolean
-                        bool[] BooleanArray = new bool[ArrayLength];
+                    case "b": //Of Boolean
+                        bool[] BooleanArray = new bool[arrayLength];
 
-                        for (int i = 0; i < Pointers.Length; i++)
+                        for (int i = 0; i < pointersA.Length; i++)
                         {
-                            Reader.BaseStream.Seek(ValuesOffset + Pointers[i], SeekOrigin.Begin);
-                            BooleanArray[i] = Reader.ReadByte() == 1;
+                            br.BaseStream.Position = valuesOffset + pointersA[i];
+                            BooleanArray[i] = br.ReadByte() == 1;
                         }
 
-                        return new BooleanArray(Name, BooleanArray);
-                    case 'f': //Of Float
-                        float[] FloatArray = new float[ArrayLength];
+                        return new BooleanArray(name, BooleanArray);
+                    case "f": //Of Float
+                        float[] FloatArray = new float[arrayLength];
 
-                        for (int i = 0; i < Pointers.Length; i++)
+                        for (int i = 0; i < pointersA.Length; i++)
                         {
-                            Reader.BaseStream.Seek(ValuesOffset + Pointers[i], SeekOrigin.Begin);
-                            FloatArray[i] = Reader.ReadSingle();
+                            br.BaseStream.Position = valuesOffset + pointersA[i];
+                            FloatArray[i] = br.ReadSingle();
                         }
 
-                        return new FloatArray(Name, FloatArray);
-                    case 'h': //Of Array
-                        SERIParameter[] NestedArray = new SERIParameter[ArrayLength];
+                        return new FloatArray(name, FloatArray);
+                    case "h": //Of Array
+                        SERIParameter[] NestedArray = new SERIParameter[arrayLength];
 
-                        for (int i = 0; i < Pointers.Length; i++)
+                        for (int i = 0; i < pointersA.Length; i++)
                         {
-                            Reader.BaseStream.Seek(ValuesOffset + Pointers[i], SeekOrigin.Begin);
-                            ushort Count = Reader.ReadUInt16();
-                            long TypesTableOffset = ValuesOffset + Pointers[i] + 2 + Count * 4;
+                            br.BaseStream.Position = valuesOffset + pointersA[i];
+                            ushort Count = br.ReadUInt16();
+                            long TypesTableOffset = valuesOffset + pointersA[i] + 2 + Count * 4;
                             SERIParameter[] Arrays = new SERIParameter[Count];
                             for (int Index = 0; Index < Count; Index++)
                             {
-                                Reader.BaseStream.Seek(ValuesOffset + Pointers[i] + 2 + Index * 4, SeekOrigin.Begin);
-                                ushort NameOffset = Reader.ReadUInt16();
-                                ushort ValueOffset = Reader.ReadUInt16();
-                                string ArrayName = ReadNullTerminatedString(Reader, StringTableOffset + NameOffset);
+                                using (var namesB = new BinaryReaderX(names, true))
+                                {
+                                    br.BaseStream.Position = valuesOffset + pointersA[i] + 2 + Index * 4;
+                                    ushort NameOffset = br.ReadUInt16();
+                                    ushort ValueOffset = br.ReadUInt16();
 
-                                Reader.BaseStream.Seek(TypesTableOffset + Index, SeekOrigin.Begin);
-                                char ValueType = Reader.ReadChar();
+                                    namesB.BaseStream.Position = NameOffset;
+                                    string ArrayName = namesB.ReadCStringA();
 
-                                Arrays[Index] = ParseSERI(br.BaseStream,
-                                    names,
-                                    pointers,
-                                    valuesOffset,
-                                    ValueOffset,
-                                    ValueType,
-                                    ArrayName);
+                                    br.BaseStream.Seek(TypesTableOffset + Index, SeekOrigin.Begin);
+                                    string ValueType = br.ReadString(1);
+
+                                    Arrays[Index] = ParseSERIParameter(
+                                        br.BaseStream,
+                                        names,
+                                        pointers,
+                                        ValueType,
+                                        name,
+                                        ValueOffset,
+                                        valuesOffset);
+                                }
                             }
 
                             NestedArray[i] = new NestedArray(null, Arrays);
+                        }
 
-                            return new NestedArray(name, NestedArray);
-                        }*/
+                        return new NestedArray(name, NestedArray);
                     default:
                         throw new Exception($"Type {arrayDataType} is unknown!");
                 }
