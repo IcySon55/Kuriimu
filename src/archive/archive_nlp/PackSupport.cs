@@ -108,6 +108,7 @@ namespace archive_nlp.PACK
     {
         public Stream data = new MemoryStream();
 
+        #region Deserilization
         public SERI(Stream fileData, byte[] names, byte[] pointers)
         {
             var output = new SERIList();
@@ -520,5 +521,6 @@ namespace archive_nlp.PACK
                 }
             }
         }
+        #endregion
     }
 }
