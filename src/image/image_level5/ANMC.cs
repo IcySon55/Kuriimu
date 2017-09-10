@@ -56,7 +56,7 @@ namespace image_xi.ANMC
                 //unknown table
                 var unk1 = br.ReadMultiple<ulong>(tables[3].entryCount);
 
-                //infoMeta1 - Position ingame?
+                //infoMeta1
                 var infoMeta1 = new List<InfoMeta1>();
                 for (int i = 0; i < tables[4].entryCount; i++)
                 {
@@ -70,7 +70,7 @@ namespace image_xi.ANMC
                 //nameHashes
                 var hashes = br.ReadMultiple<uint>(tables[5].entryCount);
 
-                //InfoMeta2
+                //InfoMeta2 - image positioning, calculated from center of screen
                 var infoMeta2 = new List<InfoMeta2>();
                 for (int i = 0; i < tables[6].entryCount; i++)
                 {
@@ -79,21 +79,51 @@ namespace image_xi.ANMC
                         infoMeta = br.ReadStruct<InfoMeta2T>(),
                         floats = br.ReadMultiple<float>(0x6).ToArray()
                     });
+                    infoMeta2[infoMeta2.Count - 1].width = (int)(infoMeta2[infoMeta2.Count - 1].floats[3] + -1 * infoMeta2[infoMeta2.Count - 1].floats[0]);
+                    infoMeta2[infoMeta2.Count - 1].height = (int)(infoMeta2[infoMeta2.Count - 1].floats[4] + -1 * infoMeta2[infoMeta2.Count - 1].floats[1]);
                 }
 
                 //InfoMeta3
                 var infoMeta3 = new List<InfoMeta3>();
-                for (int i = 0; i < tables[6].entryCount; i++)
+                for (int i = 0; i < tables[7].entryCount; i++)
                 {
                     infoMeta3.Add(new InfoMeta3
                     {
                         infoMeta = br.ReadStruct<InfoMeta3T>(),
-                        floats = br.ReadMultiple<float>(0xa).ToArray()
+                        floats = br.ReadMultiple<float>((tables[7].entryLength - 8) / 4).ToArray()
                     });
                 }
 
+                //creating relative List
+                var relList = new List<RootElement>();
+                foreach (var file in fileInfo)
+                    relList.Add(new RootElement
+                    {
+                        name = hashName.ToList().Find(x => x.Value == file.nameHash).Key,
+                        fileMeta = file
+                    });
+                foreach (var sub in subParts)
+                    relList.Find(x => x.fileMeta.nameHash == sub.subPart.refHash).subParts.Add(new SubPartElement
+                    {
+                        name = hashName.ToList().Find(x => x.Value == sub.subPart.nameHash).Key,
+                        subPart = sub
+                    });
+
                 return null;
             }
+        }
+
+        public class RootElement
+        {
+            public string name;
+            public FileMeta fileMeta;
+            public List<SubPartElement> subParts = new List<SubPartElement>();
+        }
+
+        public class SubPartElement
+        {
+            public string name;
+            public SubPart subPart;
         }
 
         public static void Save(Stream input)
