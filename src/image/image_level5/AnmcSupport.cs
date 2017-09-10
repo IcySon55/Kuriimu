@@ -87,6 +87,8 @@ namespace image_xi.ANMC
     {
         public InfoMeta2T infoMeta;
         public float[] floats;
+        public int width;
+        public int height;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

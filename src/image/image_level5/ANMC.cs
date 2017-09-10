@@ -79,16 +79,18 @@ namespace image_xi.ANMC
                         infoMeta = br.ReadStruct<InfoMeta2T>(),
                         floats = br.ReadMultiple<float>(0x6).ToArray()
                     });
+                    infoMeta2[infoMeta2.Count - 1].width = (int)(infoMeta2[infoMeta2.Count - 1].floats[3] + -1 * infoMeta2[infoMeta2.Count - 1].floats[0]);
+                    infoMeta2[infoMeta2.Count - 1].height = (int)(infoMeta2[infoMeta2.Count - 1].floats[4] + -1 * infoMeta2[infoMeta2.Count - 1].floats[1]);
                 }
 
                 //InfoMeta3
                 var infoMeta3 = new List<InfoMeta3>();
-                for (int i = 0; i < tables[6].entryCount; i++)
+                for (int i = 0; i < tables[7].entryCount; i++)
                 {
                     infoMeta3.Add(new InfoMeta3
                     {
                         infoMeta = br.ReadStruct<InfoMeta3T>(),
-                        floats = br.ReadMultiple<float>(0xa).ToArray()
+                        floats = br.ReadMultiple<float>((tables[7].entryLength - 8) / 4).ToArray()
                     });
                 }
 
