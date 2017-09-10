@@ -156,7 +156,7 @@ namespace Kuriimu.UI
             tsb3.DropDownItems[1].Tag = Compression.LZ10VLE;
         }
 
-        public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile)
+        public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile, bool compress = false)
         {
             openFile = null;
             saveFile = null;
@@ -173,7 +173,7 @@ namespace Kuriimu.UI
             var sfd = new SaveFileDialog()
             {
                 Title = saveCaption,
-                FileName = Path.GetFileName(ofd.FileName) + saveExtension,
+                FileName = !compress ? Path.GetFileNameWithoutExtension(ofd.FileName) + saveExtension + Path.GetExtension(ofd.FileName) : Path.GetFileName(ofd.FileName.Replace(saveExtension, string.Empty)),
                 Filter = "All Files (*.*)|*.*"
             };
 
@@ -191,13 +191,13 @@ namespace Kuriimu.UI
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a " + tsi.Tag.ToString() + " compressed file...", "Save your decompressed file...", ".decomp", out FileStream openFile, out FileStream saveFile)) return;
+            if (!PrepareFiles("Open a " + tsi?.Tag + " compressed file...", "Save your decompressed file...", ".decomp", out var openFile, out var saveFile)) return;
 
             try
             {
                 using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    switch (tsi.Tag)
+                    switch (tsi?.Tag)
                     {
                         case Compression.Level5:
                             outFs.Write(Level5.Decompress(openFile));
@@ -243,22 +243,23 @@ namespace Kuriimu.UI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
-            MessageBox.Show($"Successfully decompressed {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"Successfully decompressed {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static void Compress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a decompressed " + tsi.Tag.ToString() + "file...", "Save your compressed file...", ".comp", out FileStream openFile, out FileStream saveFile)) return;
+            if (!PrepareFiles("Open a decompressed " + tsi?.Tag + "file...", "Save your compressed file...", ".decomp", out var openFile, out var saveFile, true)) return;
 
             try
             {
                 using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    switch (tsi.Tag)
+                    switch (tsi?.Tag)
                     {
                         case Compression.L5LZ10:
                             outFs.Write(Level5.Compress(openFile, Level5.Method.LZ10));
@@ -322,9 +323,10 @@ namespace Kuriimu.UI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
-            MessageBox.Show($"Successfully compressed {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"Successfully compressed {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public enum Compression : short
