@@ -29,11 +29,11 @@ namespace image_nintendo.VCG
 
             var settings = new ImageSettings
             {
-                Width = 96,
-                Height = 96,
+                Width = 112,
+                Height = 112,
                 TileSize = 8,
                 BitPerIndex = BitLength.Bit4,
-                TransparentColor = pal.ToList()[transparentIndex]
+                TransparentColor = pal.ToList()[transparentIndex - 1]
             };
 
             // Tiles
@@ -41,13 +41,13 @@ namespace image_nintendo.VCG
             using (var brVCG = new BinaryReaderX(inputVCG))
             {
                 var magic = brVCG.ReadString(4);
-                brVCG.BaseStream.Position = 0x10; // Possible Tile Start
+                brVCG.ReadInt64();
+                var dataLength = brVCG.ReadInt32();
 
                 while (brVCG.BaseStream.Position < brVCG.BaseStream.Length)
-                {
-                    tiles.Add(brVCG.ReadBytes(8 * 8 / 2));
-                }
+                    tiles.Add(brVCG.ReadBytes(4 * 4));
 
+                // Temporary
                 brVCG.BaseStream.Position = 0x10;
                 bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings, pal));
             }
