@@ -86,6 +86,26 @@ namespace CeteraDS.Image
             }
         }
 
+        public static Bitmap DrawPalette(IEnumerable<Color> colors, int pixelSize = 8)
+        {
+            var palette = new Bitmap(16 * pixelSize, Math.Max(colors.Count() / 16 * 16, 16 * pixelSize), PixelFormat.Format24bppRgb);
+            var (x, y) = (0, 0);
+            var gfx = Graphics.FromImage(palette);
+
+            foreach (var clr in colors)
+            {
+                gfx.FillRectangle(new SolidBrush(clr), x, y, pixelSize, pixelSize);
+                x += pixelSize;
+                if (x % palette.Width == 0)
+                {
+                    x = 0;
+                    y += pixelSize;
+                }
+            }
+
+            return palette;
+        }
+
         static IEnumerable<Color> GetColorsFromIndeces(byte[] indeces, IEnumerable<Color> palette, ImageSettings settings)
         {
             using (var br = new BinaryReaderX(new MemoryStream(indeces)))
