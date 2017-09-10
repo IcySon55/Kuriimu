@@ -45,8 +45,11 @@ namespace image_nintendo.VCG
 
                 while (brVCG.BaseStream.Position < brVCG.BaseStream.Length)
                 {
-                    tiles.Add(brVCG.ReadBytes(8 * 8));
+                    tiles.Add(brVCG.ReadBytes(8 * 8 / 2));
                 }
+
+                brVCG.BaseStream.Position = 0x10;
+                bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings, pal));
             }
 
             // Tile Map
