@@ -10,13 +10,14 @@ namespace image_nintendo.VCG
     class VCG
     {
         public List<Bitmap> bmps = new List<Bitmap>();
-        
+
 
         public VCG(Stream inputVCG, Stream inputVCL, Stream inputVCE)
         {
             IEnumerable<Color> pal;
             int transparentIndex;
 
+            // Palette
             using (var brVCL = new BinaryReaderX(inputVCL))
             {
                 var magic = brVCL.ReadString(4);
@@ -35,18 +36,29 @@ namespace image_nintendo.VCG
                 TransparentColor = pal.ToList()[transparentIndex]
             };
 
+            // Tiles
+            var tiles = new List<byte[]>();
             using (var brVCG = new BinaryReaderX(inputVCG))
             {
                 var magic = brVCG.ReadString(4);
+                brVCG.BaseStream.Position = 0x10; // Possible Tile Start
 
-                bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings, pal));
+                while (brVCG.BaseStream.Position < brVCG.BaseStream.Length)
+                {
+                    tiles.Add(brVCG.ReadBytes(8 * 8));
+                }
             }
 
+            // Tile Map
             using (var brVCE = new BinaryReaderX(inputVCE))
             {
                 var magic = brVCE.ReadString(4);
-                
+
+
+
+                //bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings, pal));
             }
+
         }
 
         public void Save(string filename)
