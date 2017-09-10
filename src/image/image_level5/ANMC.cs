@@ -56,7 +56,7 @@ namespace image_xi.ANMC
                 //unknown table
                 var unk1 = br.ReadMultiple<ulong>(tables[3].entryCount);
 
-                //infoMeta1 - Position ingame?
+                //infoMeta1
                 var infoMeta1 = new List<InfoMeta1>();
                 for (int i = 0; i < tables[4].entryCount; i++)
                 {
@@ -70,7 +70,7 @@ namespace image_xi.ANMC
                 //nameHashes
                 var hashes = br.ReadMultiple<uint>(tables[5].entryCount);
 
-                //InfoMeta2
+                //InfoMeta2 - image positioning, calculated from center of screen
                 var infoMeta2 = new List<InfoMeta2>();
                 for (int i = 0; i < tables[6].entryCount; i++)
                 {
@@ -94,8 +94,36 @@ namespace image_xi.ANMC
                     });
                 }
 
+                //creating relative List
+                var relList = new List<RootElement>();
+                foreach (var file in fileInfo)
+                    relList.Add(new RootElement
+                    {
+                        name = hashName.ToList().Find(x => x.Value == file.nameHash).Key,
+                        fileMeta = file
+                    });
+                foreach (var sub in subParts)
+                    relList.Find(x => x.fileMeta.nameHash == sub.subPart.refHash).subParts.Add(new SubPartElement
+                    {
+                        name = hashName.ToList().Find(x => x.Value == sub.subPart.nameHash).Key,
+                        subPart = sub
+                    });
+
                 return null;
             }
+        }
+
+        public class RootElement
+        {
+            public string name;
+            public FileMeta fileMeta;
+            public List<SubPartElement> subParts = new List<SubPartElement>();
+        }
+
+        public class SubPartElement
+        {
+            public string name;
+            public SubPart subPart;
         }
 
         public static void Save(Stream input)
