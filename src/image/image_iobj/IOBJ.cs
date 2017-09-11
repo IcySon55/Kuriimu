@@ -61,8 +61,9 @@ namespace image_iobj
                     var width = br.ReadInt32();
                     var height = br.ReadInt32();
                     var format = (Format)br.ReadInt32();
+                    br.BaseStream.Position -= 4;
 
-                    imgMetaInf.Add(br.ReadBytes(0x70));
+                    imgMetaInf.Add(br.ReadBytes(0x74));
 
                     var settings = new ImageSettings
                     {
@@ -123,10 +124,7 @@ namespace image_iobj
 
                     Format format;
                     using (var br = new BinaryReaderX(new MemoryStream(imgMetaInf[count])))
-                    {
-                        br.BaseStream.Position = 0xc;
                         format = (Format)br.ReadInt32();
-                    }
 
                     var settings = new ImageSettings
                     {
@@ -141,7 +139,6 @@ namespace image_iobj
                     bw.Write(pic.Length);
                     bw.Write(bmp.Width);
                     bw.Write(bmp.Height);
-                    bw.Write((int)format);
                     bw.Write(imgMetaInf[count++]);
 
                     bw.Write(pic);
