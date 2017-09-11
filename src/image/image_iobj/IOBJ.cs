@@ -60,18 +60,16 @@ namespace image_iobj
                     var dataSize = br.ReadInt32();
                     var width = br.ReadInt32();
                     var height = br.ReadInt32();
-                    br.BaseStream.Position += 0x20;
                     var format = (Format)br.ReadInt32();
-                    br.BaseStream.Position = imgOffsets[i];
 
-                    imgMetaInf.Add(br.ReadBytes(0x80));
+                    imgMetaInf.Add(br.ReadBytes(0x70));
 
                     var settings = new ImageSettings
                     {
                         Width = width,
                         Height = height,
                         Orientation = Orientation.XFlip,
-                        Format = ImageSettings.ConvertFormat(format)
+                        Format = ImageSettings.ConvertFormat(((int)format > 0x12) ? Format.ETC1A4 : format)
                     };
 
                     bmps.Add(Common.Load(br.ReadBytes(dataSize), settings));
@@ -126,7 +124,7 @@ namespace image_iobj
                     Format format;
                     using (var br = new BinaryReaderX(new MemoryStream(imgMetaInf[count])))
                     {
-                        br.BaseStream.Position = 0x2c;
+                        br.BaseStream.Position = 0xc;
                         format = (Format)br.ReadInt32();
                     }
 
@@ -135,15 +133,16 @@ namespace image_iobj
                         Width = bmp.Width,
                         Height = bmp.Height,
                         Orientation = Orientation.XFlip,
-                        Format = ImageSettings.ConvertFormat(format)
+                        Format = ImageSettings.ConvertFormat(((int)format > 0x12) ? Format.ETC1A4 : format)
                     };
 
                     var pic = Common.Save(bmp, settings);
 
-                    bw.Write(imgMetaInf[count++]);
-                    bw.BaseStream.Position -= 0x80;
                     bw.Write(pic.Length);
-                    bw.BaseStream.Position += 0x7c;
+                    bw.Write(bmp.Width);
+                    bw.Write(bmp.Height);
+                    bw.Write((int)format);
+                    bw.Write(imgMetaInf[count++]);
 
                     bw.Write(pic);
                     bw.WriteAlignment(0x80);

@@ -5,8 +5,9 @@ namespace image_iobj
 {
     public enum Format : int
     {
-        RGBA4444 = 1,
-        ETC1A4 = 0x20
+        RGBA8888 = 4,
+        RGBA4444 = 5,
+        ETC1A4 = 0x12
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
