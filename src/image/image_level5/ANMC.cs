@@ -70,31 +70,40 @@ namespace image_xi.ANMC
                 //nameHashes
                 var hashes = br.ReadMultiple<uint>(tables[5].entryCount);
 
-                //InfoMeta2 - image positioning, calculated from center of screen
-                var infoMeta2 = new List<InfoMeta2>();
+                //Positioning
+                var positioning = new List<Position>();
                 for (int i = 0; i < tables[6].entryCount; i++)
                 {
-                    infoMeta2.Add(new InfoMeta2
+                    positioning.Add(new Position
                     {
-                        infoMeta = br.ReadStruct<InfoMeta2T>(),
-                        floats = br.ReadMultiple<float>(0x6).ToArray()
+                        infoMeta = br.ReadStruct<PositionHeader>(),
+                        values = br.ReadStruct<PositionEntry>()
                     });
-                    infoMeta2[infoMeta2.Count - 1].width = (int)(infoMeta2[infoMeta2.Count - 1].floats[3] + -1 * infoMeta2[infoMeta2.Count - 1].floats[0]);
-                    infoMeta2[infoMeta2.Count - 1].height = (int)(infoMeta2[infoMeta2.Count - 1].floats[4] + -1 * infoMeta2[infoMeta2.Count - 1].floats[1]);
                 }
 
                 //InfoMeta3
-                var infoMeta3 = new List<InfoMeta3>();
+                var center = new List<Center>();
                 for (int i = 0; i < tables[7].entryCount; i++)
                 {
-                    infoMeta3.Add(new InfoMeta3
+                    center.Add(new Center
                     {
-                        infoMeta = br.ReadStruct<InfoMeta3T>(),
-                        floats = br.ReadMultiple<float>((tables[7].entryLength - 8) / 4).ToArray()
+                        infoMeta = br.ReadStruct<CenterHeader>(),
+                        values = br.ReadStruct<CenterEntry>()
                     });
                 }
 
-                //creating relative List
+                //InfoMeta4
+                var infoMeta4 = new List<MetaInf4>();
+                for (int i = 0; i < tables[7].entryCount; i++)
+                {
+                    infoMeta4.Add(new MetaInf4
+                    {
+                        infoMeta = br.ReadStruct<MetaInf4T>(),
+                        values = br.ReadMultiple<float>(0xa).ToArray()
+                    });
+                }
+
+                //populating relative List
                 var relList = new List<RootElement>();
                 foreach (var file in fileInfo)
                     relList.Add(new RootElement
@@ -108,6 +117,10 @@ namespace image_xi.ANMC
                         name = hashName.ToList().Find(x => x.Value == sub.subPart.nameHash).Key,
                         subPart = sub
                     });
+
+                foreach (var meta in infoMeta1)
+                    foreach (var file in relList)
+                        file.subParts.Find(y => y.subPart.subPart.nameHash == meta.infoMeta.subPartHash2).metaInfs1.Add(meta);
 
                 return null;
             }
@@ -124,6 +137,15 @@ namespace image_xi.ANMC
         {
             public string name;
             public SubPart subPart;
+            public List<InfoMeta1> metaInfs1 = new List<InfoMeta1>();
+            public List<MetaInf> metaInfs = new List<MetaInf>();
+        }
+
+        public class MetaInf
+        {
+            public string name;
+            public Position posistionInf;
+            public Center coordinationCenter;
         }
 
         public static void Save(Stream input)

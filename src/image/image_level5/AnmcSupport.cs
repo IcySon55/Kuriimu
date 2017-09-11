@@ -75,33 +75,74 @@ namespace image_xi.ANMC
         public float[] floats;
     }
 
+    #region Positioning
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InfoMeta2T
+    public struct PositionHeader
     {
         public uint hash;
         public ushort unk1;
         public ushort unk2;
     }
 
-    public class InfoMeta2
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct PositionEntry
     {
-        public InfoMeta2T infoMeta;
-        public float[] floats;
-        public int width;
-        public int height;
+        public float x1;
+        public float y1;
+        public float z1;
+
+        public float x2;
+        public float y2;
+        public float z2;
     }
 
+    public class Position
+    {
+        public PositionHeader infoMeta;
+        public PositionEntry values;
+
+        public int width => (int)(values.x2 + -1 * values.x1);
+        public int height => (int)(values.y2 + -1 * values.y1);
+    }
+    #endregion
+
+    #region Center
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InfoMeta3T
+    public struct CenterHeader
     {
         public uint hash;
         public ushort unk1;
         public ushort unk2;
     }
 
-    public class InfoMeta3
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct CenterEntry
     {
-        public InfoMeta3T infoMeta;
-        public float[] floats;
+        public float x;
+        public float y;
+        public float z;
     }
+
+    public class Center
+    {
+        public CenterHeader infoMeta;
+        public CenterEntry values;
+    }
+    #endregion
+
+    #region MetaInf4
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct MetaInf4T
+    {
+        public uint hash;
+        public ushort unk1;
+        public ushort unk2;
+    }
+
+    public class MetaInf4
+    {
+        public MetaInf4T infoMeta;
+        public float[] values;
+    }
+    #endregion
 }
