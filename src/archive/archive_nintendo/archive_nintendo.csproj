@@ -90,8 +90,11 @@
     <Compile Include="SbSupport.cs" />
     <Compile Include="SimpleSarcManager.cs" />
     <Compile Include="UMSBT.cs" />
+    <Compile Include="ViwManager.cs" />
     <Compile Include="UmsbtManager.cs" />
     <Compile Include="UmsbtSupport.cs" />
+    <Compile Include="VIW.cs" />
+    <Compile Include="ViwSupport.cs" />
     <Compile Include="ZAR.cs" />
     <Compile Include="ZarManager.cs" />
     <Compile Include="ZarSupport.cs" />
