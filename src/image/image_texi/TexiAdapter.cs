@@ -22,7 +22,7 @@ namespace image_texi
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -55,11 +55,13 @@ namespace image_texi
 
         public void Save(string filename = "")
         {
+            var texiName = filename + "i";
+
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
             _texi.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-            _texi.Save(FileInfo.FullName);
+            _texi.Save(File.Create(FileInfo.FullName), File.Create(texiName));
         }
 
         // Bitmaps
