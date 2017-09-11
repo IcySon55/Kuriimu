@@ -21,11 +21,24 @@ namespace Cetera.Image
 
     public enum Orientation : byte
     {
-        Default,
+        Default = 0,
+        XFlip = 1,
+        YFlip = 2,
+        XYFlip = 3,
+        Rotate90 = 4,
+        XFlip90 = 5,
+        YFlip90 = 6,
+        Rotate270 = 7,
+        TransposeTile = 8
+    }
+
+    /*public enum Orientation : byte
+    {
+        Default = 0,
         TransposeTile = 1,
         Rotate90 = 4,
-        Transpose = 8
-    }
+        Transpose = 8,
+    }*/
 
     public class ImageSettings
     {
@@ -186,7 +199,7 @@ namespace Cetera.Image
                 strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
                 strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
             }
-            int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
+            //int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
 
             //stride TileSize
             var tileSize = 0;
@@ -203,15 +216,15 @@ namespace Cetera.Image
                 int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
                 if (settings.ZOrder)
                 {
-                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
                     x_in = ZOrderX(tileSize, i);
                     y_in = ZOrderY(tileSize, i);
                 }
                 else
                 {
-                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
                     x_in = i % powTileSize % tileSize;
                     y_in = i % powTileSize / tileSize;
                 }
@@ -221,14 +234,29 @@ namespace Cetera.Image
                     case Orientation.Default:
                         yield return new Point(x_out + x_in, y_out + y_in);
                         break;
-                    case Orientation.TransposeTile:
-                        yield return new Point(x_out + y_in, y_out + x_in);
+                    case Orientation.XFlip:
+                        yield return new Point(x_out + x_in, strideHeight - 1 - (y_out + y_in));
+                        break;
+                    case Orientation.YFlip:
+                        yield return new Point(strideWidth - 1 - (x_out + x_in), y_out + y_in);
+                        break;
+                    case Orientation.XYFlip:
+                        yield return new Point(strideWidth - 1 - (x_out + x_in), strideHeight - 1 - (y_out + y_in));
                         break;
                     case Orientation.Rotate90:
-                        yield return new Point(y_out + y_in, stride - 1 - (x_out + x_in));
+                        yield return new Point(strideWidth - 1 - (y_out + y_in), x_out + x_in);
                         break;
-                    case Orientation.Transpose:
+                    case Orientation.XFlip90:
                         yield return new Point(y_out + y_in, x_out + x_in);
+                        break;
+                    case Orientation.YFlip90:
+                        yield return new Point(strideWidth - 1 - (y_out + y_in), strideHeight - 1 - (x_out + x_in));
+                        break;
+                    case Orientation.Rotate270:
+                        yield return new Point(y_out + y_in, strideHeight - 1 - (x_out + x_in));
+                        break;
+                    case Orientation.TransposeTile:
+                        yield return new Point(x_out + y_in, y_out + x_in);
                         break;
                     default:
                         throw new NotSupportedException($"Unknown orientation format {settings.Orientation}");
