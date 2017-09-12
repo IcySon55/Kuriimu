@@ -6,19 +6,19 @@ using System.Linq;
 using Kuriimu.IO;
 using Kuriimu.Kontract;
 
-namespace image_texi
+namespace image_iobj
 {
-    public sealed class TexiAdapter : IImageAdapter
+    public sealed class IobjAdapter : IImageAdapter
     {
-        private TEXI _texi = null;
+        private IOBJ _iobj = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
-        public string Name => "TEXI";
-        public string Description => "NLP Texture";
-        public string Extension => "*.tex";
-        public string About => "This is the TEXI image adapter for Kukkii.";
+        public string Name => "IOBJ";
+        public string Description => "Image OBJect";
+        public string Extension => "*.bin;*.iobj";
+        public string About => "This is the IOBJ image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -30,38 +30,31 @@ namespace image_texi
 
         public bool Identify(string filename)
         {
-            var texiName = filename + "i";
-            if (!File.Exists(texiName)) return false;
-
-            using (var br = new BinaryReaderX(File.OpenRead(texiName)))
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                br.BaseStream.Position = 0x18;
-                return br.ReadString(4) == "SERI";
+                return br.ReadString(4) == "IOBJ";
             }
         }
 
         public void Load(string filename)
         {
-            var texiName = filename + "i";
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
             {
-                _texi = new TEXI(FileInfo.OpenRead(), File.OpenRead(texiName));
+                _iobj = new IOBJ(FileInfo.OpenRead());
 
-                _bitmaps = _texi.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _bitmaps = _iobj.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
         public void Save(string filename = "")
         {
-            var texiName = filename + "i";
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _texi.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-            _texi.Save(File.Create(FileInfo.FullName), File.Create(texiName));
+            _iobj.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _iobj.Save(FileInfo.FullName);
         }
 
         // Bitmaps

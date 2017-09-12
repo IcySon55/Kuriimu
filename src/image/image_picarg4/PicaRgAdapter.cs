@@ -6,19 +6,19 @@ using System.Linq;
 using Kuriimu.IO;
 using Kuriimu.Kontract;
 
-namespace image_texi
+namespace image_picarg4
 {
-    public sealed class TexiAdapter : IImageAdapter
+    public sealed class PicaRgAdapter : IImageAdapter
     {
-        private TEXI _texi = null;
+        private PICARG _picaRg = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
-        public string Name => "TEXI";
-        public string Description => "NLP Texture";
-        public string Extension => "*.tex";
-        public string About => "This is the TEXI image adapter for Kukkii.";
+        public string Name => "PicaRg4";
+        public string Description => "Pica image 4";
+        public string Extension => "*.lzb";
+        public string About => "This is the PicaRg4 image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -30,38 +30,31 @@ namespace image_texi
 
         public bool Identify(string filename)
         {
-            var texiName = filename + "i";
-            if (!File.Exists(texiName)) return false;
-
-            using (var br = new BinaryReaderX(File.OpenRead(texiName)))
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                br.BaseStream.Position = 0x18;
-                return br.ReadString(4) == "SERI";
+                return br.ReadString(7) == "picaRg4";
             }
         }
 
         public void Load(string filename)
         {
-            var texiName = filename + "i";
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
             {
-                _texi = new TEXI(FileInfo.OpenRead(), File.OpenRead(texiName));
+                _picaRg = new PICARG(FileInfo.OpenRead());
 
-                _bitmaps = _texi.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _bitmaps = _picaRg.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
         public void Save(string filename = "")
         {
-            var texiName = filename + "i";
-
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _texi.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-            _texi.Save(File.Create(FileInfo.FullName), File.Create(texiName));
+            _picaRg.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _picaRg.Save(FileInfo.FullName);
         }
 
         // Bitmaps
