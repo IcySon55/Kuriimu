@@ -133,8 +133,7 @@ namespace text_t2b
 
         public void Save(string filename)
         {
-            File.WriteAllText(filename, string.Empty);
-            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
                 var utf8 = Encoding.UTF8;
 
