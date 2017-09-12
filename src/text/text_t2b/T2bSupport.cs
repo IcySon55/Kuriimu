@@ -88,6 +88,12 @@ namespace text_t2b
     }
     #endregion
 
+    public enum EncodingType : byte
+    {
+        SJIS,
+        UTF8
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {

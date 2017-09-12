@@ -15,11 +15,17 @@ namespace text_t2b
         public List<StringEntry> entries = new List<StringEntry>();
 
         private byte[] sig;
+        private EncodingType encoding;
 
         public T2B(string filename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
             {
+                //Get Encoding
+                br.BaseStream.Position = br.BaseStream.Length - 0xa;
+                encoding = (EncodingType)br.ReadByte();
+                br.BaseStream.Position = 0;
+
                 //Header
                 header = br.ReadStruct<Header>();
 
@@ -84,7 +90,7 @@ namespace text_t2b
                                     br.BaseStream.Position = header.stringSecOffset + d.value;
                                     Labels.Add(new Label
                                     {
-                                        Text = Encoding.UTF8.GetString(GetStringBytes(br.BaseStream)).Replace("\\n", "\n"),
+                                        Text = GetDecodedText(GetStringBytes(br.BaseStream), encoding).Replace("\\n", "\n"),
                                         TextID = id,
                                         Name = $"text{id++:0000}",
                                         relOffset = d.value
@@ -131,12 +137,23 @@ namespace text_t2b
             }
         }
 
+        public string GetDecodedText(byte[] bytes, EncodingType encoding)
+        {
+            switch (encoding)
+            {
+                case EncodingType.SJIS:
+                    return Encoding.GetEncoding("SJIS").GetString(bytes);
+                case EncodingType.UTF8:
+                    return Encoding.UTF8.GetString(bytes);
+                default:
+                    throw new System.Exception("Encoding isn't supported!");
+            }
+        }
+
         public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var utf8 = Encoding.UTF8;
-
                 //Update entries
                 uint relOffset = 0;
                 foreach (var label in Labels)
@@ -146,7 +163,7 @@ namespace text_t2b
                         entries[point.Y].data[point.X].value = relOffset;
                     }
 
-                    uint byteCount = (uint)utf8.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
+                    uint byteCount = (uint)GetEncodedText(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n"), encoding).Length + 1;
                     relOffset += byteCount;
                 }
 
@@ -167,13 +184,26 @@ namespace text_t2b
                 //Text
                 foreach (var label in Labels)
                 {
-                    bw.Write(utf8.GetBytes(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")));
+                    bw.Write(GetEncodedText(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n"), encoding));
                     bw.Write((byte)0);
                 }
                 bw.WriteAlignment(0x10, 0xff);
 
                 //Signature
                 bw.Write(sig);
+            }
+        }
+
+        public byte[] GetEncodedText(string text, EncodingType encoding)
+        {
+            switch (encoding)
+            {
+                case EncodingType.SJIS:
+                    return Encoding.GetEncoding("SJIS").GetBytes(text);
+                case EncodingType.UTF8:
+                    return Encoding.UTF8.GetBytes(text);
+                default:
+                    throw new System.Exception("Encoding isn't supported!");
             }
         }
     }
