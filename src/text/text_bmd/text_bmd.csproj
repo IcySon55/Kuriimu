@@ -45,6 +45,9 @@
     <Compile Include="BMD.cs" />
     <Compile Include="BmdAdapter.cs" />
     <Compile Include="BmdSupport.cs" />
+    <Compile Include="MSG1.cs" />
+    <Compile Include="Msg1Adapter.cs" />
+    <Compile Include="Msg1Support.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
