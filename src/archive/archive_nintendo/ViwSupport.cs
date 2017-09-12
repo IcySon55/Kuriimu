@@ -1,7 +1,16 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
+using Kuriimu.Compression;
+using Kuriimu.Kontract;
 
 namespace archive_nintendo.VIW
 {
+    public class ViwFileInfo : ArchiveFileInfo
+    {
+        public override Stream FileData => State != ArchiveFileState.Archived ? base.FileData : new MemoryStream(Nintendo.Decompress(base.FileData));
+        public override long? FileSize => base.FileData.Length;
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class InfHeader
     {

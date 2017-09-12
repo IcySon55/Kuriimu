@@ -39,14 +39,17 @@ namespace archive_nintendo.VIW
                 Names = br.ReadMultiple<ViwEntry>(Header.NameCount);
             }
 
-            using (var br = new BinaryReaderX(input, true))
+            foreach (var off in Offsets)
             {
-                Files.AddRange(Offsets.Select(o => new ArchiveFileInfo
+                var afi = new ViwFileInfo
                 {
-                    FileName = Names.FirstOrDefault(n => n.ID == MetaEntries[Offsets.IndexOf(o)].Unk1)?.Name,
-                    FileData = new SubStream(input, o.Offset, o.CompressedSize),
+                    FileName = (Offsets.IndexOf(off) + 0x3000).ToString("X4") + ".bin",
+                    FileData = new SubStream(input, off.Offset, off.CompressedSize),
                     State = ArchiveFileState.Archived
-                }));
+                };
+
+
+                Files.Add(afi);
             }
         }
 
