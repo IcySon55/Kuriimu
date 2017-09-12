@@ -12,10 +12,8 @@ namespace text_t2b
     public sealed class T2B
     {
         public List<Label> Labels = new List<Label>();
-
         public Header header;
         public List<StringEntry> entries = new List<StringEntry>();
-        public List<uint> offsets = new List<uint>();
         byte[] sig;
 
         public T2B(string filename)
@@ -65,25 +63,45 @@ namespace text_t2b
 
                 //Text
                 var id = 0;
-                foreach (var entry in entries)
+                for (var ctry = 0; ctry < entries.Count; ctry++)
                 {
-                    foreach (var data in entry.data)
+                    for (var ctrx = 0; ctrx < entries[ctry].data.Count; ctrx++)
                     {
-                        if (data.type == 0)
+                        var d = entries[ctry].data[ctrx];
+
+                        if (d.type == 0)
                         {
-                            if (data.value != 0xffffffff)
+                            if (d.value != 0xffffffff)
                             {
-                                if (!offsets.Contains(data.value))
+                                int index = -1;
+                                for (var i = 0; i < Labels.Count; i++)
                                 {
-                                    br.BaseStream.Position = header.stringSecOffset + data.value;
+                                    if (Labels[i].relOffset == d.value) index = i;
+                                }
+
+                                if (index == -1)
+                                {
+                                    br.BaseStream.Position = header.stringSecOffset + d.value;
                                     Labels.Add(new Label
                                     {
                                         Text = Encoding.UTF8.GetString(GetStringBytes(br.BaseStream)).Replace("\\n", "\n"),
                                         TextID = id,
                                         Name = $"text{id++:0000}",
-                                        relOffset = data.value
+                                        relOffset = d.value
                                     });
-                                    offsets.Add(data.value);
+
+                                    Labels[Labels.Count-1].xy.Add(new Label.Coors
+                                    {
+                                        x = ctrx,
+                                        y = ctry
+                                    });
+                                } else
+                                {
+                                    Labels[index].xy.Add(new Label.Coors
+                                    {
+                                        x = ctrx,
+                                        y = ctry
+                                    });
                                 }
                             }
                         }
@@ -114,26 +132,22 @@ namespace text_t2b
 
         public void Save(string filename)
         {
+            File.WriteAllText(filename, string.Empty);
             using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
             {
                 var utf8 = Encoding.UTF8;
 
                 //Update entries
                 uint relOffset = 0;
-                var count = 1;
                 foreach (var label in Labels)
                 {
-                    uint byteCount = (uint)utf8.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
-
-                    if (count < offsets.Count)
+                    foreach (var coor in label.xy)
                     {
-                        foreach (var entry in entries)
-                            foreach (var data in entry.data)
-                                if (data.type == 0 && data.value == offsets[count]) data.value = relOffset + byteCount;
+                        entries[coor.y].data[coor.x].value = relOffset;
                     }
 
+                    uint byteCount = (uint)utf8.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
                     relOffset += byteCount;
-                    count++;
                 }
 
                 //Header

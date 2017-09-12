@@ -74,6 +74,13 @@ namespace text_t2b
         public string Text;
         public int TextID;
         public uint relOffset;
+        public List<Coors> xy = new List<Coors>();
+
+        public class Coors
+        {
+            public int x;
+            public int y;
+        }
 
         public Label()
         {
@@ -81,6 +88,7 @@ namespace text_t2b
             Text = string.Empty;
             TextID = 0;
             relOffset = 0;
+            xy = new List<Coors>();
         }
     }
     #endregion
@@ -108,6 +116,18 @@ namespace text_t2b
             //2 - float
             public byte type;
             public uint value;
+        }
+    }
+
+    public class coorCont
+    {
+        public uint offset;
+        public List<coors> xy = new List<coors>();
+
+        public class coors
+        {
+            public int x;
+            public int y;
         }
     }
 }
