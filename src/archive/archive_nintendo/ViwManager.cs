@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kuriimu.Kontract;
@@ -31,29 +32,38 @@ namespace archive_nintendo.VIW
 
         public bool Identify(string filename)
         {
-            // TODO: Make this way more robust
-            return filename.EndsWith(".inf");
+            try
+            {
+                FileInfo = new FileInfo(filename);
+                var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".viw");
+                var file3 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
+
+                if (Path.GetExtension(filename) != ".inf")
+                    FileInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf"));
+
+                if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
+                    _viw = new VIW(FileInfo.OpenRead(), File.OpenRead(file2), File.OpenRead(file3));
+                _viw.Close();
+                return true;
+            }
+            catch (Exception)
+            {
+                _viw.Close();
+                return false;
+            }
         }
 
         public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
+            var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".viw");
             var file3 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
 
-            if (Path.GetExtension(filename) == ".inf")
-            {
-                var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".viw");
+            if (Path.GetExtension(filename) != ".inf")
+                FileInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf"));
 
-                if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
-                    _viw = new VIW(FileInfo.OpenRead(), File.OpenRead(file2), File.OpenRead(file3));
-            }
-            else
-            {
-                var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf");
-                
-                if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
-                    _viw = new VIW(File.OpenRead(file2), FileInfo.OpenRead(), File.OpenRead(file3));
-            }
+            if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
+                _viw = new VIW(FileInfo.OpenRead(), File.OpenRead(file2), File.OpenRead(file3));
         }
 
         public void Save(string filename = "")

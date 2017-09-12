@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Kuriimu.IO;
 using Kuriimu.Kontract;
 
@@ -23,31 +22,31 @@ namespace archive_nintendo.VIW
             _infStream = infInput;
             _viwStream = viwInput;
             _stream = input;
+
             using (var br = new BinaryReaderX(infInput, true))
             {
-                uint index = 0;
-
                 Header = br.ReadStruct<InfHeader>();
                 Offsets = br.ReadMultiple<InfEntry>(Header.FileCount);
 
-                if (br.BaseStream.Length > Header.Table1Offset)
-                    MetaEntries = br.ReadMultiple<InfMetaEntry>(Header.NameCount);
+                if (Header.MetaEntryCount > 0)
+                    MetaEntries = br.ReadMultiple<InfMetaEntry>(Header.MetaEntryCount);
             }
 
             using (var br = new BinaryReaderX(viwInput, true))
             {
-                Names = br.ReadMultiple<ViwEntry>(Header.NameCount);
+                Names = new List<ViwEntry>();
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                    Names.Add(br.ReadStruct<ViwEntry>());
             }
 
             foreach (var off in Offsets)
             {
                 var afi = new ViwFileInfo
                 {
-                    FileName = (Offsets.IndexOf(off) + 0x3000).ToString("X4") + ".bin",
+                    FileName = (Offsets.IndexOf(off) + Names[0].ID).ToString("X4") + ".bin",
                     FileData = new SubStream(input, off.Offset, off.CompressedSize),
                     State = ArchiveFileState.Archived
                 };
-
 
                 Files.Add(afi);
             }
@@ -55,16 +54,7 @@ namespace archive_nintendo.VIW
 
         public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(output))
-            {
-
-                foreach (var info in Files)
-                {
-                }
-
-                foreach (var info in Files)
-                    info.FileData.CopyTo(bw.BaseStream);
-            }
+            return;
         }
 
         public void Close()

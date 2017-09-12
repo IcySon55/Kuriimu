@@ -15,7 +15,7 @@ namespace archive_nintendo.VIW
     public class InfHeader
     {
         public int FileCount;
-        public int NameCount;
+        public int MetaEntryCount;
         public int Table0Offset;
         public int Table1Offset;
     }
