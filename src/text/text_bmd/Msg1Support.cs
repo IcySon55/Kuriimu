@@ -62,7 +62,7 @@ namespace text_bmd.msg1
 
         public override string ToString()
         {
-            return Name == string.Empty ? EditedLabel.TextOffset.ToString("X2") : Name;
+            return Name == string.Empty ? EditedLabel.TextID.ToString() : Name;
         }
     }
     #endregion
@@ -73,16 +73,20 @@ namespace text_bmd.msg1
         public string Name;
 
         public uint TextID;
-        public uint TextOffset;
+        public byte[] StartStringBlock;
         public string Text;
+        public ushort nameIndex;
+        public int type;
 
         public Label()
         {
             Name = string.Empty;
 
             TextID = 0;
-            TextOffset = 0;
+            StartStringBlock = null;
             Text = string.Empty;
+            nameIndex = 0;
+            type = 0;
         }
     }
     #endregion

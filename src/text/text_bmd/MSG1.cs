@@ -27,13 +27,48 @@ namespace text_bmd.msg1
                 textHeader = br.ReadStruct<TextHeader>();
 
                 //Labels
+                uint count = 0;
+                foreach (var entry in entries)
+                {
+                    br.BaseStream.Position = 0x20 + entry.offset;
 
+                    var name = br.ReadString(0x18);
+
+                    switch (entry.type)
+                    {
+                        case 0:
+                            var stringCount = br.ReadInt16();
+                            var nameIndex = br.ReadUInt16();
+
+                            for (int i = 0; i < stringCount; i++)
+                            {
+                                var stringOffset = br.ReadInt32();
+                                var stringSize = br.ReadInt32();
+                                var startStringBlock = br.ReadBytes(6);
+
+                                Labels.Add(new Label
+                                {
+                                    Name = $"{name}/text{i}",
+                                    TextID = count++,
+                                    Text = br.ReadCStringSJIS(),
+                                    StartStringBlock = startStringBlock,
+                                    nameIndex = nameIndex,
+                                    type = entry.type
+                                });
+
+                                br.BaseStream.Position = (br.BaseStream.Position + 0x3) & ~0x3;
+                            }
+                            break;
+                        default:
+                            throw new Exception($"Don't support Entry Type {entry.type}");
+                    }
+                }
             }
         }
 
-        public void Save(Stream input)
+        public void Save(Stream input, bool leaveOpen = false)
         {
-            using (var bw = new BinaryWriterX(input))
+            using (var bw = new BinaryWriterX(input, leaveOpen))
             {
 
             }
