@@ -44,7 +44,7 @@ namespace Cetera.Image
             Default = 0,
             TransposeTile = 1,
             Rotate90 = 4,
-            Transpose = 8,
+            Rotate270 = 8,
         }
 
         NW4CSectionList sections;
