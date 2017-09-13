@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
-using Kuriimu.Compression;
 using System.Linq;
 using System.Text;
+using Kuriimu.IO;
 
 namespace text_t2b
 {
@@ -15,13 +13,19 @@ namespace text_t2b
 
         public Header header;
         public List<StringEntry> entries = new List<StringEntry>();
-        public List<uint> offsets = new List<uint>();
-        byte[] sig;
+
+        private byte[] sig;
+        private EncodingType encoding;
 
         public T2B(string filename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
             {
+                //Get Encoding
+                br.BaseStream.Position = br.BaseStream.Length - 0xa;
+                encoding = (EncodingType)br.ReadByte();
+                br.BaseStream.Position = 0;
+
                 //Header
                 header = br.ReadStruct<Header>();
 
@@ -40,7 +44,7 @@ namespace text_t2b
 
                     //cultivate data
                     var mask = entry.typeMask.Reverse().ToList();
-                    for (int j = 0; j < 3; j++)
+                    for (int j = 0; j < mask.Count; j++)
                     {
                         for (int count = 0; count < 8; count += 2)
                         {
@@ -65,25 +69,46 @@ namespace text_t2b
 
                 //Text
                 var id = 0;
-                foreach (var entry in entries)
+                for (var ctry = 0; ctry < entries.Count; ctry++)
                 {
-                    foreach (var data in entry.data)
+                    for (var ctrx = 0; ctrx < entries[ctry].data.Count; ctrx++)
                     {
-                        if (data.type == 0)
+                        var d = entries[ctry].data[ctrx];
+
+                        if (d.type == 0)
                         {
-                            if (data.value != 0xffffffff)
+                            if (d.value != 0xffffffff)
                             {
-                                if (!offsets.Contains(data.value))
+                                int index = -1;
+                                for (var i = 0; i < Labels.Count; i++)
                                 {
-                                    br.BaseStream.Position = header.stringSecOffset + data.value;
+                                    if (Labels[i].relOffset == d.value) index = i;
+                                }
+
+                                if (index == -1)
+                                {
+                                    br.BaseStream.Position = header.stringSecOffset + d.value;
                                     Labels.Add(new Label
                                     {
-                                        Text = br.ReadCStringSJIS().Replace("\\n", "\n"),
+                                        Text = GetDecodedText(GetStringBytes(br.BaseStream), encoding).Replace("\\n", "\n"),
                                         TextID = id,
                                         Name = $"text{id++:0000}",
-                                        relOffset = data.value
+                                        relOffset = d.value
                                     });
-                                    offsets.Add(data.value);
+
+                                    Labels[Labels.Count - 1].Points.Add(new Point
+                                    {
+                                        X = ctrx,
+                                        Y = ctry
+                                    });
+                                }
+                                else
+                                {
+                                    Labels[index].Points.Add(new Point
+                                    {
+                                        X = ctrx,
+                                        Y = ctry
+                                    });
                                 }
                             }
                         }
@@ -96,32 +121,54 @@ namespace text_t2b
             }
         }
 
+        public byte[] GetStringBytes(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                var result = new List<byte>();
+                var byteT = br.ReadByte();
+                while (byteT != 0)
+                {
+                    result.Add(byteT);
+                    byteT = br.ReadByte();
+                }
+
+                return result.ToArray();
+            }
+        }
+
+        public string GetDecodedText(byte[] bytes, EncodingType encoding)
+        {
+            switch (encoding)
+            {
+                case EncodingType.SJIS:
+                    return Encoding.GetEncoding("SJIS").GetString(bytes);
+                case EncodingType.UTF8:
+                    return Encoding.UTF8.GetString(bytes);
+                default:
+                    throw new System.Exception("Encoding isn't supported!");
+            }
+        }
+
         public void Save(string filename)
         {
-            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var sjis = Encoding.GetEncoding("SJIS");
-
                 //Update entries
                 uint relOffset = 0;
-                var count = 1;
                 foreach (var label in Labels)
                 {
-                    if (count < offsets.Count)
+                    foreach (var point in label.Points)
                     {
-                        uint byteCount = (uint)sjis.GetByteCount(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")) + 1;
-
-                        foreach (var entry in entries)
-                            foreach (var data in entry.data)
-                                if (data.type == 0 && data.value == offsets[count]) data.value = relOffset + byteCount;
-
-                        relOffset += byteCount;
-                        count++;
+                        entries[point.Y].data[point.X].value = relOffset;
                     }
+
+                    uint byteCount = (uint)GetEncodedText(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n"), encoding).Length + 1;
+                    relOffset += byteCount;
                 }
 
                 //Header
-                header.stringSecSize = (int)(relOffset + 0xf) & ~0xf;
+                header.stringSecSize = (int)(relOffset);
                 bw.WriteStruct(header);
 
                 //Entries
@@ -137,13 +184,26 @@ namespace text_t2b
                 //Text
                 foreach (var label in Labels)
                 {
-                    bw.Write(sjis.GetBytes(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n")));
+                    bw.Write(GetEncodedText(label.Text.Replace("\n", "\\n").Replace("\xa", "\\n"), encoding));
                     bw.Write((byte)0);
                 }
                 bw.WriteAlignment(0x10, 0xff);
 
                 //Signature
                 bw.Write(sig);
+            }
+        }
+
+        public byte[] GetEncodedText(string text, EncodingType encoding)
+        {
+            switch (encoding)
+            {
+                case EncodingType.SJIS:
+                    return Encoding.GetEncoding("SJIS").GetBytes(text);
+                case EncodingType.UTF8:
+                    return Encoding.UTF8.GetBytes(text);
+                default:
+                    throw new System.Exception("Encoding isn't supported!");
             }
         }
     }

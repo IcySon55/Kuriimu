@@ -63,6 +63,9 @@
     <Compile Include="Garc4Support.cs" />
     <Compile Include="GarManager.cs" />
     <Compile Include="GarSupport.cs" />
+    <Compile Include="NARC.cs" />
+    <Compile Include="NarcManager.cs" />
+    <Compile Include="NarcSupport.cs" />
     <Compile Include="NDSFS.cs" />
     <Compile Include="NdsfsManager.cs" />
     <Compile Include="NdsfsSupport.cs" />
@@ -87,8 +90,11 @@
     <Compile Include="SbSupport.cs" />
     <Compile Include="SimpleSarcManager.cs" />
     <Compile Include="UMSBT.cs" />
+    <Compile Include="ViwManager.cs" />
     <Compile Include="UmsbtManager.cs" />
     <Compile Include="UmsbtSupport.cs" />
+    <Compile Include="VIW.cs" />
+    <Compile Include="ViwSupport.cs" />
     <Compile Include="ZAR.cs" />
     <Compile Include="ZarManager.cs" />
     <Compile Include="ZarSupport.cs" />

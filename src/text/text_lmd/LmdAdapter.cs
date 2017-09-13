@@ -24,7 +24,7 @@ namespace text_lmd
 
         public string Description => "Whatever LMD should mean";
 
-        public string Extension => "*.lmd;*.62440501";
+        public string Extension => "*.lmd";
 
         public string About => "This is the LMD text adapter for Kuriimu.";
 

@@ -37,7 +37,7 @@ namespace archive_level5.XPCK
 
                 //Files
                 using (var nameList = new BinaryReaderX(decNames))
-                    for (int i = 0; i < header.fileCount; i++)
+                    for (int i = 0; i < entries.Count; i++)
                     {
                         nameList.BaseStream.Position = entries[i].nameOffset;
                         Files.Add(new XPCKFileInfo
@@ -55,40 +55,26 @@ namespace archive_level5.XPCK
         {
             using (BinaryWriterX bw = new BinaryWriterX(xpck))
             {
-                uint absDataOffset = header.dataOffset;
+                int absDataOffset = header.dataOffset;
 
                 //Files
-                Files = Files.OrderBy(x => x.Entry.fileOffset).ToList();
-                uint relDataOffset = 0;
-                for (int i = 0; i < Files.Count; i++)
+                var files = Files.OrderBy(x => x.Entry.fileOffset).ToList();
+                var dataOffset = absDataOffset;
+                foreach (var file in files)
                 {
-                    bw.BaseStream.Position = absDataOffset;
-                    Files[i].FileData.CopyTo(bw.BaseStream);
-                    bw.WriteAlignment(4);
-                    if (i != Files.Count - 1) bw.Write(0);
-
-                    //Update entry
-                    Files[i].Entry.tmp = (ushort)(((relDataOffset + 0x3 & ~0x3) >> 2) & 0xffff);
-                    Files[i].Entry.tmpZ = (byte)((((relDataOffset + 0x3 & ~0x3) >> 2) & 0xff0000) >> 16);
-                    Files[i].Entry.tmp2 = (ushort)(Files[i].FileSize & 0xffff);
-                    Files[i].Entry.tmp2Z = (byte)((Files[i].FileSize & 0xff0000) >> 16);
-                    if (i != Files.Count - 1) relDataOffset += (uint)(Files[i].FileSize + 0x3 & ~0x3) + 4;
-                    if (i != Files.Count - 1) absDataOffset += (uint)(Files[i].FileSize + 0x3 & ~0x3) + 4;
+                    dataOffset=file.Write(bw.BaseStream, dataOffset, absDataOffset);
                 }
 
                 //Entries
-                Files = Files.OrderBy(x => x.Entry.crc32).ToList();
                 bw.BaseStream.Position = 0x14;
                 foreach (var file in Files)
-                {
                     bw.WriteStruct(file.Entry);
-                }
 
                 //Namelist
                 bw.Write(compNameTable);
 
                 //Header
-                header.tmp6 = (uint)(bw.BaseStream.Length - header.dataOffset) >> 2;
+                header.tmp6 = (uint)(bw.BaseStream.Length - absDataOffset) >> 2;
                 bw.BaseStream.Position = 0;
                 bw.WriteStruct(header);
             }

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace archive_dpk
+namespace archive_dpk.DPK4
 {
     public sealed class DPK4
     {

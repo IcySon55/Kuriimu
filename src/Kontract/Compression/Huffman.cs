@@ -9,22 +9,10 @@ namespace Kuriimu.Compression
     public class Huffman
     {
         //Huffman 4bit/8bit
-        public static byte[] Decompress(Stream input, int num_bits, long decompressedLength = 0)
+        public static byte[] Decompress(Stream input, int num_bits, long decompressedLength, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
             using (var br = new BinaryReaderX(input, true))
             {
-                var version = br.ReadByte();
-                if (version == 0x24 || version == 0x28)
-                {
-                    br.BaseStream.Position--;
-                    decompressedLength = br.ReadUInt32() >> 8;
-                }
-                else
-                {
-                    br.BaseStream.Position--;
-                    version = 0;
-                }
-
                 var result = new List<byte>();
 
                 var tree_size = br.ReadByte();
@@ -51,28 +39,40 @@ namespace Kuriimu.Compression
 
                     if (result.Count == decompressedLength * 8 / num_bits)
                     {
-                        if (version == 0)
-                            return num_bits == 8 ? result.ToArray() :
-                                Enumerable.Range(0, (int)decompressedLength).Select(j => (byte)(result[2 * j + 1] * 16 + result[2 * j])).ToArray();
+                        if (num_bits == 8)
+                            return result.ToArray();
                         else
-                            return num_bits == 8 ? result.ToArray() :
-                                Enumerable.Range(0, (int)decompressedLength).Select(j => (byte)(result[2 * j] * 16 + result[2 * j + 1])).ToArray();
-
+                        {
+                            if (byteOrder == ByteOrder.LittleEndian)
+                            {
+                                return Enumerable.Range(0, (int)decompressedLength).Select(j => (byte)(result[2 * j + 1] * 16 + result[2 * j])).ToArray();
+                            }
+                            else
+                            {
+                                return Enumerable.Range(0, (int)decompressedLength).Select(j => (byte)(result[2 * j] * 16 + result[2 * j + 1])).ToArray();
+                            }
+                        }
                     }
                 }
             }
         }
 
-        public static byte[] Compress(Stream input, int num_bits)
+        public static byte[] Compress(Stream input, int num_bits, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            if (input.Length > 0xFFFFFF)
-                throw new ArgumentException("File too big");
-
-            if (num_bits != 8)
-                throw new NotImplementedException("Only 8 bits is currently supported");
+            if (num_bits != 8 && num_bits != 4)
+                throw new ArgumentException($"{num_bits} Bits aren't supported!", nameof(num_bits));
 
             var inData = new byte[input.Length];
             input.Read(inData, 0, (int)input.Length);
+
+            // swap the nibble order depending on compression needs
+            //        - Nintendo (0x24 header) order -> most significant nibble first
+            //        - Level5 (3 least significant bits == 2) order -> least significant nibble first
+            if (num_bits == 4)
+                if (byteOrder == ByteOrder.LittleEndian)
+                    inData = inData.SelectMany(b => new[] { (byte)(b % 16), (byte)(b / 16) }).ToArray();
+                else
+                    inData = inData.SelectMany(b => new[] { (byte)(b / 16), (byte)(b % 16) }).ToArray();
 
             // Get frequencies
             var freq = inData.GroupBy(b => b).Select(g => new Node { freqCount = g.Count(), code = g.Key }).ToList();
@@ -112,7 +112,6 @@ namespace Kuriimu.Compression
             using (var bw = new BinaryWriterX(new MemoryStream()))
             {
                 // Write header
-                bw.Write((inData.Length << 8) | 0x20 | num_bits);
                 bw.Write((byte)lst.Count);
 
                 // Write Huffman tree
@@ -135,7 +134,7 @@ namespace Kuriimu.Compression
                 return ((MemoryStream)bw.BaseStream).ToArray();
             }
         }
-        
+
         public class Node
         {
             public Node[] children;

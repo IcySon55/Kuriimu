@@ -16,10 +16,10 @@ namespace archive_aatri.aatri
             {
                 var baseStream = base.FileData;
 
-                if (State != ArchiveFileState.Archived) return new MemoryStream(LZ11.Compress(baseStream));
+                if (State != ArchiveFileState.Archived) return new MemoryStream(Nintendo.Compress(baseStream, Nintendo.Method.LZ11));
 
                 if (Entry.uncompSize == 0) return baseStream;
-                return new MemoryStream(LZ11.Decompress(baseStream));
+                return new MemoryStream(Nintendo.Decompress(baseStream));
             }
         }
 

@@ -13,6 +13,11 @@ namespace image_level5.imgc
     public class IMGC
     {
         public static Header header;
+        public static byte[] entryStart = null;
+
+        static bool editMode = false;
+        static Level5.Method tableComp;
+        static Level5.Method picComp;
 
         public static Bitmap Load(Stream input)
         {
@@ -20,14 +25,23 @@ namespace image_level5.imgc
             {
                 //Header
                 header = br.ReadStruct<Header>();
+                if (header.imageFormat == Format.ETC1 && header.bitDepth == 8)
+                {
+                    editMode = true;
+                    header.imageFormat = Format.ETC1A4;
+                }
 
                 //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
-                byte[] table = Level5.Decompress(new MemoryStream(br.ReadBytes(header.tableSize1)));
+                var tableC = br.ReadBytes(header.tableSize1);
+                tableComp = (Level5.Method)(tableC[0] & 0x7);
+                byte[] table = Level5.Decompress(new MemoryStream(tableC));
 
                 //get image data
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
-                byte[] tex = Level5.Decompress(new MemoryStream(br.ReadBytes(header.imgDataSize)));
+                var texC = br.ReadBytes(header.imgDataSize);
+                picComp = (Level5.Method)(texC[0] & 0x7);
+                byte[] tex = Level5.Decompress(new MemoryStream(texC));
 
                 //order pic blocks by table
                 byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
@@ -50,25 +64,39 @@ namespace image_level5.imgc
             using (var table = new BinaryReaderX(tableStream))
             using (var tex = new BinaryReaderX(texStream))
             {
+                var bitDepth = Common.GetBitDepth(ImageSettings.ConvertFormat(header.imageFormat));
+
                 int tableLength = (int)table.BaseStream.Length;
 
-                var ms = new MemoryStream();
-                for (int i = 0; i < tableLength; i += 2)
+                var tmp = table.ReadUInt16();
+                table.BaseStream.Position = 0;
+                var entryLength = 2;
+                if (tmp == 0x453)
                 {
-                    int entry = table.ReadUInt16();
-                    if (entry == 0xFFFF)
+                    entryStart = table.ReadBytes(8);
+                    entryLength = 4;
+                }
+
+                var ms = new MemoryStream();
+                for (int i = (int)table.BaseStream.Position; i < tableLength; i += entryLength)
+                {
+                    uint entry = (entryLength == 2) ? table.ReadUInt16() : table.ReadUInt32();
+                    if (entry == 0xFFFF || entry == 0xFFFFFFFF)
                     {
-                        for (int j = 0; j < 64 * header.bitDepth / 8; j++)
+                        for (int j = 0; j < 64 * bitDepth / 8; j++)
                         {
                             ms.WriteByte(0);
                         }
                     }
                     else
                     {
-                        tex.BaseStream.Position = entry * (64 * header.bitDepth / 8);
-                        for (int j = 0; j < 64 * header.bitDepth / 8; j++)
+                        if (entry * (64 * bitDepth / 8) < tex.BaseStream.Length)
                         {
-                            ms.WriteByte(tex.ReadByte());
+                            tex.BaseStream.Position = entry * (64 * bitDepth / 8);
+                            for (int j = 0; j < 64 * bitDepth / 8; j++)
+                            {
+                                ms.WriteByte(tex.ReadByte());
+                            }
                         }
                     }
                 }
@@ -94,64 +122,58 @@ namespace image_level5.imgc
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
                 //Header
-                header.bitDepth = 32;
-                header.width = (short)width;
-                header.height = (short)height;
-
-                //tile table
-                List<short> table;
-                byte[] importPic = Deflate(pic, out table);
-
                 header.width = (short)bitmap.Width;
                 header.height = (short)bitmap.Height;
-                header.tableSize1 = table.Count * 2 + 4;
+
+                //tile table
+                var table = new MemoryStream();
+                byte[] importPic = Deflate(pic, ImageSettings.ConvertFormat(header.imageFormat), out table);
+
+                //Table
+                bw.BaseStream.Position = 0x48;
+                var comp = Level5.Compress(table, tableComp);
+                bw.Write(comp);
+                header.tableSize1 = comp.Length + 4;
                 header.tableSize2 = (header.tableSize1 + 3) & ~3;
-                header.imgDataSize = importPic.Length + 4;
-                bw.WriteStruct(header);
 
-                bw.Write(header.tableSize1 << 3);
-                foreach (var tableEntry in table) bw.Write(tableEntry);
-
+                //Image
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
-                bw.Write(header.imgDataSize << 3);
-                bw.Write(importPic);
+                header.imageFormat = (editMode) ? Format.ETC1 : header.imageFormat;
+                comp = Level5.Compress(new MemoryStream(importPic), picComp);
+                bw.Write(comp);
+                header.imgDataSize = comp.Length;
+
+                //Header
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
             }
         }
 
-        public static byte[] Deflate(byte[] pic, out List<short> table)
+        public static byte[] Deflate(byte[] pic, Cetera.Image.Format format, out MemoryStream table)
         {
-            table = new List<short>();
-            List<byte[]> parts = new List<byte[]>();
-            byte[] result = new byte[header.width * header.height * header.bitDepth / 8];
-
-            using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(pic)))
+            table = new MemoryStream();
+            using (var tableB = new BinaryWriterX(table, true))
             {
-                for (int i = 0; i < header.width * header.height / 64; i++)
-                {
-                    byte[] tmp = br.ReadBytes(64 * header.bitDepth / 8);
-                    bool found = false;
-                    int count = 0;
-                    while (found == false && count < parts.Count)
+                if (entryStart != null) tableB.Write(entryStart);
+
+                List<byte[]> parts = new List<byte[]>();
+
+                using (var picB = new BinaryReaderX(new MemoryStream(pic)))
+                    while (picB.BaseStream.Position < picB.BaseStream.Length)
                     {
-                        if (tmp.SequenceEqual(parts[count]))
+                        byte[] part = picB.ReadBytes(64 * Common.GetBitDepth(format) / 8);
+
+                        if (parts.Find(x => x.SequenceEqual(part)) != null)
+                            if (entryStart != null) tableB.Write(parts.FindIndex(x => x.SequenceEqual(part))); else tableB.Write((short)parts.FindIndex(x => x.SequenceEqual(part)));
+                        else
                         {
-                            found = true;
-                            table.Add((short)count);
+                            if (entryStart != null) tableB.Write(parts.Count); else tableB.Write((short)parts.Count);
+                            parts.Add(part);
                         }
-                        count++;
                     }
-                    if (!found)
-                    {
-                        table.Add((short)parts.Count);
-                        parts.Add(tmp);
-                    }
-                }
 
-                int resOffset = 0;
-                foreach (var part in parts) part.CopyTo(result, (resOffset += part.Length) - part.Length);
+                return parts.SelectMany(x => x.SelectMany(b => new[] { b })).ToArray();
             }
-
-            return result;
         }
     }
 }

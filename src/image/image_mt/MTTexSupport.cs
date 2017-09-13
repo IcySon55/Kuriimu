@@ -20,13 +20,26 @@ namespace image_mt
         RGB888 = 0x11,
 
         // PS3
-        DXT5 = 0x2A
+        DXT1 = 0x13,
+        DXT3,
+        DXT5 = 0x17,
+        DXT1_Remap = 0x19,
+        DXT5_B = 0x21,
+        DXT5_C = 0x27,
+        DXT5_YCbCr = 0x2A
+    }
+
+    public enum Version
+    {
+        v154 = 154,
+        v165 = 165
     }
 
     // This particual enum is questionable as the data space for it is only 4-bits (maybe)
     public enum AlphaChannelFlags : byte
     {
         Normal = 0x0,
+        YCbCrTransform = 0x02,
         Unknown1 = 0x03,
         Unknown2 = 0x04,
         Mixed = 0x08,
@@ -34,6 +47,12 @@ namespace image_mt
         MirroredNormalMaps1 = 0x13, // ?
         MirroredNormalMaps2 = 0x1B, // ?
         CTMipTexture = 0x20 // ?
+    }
+
+    public enum TransformDirection
+    {
+        ToProperColors,
+        ToOptimizedColors
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -58,7 +77,7 @@ namespace image_mt
     public class HeaderInfo
     {
         // Block 1
-        public int Version;
+        public Version Version;
         public int Unknown1;
         public int Unused1;
         public AlphaChannelFlags AlphaChannelFlags;

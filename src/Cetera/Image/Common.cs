@@ -16,16 +16,29 @@ namespace Cetera.Image
         L4, A4, ETC1, ETC1A4,
 
         // PS3
-        DXT1, DXT5
+        DXT1, DXT3, DXT5
     }
 
     public enum Orientation : byte
     {
-        Default,
+        Default = 0,
+        XFlip = 1,
+        YFlip = 2,
+        XYFlip = 3,
+        Rotate90 = 4,
+        XFlip90 = 5,
+        YFlip90 = 6,
+        Rotate270 = 7,
+        TransposeTile = 8
+    }
+
+    /*public enum Orientation : byte
+    {
+        Default = 0,
         TransposeTile = 1,
         Rotate90 = 4,
-        Transpose = 8
-    }
+        Transpose = 8,
+    }*/
 
     public class ImageSettings
     {
@@ -36,6 +49,7 @@ namespace Cetera.Image
         public bool PadToPowerOf2 { get; set; } = true;
         public bool ZOrder { get; set; } = true;
         public int TileSize { get; set; } = 8;
+        public Func<Color, Color> PixelShader { get; set; }
 
         /// <summary>
         /// This is currently a hack
@@ -88,7 +102,8 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
-                var dxtdecoder = new DXT.Decoder();
+                Enum.TryParse<DXT.Formats>(format.ToString(), false, out var dxtFormat);
+                var dxtdecoder = new DXT.Decoder(dxtFormat);
 
                 while (true)
                 {
@@ -147,13 +162,20 @@ namespace Cetera.Image
                         case Format.ETC1A4:
                             yield return etc1decoder.Get(() =>
                             {
-                                var alpha = (format == Format.ETC1A4) ? br.ReadUInt64() : ulong.MaxValue;
-                                return new ETC1.PixelData { Alpha = alpha, Block = br.ReadStruct<ETC1.Block>() };
+                                var etc1Alpha = format == Format.ETC1A4 ? br.ReadUInt64() : ulong.MaxValue;
+                                return new ETC1.PixelData { Alpha = etc1Alpha, Block = br.ReadStruct<ETC1.Block>() };
                             });
                             continue;
+                        case Format.DXT1:
+                        case Format.DXT3:
                         case Format.DXT5:
-                            yield return dxtdecoder.Get(() => new DXT.PixelData { Alpha = br.ReadBytes(8), Block = br.ReadBytes(8) });
-                            break;
+                            yield return dxtdecoder.Get(() =>
+                            {
+                                if (br.BaseStream.Position == br.BaseStream.Length) return (0, 0);
+                                var dxt5Alpha = format == Format.DXT3 || format == Format.DXT5 ? br.ReadUInt64() : 0;
+                                return (dxt5Alpha, br.ReadUInt64());
+                            });
+                            continue;
                         case Format.L4:
                             b = g = r = br.ReadNibble() * 17;
                             break;
@@ -177,7 +199,7 @@ namespace Cetera.Image
                 strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
                 strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
             }
-            int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
+            //int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
 
             //stride TileSize
             var tileSize = 0;
@@ -194,15 +216,15 @@ namespace Cetera.Image
                 int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
                 if (settings.ZOrder)
                 {
-                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
                     x_in = ZOrderX(tileSize, i);
                     y_in = ZOrderY(tileSize, i);
                 }
                 else
                 {
-                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
                     x_in = i % powTileSize % tileSize;
                     y_in = i % powTileSize / tileSize;
                 }
@@ -212,14 +234,29 @@ namespace Cetera.Image
                     case Orientation.Default:
                         yield return new Point(x_out + x_in, y_out + y_in);
                         break;
-                    case Orientation.TransposeTile:
-                        yield return new Point(x_out + y_in, y_out + x_in);
+                    case Orientation.XFlip:
+                        yield return new Point(x_out + x_in, strideHeight - 1 - (y_out + y_in));
+                        break;
+                    case Orientation.YFlip:
+                        yield return new Point(strideWidth - 1 - (x_out + x_in), y_out + y_in);
+                        break;
+                    case Orientation.XYFlip:
+                        yield return new Point(strideWidth - 1 - (x_out + x_in), strideHeight - 1 - (y_out + y_in));
                         break;
                     case Orientation.Rotate90:
-                        yield return new Point(y_out + y_in, stride - 1 - (x_out + x_in));
+                        yield return new Point(strideWidth - 1 - (y_out + y_in), x_out + x_in);
                         break;
-                    case Orientation.Transpose:
+                    case Orientation.XFlip90:
                         yield return new Point(y_out + y_in, x_out + x_in);
+                        break;
+                    case Orientation.YFlip90:
+                        yield return new Point(strideWidth - 1 - (y_out + y_in), strideHeight - 1 - (x_out + x_in));
+                        break;
+                    case Orientation.Rotate270:
+                        yield return new Point(y_out + y_in, strideHeight - 1 - (x_out + x_in));
+                        break;
+                    case Orientation.TransposeTile:
+                        yield return new Point(x_out + y_in, y_out + x_in);
                         break;
                     default:
                         throw new NotSupportedException($"Unknown orientation format {settings.Orientation}");
@@ -272,7 +309,9 @@ namespace Cetera.Image
                     int x = pair.Item1.X, y = pair.Item1.Y;
                     if (0 <= x && x < width && 0 <= y && y < height)
                     {
-                        ptr[data.Stride * y / 4 + x] = pair.Item2.ToArgb();
+                        var color = pair.Item2;
+                        if (settings.PixelShader != null) color = settings.PixelShader(color);
+                        ptr[data.Stride * y / 4 + x] = color.ToArgb();
                     }
                 }
             }
@@ -288,6 +327,8 @@ namespace Cetera.Image
 
             var ms = new MemoryStream();
             var etc1encoder = new ETC1.Encoder();
+            Enum.TryParse<DXT.Formats>(settings.Format.ToString(), false, out var dxtFormat);
+            var dxtencoder = new DXT.Encoder(dxtFormat);
 
             using (var bw = new BinaryWriterX(ms))
             {
@@ -297,7 +338,7 @@ namespace Cetera.Image
                     int y = Clamp(point.Y, 0, bmp.Height);
 
                     var color = bmp.GetPixel(x, y);
-                    //if (color.A == 0) color = default(Color); // daigasso seems to need this
+                    if (settings.PixelShader != null) color = settings.PixelShader(color);
 
                     switch (settings.Format)
                     {
@@ -348,6 +389,14 @@ namespace Cetera.Image
                             {
                                 if (settings.Format == Format.ETC1A4) bw.Write(data.Alpha);
                                 bw.WriteStruct(data.Block);
+                            });
+                            break;
+                        case Format.DXT1:
+                        case Format.DXT5:
+                            dxtencoder.Set(color, data =>
+                            {
+                                if (settings.Format == Format.DXT5) bw.Write(data.alpha);
+                                bw.Write(data.block);
                             });
                             break;
                         case Format.L4:

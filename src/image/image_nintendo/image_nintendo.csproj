@@ -57,6 +57,7 @@
     <Compile Include="CgfxAdapter.cs" />
     <Compile Include="CgfxSupport.cs" />
     <Compile Include="NCGR.cs" />
+    <Compile Include="VcgAdapter.cs" />
     <Compile Include="NcgrAdapter.cs" />
     <Compile Include="NcgrSupport.cs" />
     <Compile Include="SmdhProperties.cs">
@@ -79,6 +80,7 @@
     <Compile Include="CHNKTEX.cs" />
     <Compile Include="ChnkTexAdapter.cs" />
     <Compile Include="ChnkTexSupport.cs" />
+    <Compile Include="VCG.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CeteraDS\CeteraDS.csproj">

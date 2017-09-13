@@ -36,6 +36,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LZ4">
+      <HintPath>..\..\LZ4.dll</HintPath>
+    </Reference>
     <Reference Include="Security.Cryptography">
       <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
     </Reference>
@@ -63,13 +66,19 @@
     <Compile Include="Compression\HuffSupport.cs" />
     <Compile Include="Compression\LZ10.cs" />
     <Compile Include="Compression\LZ11.cs" />
+    <Compile Include="Compression\LZ4.cs" />
+    <Compile Include="Compression\LZ60.cs" />
     <Compile Include="Compression\LZ77.cs" />
     <Compile Include="Compression\LZECD.cs" />
+    <Compile Include="Compression\LZOvl.cs" />
     <Compile Include="Compression\LZSS.cs" />
     <Compile Include="Compression\LZSSVLE.cs" />
+    <Compile Include="Compression\MIO0.cs" />
     <Compile Include="Compression\Nintendo.cs" />
     <Compile Include="Compression\RevLZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
+    <Compile Include="Compression\Yay0.cs" />
+    <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />

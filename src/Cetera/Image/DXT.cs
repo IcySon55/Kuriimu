@@ -2,176 +2,108 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cetera.Image
 {
     public class DXT
     {
-
-        public struct PixelData
+        public enum Formats
         {
-            public byte[] Alpha { get; set; }
-            public byte[] Block { get; set; }
+            DXT1, DXT3, DXT5
         }
 
         public class Decoder
         {
-            Queue<Color> queue = new Queue<Color>();
+            private Queue<Color> queue = new Queue<Color>();
+            public Formats Format { get; set; }
 
             private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
 
-            public Color Get(Func<PixelData> func)
+            private Color GetRGB565(ushort val) => Color.FromArgb(255, (val >> 11) * 33 / 4, (val >> 5) % 64 * 65 / 16, (val % 32) * 33 / 4);
+
+            public Decoder(Formats format = Formats.DXT1)
+            {
+                Format = format;
+            }
+
+            public Color Get(Func<(ulong alpha, ulong block)> func)
             {
                 if (!queue.Any())
                 {
-                    var data = func();
+                    var (alpha, block) = func();
 
-                    // Alpha Bytes
-                    var alpha = data.Alpha;
-                    var alpha0 = alpha[0] * (1 / 255);
-                    var alpha1 = alpha[1] * (1 / 255);
-                    var abits_0 = alpha[2];
-                    var abits_1 = alpha[3];
-                    var abits_2 = alpha[4];
-                    var abits_3 = alpha[5];
-                    var abits_4 = alpha[6];
-                    var abits_5 = alpha[7];
+                    var (a0, a1) = ((byte)alpha, (byte)(alpha >> 8));
+                    var (color0, color1) = ((ushort)block, (ushort)(block >> 16));
+                    var (c0, c1) = (GetRGB565(color0), GetRGB565(color1));
 
-                    var abits = (ulong)(abits_0 + 256 * (abits_1 + 256 * (abits_2 + 256 * (abits_3 + 256 * (abits_4 + 256 * abits_5)))));
-
-                    // Color Bytes
-                    var color = data.Block;
-                    var c0_lo = color[0];
-                    var c0_hi = color[1];
-                    var c1_lo = color[2];
-                    var c1_hi = color[3];
-                    var cbits_0 = color[4];
-                    var cbits_1 = color[5];
-                    var cbits_2 = color[6];
-                    var cbits_3 = color[7];
-
-                    var color0 = c0_lo + c0_hi * 256u;
-                    var color1 = c1_lo + c1_hi * 256u;
-                    var cbits = (uint)(cbits_0 + 256 * (cbits_1 + 256 * (cbits_2 + 256 * cbits_3)));
-
-                    var codes = new List<ushort>();
-                    uint mask = 0x3;
-                    for (var i = 0; i < 32; i += 2)
+                    for (int i = 0; i < 16; i++)
                     {
-                        codes.Add((ushort)((cbits & mask) >> i));
-                        mask = mask << 2;
-                    }
-
-                    // Neobeo
-                    //var red = (color0 >> 11) * 33 / 4;
-                    //var grn = (color0 >> 5) % 64 * 65 / 16;
-                    //var blu = color0 % 32 * 33 / 4;
-
-                    // Internet 2
-                    var red = ((color0 >> 11) * 527 + 23) >> 6;
-                    var grn = ((color0 >> 5) % 64 * 259 + 33) >> 6;
-                    var blu = ((color0 % 32) * 527 + 23) >> 6;
-
-                    var RGB0 = Color.FromArgb(255, (int)red, (int)grn, (int)blu);
-
-
-                    red = ((color1 >> 11) * 527 + 23) >> 6;
-                    grn = ((color1 >> 5) % 64 * 259 + 33) >> 6;
-                    blu = ((color1 % 32) * 527 + 23) >> 6;
-
-                    var RGB1 = Color.FromArgb(255, (int)red, (int)grn, (int)blu);
-
-                    // Internet 1
-                    //red = (red << 3) | (red >> 2);
-                    //grn = (grn << 2) | (grn >> 4);
-                    //blu = (blu << 3) | (blu >> 2);
-
-                    //var RGB0 = Color.FromArgb(255, red, grn, blu);
-
-                    //red = (color1 >> 11) & 0x1F;
-                    //grn = (color1 >> 5) & 0x3F;
-                    //blu = color1 & 0x1F;
-                    //red = (red << 3) | (red >> 2);
-                    //grn = (grn << 2) | (grn >> 4);
-                    //blu = (blu << 3) | (blu >> 2);
-
-                    //var RGB1 = Color.FromArgb(255, red, grn, blu);
-
-                    // Build Block
-                    for (var y = 0; y < 4; y++)
-                        for (var x = 0; x < 4; x++)
+                        var code = (int)(alpha >> 16 + 3 * i) & 7;
+                        var alp = 255;
+                        if (Format == Formats.DXT3)
                         {
-                            var result = Color.Black;
-                            var code = codes[y * 4 + x];
-
-                            if (color0 > color1 && code == 0)
-                                result = RGB0;
-                            else if (color0 > color1 && code == 1)
-                                result = RGB1;
-                            else if (color0 > color1 && code == 2)
-                            {
-                                var r = (int)RGB0.R;
-                                var g = (int)RGB0.G;
-                                var b = (int)RGB0.B;
-                                r *= 2;
-                                g *= 2;
-                                b *= 2;
-                                r += RGB1.R;
-                                g += RGB1.G;
-                                b += RGB1.B;
-                                r /= 3;
-                                g /= 3;
-                                b /= 3;
-                                result = Color.FromArgb(255, r, g, b);
-                                //result = InterpolateColor(RGB0, RGB1, 2, 3);
-                            }
-                            else if (color0 > color1 && code == 3)
-                            {
-                                var r = (int)RGB1.R;
-                                var g = (int)RGB1.G;
-                                var b = (int)RGB1.B;
-                                r *= 2;
-                                g *= 2;
-                                b *= 2;
-                                r += RGB0.R;
-                                g += RGB0.G;
-                                b += RGB0.B;
-                                r /= 3;
-                                g /= 3;
-                                b /= 3;
-                                result = Color.FromArgb(255, r, g, b);
-                                //result = InterpolateColor(RGB1, RGB0, 2, 3);
-                            }
-
-                            else if (color0 <= color1 && code == 0)
-                                result = RGB0;
-                            else if (color0 <= color1 && code == 1)
-                                result = RGB1;
-                            else if (color0 <= color1 && code == 2)
-                            {
-                                var r = (int)RGB0.R;
-                                var g = (int)RGB0.G;
-                                var b = (int)RGB0.B;
-                                r += RGB1.R;
-                                g += RGB1.G;
-                                b += RGB1.B;
-                                r /= 2;
-                                g /= 2;
-                                b /= 2;
-                                result = Color.FromArgb(255, r, g, b);
-                                //result = InterpolateColor(RGB0, RGB1, 0, 2);
-                            }
-                            else if (color0 <= color1 && code == 3)
-                                result = Color.Black;
-
-                            queue.Enqueue(result);
+                            // TODO: Fix broken DXT3 alpha Neobeo!
+                            // The DXT3 images might be using yet another color mess thing, maybe
+                            alp = ((int)(alpha >> (4 * i)) & 0xF) * 17;
                         }
+                        else if (Format == Formats.DXT5)
+                        {
+                            alp = code == 0 ? a0
+                            : code == 1 ? a1
+                            : a0 > a1 ? Interpolate(a0, a1, 8 - code, 7)
+                            : code < 6 ? Interpolate(a0, a1, 6 - code, 5)
+                            : code % 2 * 255;
+                        }
+                        code = (int)(block >> 32 + 2 * i) & 3;
+                        var clr = code == 0 ? c0
+                            : code == 1 ? c1
+                            : Format == Formats.DXT5 || color0 > color1 ? InterpolateColor(c0, c1, 4 - code, 3)
+                            : code == 2 ? InterpolateColor(c0, c1, 1, 2)
+                            : Color.Black;
+                        queue.Enqueue(Color.FromArgb(alp, clr));
+                    }
                 }
                 return queue.Dequeue();
+            }
+        }
+
+        public class Encoder
+        {
+            List<Color> queue = new List<Color>();
+            public Formats Format { get; set; }
+
+            public Encoder(Formats format = Formats.DXT1)
+            {
+                Format = format;
+            }
+
+            public void Set(Color c, Action<(ulong alpha, ulong block)> func)
+            {
+                queue.Add(c);
+                if (queue.Count == 16)
+                {
+                    // Alpha
+                    ulong outAlpha = 0;
+                    if (Format == Formats.DXT5)
+                    {
+                        var alphaEncoder = new BCn.BC4BlockEncoder();
+                        alphaEncoder.LoadBlock(queue.Select(clr => clr.A / 255f).ToArray());
+                        outAlpha = alphaEncoder.EncodeUnsigned().PackedValue;
+                    }
+
+                    // Color
+                    var colorEncoder = new BCn.BC1BlockEncoder();
+                    colorEncoder.LoadBlock(
+                        queue.Select(clr => clr.R / 255f).ToArray(),
+                        queue.Select(clr => clr.G / 255f).ToArray(),
+                        queue.Select(clr => clr.B / 255f).ToArray()
+                    );
+                    var outColor = colorEncoder.Encode().PackedValue;
+
+                    func((outAlpha, outColor));
+                    queue.Clear();
+                }
             }
         }
     }

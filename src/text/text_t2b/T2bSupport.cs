@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using Kuriimu.Kontract;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using Kuriimu.Kontract;
 
 namespace text_t2b
 {
@@ -74,6 +75,7 @@ namespace text_t2b
         public string Text;
         public int TextID;
         public uint relOffset;
+        public List<Point> Points = new List<Point>();
 
         public Label()
         {
@@ -81,9 +83,16 @@ namespace text_t2b
             Text = string.Empty;
             TextID = 0;
             relOffset = 0;
+            Points = new List<Point>();
         }
     }
     #endregion
+
+    public enum EncodingType : byte
+    {
+        SJIS,
+        UTF8
+    }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header

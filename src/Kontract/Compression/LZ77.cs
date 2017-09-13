@@ -48,9 +48,9 @@ namespace Kuriimu.Compression
             }
         }
 
-        public static byte[] Compress(byte[] input)
+        public static byte[] Compress(Stream input)
         {
-            using (BinaryReaderX br = new BinaryReaderX(new MemoryStream(input)))
+            using (BinaryReaderX br = new BinaryReaderX(input))
             {
                 List<bool> result = new List<bool>();
 
@@ -126,7 +126,7 @@ namespace Kuriimu.Compression
                         }
                         catch
                         {
-                            
+
                         }
                     }
 
