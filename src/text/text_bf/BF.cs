@@ -65,26 +65,24 @@ namespace text_bf
                 var textSecSize = br.ReadUInt32();
                 br.BaseStream.Position = 0x5C;
                 var textSecOffset = br.ReadUInt32();
-                br.BaseStream.Position = textSecOffset + 0x8;
-                var magicHeader = textSecOffset + 0x8;
-                if (br.ReadString(4) == "MSG1")
+
+                br.BaseStream.Position = textSecOffset;
+                byte[] msg1Part = br.ReadBytes((int)textSecSize);
+                var msg1 = new MSG1(new MemoryStream(msg1Part));
+                for (int i = 0; i < msg1.Labels.Count; i++)
                 {
-                    byte[] msg1Part = br.ReadBytes((int)textSecSize);
-                    var msg1 = new MSG1(new MemoryStream(msg1Part));
-                    for (int i = 0; i < msg1.Labels.Count; i++)
+                    Labels.Add(new Label
                     {
-                        Labels.Add(new Label
-                        {
-                            Name = "Text " + (i + 1),
-                            Text = msg1.Labels[i].Text,
-                        });
-                    }
+                        Name = msg1.Labels[i].Name,
+                        Text = msg1.Labels[i].Text,
+                        TextID = (int)msg1.Labels[i].TextID
+                    });
                 }
             }
-                
 
-                
-            
+
+
+
         }
 
         public void Save(string filename)
