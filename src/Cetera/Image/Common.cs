@@ -32,14 +32,6 @@ namespace Cetera.Image
         TransposeTile = 8
     }
 
-    /*public enum Orientation : byte
-    {
-        Default = 0,
-        TransposeTile = 1,
-        Rotate90 = 4,
-        Transpose = 8,
-    }*/
-
     public class ImageSettings
     {
         public int Width { get; set; }
@@ -62,6 +54,11 @@ namespace Cetera.Image
         public static Format ConvertFormat<T>(T originalFormat) where T : struct, IConvertible
         {
             return (Format)Enum.Parse(typeof(Format), originalFormat.ToString());
+        }
+
+        public static Orientation ConvertOrientation<T>(T originalOrient) where T : struct, IConvertible
+        {
+            return (Orientation)Enum.Parse(typeof(Orientation), originalOrient.ToString());
         }
     }
 

@@ -39,6 +39,14 @@ namespace Cetera.Image
             ETC1, ETC1A4, L4, A4
         }
 
+        public enum Orientation : byte
+        {
+            Default = 0,
+            TransposeTile = 1,
+            Rotate90 = 4,
+            Rotate270 = 8,
+        }
+
         NW4CSectionList sections;
         public BCLIMImageHeader BCLIMHeader { get; private set; }
         public BFLIMImageHeader BFLIMHeader { get; private set; }
@@ -55,11 +63,11 @@ namespace Cetera.Image
                 {
                     case "CLIM":
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(br.ByteOrder);
-                        Settings = new ImageSettings { Width = BCLIMHeader.width, Height = BCLIMHeader.height, Format = ImageSettings.ConvertFormat(BCLIMHeader.format), Orientation = BCLIMHeader.orientation };
+                        Settings = new ImageSettings { Width = BCLIMHeader.width, Height = BCLIMHeader.height, Format = ImageSettings.ConvertFormat(BCLIMHeader.format), Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation) };
                         break;
                     case "FLIM":
                         BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(br.ByteOrder);
-                        Settings = new ImageSettings { Width = BFLIMHeader.width, Height = BFLIMHeader.height, Format = ImageSettings.ConvertFormat(BFLIMHeader.format), Orientation = BFLIMHeader.orientation };
+                        Settings = new ImageSettings { Width = BFLIMHeader.width, Height = BFLIMHeader.height, Format = ImageSettings.ConvertFormat(BFLIMHeader.format), Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation) };
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");
@@ -80,7 +88,7 @@ namespace Cetera.Image
                     case "CLIM":
                         settings.Width = BCLIMHeader.width;
                         settings.Height = BCLIMHeader.height;
-                        settings.Orientation = BCLIMHeader.orientation;
+                        settings.Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BCLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
@@ -98,7 +106,7 @@ namespace Cetera.Image
                     case "FLIM":
                         settings.Width = BFLIMHeader.width;
                         settings.Height = BFLIMHeader.height;
-                        settings.Orientation = BFLIMHeader.orientation;
+                        settings.Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BFLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
