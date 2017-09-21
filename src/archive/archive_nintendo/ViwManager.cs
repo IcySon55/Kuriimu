@@ -48,7 +48,7 @@ namespace archive_nintendo.VIW
             }
             catch (Exception)
             {
-                _viw.Close();
+                if (_viw != null) _viw.Close();
                 return false;
             }
         }
