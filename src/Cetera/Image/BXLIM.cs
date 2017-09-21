@@ -44,7 +44,7 @@ namespace Cetera.Image
             Default = 0,
             TransposeTile = 1,
             Rotate90 = 4,
-            Rotate270 = 8,
+            Transpose = 8,
         }
 
         NW4CSectionList sections;
@@ -63,11 +63,23 @@ namespace Cetera.Image
                 {
                     case "CLIM":
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(br.ByteOrder);
-                        Settings = new ImageSettings { Width = BCLIMHeader.width, Height = BCLIMHeader.height, Format = ImageSettings.ConvertFormat(BCLIMHeader.format), Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation) };
+                        Settings = new ImageSettings
+                        {
+                            Width = BCLIMHeader.width,
+                            Height = BCLIMHeader.height,
+                            Format = ImageSettings.ConvertFormat(BCLIMHeader.format),
+                            Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation)
+                        };
                         break;
                     case "FLIM":
                         BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(br.ByteOrder);
-                        Settings = new ImageSettings { Width = BFLIMHeader.width, Height = BFLIMHeader.height, Format = ImageSettings.ConvertFormat(BFLIMHeader.format), Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation) };
+                        Settings = new ImageSettings
+                        {
+                            Width = BFLIMHeader.width,
+                            Height = BFLIMHeader.height,
+                            Format = ImageSettings.ConvertFormat(BFLIMHeader.format),
+                            Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation)
+                        };
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");
