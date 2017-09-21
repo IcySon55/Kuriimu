@@ -59,6 +59,8 @@ namespace text_bmd.msg1
                                 br.BaseStream.Position = (br.BaseStream.Position + 0x3) & ~0x3;
                             }
                             break;
+                        case 1:
+                            break;
                         default:
                             throw new Exception($"Don't support Entry Type {entry.type}");
                     }
