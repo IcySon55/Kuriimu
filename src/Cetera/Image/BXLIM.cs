@@ -23,8 +23,8 @@ namespace Cetera.Image
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class BFLIMImageHeader
         {
-            public short width;
             public short height;
+            public short width;
             public short alignment;
             public Format format;
             public Orientation orientation;
@@ -43,8 +43,8 @@ namespace Cetera.Image
         {
             Default = 0,
             TransposeTile = 1,
-            Rotate90 = 4,
-            Transpose = 8,
+            Rotate270 = 4,
+            XFlip90 = 8,
         }
 
         NW4CSectionList sections;
@@ -65,8 +65,8 @@ namespace Cetera.Image
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(br.ByteOrder);
                         Settings = new ImageSettings
                         {
-                            Width = BCLIMHeader.width,
-                            Height = BCLIMHeader.height,
+                            Width = 2 << (int)Math.Log(BCLIMHeader.width - 1, 2),
+                            Height = 2 << (int)Math.Log(BCLIMHeader.height - 1, 2),
                             Format = ImageSettings.ConvertFormat(BCLIMHeader.format),
                             Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation)
                         };
@@ -75,10 +75,11 @@ namespace Cetera.Image
                         BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(br.ByteOrder);
                         Settings = new ImageSettings
                         {
-                            Width = BFLIMHeader.width,
-                            Height = BFLIMHeader.height,
+                            Width = 2 << (int)Math.Log(BFLIMHeader.width - 1, 2),
+                            Height = 2 << (int)Math.Log(BFLIMHeader.height - 1, 2),
                             Format = ImageSettings.ConvertFormat(BFLIMHeader.format),
-                            Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation)
+                            Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation),
+                            PadToPowerOf2 = true
                         };
                         break;
                     default:
@@ -100,7 +101,7 @@ namespace Cetera.Image
                     case "CLIM":
                         settings.Width = BCLIMHeader.width;
                         settings.Height = BCLIMHeader.height;
-                        settings.Orientation = (BCLIMHeader.orientation == Orientation.Rotate90) ? Cetera.Image.Orientation.Rotate270 : ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
+                        settings.Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BCLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
@@ -118,7 +119,7 @@ namespace Cetera.Image
                     case "FLIM":
                         settings.Width = BFLIMHeader.width;
                         settings.Height = BFLIMHeader.height;
-                        settings.Orientation = (BFLIMHeader.orientation == Orientation.Rotate90) ? Cetera.Image.Orientation.Rotate270 : ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
+                        settings.Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BFLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
