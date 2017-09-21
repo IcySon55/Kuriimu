@@ -99,8 +99,8 @@ namespace Cetera.Image
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
-                        settings.Width = BCLIMHeader.width;
-                        settings.Height = BCLIMHeader.height;
+                        settings.Width = 2 << (int)Math.Log(BCLIMHeader.width - 1, 2);
+                        settings.Height = 2 << (int)Math.Log(BCLIMHeader.height - 1, 2);
                         settings.Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BCLIMHeader.format);
                         texture = Common.Save(Image, settings);
@@ -108,8 +108,10 @@ namespace Cetera.Image
 
                         // We can now change the image width/height/filesize!
                         var modifiedBCLIMHeader = BCLIMHeader;
-                        modifiedBCLIMHeader.width = (short)Image.Width;
-                        modifiedBCLIMHeader.height = (short)Image.Height;
+                        modifiedBCLIMHeader.width = BCLIMHeader.width;
+                        modifiedBCLIMHeader.height = BCLIMHeader.height;
+                        /*modifiedBCLIMHeader.width = (short)Image.Width;
+                        modifiedBCLIMHeader.height = (short)Image.Height;*/
                         modifiedBCLIMHeader.datasize = texture.Length;
                         BCLIMHeader = modifiedBCLIMHeader;
                         sections[0].Data = BCLIMHeader.StructToBytes();
@@ -117,8 +119,8 @@ namespace Cetera.Image
                         bw.WriteSections(sections);
                         break;
                     case "FLIM":
-                        settings.Width = BFLIMHeader.width;
-                        settings.Height = BFLIMHeader.height;
+                        settings.Width = 2 << (int)Math.Log(BFLIMHeader.height - 1, 2);
+                        settings.Height = 2 << (int)Math.Log(BFLIMHeader.width - 1, 2);
                         settings.Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BFLIMHeader.format);
                         texture = Common.Save(Image, settings);
@@ -126,8 +128,10 @@ namespace Cetera.Image
 
                         // We can now change the image width/height/filesize!
                         var modifiedBFLIMHeader = BFLIMHeader;
-                        modifiedBFLIMHeader.width = (short)Image.Width;
-                        modifiedBFLIMHeader.height = (short)Image.Height;
+                        modifiedBFLIMHeader.width = BFLIMHeader.width;
+                        modifiedBFLIMHeader.height = BFLIMHeader.height;
+                        /*modifiedBFLIMHeader.width = (short)Image.Width;
+                        modifiedBFLIMHeader.height = (short)Image.Height;*/
                         modifiedBFLIMHeader.datasize = texture.Length;
                         BFLIMHeader = modifiedBFLIMHeader;
                         sections[0].Data = BFLIMHeader.StructToBytes();
