@@ -196,7 +196,6 @@ namespace Cetera.Image
                 strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
                 strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
             }
-            //int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
 
             //stride TileSize
             var tileSize = 0;
@@ -206,6 +205,17 @@ namespace Cetera.Image
                 tileSize = settings.TileSize;
             int powTileSize = (int)Math.Pow(tileSize, 2);
 
+            int stride = strideWidth;
+            switch (settings.Orientation)
+            {
+                case Orientation.Rotate270:
+                case Orientation.Rotate90:
+                case Orientation.Transpose:
+                case Orientation.XFlip90:
+                    stride = strideHeight;
+                    break;
+            }
+
             for (int i = 0; i < strideWidth * strideHeight; i++)
             {
                 //in == order inside a tile
@@ -213,15 +223,15 @@ namespace Cetera.Image
                 int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
                 if (settings.ZOrder)
                 {
-                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
                     x_in = ZOrderX(tileSize, i);
                     y_in = ZOrderY(tileSize, i);
                 }
                 else
                 {
-                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
                     x_in = i % powTileSize % tileSize;
                     y_in = i % powTileSize / tileSize;
                 }
@@ -291,8 +301,21 @@ namespace Cetera.Image
 
         public static Bitmap Load(byte[] tex, ImageSettings settings)
         {
+            switch (settings.Orientation)
+            {
+                case Orientation.Rotate270:
+                case Orientation.Rotate90:
+                case Orientation.Transpose:
+                case Orientation.XFlip90:
+                    var tmpWidth = settings.Width;
+                    settings.Width = settings.Height;
+                    settings.Height = tmpWidth;
+                    break;
+            }
+
             int width = settings.Width, height = settings.Height;
             var colors = GetColorsFromTexture(tex, settings.Format);
+
             var points = GetPointSequence(settings);
 
             // Now we just need to merge the points with the colors
