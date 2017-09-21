@@ -65,11 +65,12 @@ namespace image_iobj
 
                     imgMetaInf.Add(br.ReadBytes(0x74));
 
+                    throw new System.NotImplementedException();
                     var settings = new ImageSettings
                     {
                         Width = width,
                         Height = height,
-                        Orientation = Orientation.XFlip,
+                        //Orientation = Orientation.XFlip,
                         Format = ImageSettings.ConvertFormat(((int)format > 0x12) ? Format.ETC1A4 : format)
                     };
 
@@ -126,11 +127,12 @@ namespace image_iobj
                     using (var br = new BinaryReaderX(new MemoryStream(imgMetaInf[count])))
                         format = (Format)br.ReadInt32();
 
+                    throw new System.NotImplementedException();
                     var settings = new ImageSettings
                     {
                         Width = bmp.Width,
                         Height = bmp.Height,
-                        Orientation = Orientation.XFlip,
+                        //Orientation = Orientation.XFlip,
                         Format = ImageSettings.ConvertFormat(((int)format > 0x12) ? Format.ETC1A4 : format)
                     };
 

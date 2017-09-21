@@ -19,17 +19,13 @@ namespace Cetera.Image
         DXT1, DXT3, DXT5
     }
 
-    public enum Orientation : byte
+    public enum Orientation
     {
-        Default = 0,
-        XFlip = 1,
-        YFlip = 2,
-        XYFlip = 3,
-        Rotate90 = 4,
-        XFlip90 = 5,
-        Transpose = 6,
-        Rotate270 = 7,
-        TransposeTile = 8
+        Default,
+        HorizontalFlip,
+        Rotate90,
+        Transpose,
+        TransposeTile = 0x10000
     }
 
     public class ImageSettings
@@ -208,10 +204,8 @@ namespace Cetera.Image
             int stride = strideWidth;
             switch (settings.Orientation)
             {
-                case Orientation.Rotate270:
                 case Orientation.Rotate90:
                 case Orientation.Transpose:
-                case Orientation.XFlip90:
                     stride = strideHeight;
                     break;
             }
@@ -241,26 +235,14 @@ namespace Cetera.Image
                     case Orientation.Default:
                         yield return new Point(x_out + x_in, y_out + y_in);
                         break;
-                    case Orientation.XFlip:
-                        yield return new Point(x_out + x_in, strideHeight - 1 - (y_out + y_in));
-                        break;
-                    case Orientation.YFlip:
-                        yield return new Point(strideWidth - 1 - (x_out + x_in), y_out + y_in);
-                        break;
-                    case Orientation.XYFlip:
-                        yield return new Point(strideWidth - 1 - (x_out + x_in), strideHeight - 1 - (y_out + y_in));
+                    case Orientation.HorizontalFlip:
+                        yield return new Point(stride - 1 - (x_out + x_in), y_out + y_in);
                         break;
                     case Orientation.Rotate90:
-                        yield return new Point(strideWidth - 1 - (y_out + y_in), x_out + x_in);
-                        break;
-                    case Orientation.XFlip90:
-                        yield return new Point(y_out + y_in, x_out + x_in);
+                        yield return new Point(y_out + y_in, stride - 1 - (x_out + x_in));
                         break;
                     case Orientation.Transpose:
-                        yield return new Point(strideWidth - 1 - (y_out + y_in), strideHeight - 1 - (x_out + x_in));
-                        break;
-                    case Orientation.Rotate270:
-                        yield return new Point(y_out + y_in, strideHeight - 1 - (x_out + x_in));
+                        yield return new Point(y_out + y_in, x_out + x_in);
                         break;
                     case Orientation.TransposeTile:
                         yield return new Point(x_out + y_in, y_out + x_in);
@@ -301,18 +283,6 @@ namespace Cetera.Image
 
         public static Bitmap Load(byte[] tex, ImageSettings settings)
         {
-            switch (settings.Orientation)
-            {
-                case Orientation.Rotate270:
-                case Orientation.Rotate90:
-                case Orientation.Transpose:
-                case Orientation.XFlip90:
-                    var tmpWidth = settings.Width;
-                    settings.Width = settings.Height;
-                    settings.Height = tmpWidth;
-                    break;
-            }
-
             int width = settings.Width, height = settings.Height;
             var colors = GetColorsFromTexture(tex, settings.Format);
 
