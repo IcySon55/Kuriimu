@@ -39,6 +39,7 @@
     <Reference Include="LZ4">
       <HintPath>..\..\LZ4.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Security.Cryptography">
       <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
     </Reference>
@@ -80,6 +81,7 @@
     <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
+    <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
