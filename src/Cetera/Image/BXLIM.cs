@@ -100,7 +100,7 @@ namespace Cetera.Image
                     case "CLIM":
                         settings.Width = BCLIMHeader.width;
                         settings.Height = BCLIMHeader.height;
-                        settings.Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
+                        settings.Orientation = (BCLIMHeader.orientation == Orientation.Rotate90) ? Cetera.Image.Orientation.Rotate270 : ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BCLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
@@ -118,7 +118,7 @@ namespace Cetera.Image
                     case "FLIM":
                         settings.Width = BFLIMHeader.width;
                         settings.Height = BFLIMHeader.height;
-                        settings.Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
+                        settings.Orientation = (BFLIMHeader.orientation == Orientation.Rotate90) ? Cetera.Image.Orientation.Rotate270 : ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BFLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);

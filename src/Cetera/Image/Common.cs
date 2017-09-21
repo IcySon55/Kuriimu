@@ -27,8 +27,8 @@ namespace Cetera.Image
         XYFlip = 3,
         Rotate90 = 4,
         XFlip90 = 5,
-        YFlip90 = 6,
-        Transpose = 7,
+        Transpose = 6,
+        Rotate270 = 7,
         TransposeTile = 8
     }
 
@@ -246,10 +246,10 @@ namespace Cetera.Image
                     case Orientation.XFlip90:
                         yield return new Point(y_out + y_in, x_out + x_in);
                         break;
-                    case Orientation.YFlip90:
+                    case Orientation.Transpose:
                         yield return new Point(strideWidth - 1 - (y_out + y_in), strideHeight - 1 - (x_out + x_in));
                         break;
-                    case Orientation.Transpose:
+                    case Orientation.Rotate270:
                         yield return new Point(y_out + y_in, strideHeight - 1 - (x_out + x_in));
                         break;
                     case Orientation.TransposeTile:
