@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.Compression;
 using Kuriimu.IO;
 using Kuriimu.CTR;
-using Microsoft.VisualBasic;
 using Kuriimu.Encryption;
 
 namespace Kuriimu.UI
@@ -64,14 +62,14 @@ namespace Kuriimu.UI
                     switch (tsi.Tag)
                     {
                         case Types.BlowFishCBC:
-                            var key = Interaction.InputBox("Input decryption key:", "Decrypt Blowfish", String.Empty);
+                            var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
 
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             var bf = new BlowFish(key);
                             outFs.Write(bf.Decrypt_CBC(openBr.ReadAllBytes()));
                             break;
                         case Types.BlowFishECB:
-                            key = Interaction.InputBox("Input decryption key:", "Decrypt Blowfish", String.Empty);
+                            key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
 
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             bf = new BlowFish(key);
@@ -118,14 +116,14 @@ namespace Kuriimu.UI
                     switch (tsi?.Tag)
                     {
                         case Types.BlowFishCBC:
-                            var key = Interaction.InputBox("Input encryption key:", "Encrypt Blowfish", String.Empty);
+                            var key = InputBox.Show("Input encryption key:", "Encrypt Blowfish");
 
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             var bf = new BlowFish(key);
                             outFs.Write(bf.Encrypt_CBC(openFs.ReadAllBytes()));
                             break;
                         case Types.BlowFishECB:
-                            key = Interaction.InputBox("Input encryption key:", "Encrypt Blowfish", String.Empty);
+                            key = InputBox.Show("Input encryption key:", "Encrypt Blowfish");
 
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             bf = new BlowFish(key);

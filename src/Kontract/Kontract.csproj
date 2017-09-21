@@ -39,7 +39,6 @@
     <Reference Include="LZ4">
       <HintPath>..\..\LZ4.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Security.Cryptography">
       <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
     </Reference>
@@ -106,8 +105,19 @@
     <Compile Include="UI\Compression.cs" />
     <Compile Include="UI\Encryption.cs" />
     <Compile Include="UI\Hash.cs" />
+    <Compile Include="UI\InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\InputBox.Designer.cs">
+      <DependentUpon>InputBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Win32.cs" />
     <Compile Include="ValueTuple.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UI\InputBox.resx">
+      <DependentUpon>InputBox.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
