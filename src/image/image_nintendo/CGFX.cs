@@ -63,14 +63,22 @@ namespace image_nintendo.CGFX
                 for (int i = 0; i < dictHeader.entryCount; i++)
                 {
                     br.BaseStream.Position = TxObs[i].texDataOffset;
-                    var settings = new ImageSettings
+                    var width = TxObs[i].height;
+                    var height = TxObs[i].width;
+                    for (int j = 0; j < ((TxObs[i].mipmapLvls == 0) ? 1 : TxObs[i].mipmapLvls); j++)
                     {
-                        Width = (int)TxObs[i].width,
-                        Height = (int)TxObs[i].height,
-                        Format = ImageSettings.ConvertFormat(TxObs[i].format),
-                        PadToPowerOf2 = false
-                    };
-                    bmps.Add(Common.Load(br.ReadBytes((int)TxObs[i].texDataSize), settings));
+                        var settings = new ImageSettings
+                        {
+                            Width = (int)width,
+                            Height = (int)height,
+                            Format = ImageSettings.ConvertFormat(TxObs[i].format),
+                            PadToPowerOf2 = false
+                        };
+                        bmps.Add(Common.Load(br.ReadBytes((int)(Common.GetBitDepth(ImageSettings.ConvertFormat(TxObs[i].format)) * width * height / 8)), settings));
+
+                        width /= 2;
+                        height /= 2;
+                    }
                 }
             }
         }
@@ -88,18 +96,27 @@ namespace image_nintendo.CGFX
             {
                 bw.Write(list);
 
+                var bmpCount = 0;
                 for (int i = 0; i < TxObs.Count; i++)
                 {
                     bw.BaseStream.Position = TxObs[i].texDataOffset;
-                    var settings = new ImageSettings
+                    var width = TxObs[i].height;
+                    var height = TxObs[i].width;
+                    for (int j = 0; j < ((TxObs[i].mipmapLvls == 0) ? 1 : TxObs[i].mipmapLvls); j++)
                     {
-                        Width = (int)TxObs[i].width,
-                        Height = (int)TxObs[i].height,
-                        Format = ImageSettings.ConvertFormat(TxObs[i].format),
-                        PadToPowerOf2 = false
-                    };
+                        var settings = new ImageSettings
+                        {
+                            Width = (int)width,
+                            Height = (int)height,
+                            Format = ImageSettings.ConvertFormat(TxObs[i].format),
+                            PadToPowerOf2 = false
+                        };
 
-                    bw.Write(Common.Save(bmps[i], settings));
+                        bw.Write(Common.Save(bmps[bmpCount++], settings));
+
+                        width /= 2;
+                        height /= 2;
+                    }
                 }
             }
         }
