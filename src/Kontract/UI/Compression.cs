@@ -156,42 +156,11 @@ namespace Kuriimu.UI
             tsb3.DropDownItems[1].Tag = Compression.LZ10VLE;
         }
 
-        public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile, bool compress = false)
-        {
-            openFile = null;
-            saveFile = null;
-
-            var ofd = new OpenFileDialog
-            {
-                Title = openCaption,
-                Filter = "All Files (*.*)|*.*"
-            };
-
-            if (ofd.ShowDialog() != DialogResult.OK) return false;
-            openFile = File.OpenRead(ofd.FileName);
-
-            var sfd = new SaveFileDialog()
-            {
-                Title = saveCaption,
-                FileName = !compress ? Path.GetFileNameWithoutExtension(ofd.FileName) + saveExtension + Path.GetExtension(ofd.FileName) : Path.GetFileName(ofd.FileName.Replace(saveExtension, string.Empty)),
-                Filter = "All Files (*.*)|*.*"
-            };
-
-            if (sfd.ShowDialog() != DialogResult.OK)
-            {
-                openFile.Dispose();
-                return false;
-            }
-            saveFile = File.Create(sfd.FileName);
-
-            return true;
-        }
-
         public static void Decompress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a " + tsi?.Tag + " compressed file...", "Save your decompressed file...", ".decomp", out var openFile, out var saveFile)) return;
+            if (!Shared.PrepareFiles("Open a " + tsi?.Tag + " compressed file...", "Save your decompressed file...", ".decomp", out var openFile, out var saveFile)) return;
 
             try
             {
@@ -253,7 +222,7 @@ namespace Kuriimu.UI
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a decompressed " + tsi?.Tag + "file...", "Save your compressed file...", ".decomp", out var openFile, out var saveFile, true)) return;
+            if (!Shared.PrepareFiles("Open a decompressed " + tsi?.Tag + "file...", "Save your compressed file...", ".decomp", out var openFile, out var saveFile, true)) return;
 
             try
             {

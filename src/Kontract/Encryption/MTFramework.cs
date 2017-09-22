@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Kuriimu.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using Kuriimu.IO;
 using Kuriimu.Kontract;
-using Kuriimu.Encryption;
 
 /*Dual Destinies Android:
     key1: imaguy_uyrag_igurustim_

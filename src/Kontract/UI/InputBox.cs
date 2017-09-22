@@ -9,8 +9,8 @@ namespace Kuriimu
 
         public string Caption
         {
-            get => Caption;
-            set => Caption = value;
+            get => Text;
+            set => Text = value;
         }
 
         public string Question
@@ -55,7 +55,7 @@ namespace Kuriimu
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (txtResponse.Text.Trim().Length > MaxLength)
+            if (txtResponse.Text.Trim().Length > MaxLength && MaxLength > 0)
                 MessageBox.Show("The name entered is too long. Valid names can only be " + MaxLength + " character(s) long.", "Input Too Long", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
                 DialogResult = DialogResult.OK;

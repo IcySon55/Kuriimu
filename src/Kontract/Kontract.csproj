@@ -39,7 +39,6 @@
     <Reference Include="LZ4">
       <HintPath>..\..\LZ4.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Security.Cryptography">
       <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
     </Reference>

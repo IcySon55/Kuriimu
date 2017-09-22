@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.IO;
 using Kuriimu.CTR;
 using Kuriimu.Encryption;
-using Microsoft.VisualBasic;
+using Kuriimu.IO;
 
 namespace Kuriimu.UI
 {
@@ -41,7 +40,7 @@ namespace Kuriimu.UI
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
-            tsb3.DropDownItems[0].Tag = Types.normal;
+            tsb3.DropDownItems[0].Tag = Types.Normal;
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
             tsb3.DropDownItems[1].Tag = Types.CIA;
             /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
@@ -63,7 +62,7 @@ namespace Kuriimu.UI
             var tsi = sender as ToolStripMenuItem;
             var name = (tsi.Tag.ToString() == "normal") ? "3DS" : tsi.Tag.ToString();
 
-            if (!PrepareFiles("Open an encrypted " + name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
+            if (!Shared.PrepareFiles("Open an encrypted " + name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
 
             try
             {
@@ -80,23 +79,20 @@ namespace Kuriimu.UI
                             outFs.Write(bf.Decrypt_CBC(openBr.ReadAllBytes()));
                             break;
                         case Types.BlowFishECB:
-                            //key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
-                            key = Interaction.InputBox("Input decryption key:", "Decrypt Blowfish");
+                            key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
 
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             bf = new BlowFish(key);
                             outFs.Write(bf.Decrypt_ECB(openBr.ReadAllBytes()));
                             break;
                         case Types.MTMobile:
-                            //var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTMobile");
-                            //var key2 = InputBox.Show("Input 2nd decryption key:", "Decrypt MTMobile");
-                            var key1 = Interaction.InputBox("Input 1st decryption key:", "Decrypt MTMobile");
-                            var key2 = Interaction.InputBox("Input 2nd decryption key:", "Decrypt MTMobile");
+                            var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTMobile");
+                            var key2 = InputBox.Show("Input 2nd decryption key:", "Decrypt MTMobile");
 
                             if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
                             outFs.Write(MTFramework.Decrypt(openBr.BaseStream, key1, key2));
                             break;
-                        case Types.normal:
+                        case Types.Normal:
                             var engine = new AesEngine();
                             openBr.BaseStream.CopyTo(outFs.BaseStream);
                             openBr.BaseStream.Position = 0;
@@ -115,20 +111,21 @@ namespace Kuriimu.UI
                                 break;*/
                     }
                 }
+
+                MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.Delete(saveFile.Name);
             }
-
-            MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static void Encrypt(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a decrypted " + tsi?.Tag + " file...", "Save your encrypted file...", ".encrypt", out var openFile, out var saveFile)) return;
+            if (!Shared.PrepareFiles("Open a decrypted " + tsi?.Tag + " file...", "Save your encrypted file...", ".dec", out var openFile, out var saveFile, true)) return;
 
             try
             {
@@ -151,57 +148,26 @@ namespace Kuriimu.UI
                             outFs.Write(bf.Encrypt_ECB(openFs.ReadAllBytes()));
                             break;
                         case Types.MTMobile:
-                            var key1 = Interaction.InputBox("Input 1st encryption key:", "Encrypt MTMobile");
-                            var key2 = Interaction.InputBox("Input 2nd encryption key:", "Encrypt MTMobile");
+                            var key1 = InputBox.Show("Input 1st encryption key:", "Encrypt MTMobile");
+                            var key2 = InputBox.Show("Input 2nd encryption key:", "Encrypt MTMobile");
 
                             if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
                             outFs.Write(MTFramework.Encrypt(openFs.BaseStream, key1, key2));
                             break;
                     }
+
+                MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                File.Delete(saveFile.Name);
             }
-
-            MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile)
+        public enum Types
         {
-            openFile = null;
-            saveFile = null;
-
-            var ofd = new OpenFileDialog
-            {
-                Title = openCaption,
-                Filter = "All Files (*.*)|*.*"
-            };
-
-            if (ofd.ShowDialog() != DialogResult.OK) return false;
-            openFile = File.OpenRead(ofd.FileName);
-
-            var sfd = new SaveFileDialog()
-            {
-                Title = saveCaption,
-                FileName = Path.GetFileNameWithoutExtension(ofd.FileName) + saveExtension,
-                Filter = "All Files (*.*)|*.*"
-            };
-
-            if (sfd.ShowDialog() != DialogResult.OK)
-            {
-                openFile.Dispose();
-                return false;
-            }
-            saveFile = File.Create(sfd.FileName);
-
-            return true;
-        }
-
-        public enum Types : byte
-        {
-            normal,
+            Normal,
             CIA,
             BOSS,
             BlowFishCBC,
