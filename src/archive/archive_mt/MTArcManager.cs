@@ -36,7 +36,7 @@ namespace archive_mt
             {
                 if (br.BaseStream.Length < 4) return false;
                 var magic = br.ReadString(4);
-                return magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH";
+                return magic == "ARCC" || magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH";
             }
         }
 
