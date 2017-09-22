@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Kuriimu.IO;
 using Kuriimu.CTR;
 using Kuriimu.Encryption;
+using Microsoft.VisualBasic;
 
 namespace Kuriimu.UI
 {
@@ -45,6 +46,16 @@ namespace Kuriimu.UI
             tsb3.DropDownItems[1].Tag = Types.CIA;
             /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
             tsb3.DropDownItems[2].Tag = Types.BOSS;*/
+
+            //Mobile
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Mobile", null));
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[2];
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("MT Framework", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
+            tsb3.DropDownItems[0].Tag = Types.MTMobile;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
+            tsb3.DropDownItems[1].Tag = Types.MTMobile;
         }
 
         public static void Decrypt(object sender, EventArgs e)
@@ -69,11 +80,21 @@ namespace Kuriimu.UI
                             outFs.Write(bf.Decrypt_CBC(openBr.ReadAllBytes()));
                             break;
                         case Types.BlowFishECB:
-                            key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
+                            //key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
+                            key = Interaction.InputBox("Input decryption key:", "Decrypt Blowfish");
 
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             bf = new BlowFish(key);
                             outFs.Write(bf.Decrypt_ECB(openBr.ReadAllBytes()));
+                            break;
+                        case Types.MTMobile:
+                            //var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTMobile");
+                            //var key2 = InputBox.Show("Input 2nd decryption key:", "Decrypt MTMobile");
+                            var key1 = Interaction.InputBox("Input 1st decryption key:", "Decrypt MTMobile");
+                            var key2 = Interaction.InputBox("Input 2nd decryption key:", "Decrypt MTMobile");
+
+                            if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
+                            outFs.Write(MTFramework.Decrypt(openBr.BaseStream, key1, key2));
                             break;
                         case Types.normal:
                             var engine = new AesEngine();
@@ -177,7 +198,8 @@ namespace Kuriimu.UI
             CIA,
             BOSS,
             BlowFishCBC,
-            BlowFishECB
+            BlowFishECB,
+            MTMobile
         }
     }
 }
