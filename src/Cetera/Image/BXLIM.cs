@@ -23,8 +23,8 @@ namespace Cetera.Image
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class BFLIMImageHeader
         {
-            public short height;
             public short width;
+            public short height;
             public short alignment;
             public Format format;
             public Orientation orientation;
@@ -42,9 +42,8 @@ namespace Cetera.Image
         public enum Orientation : byte
         {
             Default = 0,
-            TransposeTile = 1,
-            Rotate270 = 4,
-            XFlip90 = 8,
+            Rotate90 = 4,
+            Transpose = 8,
         }
 
         NW4CSectionList sections;
@@ -65,8 +64,8 @@ namespace Cetera.Image
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(br.ByteOrder);
                         Settings = new ImageSettings
                         {
-                            Width = 2 << (int)Math.Log(BCLIMHeader.width - 1, 2),
-                            Height = 2 << (int)Math.Log(BCLIMHeader.height - 1, 2),
+                            Width = BCLIMHeader.width,
+                            Height = BCLIMHeader.height,
                             Format = ImageSettings.ConvertFormat(BCLIMHeader.format),
                             Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation)
                         };
@@ -75,11 +74,10 @@ namespace Cetera.Image
                         BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(br.ByteOrder);
                         Settings = new ImageSettings
                         {
-                            Width = 2 << (int)Math.Log(BFLIMHeader.width - 1, 2),
-                            Height = 2 << (int)Math.Log(BFLIMHeader.height - 1, 2),
+                            Width = BFLIMHeader.width,
+                            Height = BFLIMHeader.height,
                             Format = ImageSettings.ConvertFormat(BFLIMHeader.format),
-                            Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation),
-                            PadToPowerOf2 = true
+                            Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation)
                         };
                         break;
                     default:
@@ -99,41 +97,33 @@ namespace Cetera.Image
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
-                        settings.Width = 2 << (int)Math.Log(BCLIMHeader.width - 1, 2);
-                        settings.Height = 2 << (int)Math.Log(BCLIMHeader.height - 1, 2);
+                        settings.Width = BCLIMHeader.width;
+                        settings.Height = BCLIMHeader.height;
                         settings.Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BCLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!
-                        var modifiedBCLIMHeader = BCLIMHeader;
-                        modifiedBCLIMHeader.width = BCLIMHeader.width;
-                        modifiedBCLIMHeader.height = BCLIMHeader.height;
-                        /*modifiedBCLIMHeader.width = (short)Image.Width;
-                        modifiedBCLIMHeader.height = (short)Image.Height;*/
-                        modifiedBCLIMHeader.datasize = texture.Length;
-                        BCLIMHeader = modifiedBCLIMHeader;
+                        BCLIMHeader.width = (short)Image.Width;
+                        BCLIMHeader.height = (short)Image.Height;
+                        BCLIMHeader.datasize = texture.Length;
                         sections[0].Data = BCLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
                         bw.WriteSections(sections);
                         break;
                     case "FLIM":
-                        settings.Width = 2 << (int)Math.Log(BFLIMHeader.height - 1, 2);
-                        settings.Height = 2 << (int)Math.Log(BFLIMHeader.width - 1, 2);
+                        settings.Width = BFLIMHeader.width;
+                        settings.Height = BFLIMHeader.height;
                         settings.Orientation = ImageSettings.ConvertOrientation(BFLIMHeader.orientation);
                         settings.Format = ImageSettings.ConvertFormat(BFLIMHeader.format);
                         texture = Common.Save(Image, settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!
-                        var modifiedBFLIMHeader = BFLIMHeader;
-                        modifiedBFLIMHeader.width = BFLIMHeader.width;
-                        modifiedBFLIMHeader.height = BFLIMHeader.height;
-                        /*modifiedBFLIMHeader.width = (short)Image.Width;
-                        modifiedBFLIMHeader.height = (short)Image.Height;*/
-                        modifiedBFLIMHeader.datasize = texture.Length;
-                        BFLIMHeader = modifiedBFLIMHeader;
+                        BFLIMHeader.width = (short)Image.Width;
+                        BFLIMHeader.height = (short)Image.Height;
+                        BFLIMHeader.datasize = texture.Length;
                         sections[0].Data = BFLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
                         bw.WriteSections(sections);
