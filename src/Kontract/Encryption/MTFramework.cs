@@ -24,15 +24,29 @@ namespace Kuriimu.Encryption
             {
                 var bf = new BlowFish(GetCipherKey(key1, key2));
 
+                //Header
                 var header = br.ReadStruct<Header>();
                 bw.WriteStruct(header);
+
+                //Decrypt entries
                 var entries = new List<byte[]>();
                 for (int i = 0; i < header.entryCount; i++)
                 {
-                    var entry = bf.Decrypt_ECB(ReverseByteArray(br.ReadBytes(0x50)));
+                    var entry = ReverseByteArray(bf.Decrypt_ECB(ReverseByteArray(br.ReadBytes(0x50))));
                     entries.Add(entry);
                     bw.Write(entry);
                 }
+
+                //Decrypt archive data
+                var dataOffset = 0;
+                using (var entryR = new BinaryReaderX(new MemoryStream(entries[0])))
+                {
+                    entryR.BaseStream.Position = 0x4c;
+                    dataOffset = entryR.ReadInt32();
+                }
+                br.BaseStream.Position = dataOffset;
+                bw.BaseStream.Position = dataOffset;
+                bw.Write(ReverseByteArray(bf.Decrypt_ECB(ReverseByteArray(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
 
                 return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
             }
