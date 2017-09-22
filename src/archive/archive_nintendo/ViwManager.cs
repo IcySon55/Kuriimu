@@ -24,7 +24,7 @@ namespace archive_nintendo.VIW
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -70,22 +70,31 @@ namespace archive_nintendo.VIW
         {
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
+            var file2 = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".viw");
+            var file3 = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName));
+
+            if (Path.GetExtension(FileInfo.Name) != ".inf")
+                FileInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".inf"));
 
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _viw.Save(FileInfo.Create());
+                _viw.Save(FileInfo.Create(), File.Create(file2), File.Create(file3));
                 _viw.Close();
             }
             else
             {
                 // Create the temp file
-                _viw.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _viw.Save(File.Create(FileInfo.FullName + ".tmp"), File.Create(file2 + ".tmp"), File.Create(file3 + ".tmp"));
                 _viw.Close();
                 // Delete the original
                 FileInfo.Delete();
+                File.Delete(file2);
+                File.Delete(file3);
                 // Rename the temporary file
                 File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+                File.Move(file2 + ".tmp", file2);
+                File.Move(file3 + ".tmp", file3);
             }
 
             // Reload the new file to make sure everything is in order
@@ -106,3 +115,4 @@ namespace archive_nintendo.VIW
         public bool ShowProperties(Icon icon) => false;
     }
 }
+

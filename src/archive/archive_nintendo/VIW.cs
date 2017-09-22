@@ -52,9 +52,32 @@ namespace archive_nintendo.VIW
             }
         }
 
-        public void Save(Stream output)
+        public void Save(Stream infOutput, Stream viwOutput, Stream output)
         {
-            return;
+            using (output)
+                for (var i = 0; i < Files.Count; i++)
+                {
+                    Offsets[i].Offset = (int)output.Position;
+                    Offsets[i].CompressedSize = ((ViwFileInfo)Files[i]).Write(output);
+                }
+
+            using (var bw = new BinaryWriterX(infOutput))
+            {
+                bw.WriteStruct(Header);
+
+                foreach (var offset in Offsets)
+                    bw.WriteStruct(offset);
+
+                if (Header.MetaEntryCount > 0)
+                    foreach (var entry in MetaEntries)
+                        bw.WriteStruct(entry);
+            }
+
+            using (var bw = new BinaryWriterX(viwOutput))
+            {
+                foreach (var name in Names)
+                    bw.WriteStruct(name);
+            }
         }
 
         public void Close()
