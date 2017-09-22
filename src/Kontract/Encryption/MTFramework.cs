@@ -52,9 +52,39 @@ namespace Kuriimu.Encryption
             }
         }
 
-        public static byte[] Encrypt(Stream input)
+        public static byte[] Encrypt(Stream input, String key1, String key2)
         {
-            return null;
+            using (var br = new BinaryReaderX(input))
+            using (var bw = new BinaryWriterX(new MemoryStream()))
+            {
+                var bf = new BlowFish(GetCipherKey(key1, key2));
+
+                //Header
+                var header = br.ReadStruct<Header>();
+                bw.WriteStruct(header);
+
+                //Decrypt entries
+                var entries = new List<byte[]>();
+                for (int i = 0; i < header.entryCount; i++)
+                {
+                    var entry = br.ReadBytes(0x50);
+                    entries.Add(entry);
+                    bw.Write(ReverseByteArray(bf.Encrypt_ECB(ReverseByteArray(entry))));
+                }
+
+                //Decrypt archive data
+                var dataOffset = 0;
+                using (var entryR = new BinaryReaderX(new MemoryStream(entries[0])))
+                {
+                    entryR.BaseStream.Position = 0x4c;
+                    dataOffset = entryR.ReadInt32();
+                }
+                br.BaseStream.Position = dataOffset;
+                bw.BaseStream.Position = dataOffset;
+                bw.Write(ReverseByteArray(bf.Encrypt_ECB(ReverseByteArray(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
+
+                return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
+            }
         }
 
         static byte[] GetCipherKey(String key1, String key2)

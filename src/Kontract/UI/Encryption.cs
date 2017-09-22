@@ -52,9 +52,9 @@ namespace Kuriimu.UI
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[2];
             tsb2.DropDownItems.Add(new ToolStripMenuItem("MT Framework", null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
-            tsb3.DropDownItems[0].Tag = Types.MTMobile;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
+            tsb3.DropDownItems[0].Tag = Types.MTMobile;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
             tsb3.DropDownItems[1].Tag = Types.MTMobile;
         }
 
@@ -149,6 +149,13 @@ namespace Kuriimu.UI
                             if (key == String.Empty) throw new Exception("Key can't be empty!");
                             bf = new BlowFish(key);
                             outFs.Write(bf.Encrypt_ECB(openFs.ReadAllBytes()));
+                            break;
+                        case Types.MTMobile:
+                            var key1 = Interaction.InputBox("Input 1st encryption key:", "Encrypt MTMobile");
+                            var key2 = Interaction.InputBox("Input 2nd encryption key:", "Encrypt MTMobile");
+
+                            if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
+                            outFs.Write(MTFramework.Encrypt(openFs.BaseStream, key1, key2));
                             break;
                     }
             }
