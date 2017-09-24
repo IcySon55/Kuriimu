@@ -43,4 +43,19 @@ namespace archive_obb
         public int size;
         public uint unk2;
     }
+
+    public class ObbSupport
+    {
+        public static Dictionary<String, String> extensions = new Dictionary<string, string>()
+        {
+            ["OggS"] = ".ogg",
+            ["ARCC"] = ".arc",
+            ["GUI\0"] = ".gui",
+            ["SBKR"] = ".sbkr",
+            ["TEX "] = ".tex",
+            ["FWSE"] = ".fwse",
+            ["SDL\0"] = ".sdl",
+            ["MOD\0"] = ".mod"
+        };
+    }
 }
