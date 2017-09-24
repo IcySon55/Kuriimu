@@ -48,7 +48,7 @@ namespace image_mt.Mobile
 
         //Block3
         public byte unk3;
-        public byte unk4;
+        public Format format;
         public short width;
         public short height;
     }

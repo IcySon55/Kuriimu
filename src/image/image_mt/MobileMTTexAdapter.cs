@@ -54,7 +54,7 @@ namespace image_mt.Mobile
                 FileInfo = new FileInfo(filename);
 
             if (_bitmaps.Count >= 1)
-                _tex.headerInfo.Format = ((MobileMTTexBitmapInfo)_bitmaps[0]).format;
+                _tex.headerInfo.format = ((MobileMTTexBitmapInfo)_bitmaps[0]).format;
             _tex.bmps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
         }

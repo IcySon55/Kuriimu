@@ -34,24 +34,10 @@ namespace image_mt.Mobile
 
                     //Block 3
                     unk3 = (byte)(header.Block3 >> 30),
-                    unk4 = (byte)(header.Block3 >> 24 & 0x3F),
+                    format = (Format)(header.Block3 >> 24 & 0x3F),
                     width = (short)(header.Block3 >> 13 & 0x1FFF),
                     height = (short)(header.Block3 & 0x1FFF)
                 };
-                /*headerInfo = new HeaderInfo
-                {
-                    // Block 1
-                    Version = (Version)(Header.Block1 & 0xFFF),
-                    Unknown1 = (int)((Header.Block1 >> 12) & 0xFFF),
-                    Unused1 = (int)((Header.Block1 >> 24) & 0xF),
-                    AlphaChannelFlags = (AlphaChannelFlags)((Header.Block1 >> 28) & 0xF),
-                    //Block2
-                    MipMapCount = (int)(Header.Block2),
-                    //Block3
-                    Width = (int)(Header.Block3 & 0x1FFF),
-                    Height = (int)((Header.Block3 >> 13) & 0x1FFF),
-                    Format = (Format)((Header.Block3 >> 26) & 0x3F)
-                };*/
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
                 //Settings.Format = ImageSettings.ConvertFormat(format);
