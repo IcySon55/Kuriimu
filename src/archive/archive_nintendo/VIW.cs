@@ -8,8 +8,8 @@ namespace archive_nintendo.VIW
     class VIW
     {
         public List<ArchiveFileInfo> Files = new List<ArchiveFileInfo>();
-        private Stream _infStream;
         private Stream _viwStream;
+        private Stream _infStream;
         private Stream _stream;
 
         private InfHeader Header;
@@ -17,7 +17,7 @@ namespace archive_nintendo.VIW
         private List<InfMetaEntry> MetaEntries;
         private List<ViwEntry> Names;
 
-        public VIW(Stream infInput, Stream viwInput, Stream input)
+        public VIW(Stream viwInput, Stream infInput, Stream input)
         {
             _infStream = infInput;
             _viwStream = viwInput;
@@ -52,7 +52,7 @@ namespace archive_nintendo.VIW
             }
         }
 
-        public void Save(Stream infOutput, Stream viwOutput, Stream output)
+        public void Save(Stream viwOutput, Stream infOutput, Stream output)
         {
             using (output)
                 for (var i = 0; i < Files.Count; i++)
@@ -82,14 +82,14 @@ namespace archive_nintendo.VIW
 
         public void Close()
         {
-            _infStream?.Dispose();
             _viwStream?.Dispose();
+            _infStream?.Dispose();
             _stream?.Dispose();
             foreach (var afi in Files)
                 if (afi.State != ArchiveFileState.Archived)
                     afi.FileData?.Dispose();
-            _infStream = null;
             _viwStream = null;
+            _infStream = null;
             _stream = null;
         }
     }
