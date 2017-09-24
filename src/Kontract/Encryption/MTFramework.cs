@@ -20,6 +20,7 @@ namespace Kuriimu.Encryption
             using (var bw = new BinaryWriterX(new MemoryStream()))
             {
                 var bf = new BlowFish(GetCipherKey(key1, key2));
+                bf.MTMethod = true;
 
                 //Header
                 var header = br.ReadStruct<Header>();
@@ -29,7 +30,7 @@ namespace Kuriimu.Encryption
                 var entries = new List<byte[]>();
                 for (int i = 0; i < header.entryCount; i++)
                 {
-                    var entry = Shared.ReverseByteValues(bf.Decrypt_ECB(Shared.ReverseByteValues(br.ReadBytes(0x50))));
+                    var entry = bf.Decrypt_ECB(br.ReadBytes(0x50));
                     entries.Add(entry);
                     bw.Write(entry);
                 }
@@ -43,7 +44,7 @@ namespace Kuriimu.Encryption
                 }
                 br.BaseStream.Position = dataOffset;
                 bw.BaseStream.Position = dataOffset;
-                bw.Write(Shared.ReverseByteValues(bf.Decrypt_ECB(Shared.ReverseByteValues(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
+                bw.Write(bf.Decrypt_ECB(br.ReadBytes((int)br.BaseStream.Length - dataOffset)));
 
                 return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
             }
@@ -55,6 +56,7 @@ namespace Kuriimu.Encryption
             using (var bw = new BinaryWriterX(new MemoryStream()))
             {
                 var bf = new BlowFish(GetCipherKey(key1, key2));
+                bf.MTMethod = true;
 
                 //Header
                 var header = br.ReadStruct<Header>();
@@ -66,7 +68,7 @@ namespace Kuriimu.Encryption
                 {
                     var entry = br.ReadBytes(0x50);
                     entries.Add(entry);
-                    bw.Write(Shared.ReverseByteValues(bf.Encrypt_ECB(Shared.ReverseByteValues(entry))));
+                    bw.Write(bf.Encrypt_ECB(entry));
                 }
 
                 //Decrypt archive data
@@ -78,17 +80,13 @@ namespace Kuriimu.Encryption
                 }
                 br.BaseStream.Position = dataOffset;
                 bw.BaseStream.Position = dataOffset;
-                bw.Write(Shared.ReverseByteValues(bf.Encrypt_ECB(Shared.ReverseByteValues(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
+                bw.Write(bf.Encrypt_ECB(br.ReadBytes((int)br.BaseStream.Length - dataOffset)));
 
                 return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
             }
         }
 
-        static byte[] GetCipherKey(String key1, String key2)
-        {
-            var count = 0;
-            return key2.SelectMany(c => new[] { (byte)((c ^ key1[key1.Length - count - 1]) | count++ << 6) }).ToArray();
-        }
+        static byte[] GetCipherKey(String key1, String key2) => key1.Reverse().Select((c, i) => (byte)(c ^ key2[i] | i << 6)).ToArray();
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class Header

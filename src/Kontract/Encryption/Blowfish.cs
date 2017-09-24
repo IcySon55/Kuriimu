@@ -46,6 +46,9 @@ namespace Kuriimu.Encryption
         //COMPATIBILITY WITH javascript CRYPTO LIBRARY
         private bool nonStandardMethod;
 
+        //Compatibility with MT Framework
+        private bool mtMethod;
+
         /// <summary>
         /// Constructor for hex key
         /// </summary>
@@ -175,6 +178,12 @@ namespace Kuriimu.Encryption
         {
             get { return nonStandardMethod; }
             set { nonStandardMethod = value; }
+        }
+
+        public bool MTMethod
+        {
+            get { return mtMethod; }
+            set { mtMethod = value; }
         }
 
         /// <summary>
@@ -375,7 +384,12 @@ namespace Kuriimu.Encryption
             Buffer.BlockCopy(block, 0, block1, 0, 4);
             Buffer.BlockCopy(block, 4, block2, 0, 4);
             //split the block
-            if (nonStandardMethod)
+            if (mtMethod)
+            {
+                xl_par = BitConverter.ToUInt32(block1, 0);
+                xr_par = BitConverter.ToUInt32(block2, 0);
+            }
+            else if (nonStandardMethod)
             {
                 xr_par = BitConverter.ToUInt32(block1, 0);
                 xl_par = BitConverter.ToUInt32(block2, 0);
@@ -398,7 +412,12 @@ namespace Kuriimu.Encryption
         {
             byte[] block1 = new byte[4];
             byte[] block2 = new byte[4];
-            if (nonStandardMethod)
+            if (mtMethod)
+            {
+                block1 = BitConverter.GetBytes(xl_par);
+                block2 = BitConverter.GetBytes(xr_par);
+            }
+            else if (nonStandardMethod)
             {
                 block1 = BitConverter.GetBytes(xr_par);
                 block2 = BitConverter.GetBytes(xl_par);
