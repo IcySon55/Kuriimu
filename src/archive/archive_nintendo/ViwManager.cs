@@ -15,7 +15,7 @@ namespace archive_nintendo.VIW
         // Information
         public string Name => "VIW";
         public string Description => "VIW Archive";
-        public string Extension => "*.viw;*.inf";
+        public string Extension => "*.viw";
         public string About => "This is the VIW archive manager for Karameru.";
 
         // Feature Support
@@ -35,11 +35,8 @@ namespace archive_nintendo.VIW
             try
             {
                 FileInfo = new FileInfo(filename);
-                var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".viw");
+                var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf");
                 var file3 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
-
-                if (Path.GetExtension(filename) != ".inf")
-                    FileInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf"));
 
                 if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
                     _viw = new VIW(FileInfo.OpenRead(), File.OpenRead(file2), File.OpenRead(file3));
@@ -56,11 +53,8 @@ namespace archive_nintendo.VIW
         public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".viw");
+            var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf");
             var file3 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
-
-            if (Path.GetExtension(filename) != ".inf")
-                FileInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf"));
 
             if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
                 _viw = new VIW(FileInfo.OpenRead(), File.OpenRead(file2), File.OpenRead(file3));
@@ -70,11 +64,8 @@ namespace archive_nintendo.VIW
         {
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
-            var file2 = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".viw");
+            var file2 = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".inf");
             var file3 = Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName));
-
-            if (Path.GetExtension(FileInfo.Name) != ".inf")
-                FileInfo = new FileInfo(Path.Combine(Path.GetDirectoryName(FileInfo.FullName), Path.GetFileNameWithoutExtension(FileInfo.FullName) + ".inf"));
 
             // Save As...
             if (!string.IsNullOrEmpty(filename))
