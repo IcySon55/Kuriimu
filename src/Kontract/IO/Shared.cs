@@ -41,23 +41,5 @@ namespace Kuriimu.IO
 
             return true;
         }
-
-        /// <summary>
-        /// Loops through a byte[] and reverse every 'count' bytes
-        /// </summary>
-        /// <param name="input">byte[] to reverse</param>
-        /// <param name="count">Count of bytes to reverse</param>
-        /// <returns>Reversed byte[]</returns>
-        public static byte[] ReverseByteValues(byte[] input, int count = 4)
-        {
-            if (input.Length % count != 0) throw new System.Exception($"byte[] has to be dividable by {count}!");
-
-            var result = new byte[input.Length];
-            for (int i = 0; i < input.Length; i += count)
-                for (int j = count - 1; j >= 0; j--)
-                    result[i + (count - j)] = input[i + j];
-
-            return result;
-        }
     }
 }
