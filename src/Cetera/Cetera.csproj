@@ -69,6 +69,13 @@
     <Compile Include="Image\BCn\ImageEncoder.cs" />
     <Compile Include="Image\BCn\ImageEncodingHelper.cs" />
     <Compile Include="Image\DXT.cs" />
+    <Compile Include="Image\PVRTC\BitScale.cs" />
+    <Compile Include="Image\PVRTC\MortonTable.cs" />
+    <Compile Include="Image\PVRTC\PvrtcCompress.cs" />
+    <Compile Include="Image\PVRTC\PvrtcDecompress.cs" />
+    <Compile Include="Image\PVRTC\PvrtcPacket.cs" />
+    <Compile Include="Image\PVRTC\Vector3Int.cs" />
+    <Compile Include="Image\PVRTC\Vector4Int.cs" />
     <Compile Include="IO\Extensions.cs" />
     <Compile Include="Font\BCFNT.cs" />
     <Compile Include="Image\BXLIM.cs" />
