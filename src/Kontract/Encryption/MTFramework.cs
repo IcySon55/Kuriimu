@@ -29,7 +29,7 @@ namespace Kuriimu.Encryption
                 var entries = new List<byte[]>();
                 for (int i = 0; i < header.entryCount; i++)
                 {
-                    var entry = ReverseByteArray(bf.Decrypt_ECB(ReverseByteArray(br.ReadBytes(0x50))));
+                    var entry = Shared.ReverseByteValues(bf.Decrypt_ECB(Shared.ReverseByteValues(br.ReadBytes(0x50))));
                     entries.Add(entry);
                     bw.Write(entry);
                 }
@@ -43,7 +43,7 @@ namespace Kuriimu.Encryption
                 }
                 br.BaseStream.Position = dataOffset;
                 bw.BaseStream.Position = dataOffset;
-                bw.Write(ReverseByteArray(bf.Decrypt_ECB(ReverseByteArray(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
+                bw.Write(Shared.ReverseByteValues(bf.Decrypt_ECB(Shared.ReverseByteValues(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
 
                 return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
             }
@@ -66,7 +66,7 @@ namespace Kuriimu.Encryption
                 {
                     var entry = br.ReadBytes(0x50);
                     entries.Add(entry);
-                    bw.Write(ReverseByteArray(bf.Encrypt_ECB(ReverseByteArray(entry))));
+                    bw.Write(Shared.ReverseByteValues(bf.Encrypt_ECB(Shared.ReverseByteValues(entry))));
                 }
 
                 //Decrypt archive data
@@ -78,7 +78,7 @@ namespace Kuriimu.Encryption
                 }
                 br.BaseStream.Position = dataOffset;
                 bw.BaseStream.Position = dataOffset;
-                bw.Write(ReverseByteArray(bf.Encrypt_ECB(ReverseByteArray(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
+                bw.Write(Shared.ReverseByteValues(bf.Encrypt_ECB(Shared.ReverseByteValues(br.ReadBytes((int)br.BaseStream.Length - dataOffset)))));
 
                 return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
             }
@@ -88,19 +88,6 @@ namespace Kuriimu.Encryption
         {
             var count = 0;
             return key2.SelectMany(c => new[] { (byte)((c ^ key1[key1.Length - count - 1]) | count++ << 6) }).ToArray();
-        }
-
-        static byte[] ReverseByteArray(byte[] input)
-        {
-            var result = new byte[input.Length];
-            for (int i = 0; i < input.Length; i += 4)
-            {
-                result[i] = input[i + 3];
-                result[i + 1] = input[i + 2];
-                result[i + 2] = input[i + 1];
-                result[i + 3] = input[i];
-            }
-            return result;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
