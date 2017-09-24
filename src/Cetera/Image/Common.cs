@@ -16,7 +16,10 @@ namespace Cetera.Image
         L4, A4, ETC1, ETC1A4,
 
         // PS3
-        DXT1, DXT3, DXT5
+        DXT1, DXT3, DXT5,
+
+        // PC
+        PVRTC
     }
 
     public enum Orientation
@@ -78,10 +81,14 @@ namespace Cetera.Image
                 case Format.A8:
                 case Format.LA44:
                 case Format.ETC1A4:
+                case Format.DXT3:
+                case Format.DXT5:
                     return 8;
                 case Format.L4:
                 case Format.A4:
                 case Format.ETC1:
+                case Format.DXT1:
+                case Format.PVRTC:
                     return 4;
                 default:
                     return 0;
@@ -175,6 +182,13 @@ namespace Cetera.Image
                         case Format.A4:
                             a = br.ReadNibble() * 17;
                             break;
+                        case Format.PVRTC:
+                            var block = br.ReadBytes(8);
+                            var bmp = PVRTC.PvrtcDecompress.DecodeRgb4Bpp(block, 4);
+                            for (int y = 0; y < 4; y++)
+                                for (int x = 0; x < 4; x++)
+                                    yield return bmp.GetPixel(x, y);
+                            continue;
                         default:
                             throw new NotSupportedException($"Unknown image format {format}");
                     }
