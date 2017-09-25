@@ -97,8 +97,10 @@ namespace Cetera.Image
 
         static int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max - 1);
 
-        static IEnumerable<Color> GetColorsFromTexture(byte[] tex, Format format)
+        static IEnumerable<Color> GetColorsFromTexture(byte[] tex, ImageSettings settings)
         {
+            var format = settings.Format;
+
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
@@ -183,17 +185,15 @@ namespace Cetera.Image
                             a = br.ReadNibble() * 17;
                             break;
                         case Format.PVRTC:
-                            var block = br.ReadBytes(8);
-                            var bmp = PVRTC.PvrtcDecompress.DecodeRgb4Bpp(block, 4);
-                            for (int y = 0; y < 4; y++)
-                                for (int x = 0; x < 4; x++)
+                            var bmp = PVRTC.PvrtcDecompress.DecodeRgb4Bpp(tex, settings.Width);
+                            for (int y = 0; y < settings.Height; y++)
+                                for (int x = 0; x < settings.Width; x++)
                                     yield return bmp.GetPixel(x, y);
                             continue;
                         case Format.PVRTCA:
-                            block = br.ReadBytes(8);
-                            bmp = PVRTC.PvrtcDecompress.DecodeRgba4Bpp(block, 4);
-                            for (int y = 0; y < 4; y++)
-                                for (int x = 0; x < 4; x++)
+                            bmp = PVRTC.PvrtcDecompress.DecodeRgba4Bpp(tex, settings.Width);
+                            for (int y = 0; y < settings.Height; y++)
+                                for (int x = 0; x < settings.Width; x++)
                                     yield return bmp.GetPixel(x, y);
                             continue;
                         default:
@@ -305,7 +305,7 @@ namespace Cetera.Image
         public static Bitmap Load(byte[] tex, ImageSettings settings)
         {
             int width = settings.Width, height = settings.Height;
-            var colors = GetColorsFromTexture(tex, settings.Format);
+            var colors = GetColorsFromTexture(tex, settings);
 
             var points = GetPointSequence(settings);
 

@@ -171,7 +171,7 @@ namespace Cetera.Image.PVRTC
 
             for (int y = 0; y < size; y++)
                 for (int x = 0; x < size; x++)
-                    returnValue.SetPixel(x, y, tempColor32Array[x + y]);
+                    returnValue.SetPixel(x, y, tempColor32Array[y * size + x]);
 
             return returnValue;
         }
