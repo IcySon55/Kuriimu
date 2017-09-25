@@ -18,8 +18,8 @@ namespace Cetera.Image
         // PS3
         DXT1, DXT3, DXT5,
 
-        // PC
-        PVRTC
+        // Mobile
+        PVRTC, PVRTCA
     }
 
     public enum Orientation
@@ -185,6 +185,13 @@ namespace Cetera.Image
                         case Format.PVRTC:
                             var block = br.ReadBytes(8);
                             var bmp = PVRTC.PvrtcDecompress.DecodeRgb4Bpp(block, 4);
+                            for (int y = 0; y < 4; y++)
+                                for (int x = 0; x < 4; x++)
+                                    yield return bmp.GetPixel(x, y);
+                            continue;
+                        case Format.PVRTCA:
+                            block = br.ReadBytes(8);
+                            bmp = PVRTC.PvrtcDecompress.DecodeRgba4Bpp(block, 4);
                             for (int y = 0; y < 4; y++)
                                 for (int x = 0; x < 4; x++)
                                     yield return bmp.GetPixel(x, y);
