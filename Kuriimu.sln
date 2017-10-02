@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "src\Kuriimu\Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -312,6 +312,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_bf", "src\text\text_bf\text_bf.csproj", "{6C35BFDA-2F41-47E9-A325-7E249C69EBFF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_rgssad", "src\archive\archive_rgssad\archive_rgssad.csproj", "{CF9EA0F9-4DC5-487A-9898-A2CF69086C75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kohii", "src\Kohii\Kohii\Kohii.csproj", "{A9E8D43B-B847-4A7A-9178-DA653C676B40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -735,6 +737,10 @@ Global
 		{CF9EA0F9-4DC5-487A-9898-A2CF69086C75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF9EA0F9-4DC5-487A-9898-A2CF69086C75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF9EA0F9-4DC5-487A-9898-A2CF69086C75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9E8D43B-B847-4A7A-9178-DA653C676B40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9E8D43B-B847-4A7A-9178-DA653C676B40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9E8D43B-B847-4A7A-9178-DA653C676B40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9E8D43B-B847-4A7A-9178-DA653C676B40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
