@@ -88,6 +88,7 @@
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
     <Compile Include="Interface\IPlugin.cs" />
+    <Compile Include="Interface\ISoundAdapter.cs" />
     <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />
     <Compile Include="IO\BinaryWriterX.cs" />
