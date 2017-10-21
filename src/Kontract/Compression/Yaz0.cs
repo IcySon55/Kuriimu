@@ -6,17 +6,20 @@ using System.Threading.Tasks;
 using System.IO;
 using Kuriimu.IO;
 
-/*C# Source by LordNed
+/*C# Decompressor by LordNed
  https://github.com/LordNed/WArchive-Tools/tree/master/ArchiveToolsLib/Compression
- */
+
+  Python Compressor Source
+  https://pastebin.com/GUHMwpjT
+  */
 
 namespace Kuriimu.Compression
 {
     public class Yaz0
     {
-        public static byte[] Decompress(Stream instream)
+        public static byte[] Decompress(Stream instream, ByteOrder byteOrder)
         {
-            using (var br = new BinaryReaderX(instream, true))
+            using (var br = new BinaryReaderX(instream, true, byteOrder))
             {
                 #region 16-byte Header
                 if (br.ReadString(4) != "Yaz0") // "Yaz0" Magic
@@ -86,184 +89,170 @@ namespace Kuriimu.Compression
             }
         }
 
-        static int sNumBytes1, sMatchPos;
-        static bool sPrevFlag = false;
-
-        public static byte[] Compress(Stream instream)
+        public static byte[] Compress(Stream input, ByteOrder byteOrder)
         {
-            if (instream == null)
-                throw new Exception("File should not be null!");
-            if (instream.Length == 0)
-                throw new Exception("File should not be empty!");
-
-            using (var bw = new BinaryWriterX(new MemoryStream((int)instream.Length)))
+            using (var br = new BinaryReaderX(input, true))
             {
-                #region Yaz0 Header
-                bw.WriteASCII("Yaz0");
-                bw.Write((int)instream.Length);
-                bw.Write((long)0);
-                #endregion
+                var cap = 0x111;
+                var sz = input.Length;
 
-                int srcPos = 0;
-                int dstPos = 0;
-                byte[] dst = new byte[24]; // 8 codes * 3 bytes maximum per code.
+                var itr = new List<byte>();
+                var cmds = itr;
+                var ctrl = itr;
+                var raws = itr;
 
-                int validBitCount = 0;
-                byte curCodeByte = 0;
+                var cmdpos = 0;
+                cmds.Add(0);
 
-                byte[] src = new BinaryReaderX(instream, true).ReadAllBytes();
+                var pos = 0;
+                byte flag = 0x80;
 
-                while (srcPos < src.Length)
+                while (pos < sz)
                 {
-                    int numBytes, matchPos;
-                    NintendoYaz0Encode(src, srcPos, out numBytes, out matchPos);
-                    if (numBytes < 3)
-                    {
-                        // Straight Copy
-                        dst[dstPos] = src[srcPos];
-                        srcPos++;
-                        dstPos++;
+                    var hitp = 0;
+                    var hitl = 0;
+                    _search(input, pos, sz, cap, ref hitp, ref hitl);
 
-                        // Set flag for straight copy
-                        curCodeByte |= (byte)(0x80 >> validBitCount);
+                    if (hitl < 3)
+                    {
+                        raws.Add(br.PeekBytes(pos)[0]);
+                        cmds[cmdpos] |= flag;
+                        pos += 1;
                     }
                     else
                     {
-                        // RLE part
-                        uint dist = (uint)(srcPos - matchPos - 1);
-                        byte byte1, byte2, byte3;
+                        var tstp = 0;
+                        var tstl = 0;
+                        _search(input, pos + 1, sz, cap, ref tstp, ref tstl);
 
-                        // Requires a 3 byte encoding
-                        if (numBytes >= 0x12)
+                        if ((hitl + 1) < tstl)
                         {
-                            byte1 = (byte)(0 | (dist >> 8));
-                            byte2 = (byte)(dist & 0xFF);
-                            dst[dstPos++] = byte1;
-                            dst[dstPos++] = byte2;
+                            raws.Add(br.PeekBytes(pos)[0]);
+                            cmds[cmdpos] |= flag;
+                            pos += 1;
+                            flag >>= 1;
+                            if (flag == 0)
+                            {
+                                flag = 0x80;
+                                cmdpos = cmds.Count();
+                                cmds.Add(0);
+                            }
 
-                            // Maximum run length for 3 byte encoding.
-                            if (numBytes > 0xFF + 0x12)
-                                numBytes = 0xFF + 0x12;
-                            byte3 = (byte)(numBytes - 0x12);
-                            dst[dstPos++] = byte3;
+                            hitl = tstl;
+                            hitp = tstp;
                         }
-                        // 2 byte encoding
+
+                        var e = pos - hitp - 1;
+                        pos += hitl;
+
+                        if (hitl < 0x12)
+                        {
+                            hitl -= 2;
+                            ctrl.AddRange(BitConverter.GetBytes((ushort)((hitl << 12) | e)).Reverse());
+                        }
                         else
                         {
-                            byte1 = (byte)((uint)((numBytes - 2) << 4) | (dist >> 8));
-                            byte2 = (byte)(dist & 0xFF);
-                            dst[dstPos++] = byte1;
-                            dst[dstPos++] = byte2;
+                            ctrl.AddRange(BitConverter.GetBytes((ushort)(e)).Reverse());
+                            raws.Add((byte)(hitl - 0x12));
                         }
-                        srcPos += numBytes;
                     }
 
-                    validBitCount++;
-
-                    // Write 8 codes if we've filled a block
-                    if (validBitCount == 8)
+                    flag >>= 1;
+                    if (flag == 0)
                     {
-                        // Write the code byte 
-                        bw.Write(curCodeByte);
-
-                        // And then any bytes in the dst buffer.
-                        for (int i = 0; i < dstPos; i++)
-                            bw.Write(dst[i]);
-
-                        //output.Flush();                    
-
-                        curCodeByte = 0;
-                        validBitCount = 0;
-                        dstPos = 0;
+                        flag = 0x80;
+                        cmdpos = cmds.Count();
+                        cmds.Add(0);
                     }
                 }
 
-                // If we didn't finish off on a whole byte, add the last code byte.
-                if (validBitCount > 0)
-                {
-                    // Write the code byte 
-                    bw.Write(curCodeByte);
+                if (flag == 0x80)
+                    cmds.RemoveAt(cmdpos);
 
-                    // And then any bytes in the dst buffer.
-                    for (int i = 0; i < dstPos; i++)
-                        bw.Write(dst[i]);
-
-                    curCodeByte = 0;
-                    validBitCount = 0;
-                    dstPos = 0;
-                }
-
-                return new BinaryReaderX(bw.BaseStream).ReadAllBytes();
+                List<byte> header = new List<byte>();
+                header.AddRange(Encoding.ASCII.GetBytes("Yaz0"));
+                header.AddRange((byteOrder == ByteOrder.LittleEndian) ? BitConverter.GetBytes((int)sz) : BitConverter.GetBytes((int)sz).Reverse());
+                header.AddRange(BitConverter.GetBytes(0));
+                header.AddRange(BitConverter.GetBytes(0));
+                header.AddRange(cmds);
+                return header.ToArray();
             }
         }
 
-        private static void NintendoYaz0Encode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
+        public static void _search(Stream data, int pos, long sz, int cap, ref int hitp, ref int hitl)
         {
-            int startPos = srcPos - 0x1000;
-            int numBytes = 1;
-
-            // If prevFlag is set, it means that the previous position was determined by the look-ahead try so use
-            // that. This is not the best optimization, but apparently Nintendo's choice for speed.
-            if (sPrevFlag)
+            var t = 0;
+            if (pos == 734)
+                t = 0;
+            using (var br = new BinaryReaderX(data, true))
             {
-                outMatchPos = sMatchPos;
-                sPrevFlag = false;
-                outNumBytes = sNumBytes1;
+                var ml = Math.Min(cap, sz - pos);
+                if (ml < 3)
+                    return;
+
+                var mp = Math.Max(0, pos - 0x1000);
+                hitp = 0;
+                hitl = 3;
+
+                if (mp < pos)
+                {
+                    var hl = IndexOf(br.PeekBytes(mp, (pos + hitl) - mp), br.PeekBytes(pos, hitl));
+                    while (hl < (pos - mp))
+                    {
+                        while ((hitl < ml) && (br.PeekBytes(pos + hitl)[0] == br.PeekBytes(mp + hl + hitl)[0]))
+                            hitl += 1;
+
+                        mp += hl;
+                        hitp = mp;
+                        if (hitl == ml)
+                            return;
+
+                        mp += 1;
+                        hitl += 1;
+                        if (mp >= pos)
+                            break;
+
+                        hl = IndexOf(br.PeekBytes(mp, (pos + hitl) - mp), br.PeekBytes(pos, hitl));
+                    }
+                }
+
+                if (hitl < 4)
+                    hitl = 1;
+
+                hitl -= 1;
                 return;
             }
-
-            sPrevFlag = false;
-            SimpleRLEEncode(src, srcPos, out numBytes, out sMatchPos);
-            outMatchPos = sMatchPos;
-
-            // If this position is RLE encoded, then compare to copying 1 byte and next pos (srcPos + 1) encoding.
-            if (numBytes >= 3)
-            {
-                SimpleRLEEncode(src, srcPos + 1, out sNumBytes1, out sMatchPos);
-
-                // If the next position encoding is +2 longer than current position, choose it.
-                // This does not gurantee the best optimization, but fairly good optimization with speed.
-                if (sNumBytes1 >= numBytes + 2)
-                {
-                    numBytes = 1;
-                    sPrevFlag = true;
-                }
-            }
-
-            outNumBytes = numBytes;
         }
 
-        private static void SimpleRLEEncode(byte[] src, int srcPos, out int outNumBytes, out int outMatchPos)
+        private static int IndexOf(byte[] input, byte[] search)
         {
-            int startPos = srcPos - 0x400;
-            int numBytes = 1;
-            int matchPos = 0;
+            var index = -1;
 
-            if (startPos < 0)
-                startPos = 0;
-
-            // Search backwards through the stream for an already encoded bit.
-            for (int i = startPos; i < srcPos; i++)
+            var searchCount = 0;
+            for (int i = 0; i < input.Count(); i++)
             {
-                int j;
-                for (j = 0; j < src.Length - srcPos; j++)
+                if (searchCount != 0)
                 {
-                    if (src[i + j] != src[j + srcPos])
-                        break;
+                    index = i - 1;
+                    break;
                 }
 
-                if (j > numBytes)
+                if ((input.Count() - i < search.Count()) && (searchCount == 0))
+                    break;
+
+                for (int j = 0; j < search.Count(); j++)
                 {
-                    numBytes = j;
-                    matchPos = i;
+                    if (input[i + j] == search[j])
+                        searchCount++;
+                    else
+                    {
+                        searchCount = 0;
+                        break;
+                    }
                 }
             }
 
-            outMatchPos = matchPos;
-            if (numBytes == 2)
-                numBytes = 1;
-
-            outNumBytes = numBytes;
+            return index;
         }
     }
 }
