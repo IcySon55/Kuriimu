@@ -102,6 +102,30 @@ namespace Kuriimu.Kontract
             tre.SelectedNode = result;
         }
 
+        public static void SelectNodeByNodeName(this TreeView tre, string name)
+        {
+            TreeNode result = null;
+
+            foreach (TreeNode node in tre.Nodes)
+            {
+                if (node.Text == name)
+                    result = node;
+
+                if (result == null)
+                    foreach (TreeNode subNode in node.Nodes)
+                        if (subNode.Text == name)
+                        {
+                            result = subNode;
+                            break;
+                        }
+
+                if (result != null)
+                    break;
+            }
+
+            tre.SelectedNode = result;
+        }
+
         public static void DoubleBuffer(Control ctrl, bool doubleBuffered)
         {
             ctrl.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, doubleBuffered, null);

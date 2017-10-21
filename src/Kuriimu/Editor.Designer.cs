@@ -39,6 +39,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,6 +75,7 @@
             this.tsbSortEntries = new System.Windows.Forms.ToolStripButton();
             this.tsbShowTextPreview = new System.Windows.Forms.ToolStripButton();
             this.tsbManageLabels = new System.Windows.Forms.ToolStripDropDownButton();
+            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splContent = new System.Windows.Forms.SplitContainer();
             this.splText = new System.Windows.Forms.SplitContainer();
             this.txtEdit = new System.Windows.Forms.TextBox();
@@ -117,6 +119,7 @@
             this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbFind = new System.Windows.Forms.ToolStripButton();
+            this.tsbSearchDirectory = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.tsbKukki = new System.Windows.Forms.ToolStripButton();
@@ -133,7 +136,6 @@
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
             this.imlScreenshots = new System.Windows.Forms.ImageList(this.components);
-            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -251,6 +253,7 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.findToolStripMenuItem,
+            this.searchDirectoryToolStripMenuItem,
             this.toolStripMenuItem1,
             this.propertiesToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
@@ -263,14 +266,24 @@
             this.findToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.findToolStripMenuItem.Text = "&Find";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
+            // searchDirectoryToolStripMenuItem
+            // 
+            this.searchDirectoryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_search;
+            this.searchDirectoryToolStripMenuItem.Name = "searchDirectoryToolStripMenuItem";
+            this.searchDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.F)));
+            this.searchDirectoryToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.searchDirectoryToolStripMenuItem.Text = "&Search Directory";
+            this.searchDirectoryToolStripMenuItem.Click += new System.EventHandler(this.searchDirectoryToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(143, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(229, 6);
             // 
             // propertiesToolStripMenuItem
             // 
@@ -278,7 +291,7 @@
             this.propertiesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_properties;
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
             this.propertiesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.propertiesToolStripMenuItem.Text = "&Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
@@ -622,6 +635,14 @@
             this.tsbManageLabels.Name = "tsbManageLabels";
             this.tsbManageLabels.Size = new System.Drawing.Size(29, 22);
             this.tsbManageLabels.Text = "Show Text Preview";
+            // 
+            // newLabelToolStripMenuItem
+            // 
+            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
+            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
+            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.newLabelToolStripMenuItem.Text = "New Label...";
+            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
             // 
             // splContent
             // 
@@ -1069,6 +1090,7 @@
             this.tsbSaveAs,
             this.toolStripSeparator2,
             this.tsbFind,
+            this.tsbSearchDirectory,
             this.toolStripSeparator3,
             this.tsbKarameru,
             this.tsbKukki,
@@ -1146,6 +1168,16 @@
             this.tsbFind.Size = new System.Drawing.Size(23, 22);
             this.tsbFind.Text = "Find";
             this.tsbFind.Click += new System.EventHandler(this.tsbFind_Click);
+            // 
+            // tsbSearchDirectory
+            // 
+            this.tsbSearchDirectory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSearchDirectory.Image = global::Kuriimu.Properties.Resources.menu_search;
+            this.tsbSearchDirectory.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSearchDirectory.Name = "tsbSearchDirectory";
+            this.tsbSearchDirectory.Size = new System.Drawing.Size(23, 22);
+            this.tsbSearchDirectory.Text = "Find";
+            this.tsbSearchDirectory.Click += new System.EventHandler(this.tsbSearchDirectory_Click);
             // 
             // toolStripSeparator3
             // 
@@ -1287,14 +1319,6 @@
             this.imlScreenshots.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
             this.imlScreenshots.ImageSize = new System.Drawing.Size(96, 64);
             this.imlScreenshots.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // newLabelToolStripMenuItem
-            // 
-            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
-            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
-            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.newLabelToolStripMenuItem.Text = "New Label...";
-            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
             // 
             // Editor
             // 
@@ -1468,5 +1492,7 @@
         private System.Windows.Forms.ToolStripMenuItem removeLabelToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton tsbManageLabels;
         private System.Windows.Forms.ToolStripMenuItem newLabelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tsbSearchDirectory;
     }
 }

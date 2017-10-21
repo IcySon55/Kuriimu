@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Kuriimu.Properties;
-using Kuriimu.Kontract;
 using Kuriimu.IO;
-using System.Collections.Generic;
-using System.Linq;
+using Kuriimu.Kontract;
+using Kuriimu.Properties;
 
 namespace Kuriimu
 {
@@ -67,7 +67,7 @@ namespace Kuriimu
                 {
                     var W = (cmbEncoding.SelectedValue as Encoding)?.GetBytes(txtSearchText.Text);
                     var files = Directory.GetFiles(txtSearchDirectory.Text.Trim(), "*.*", (chkSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
-                    var results = new List<SearchResult>();
+                    var results = new List<SequenceSearchResult>();
                     var searcher = new KmpSearcher(W);
 
                     foreach (var file in files.Where(o => new FileInfo(o).Length < SearchLimit))
@@ -77,7 +77,7 @@ namespace Kuriimu
                             var offset = searcher.Search(br);
 
                             if (offset >= 0)
-                                results.Add(new SearchResult { Filename = file, Offset = offset });
+                                results.Add(new SequenceSearchResult { Filename = file, Offset = offset });
                         }
                     }
 
@@ -89,6 +89,12 @@ namespace Kuriimu
             {
                 MessageBox.Show($"Could not find \"{txtSearchText.Text}\".", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+
+        private void txtSearchDirectory_TextChanged(object sender, EventArgs e)
+        {
+            Settings.Default.SequenceSearchDirectory = txtSearchDirectory.Text;
+            Settings.Default.Save();
         }
 
         private void txtSearchText_TextChanged(object sender, EventArgs e)
@@ -115,7 +121,7 @@ namespace Kuriimu
         }
     }
 
-    public class SearchResult
+    public class SequenceSearchResult
     {
         public string Filename { get; set; }
         public int Offset { get; set; }

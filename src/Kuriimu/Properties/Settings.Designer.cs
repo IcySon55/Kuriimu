@@ -104,24 +104,96 @@ namespace Kuriimu.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SelectedGameHandler {
+        public string SearchDirectoryDirectory {
             get {
-                return ((string)(this["SelectedGameHandler"]));
+                return ((string)(this["SearchDirectoryDirectory"]));
             }
             set {
-                this["SelectedGameHandler"] = value;
+                this["SearchDirectoryDirectory"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool PreviewEnabled {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SearchDirectoryWhat {
             get {
-                return ((bool)(this["PreviewEnabled"]));
+                return ((string)(this["SearchDirectoryWhat"]));
             }
             set {
-                this["PreviewEnabled"] = value;
+                this["SearchDirectoryWhat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SearchDirectoryMatchCase {
+            get {
+                return ((bool)(this["SearchDirectoryMatchCase"]));
+            }
+            set {
+                this["SearchDirectoryMatchCase"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SearchDirectorySubfolders {
+            get {
+                return ((bool)(this["SearchDirectorySubfolders"]));
+            }
+            set {
+                this["SearchDirectorySubfolders"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SequenceSearchDirectory {
+            get {
+                return ((string)(this["SequenceSearchDirectory"]));
+            }
+            set {
+                this["SequenceSearchDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SequenceSearchWhat {
+            get {
+                return ((string)(this["SequenceSearchWhat"]));
+            }
+            set {
+                this["SequenceSearchWhat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Unicode")]
+        public string SequenceSearchEncoding {
+            get {
+                return ((string)(this["SequenceSearchEncoding"]));
+            }
+            set {
+                this["SequenceSearchEncoding"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SequenceSearchSubfolders {
+            get {
+                return ((bool)(this["SequenceSearchSubfolders"]));
+            }
+            set {
+                this["SequenceSearchSubfolders"] = value;
             }
         }
         
@@ -152,60 +224,36 @@ namespace Kuriimu.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool SequenceSearchSubfolders {
-            get {
-                return ((bool)(this["SequenceSearchSubfolders"]));
-            }
-            set {
-                this["SequenceSearchSubfolders"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SequenceSearchDirectory {
-            get {
-                return ((string)(this["SequenceSearchDirectory"]));
-            }
-            set {
-                this["SequenceSearchDirectory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Unicode")]
-        public string SequenceSearchEncoding {
-            get {
-                return ((string)(this["SequenceSearchEncoding"]));
-            }
-            set {
-                this["SequenceSearchEncoding"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SequenceSearchWhat {
-            get {
-                return ((string)(this["SequenceSearchWhat"]));
-            }
-            set {
-                this["SequenceSearchWhat"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ShowTextPreview {
             get {
                 return ((bool)(this["ShowTextPreview"]));
             }
             set {
                 this["ShowTextPreview"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectedGameHandler {
+            get {
+                return ((string)(this["SelectedGameHandler"]));
+            }
+            set {
+                this["SelectedGameHandler"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PreviewEnabled {
+            get {
+                return ((bool)(this["PreviewEnabled"]));
+            }
+            set {
+                this["PreviewEnabled"] = value;
             }
         }
     }

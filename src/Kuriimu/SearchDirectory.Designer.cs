@@ -1,6 +1,6 @@
 ﻿namespace Kuriimu
 {
-	partial class SequenceSearch
+	partial class SearchDirectory
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -37,9 +37,7 @@
             this.txtSearchDirectory = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.chkSearchSubfolders = new System.Windows.Forms.CheckBox();
-            this.cmbEncoding = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lblNote = new System.Windows.Forms.Label();
+            this.chkMatchCase = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -95,8 +93,9 @@
             this.lstResults.Location = new System.Drawing.Point(13, 98);
             this.lstResults.Margin = new System.Windows.Forms.Padding(4);
             this.lstResults.Name = "lstResults";
-            this.lstResults.Size = new System.Drawing.Size(458, 271);
+            this.lstResults.Size = new System.Drawing.Size(458, 290);
             this.lstResults.TabIndex = 7;
+            this.lstResults.DoubleClick += new System.EventHandler(this.lstResults_DoubleClick);
             // 
             // label2
             // 
@@ -137,7 +136,7 @@
             // chkSearchSubfolders
             // 
             this.chkSearchSubfolders.AutoSize = true;
-            this.chkSearchSubfolders.Location = new System.Drawing.Point(281, 71);
+            this.chkSearchSubfolders.Location = new System.Drawing.Point(105, 71);
             this.chkSearchSubfolders.Margin = new System.Windows.Forms.Padding(4);
             this.chkSearchSubfolders.Name = "chkSearchSubfolders";
             this.chkSearchSubfolders.Size = new System.Drawing.Size(113, 17);
@@ -146,44 +145,26 @@
             this.chkSearchSubfolders.UseVisualStyleBackColor = true;
             this.chkSearchSubfolders.CheckedChanged += new System.EventHandler(this.chkSearchSubfolders_CheckedChanged);
             // 
-            // cmbEncoding
+            // chkMatchCase
             // 
-            this.cmbEncoding.FormattingEnabled = true;
-            this.cmbEncoding.Location = new System.Drawing.Point(74, 69);
-            this.cmbEncoding.Name = "cmbEncoding";
-            this.cmbEncoding.Size = new System.Drawing.Size(190, 21);
-            this.cmbEncoding.TabIndex = 8;
-            this.cmbEncoding.SelectedIndexChanged += new System.EventHandler(this.cmbEncoding_SelectedIndexChanged);
+            this.chkMatchCase.AutoSize = true;
+            this.chkMatchCase.Location = new System.Drawing.Point(15, 71);
+            this.chkMatchCase.Margin = new System.Windows.Forms.Padding(4);
+            this.chkMatchCase.Name = "chkMatchCase";
+            this.chkMatchCase.Size = new System.Drawing.Size(82, 17);
+            this.chkMatchCase.TabIndex = 8;
+            this.chkMatchCase.Text = "Match case";
+            this.chkMatchCase.UseVisualStyleBackColor = true;
+            this.chkMatchCase.CheckedChanged += new System.EventHandler(this.chkMatchCase_CheckedChanged);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 72);
-            this.label3.Margin = new System.Windows.Forms.Padding(4);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(55, 13);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "Encoding:";
-            // 
-            // lblNote
-            // 
-            this.lblNote.Location = new System.Drawing.Point(12, 373);
-            this.lblNote.Name = "lblNote";
-            this.lblNote.Size = new System.Drawing.Size(459, 20);
-            this.lblNote.TabIndex = 10;
-            this.lblNote.Text = "Files over 8MB will not be searched.";
-            this.lblNote.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // SequenceSearch
+            // SearchDirectory
             // 
             this.AcceptButton = this.btnSearch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(484, 401);
-            this.Controls.Add(this.lblNote);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.cmbEncoding);
+            this.Controls.Add(this.chkMatchCase);
             this.Controls.Add(this.chkSearchSubfolders);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.txtSearchDirectory);
@@ -196,9 +177,9 @@
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "SequenceSearch";
+            this.Name = "SearchDirectory";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Sequence Search";
+            this.Text = "Search Directory";
             this.Load += new System.EventHandler(this.frmSearchDirectory_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -216,8 +197,6 @@
 		private System.Windows.Forms.TextBox txtSearchDirectory;
 		private System.Windows.Forms.Button btnBrowse;
 		private System.Windows.Forms.CheckBox chkSearchSubfolders;
-        private System.Windows.Forms.ComboBox cmbEncoding;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lblNote;
+        private System.Windows.Forms.CheckBox chkMatchCase;
     }
 }
