@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kuriimu.Compression;
-
+using Kuriimu.IO;
 using static Kuriimu.Compression.LZ10;
 using static Kuriimu.Compression.LZ11;
 using static Kuriimu.Compression.LZ77;
@@ -61,7 +61,7 @@ namespace KuriimuTests
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.MIO0:
-                    bytes2 = MIO0.Decompress(new MemoryStream(MIO0.Compress(new MemoryStream(bytes))));
+                    bytes2 = MIO0.Decompress(new MemoryStream(MIO0.Compress(new MemoryStream(bytes), ByteOrder.LittleEndian)), ByteOrder.LittleEndian);
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
             }

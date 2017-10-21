@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kuriimu.Compression;
+using Kuriimu.IO;
 
 namespace KuriimuTests
 {
@@ -25,11 +26,11 @@ namespace KuriimuTests
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.Yaz0:
-                    bytes2 = Yaz0.Decompress(new MemoryStream(Yaz0.Compress(new MemoryStream(bytes))));
+                    bytes2 = Yaz0.Decompress(new MemoryStream(Yaz0.Compress(new MemoryStream(bytes), ByteOrder.LittleEndian)), ByteOrder.LittleEndian);
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.Yay0:
-                    bytes2 = Yay0.Decompress(new MemoryStream(Yay0.Compress(new MemoryStream(bytes))));
+                    bytes2 = Yay0.Decompress(new MemoryStream(Yay0.Compress(new MemoryStream(bytes), ByteOrder.LittleEndian)), ByteOrder.LittleEndian);
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
             }
