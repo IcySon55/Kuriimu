@@ -41,6 +41,20 @@ namespace Kuriimu.IO
         public List<T> ReadMultiple<T>(int count, Func<int, T> func) => Enumerable.Range(0, count).Select(func).ToList();
         public List<T> ReadMultiple<T>(int count) => Enumerable.Range(0, count).Select(_ => ReadStruct<T>()).ToList();
 
+        public byte[] PeekBytes(int pos, int length = 1)
+        {
+            var startOffset = base.BaseStream.Position;
+
+            if (pos + length >= base.BaseStream.Length) length = (int)base.BaseStream.Length - pos;
+            if (pos < 0 || pos >= base.BaseStream.Length) pos = length = 0;
+
+            base.BaseStream.Position = pos;
+            var result = base.ReadBytes(length);
+            base.BaseStream.Position = startOffset;
+
+            return result;
+        }
+
         public byte[] ReadAllBytes()
         {
             var startOffset = base.BaseStream.Position;
