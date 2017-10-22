@@ -19,7 +19,14 @@ namespace Cetera.Image
         DXT1, DXT3, DXT5,
 
         // Mobile
-        PVRTC, PVRTCA
+        PVRTC, PVRTCA,
+
+        //WiiU
+        ATI1L, ATI1A, ATI2,
+        sRGBA8888,
+        sDXT1, sDXT3, sDXT5,
+        RGBA1010102
+
     }
 
     public enum Orientation

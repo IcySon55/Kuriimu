@@ -59,7 +59,11 @@ namespace Cetera.Image
             RGBA4444, RGBA8888,
             ETC1, ETC1A4,
             DXT1, DXT3, DXT5,
-            L4 = 0x12, A4
+            ATI1L, ATI1A, ATI2,
+            L4, A4,
+            sRGBA8888,
+            sDXT1, sDXT3, sDXT5,
+            RGBA1010102
         }
 
         public enum Orientation : byte
