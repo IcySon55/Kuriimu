@@ -134,7 +134,7 @@ namespace Kuriimu.Compression
 
                     if (hitl < 3)
                     {
-                        raws.Add(br.PeekBytes(pos)[0]);
+                        raws.Add(br.ScanBytes(pos)[0]);
                         cmds[cmdpos] |= flag;
                         pos += 1;
                     }
@@ -146,7 +146,7 @@ namespace Kuriimu.Compression
 
                         if ((hitl + 1) < tstl)
                         {
-                            raws.Add(br.PeekBytes(pos)[0]);
+                            raws.Add(br.ScanBytes(pos)[0]);
                             cmds[cmdpos] |= flag;
                             pos += 1;
                             flag >>= 1;
@@ -223,10 +223,10 @@ namespace Kuriimu.Compression
 
                 if (mp < pos)
                 {
-                    var hl = IndexOf(br.PeekBytes(mp, (pos + hitl) - mp), br.PeekBytes(pos, hitl));
+                    var hl = IndexOf(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
                     while (hl < (pos - mp))
                     {
-                        while ((hitl < ml) && (br.PeekBytes(pos + hitl)[0] == br.PeekBytes(mp + hl + hitl)[0]))
+                        while ((hitl < ml) && (br.ScanBytes(pos + hitl)[0] == br.ScanBytes(mp + hl + hitl)[0]))
                             hitl += 1;
 
                         mp += hl;
@@ -239,7 +239,7 @@ namespace Kuriimu.Compression
                         if (mp >= pos)
                             break;
 
-                        hl = IndexOf(br.PeekBytes(mp, (pos + hitl) - mp), br.PeekBytes(pos, hitl));
+                        hl = IndexOf(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
                     }
                 }
 
