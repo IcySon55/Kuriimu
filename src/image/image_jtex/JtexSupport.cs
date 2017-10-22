@@ -16,7 +16,7 @@ namespace image_jtex
         public int unk1;
         public short width;
         public short height;
-        public BXLIM.Format format;
+        public BXLIM.CLIMFormat format;
         public Orientation orientation;
         public short unk2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 28)]
