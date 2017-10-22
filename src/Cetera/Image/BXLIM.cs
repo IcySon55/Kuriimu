@@ -179,8 +179,6 @@ namespace Cetera.Image
                                         newPosY += tileSize;
                                     }
                                 }
-
-                                newImage.Save("C:\\Users\\Kirito\\Desktop\\test.bmp");
                             }
                         else
                             for (int x = padWidth / 2 - 2 * tileSize; x >= 0; x -= 2 * tileSize)
@@ -208,8 +206,6 @@ namespace Cetera.Image
                                         newPosY += tileSize;
                                     }
                                 }
-
-                                newImage.Save("C:\\Users\\Kirito\\Desktop\\test.bmp");
                             }
 
                         xValuesPos++;
