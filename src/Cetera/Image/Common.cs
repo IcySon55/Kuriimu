@@ -167,6 +167,13 @@ namespace Cetera.Image
                             g = br.ReadByte();
                             r = br.ReadByte();
                             break;
+                        case Format.RGBA1010102:
+                            var pack = br.ReadUInt32();
+                            r = (int)((pack >> 22) / 4);
+                            g = (int)(((pack >> 12) & 0x3FF) / 4);
+                            b = (int)(((pack >> 2) & 0x3FF) / 4);
+                            a = (int)((pack & 0x3) * 85);
+                            break;
                         case Format.ETC1:
                         case Format.ETC1A4:
                             yield return etc1decoder.Get(() =>
