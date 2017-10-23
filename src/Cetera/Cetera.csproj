@@ -59,6 +59,7 @@
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Hash\SimpleHash.cs" />
     <Compile Include="Hash\XbbHash.cs" />
+    <Compile Include="Image\ATI.cs" />
     <Compile Include="Image\BCn\BC1BlockEncoder.cs" />
     <Compile Include="Image\BCn\BC2ABlockEncoder.cs" />
     <Compile Include="Image\BCn\BC4BlockEncoder.cs" />

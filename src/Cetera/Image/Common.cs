@@ -111,8 +111,12 @@ namespace Cetera.Image
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
+
                 Enum.TryParse<DXT.Formats>(format.ToString(), false, out var dxtFormat);
                 var dxtdecoder = new DXT.Decoder(dxtFormat);
+
+                Enum.TryParse<ATI.Formats>(format.ToString(), false, out var atiFormat);
+                var atidecoder = new ATI.Decoder(atiFormat);
 
                 while (true)
                 {
@@ -190,6 +194,15 @@ namespace Cetera.Image
                                 if (br.BaseStream.Position == br.BaseStream.Length) return (0, 0);
                                 var dxt5Alpha = format == Format.DXT3 || format == Format.DXT5 ? br.ReadUInt64() : 0;
                                 return (dxt5Alpha, br.ReadUInt64());
+                            });
+                            continue;
+                        case Format.ATI1L:
+                        case Format.ATI1A:
+                        case Format.ATI2:
+                            yield return atidecoder.Get(() =>
+                            {
+                                if (br.BaseStream.Position == br.BaseStream.Length) return (0, 0);
+                                return (br.ReadUInt64(), format == Format.ATI2 ? br.ReadUInt64() : 0);
                             });
                             continue;
                         case Format.L4:
