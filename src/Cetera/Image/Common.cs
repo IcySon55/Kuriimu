@@ -233,6 +233,20 @@ namespace Cetera.Image
 
         static IEnumerable<Point> GetPointSequence(ImageSettings settings)
         {
+            switch (settings.Format)
+            {
+                case Format.ATI1A:
+                case Format.ATI1L:
+                case Format.ATI2:
+                case Format.ETC1:
+                case Format.ETC1A4:
+                case Format.DXT1:
+                case Format.DXT3:
+                case Format.DXT5:
+                    settings.TileSize = settings.TileSize + 3 & ~0x3;
+                    break;
+            }
+
             int strideWidth = (settings.Width + 7) & ~7;
             int strideHeight = (settings.Height + 7) & ~7;
             if (settings.PadToPowerOf2)
@@ -274,8 +288,25 @@ namespace Cetera.Image
                 {
                     x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
                     y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
-                    x_in = i % powTileSize % tileSize;
-                    y_in = i % powTileSize / tileSize;
+
+                    switch (settings.Format)
+                    {
+                        case Format.ATI1A:
+                        case Format.ATI1L:
+                        case Format.ATI2:
+                        case Format.ETC1:
+                        case Format.ETC1A4:
+                        case Format.DXT1:
+                        case Format.DXT3:
+                        case Format.DXT5:
+                            x_in = (i % 4 + i % powTileSize / 16 * 4) % tileSize;
+                            y_in = (i % 16 / 4 + i / (tileSize * 4) * 4) % tileSize;
+                            break;
+                        default:
+                            x_in = i % powTileSize % tileSize;
+                            y_in = i % powTileSize / tileSize;
+                            break;
+                    }
                 }
 
                 switch (settings.Orientation)
