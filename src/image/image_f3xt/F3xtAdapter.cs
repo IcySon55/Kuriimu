@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Linq;
 
 namespace image_f3xt

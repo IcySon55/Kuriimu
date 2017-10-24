@@ -1,5 +1,5 @@
 ﻿using System;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 using System.Collections.Generic;
 
 namespace text_kbd

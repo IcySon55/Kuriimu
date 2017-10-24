@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Kontract;
+using Kontract;
 using Cetera.Image;
 
 namespace image_jtex

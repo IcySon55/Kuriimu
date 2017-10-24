@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_mt
 {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.IO;
-using Kuriimu.Hash;
+using Kontract.IO;
+using Kontract.Hash;
 
-namespace Kuriimu.UI
+namespace Kontract.UI
 {
     public static class HashTools
     {

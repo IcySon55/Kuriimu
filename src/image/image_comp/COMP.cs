@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using Cetera.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_comp
 {

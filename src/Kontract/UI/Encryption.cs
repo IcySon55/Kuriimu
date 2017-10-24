@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.CTR;
-using Kuriimu.Encryption;
-using Kuriimu.IO;
+using Kontract.CTR;
+using Kontract.Encryption;
+using Kontract.IO;
+using Kontract;
 
-namespace Kuriimu.UI
+namespace Kontract.UI
 {
     public static class EncryptionTools
     {

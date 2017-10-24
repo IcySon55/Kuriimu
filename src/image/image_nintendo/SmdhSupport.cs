@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 using Cetera.Image;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace image_nintendo.SMDH
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Kuriimu.Kontract
+namespace Kontract.Interface
 {
     public interface IExtension
     {

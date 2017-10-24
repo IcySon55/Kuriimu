@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 using System.Drawing;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.IO;
 
-namespace Kuriimu.Image.Format
+namespace Kontract.Image.Format
 {
     public class RGBA : IImageFormat
     {

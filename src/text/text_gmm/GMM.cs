@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;

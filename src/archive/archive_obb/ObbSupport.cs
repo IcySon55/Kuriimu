@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace archive_obb
 {

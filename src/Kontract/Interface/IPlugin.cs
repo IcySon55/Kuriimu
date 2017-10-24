@@ -1,4 +1,4 @@
-﻿namespace Kuriimu.Kontract
+﻿namespace Kontract.Interface
 {
     public interface IPlugin
     {

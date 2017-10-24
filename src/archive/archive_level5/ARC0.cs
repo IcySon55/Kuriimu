@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Cetera.Hash;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_level5.ARC0
 {

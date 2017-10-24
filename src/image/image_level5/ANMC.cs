@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using Cetera.Hash;
 
 namespace image_xi.ANMC

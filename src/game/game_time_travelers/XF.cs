@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using image_level5.imgc;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.IO;
+using Kontract;
 
 namespace game_time_travelers
 {

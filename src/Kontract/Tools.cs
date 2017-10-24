@@ -5,8 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using Kontract.Interface;
 
-namespace Kuriimu.Kontract
+namespace Kontract
 {
     public static class Tools
     {

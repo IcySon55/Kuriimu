@@ -1,4 +1,4 @@
-﻿namespace Kuriimu
+﻿namespace Kontract
 {
     partial class InputBox
     {

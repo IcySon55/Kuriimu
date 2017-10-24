@@ -1,4 +1,4 @@
-﻿using Kuriimu.Kontract;
+﻿using Kontract.Interface;
 
 namespace archive_srtz.SEG
 {

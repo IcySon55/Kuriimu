@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
+using Kontract.IO;
 using LZ4;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class LZ4
     {

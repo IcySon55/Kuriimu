@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Text;
 
 //source code adjusted from pleonex' github:

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kuriimu.CTR
+namespace Kontract.CTR
 {
     public static class BigEndian
     {

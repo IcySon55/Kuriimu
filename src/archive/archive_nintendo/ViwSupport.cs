@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Compression;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.Compression;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_nintendo.VIW
 {

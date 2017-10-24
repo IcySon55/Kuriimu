@@ -9,9 +9,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using Kuriimu.Properties;
-using Kuriimu.UI;
+using Kontract.UI;
 
 namespace Kuriimu
 {

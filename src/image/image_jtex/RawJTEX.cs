@@ -2,8 +2,8 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.Image;
-using Kuriimu.Compression;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.IO;
 
 namespace image_rawJtex
 {

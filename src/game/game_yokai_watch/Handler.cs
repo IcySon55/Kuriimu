@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using game_yokai_watch.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace game_yokai_watch
 {

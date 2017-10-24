@@ -4,9 +4,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using text_lmd.Properties;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace text_lmd
 {

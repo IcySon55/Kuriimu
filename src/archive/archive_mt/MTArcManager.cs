@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_mt
 {

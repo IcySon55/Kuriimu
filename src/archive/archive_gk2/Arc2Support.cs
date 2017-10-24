@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.Compression;
+using Kontract.Interface;
+using Kontract.Compression;
 
 namespace archive_gk2.arc2
 {

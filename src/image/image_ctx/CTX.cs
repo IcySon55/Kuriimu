@@ -2,57 +2,13 @@
 using System.Drawing;
 using System.IO;
 using Cetera.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_ctx
 {
     public class CTX
     {
-        /*public class Chunk
-        {
-            public Chunk(Stream input)
-            {
-                using (var br = new BinaryReaderX(input, true))
-                {
-                    magic = br.ReadStruct<Magic>();
-                    chunkSize = br.ReadInt32();
-                    texCount = br.ReadInt32();
-
-                    textures = br.ReadMultiple<TexEntry>(texCount);
-                }
-            }
-            public Magic magic; //"tex "
-            public int chunkSize;
-            public int texCount;
-            public List<TexEntry> textures;
-
-            public void Write(Stream input)
-            {
-                using (var bw = new BinaryWriterX(input, true))
-                {
-                    bw.WriteASCII(magic);
-                    bw.Write(chunkSize);
-                    bw.Write(texCount);
-                }
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public class TexEntry
-        {
-            public int dataLength;
-            public short unk0;
-            public short unk1;
-            public ushort width;
-            public ushort height;
-            public Format imageFormat;
-            public DataTypes dataType;
-        }
-
-        public Header header;
-        List<Chunk> chunks = new List<Chunk>();*/
-
         public Header header;
 
         public List<Bitmap> bmps = new List<Bitmap>();

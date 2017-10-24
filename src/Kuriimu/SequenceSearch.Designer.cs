@@ -1,33 +1,33 @@
 ﻿namespace Kuriimu
 {
-	partial class SequenceSearch
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class SequenceSearch
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.label1 = new System.Windows.Forms.Label();
             this.txtSearchText = new System.Windows.Forms.TextBox();
             this.btnSearch = new System.Windows.Forms.Button();
@@ -203,19 +203,19 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox txtSearchText;
-		private System.Windows.Forms.Button btnSearch;
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.ListBox lstResults;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox txtSearchDirectory;
-		private System.Windows.Forms.Button btnBrowse;
-		private System.Windows.Forms.CheckBox chkSearchSubfolders;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtSearchText;
+        private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ListBox lstResults;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtSearchDirectory;
+        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.CheckBox chkSearchSubfolders;
         private System.Windows.Forms.ComboBox cmbEncoding;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblNote;

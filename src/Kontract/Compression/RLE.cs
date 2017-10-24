@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
+using Kontract.IO;
 using System;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class RLE
     {

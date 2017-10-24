@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_nintendo.VIW
 {

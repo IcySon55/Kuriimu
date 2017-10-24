@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 
 namespace image_xi.ANMC
 {

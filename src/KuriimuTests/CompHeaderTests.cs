@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kuriimu.Compression;
+using Kontract.Compression;
 
 namespace KuriimuTests
 {

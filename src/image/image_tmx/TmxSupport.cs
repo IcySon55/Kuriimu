@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 
 namespace image_tmx
 {

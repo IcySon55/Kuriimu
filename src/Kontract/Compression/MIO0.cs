@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Collections;
 
 /*C# Decompressor Source by LordNed
@@ -14,7 +14,7 @@ using System.Collections;
   https://pastebin.com/GUHMwpjT
   */
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class MIO0
     {

@@ -2,8 +2,8 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace image_nintendo.VCG
 {

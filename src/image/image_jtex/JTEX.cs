@@ -2,7 +2,7 @@ using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using Cetera.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_jtex
 {

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Kuriimu.Hash
+namespace Kontract.Hash
 {
     public class Crc32
     {

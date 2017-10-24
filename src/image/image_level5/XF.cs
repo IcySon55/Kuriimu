@@ -5,8 +5,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 
 namespace image_level5.XF
 {

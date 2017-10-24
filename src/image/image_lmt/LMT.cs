@@ -2,8 +2,8 @@
 using System.Drawing;
 using System.IO;
 using Cetera.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_lmt
 {

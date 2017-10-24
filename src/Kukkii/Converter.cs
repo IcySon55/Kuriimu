@@ -10,8 +10,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using Cyotek.Windows.Forms;
 using Kukkii.Properties;
-using Kuriimu.Kontract;
-using Kuriimu.UI;
+using Kontract.Interface;
+using Kontract;
+using Kontract.UI;
 
 namespace Kukkii
 {

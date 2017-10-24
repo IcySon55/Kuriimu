@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
 
 /*Dual Destinies Android:
     key1: imaguy_uyrag_igurustim_
     key2: enokok_ikorodo_odohuran*/
 
-namespace Kuriimu.Encryption
+namespace Kontract.Encryption
 {
     public class MTFramework
     {

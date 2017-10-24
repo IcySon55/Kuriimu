@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Kuriimu.Kontract
+namespace Kontract
 {
     [XmlRoot("kupUser")]
     public sealed class KupUser

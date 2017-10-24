@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Kuriimu
+namespace Kontract
 {
     public partial class InputBox : Form
     {

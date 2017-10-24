@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 
-namespace Kuriimu.Kontract
+namespace Kontract.Interface
 {
     public interface IImageFormat
     {

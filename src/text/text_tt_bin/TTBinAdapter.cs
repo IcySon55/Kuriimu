@@ -4,9 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract;
+using Kontract.IO;
 using text_ttbin.Properties;
 
 namespace tt.text_ttbin

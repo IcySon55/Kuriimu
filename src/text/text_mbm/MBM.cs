@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 
 namespace text_mbm
 {

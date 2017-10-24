@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using Cetera.Font;
 using game_unchained_blades_exxiv.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace game_unchained_blades_exxiv
 {

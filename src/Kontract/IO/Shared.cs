@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 
-namespace Kuriimu.IO
+namespace Kontract.IO
 {
     public enum ByteOrder : ushort
     {

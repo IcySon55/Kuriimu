@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Kuriimu.Image;
-using Kuriimu.Image.Format;
-using Kuriimu.Image.Swizzle;
+using Kontract.Image;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
 using System.IO;
 using System.Drawing;
 
@@ -44,7 +44,7 @@ namespace KuriimuTests
                 255,0x00,0x00,0x00,
                 255,0x00,0x00,0x00,
                 255,0x00,0x00,0x00,};
-            var bmp = Kuriimu.Image.Image.Load(tex, settings);
+            var bmp = Kontract.Image.Image.Load(tex, settings);
         }
     }
 }

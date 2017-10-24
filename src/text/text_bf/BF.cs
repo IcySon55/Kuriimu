@@ -4,8 +4,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using text_bmd;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 using text_bmd.msg1;
 
 namespace text_bf

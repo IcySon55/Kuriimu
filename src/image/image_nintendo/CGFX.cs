@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 using Cetera.Image;
 
 namespace image_nintendo.CGFX

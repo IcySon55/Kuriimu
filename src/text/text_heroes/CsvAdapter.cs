@@ -4,8 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract;
 
 namespace text_heroes
 {
@@ -55,7 +55,7 @@ namespace text_heroes
             if (FileInfo.Exists)
             {
                 _format = new CSV(FileInfo.OpenRead());
-                
+
                 var namBackupFilePath = FileInfo.FullName + ".bak";
                 if (File.Exists(namBackupFilePath))
                     _formatBackup = new CSV(File.OpenRead(namBackupFilePath));

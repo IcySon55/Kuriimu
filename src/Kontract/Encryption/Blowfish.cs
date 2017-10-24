@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Kuriimu.Encryption
+namespace Kontract.Encryption
 {
     public class BlowFish
     {

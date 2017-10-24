@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
+using Kontract;
 
 namespace archive_nintendo.CGRP
 {

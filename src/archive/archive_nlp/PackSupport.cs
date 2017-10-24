@@ -1,9 +1,10 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.IO;
-using Kuriimu.Compression;
+using Kontract.Compression;
 using System;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 

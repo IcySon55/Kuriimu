@@ -1,22 +1,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
-
-//Notes:
-//Load in the class constructor
-//If compressed Files are given in the archive:
-// -> make a new ArchiveFileInfo derived from the original
-// -> set all needed parameters in there
-// -> create at least one more stream in it (maybe named compStream)
-// -> override get of FileData and compress the compStream there
-// -->> To get the files then in IEnumerable Files, create a list of this derived AFI
-//After replacing formerly compressed files:
-// -> DO NOT override the set of FileData
-// -> In the Save/Save As... function that is called, recompress everything depending on Afi.State
-// -->> If State is Replaced or Added=Recompress and evaluate all sizes (offset, compSize etc.)
-// -->> If State==Archived just copy over compStream but reevaluate offset
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_hpi_hpb
 {

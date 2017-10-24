@@ -5,7 +5,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using Cetera.Font;
 using game_great_detective_pikachu.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace game_great_detective_pikachu
 {

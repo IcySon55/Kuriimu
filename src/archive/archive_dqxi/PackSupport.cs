@@ -1,7 +1,8 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Text;
 
 namespace archive_dqxi

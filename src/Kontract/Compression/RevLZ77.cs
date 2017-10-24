@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.IO;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public sealed class RevLZ77
     {

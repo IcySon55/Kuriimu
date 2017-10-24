@@ -4,8 +4,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Cetera.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 
 namespace image_nintendo.SMDH
 {

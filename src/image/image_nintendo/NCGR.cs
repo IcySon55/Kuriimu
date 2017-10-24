@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using CeteraDS.Hash;
 using CeteraDS.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 using Microsoft.VisualBasic;
 using System;
 

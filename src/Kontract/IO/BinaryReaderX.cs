@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Kuriimu.IO
+namespace Kontract.IO
 {
     public class BinaryReaderX : BinaryReader
     {

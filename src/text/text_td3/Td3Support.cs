@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract;
 
 namespace text_td3
 {

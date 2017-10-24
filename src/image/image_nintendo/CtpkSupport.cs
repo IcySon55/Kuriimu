@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using Cetera.Image;
 using System.Drawing;
 

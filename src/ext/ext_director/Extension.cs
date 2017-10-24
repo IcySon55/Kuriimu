@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using ext_director.Properties;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace ext_director
 {

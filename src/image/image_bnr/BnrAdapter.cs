@@ -4,8 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using CeteraDS.Hash;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace image_bnr
 {

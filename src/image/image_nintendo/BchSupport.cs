@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Kuriimu.Kontract;
+using Kontract;
 using System;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using Cetera.Image;
 using System.Drawing;
 

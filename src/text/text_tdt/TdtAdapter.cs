@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using text_tdt.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 
 namespace text_tdt
 {

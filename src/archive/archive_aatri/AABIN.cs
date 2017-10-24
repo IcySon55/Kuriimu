@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
-using Kuriimu.Compression;
+using Kontract.Interface;
+using Kontract.IO;
+using Kontract.Compression;
 
 namespace archive_aatri.aabin
 {

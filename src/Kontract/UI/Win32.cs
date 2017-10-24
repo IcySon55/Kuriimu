@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Kuriimu.Kontract
+namespace Kontract
 {
     public static class Win32
     {

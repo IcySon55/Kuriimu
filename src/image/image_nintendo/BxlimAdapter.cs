@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace image_nintendo.BXLIM
 {

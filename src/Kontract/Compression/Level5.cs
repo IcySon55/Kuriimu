@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Linq;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class Level5
     {

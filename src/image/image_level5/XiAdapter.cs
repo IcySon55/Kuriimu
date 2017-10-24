@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_level5.imgc
 {

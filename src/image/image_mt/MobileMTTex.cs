@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Cetera.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_mt.Mobile
 {

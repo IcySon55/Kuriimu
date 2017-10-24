@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract;
 using Kuriimu.Properties;
 
 namespace Kuriimu

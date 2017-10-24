@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace Kuriimu.Kontract
+namespace Kontract.Interface
 {
     public interface IGameHandler
     {

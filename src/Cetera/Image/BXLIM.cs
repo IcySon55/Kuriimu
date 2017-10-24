@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Linq;
 
 namespace Cetera.Image

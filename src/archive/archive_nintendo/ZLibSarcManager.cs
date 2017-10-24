@@ -4,9 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_nintendo.ZlibSARC
 {

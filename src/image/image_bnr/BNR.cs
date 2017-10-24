@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using CeteraDS.Hash;
 using CeteraDS.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 
 /*Nintendo DS Banner*/
 namespace image_bnr

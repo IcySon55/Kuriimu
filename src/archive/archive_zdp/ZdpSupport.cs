@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 
 namespace archive_zdp
 {

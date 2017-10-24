@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
-namespace Kuriimu.Image.Swizzle
+namespace Kontract.Image.Swizzle
 {
     public class ZOrder : IImageSwizzle
     {

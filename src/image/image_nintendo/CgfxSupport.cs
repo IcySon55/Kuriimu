@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Kontract;
+using Kontract;
 using Cetera.Image;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_nintendo.CGFX
 {

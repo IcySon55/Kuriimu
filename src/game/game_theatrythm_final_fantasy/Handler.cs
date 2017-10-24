@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Cetera.Font;
 using game_theatrythm_final_fantasy.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace game_theatrythm_final_fantasy
 {

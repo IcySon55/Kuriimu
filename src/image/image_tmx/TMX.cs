@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 /*Original functions and understanding by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */

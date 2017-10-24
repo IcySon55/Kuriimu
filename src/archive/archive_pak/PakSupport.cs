@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_pak
 {

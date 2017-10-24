@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.IO;
 using System.Collections;
 
@@ -14,7 +14,7 @@ using System.Collections;
   https://pastebin.com/GUHMwpjT
   */
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class Yay0
     {

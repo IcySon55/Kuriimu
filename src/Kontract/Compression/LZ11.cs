@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class LZ11
     {

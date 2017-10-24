@@ -3,8 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using CeteraDS.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_aa
 {

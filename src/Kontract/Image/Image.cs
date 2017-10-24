@@ -4,10 +4,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
-namespace Kuriimu.Image
+namespace Kontract.Image
 {
     /// <summary>
     /// Defines the settings with which an image will be loaded/saved

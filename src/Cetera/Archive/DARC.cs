@@ -2,8 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
+using Kontract;
 using System.Text;
 
 namespace Cetera.Archive

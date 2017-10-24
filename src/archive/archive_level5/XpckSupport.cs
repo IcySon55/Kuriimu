@@ -1,8 +1,9 @@
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 using System;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
+using Kontract;
 
 namespace archive_level5.XPCK
 {

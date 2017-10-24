@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 /*C# Decompressor by LordNed
  https://github.com/LordNed/WArchive-Tools/tree/master/ArchiveToolsLib/Compression
@@ -13,7 +13,7 @@ using Kuriimu.IO;
   https://pastebin.com/GUHMwpjT
   */
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class Yaz0
     {

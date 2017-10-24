@@ -4,8 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using CeteraDS.Image;
-using Kuriimu.Compression;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.IO;
 
 /**CHNK - Chunk, contains every partition and provides compression information
  * TXIF - Gives general information about the textures

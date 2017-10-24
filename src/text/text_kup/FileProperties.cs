@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using text_kup.Properties;
-using Kuriimu.Kontract;
+using Kontract;
 
 namespace text_kup
 {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.Compression;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.IO;
 
-namespace Kuriimu.UI
+namespace Kontract.UI
 {
     public static class CompressionTools
     {
@@ -208,7 +208,7 @@ namespace Kuriimu.UI
                             outFs.Write(LZOvl.Decompress(openFile));
                             break;
                         case Compression.LZ4:
-                            outFs.Write(Kuriimu.Compression.LZ4.Decompress(openFile));
+                            outFs.Write(Kontract.Compression.LZ4.Decompress(openFile));
                             break;
                         case Compression.MIO0LE:
                             outFs.Write(MIO0.Decompress(openFile, ByteOrder.LittleEndian));
@@ -303,7 +303,7 @@ namespace Kuriimu.UI
                             outFs.Write(LZOvl.Compress(openFile));
                             break;
                         case Compression.LZ4:
-                            outFs.Write(Kuriimu.Compression.LZ4.Compress(openFile));
+                            outFs.Write(Kontract.Compression.LZ4.Compress(openFile));
                             break;
                         case Compression.MIO0LE:
                             outFs.Write(MIO0.Compress(openFile, ByteOrder.LittleEndian));

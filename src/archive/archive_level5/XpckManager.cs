@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using Cetera.Hash;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_level5.XPCK
 {

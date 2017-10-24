@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Cetera.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace Cetera.Layout
 {

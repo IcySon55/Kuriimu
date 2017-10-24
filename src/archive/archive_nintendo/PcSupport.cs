@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace archive_nintendo.PC
 {

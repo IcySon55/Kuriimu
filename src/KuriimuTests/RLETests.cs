@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kuriimu.Compression;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.IO;
 
 namespace KuriimuTests
 {

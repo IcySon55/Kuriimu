@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public sealed class HuffSupport
     {

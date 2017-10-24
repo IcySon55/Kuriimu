@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.Runtime.InteropServices;
 
 namespace text_xs

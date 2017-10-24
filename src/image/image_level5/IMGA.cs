@@ -4,9 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Cetera.Image;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_level5.imga
 {

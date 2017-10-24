@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using Kuriimu.Properties;
 
 namespace Kuriimu

@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 
-namespace Kuriimu.Kontract
+namespace Kontract.Interface
 {
     public interface ITextAdapter : IPlugin
     {

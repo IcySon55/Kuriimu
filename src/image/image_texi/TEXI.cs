@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Xml.Serialization;
 using System.Xml;
 using Cetera.Image;

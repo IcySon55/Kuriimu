@@ -3,8 +3,8 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using Cetera.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract;
+using Kontract.IO;
 
 /*Original image and data types by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */

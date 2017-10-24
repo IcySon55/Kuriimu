@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract;
+using Kontract.Interface;
 using System.Linq;
 
 namespace text_gmd

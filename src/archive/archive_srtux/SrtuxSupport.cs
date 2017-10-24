@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Compression;
+using Kontract.IO;
+using Kontract.Compression;
 using System;
 using System.Linq;
 
