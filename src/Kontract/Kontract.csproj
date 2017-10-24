@@ -83,6 +83,7 @@
     <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Hash\Crc32.cs" />
+    <Compile Include="Image\Format\LA.cs" />
     <Compile Include="Image\Format\RGBA.cs" />
     <Compile Include="Image\Image.cs" />
     <Compile Include="Image\Swizzle\ZOrder.cs" />

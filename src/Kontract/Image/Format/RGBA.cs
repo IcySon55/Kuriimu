@@ -69,6 +69,8 @@ namespace Kontract.Image.Format
                         case 32:
                             value = br.ReadUInt32();
                             break;
+                        default:
+                            throw new Exception($"BitDepth {bitDepth} not supported!");
                     }
 
                     yield return Color.FromArgb(
