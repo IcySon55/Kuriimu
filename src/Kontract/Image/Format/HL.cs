@@ -10,25 +10,25 @@ using System.IO;
 
 namespace Kontract.Image.Format
 {
-    public class LA : IImageFormat
+    public class HL : IImageFormat
     {
         public int bitDepth { get; set; }
 
-        int lDepth;
-        int aDepth;
+        int rDepth;
+        int gDepth;
 
         ByteOrder byteOrder;
 
-        public LA(int l, int a, ByteOrder byteOrder = ByteOrder.LittleEndian)
+        public HL(int r, int g, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            bitDepth = a + l;
+            bitDepth = r + g;
             if (bitDepth % 4 != 0) throw new Exception($"Overall bitDepth has to be dividable by 4. Given bitDepth: {bitDepth}");
             if (bitDepth > 16) throw new Exception($"Overall bitDepth can't be bigger than 16. Given bitDepth: {bitDepth}");
             if (bitDepth < 4) throw new Exception($"Overall bitDepth can't be smaller than 4. Given bitDepth: {bitDepth}");
-            if (l < 4 || a < 4) throw new Exception($"Luminance and Alpha value can't be smaller than 4.\nGiven Luminance: {l}; Given Alpha: {a}");
+            if (r < 4 || g < 4) throw new Exception($"Red and Green value can't be smaller than 4.\nGiven Red: {r}; Given Green: {g}");
 
-            lDepth = l;
-            aDepth = a;
+            rDepth = r;
+            gDepth = g;
 
             this.byteOrder = byteOrder;
         }
@@ -37,10 +37,10 @@ namespace Kontract.Image.Format
         {
             using (var br = new BinaryReaderX(new MemoryStream(tex), byteOrder))
             {
-                var lShift = aDepth;
+                var rShift = gDepth;
 
-                var aBitMask = (int)Math.Pow(2, aDepth) - 1;
-                var lBitMask = (int)Math.Pow(2, lDepth) - 1;
+                var gBitMask = (int)Math.Pow(2, gDepth) - 1;
+                var rBitMask = (int)Math.Pow(2, rDepth) - 1;
 
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
@@ -62,10 +62,10 @@ namespace Kontract.Image.Format
                     }
 
                     yield return Color.FromArgb(
-                        (aDepth == 0) ? 255 : CorrectValue((int)(value & aBitMask), aDepth),
-                        (lDepth == 0) ? 255 : CorrectValue((int)(value >> lShift & lBitMask), lDepth),
-                        (lDepth == 0) ? 255 : CorrectValue((int)(value >> lShift & lBitMask), lDepth),
-                        (lDepth == 0) ? 255 : CorrectValue((int)(value >> lShift & lBitMask), lDepth));
+                        (gDepth == 0) ? 255 : CorrectValue((int)(value & gBitMask), gDepth),
+                        (rDepth == 0) ? 255 : CorrectValue((int)(value >> rShift & rBitMask), rDepth),
+                        (rDepth == 0) ? 255 : CorrectValue((int)(value >> rShift & rBitMask), rDepth),
+                        (rDepth == 0) ? 255 : CorrectValue((int)(value >> rShift & rBitMask), rDepth));
                 }
             }
         }
