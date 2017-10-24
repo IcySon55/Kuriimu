@@ -127,6 +127,9 @@ namespace KuriimuTests
         public void UnicodeHelloWorldLZ77Test() => Test(Encoding.Unicode.GetBytes("hello world"), Method.LZ77);
 
         [TestMethod]
+        public void HalfKilobyteLZ77Test() => Test(Enumerable.Range(0, 512).Select(i => (byte)(i / 2)).ToArray(), Method.LZ77);
+
+        [TestMethod]
         public void HundredZeroesLZ77Test() => Test(new byte[100], Method.LZ77);
 
         [TestMethod]
