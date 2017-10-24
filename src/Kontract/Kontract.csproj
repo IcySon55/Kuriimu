@@ -83,10 +83,16 @@
     <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Hash\Crc32.cs" />
+    <Compile Include="Image\Format\RGBA.cs" />
+    <Compile Include="Image\Image.cs" />
+    <Compile Include="Image\Swizzle\ZOrder.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
+    <Compile Include="Interface\Image\IImageFormat.cs" />
+    <Compile Include="Interface\Image\IImageSwizzle.cs" />
+    <Compile Include="Interface\Image\ITransformation.cs" />
     <Compile Include="Interface\IPlugin.cs" />
     <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />
@@ -119,6 +125,9 @@
     <EmbeddedResource Include="UI\InputBox.resx">
       <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Image\Transform\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -21,7 +21,7 @@ namespace Kuriimu.Kontract
             return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
         }
 
-        public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
+        public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, System.Drawing.Image noGameIcon, EventHandler selectedIndexChanged)
         {
             tsb.DropDownItems.Clear();
 
