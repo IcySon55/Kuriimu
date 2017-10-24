@@ -47,6 +47,7 @@ namespace Cetera.Image
         public bool PadToPowerOf2 { get; set; } = true;
         public bool ZOrder { get; set; } = true;
         public int TileSize { get; set; } = 8;
+        public ByteOrder ByteOrder { get; set; } = ByteOrder.LittleEndian;
         public Func<Color, Color> PixelShader { get; set; }
 
         /// <summary>
@@ -134,8 +135,16 @@ namespace Cetera.Image
                             b = g = r = br.ReadNibble() * 17;
                             break;
                         case Format.LA88:
-                            a = br.ReadByte();
-                            b = g = r = br.ReadByte();
+                            if (settings.ByteOrder == ByteOrder.LittleEndian)
+                            {
+                                a = br.ReadByte();
+                                b = g = r = br.ReadByte();
+                            }
+                            else
+                            {
+                                b = g = r = br.ReadByte();
+                                a = br.ReadByte();
+                            }
                             break;
                         case Format.HL88:
                             g = br.ReadByte();
