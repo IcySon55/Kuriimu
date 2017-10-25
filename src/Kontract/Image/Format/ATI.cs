@@ -19,8 +19,10 @@ namespace Kontract.Image.Format
             ATI2,
         }
 
-        public int bitDepth { get; set; }
-        public int blockBitDepth { get; set; }
+        public int BitDepth { get; set; }
+        public int BlockBitDepth { get; set; }
+
+        public string FormatName { get; set; }
 
         Format format;
 
@@ -28,10 +30,11 @@ namespace Kontract.Image.Format
 
         public ATI(Format format, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            bitDepth = (format == Format.ATI1L || format == Format.ATI1A) ? 4 : 8;
-            blockBitDepth = (format == Format.ATI1L || format == Format.ATI1A) ? 64 : 128;
+            BitDepth = (format == Format.ATI1L || format == Format.ATI1A) ? 4 : 8;
+            BlockBitDepth = (format == Format.ATI1L || format == Format.ATI1A) ? 64 : 128;
 
             this.format = format;
+            FormatName = format.ToString();
 
             this.byteOrder = byteOrder;
         }

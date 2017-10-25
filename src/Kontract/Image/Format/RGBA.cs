@@ -12,7 +12,9 @@ namespace Kontract.Image.Format
 {
     public class RGBA : IImageFormat
     {
-        public int bitDepth { get; set; }
+        public int BitDepth { get; set; }
+
+        public string FormatName { get; set; }
 
         int rDepth;
         int gDepth;
@@ -25,10 +27,10 @@ namespace Kontract.Image.Format
 
         public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.LittleEndian, bool standard = false)
         {
-            bitDepth = r + g + b + a;
-            if (bitDepth % 8 != 0) throw new Exception($"Overall bitDepth has to be dividable by 8. Given bitDepth: {bitDepth}");
-            if (bitDepth <= 8) throw new Exception($"Overall bitDepth can't be smaller than 16. Given bitDepth: {bitDepth}");
-            if (bitDepth > 32) throw new Exception($"Overall bitDepth can't be bigger than 32. Given bitDepth: {bitDepth}");
+            BitDepth = r + g + b + a;
+            if (BitDepth % 8 != 0) throw new Exception($"Overall bitDepth has to be dividable by 8. Given bitDepth: {BitDepth}");
+            if (BitDepth <= 8) throw new Exception($"Overall bitDepth can't be smaller than 16. Given bitDepth: {BitDepth}");
+            if (BitDepth > 32) throw new Exception($"Overall bitDepth can't be bigger than 32. Given bitDepth: {BitDepth}");
 
             this.byteOrder = byteOrder;
 
@@ -36,6 +38,8 @@ namespace Kontract.Image.Format
             gDepth = g;
             bDepth = b;
             aDepth = a;
+
+            FormatName = "RGB" + ((a != 0) ? "A" : "") + r.ToString() + g.ToString() + b.ToString() + ((a != 0) ? a.ToString() : "");
 
             this.standard = standard;
         }
@@ -57,7 +61,7 @@ namespace Kontract.Image.Format
                 {
                     long value = 0;
 
-                    switch (bitDepth)
+                    switch (BitDepth)
                     {
                         case 16:
                             value = br.ReadUInt16();
@@ -70,7 +74,7 @@ namespace Kontract.Image.Format
                             value = br.ReadUInt32();
                             break;
                         default:
-                            throw new Exception($"BitDepth {bitDepth} not supported!");
+                            throw new Exception($"BitDepth {BitDepth} not supported!");
                     }
 
                     yield return Color.FromArgb(

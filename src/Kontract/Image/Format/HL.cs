@@ -12,7 +12,9 @@ namespace Kontract.Image.Format
 {
     public class HL : IImageFormat
     {
-        public int bitDepth { get; set; }
+        public int BitDepth { get; set; }
+
+        public string FormatName { get; set; }
 
         int rDepth;
         int gDepth;
@@ -21,14 +23,16 @@ namespace Kontract.Image.Format
 
         public HL(int r, int g, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            bitDepth = r + g;
-            if (bitDepth % 4 != 0) throw new Exception($"Overall bitDepth has to be dividable by 4. Given bitDepth: {bitDepth}");
-            if (bitDepth > 16) throw new Exception($"Overall bitDepth can't be bigger than 16. Given bitDepth: {bitDepth}");
-            if (bitDepth < 4) throw new Exception($"Overall bitDepth can't be smaller than 4. Given bitDepth: {bitDepth}");
-            if (r < 4 || g < 4) throw new Exception($"Red and Green value can't be smaller than 4.\nGiven Red: {r}; Given Green: {g}");
+            BitDepth = r + g;
+            if (BitDepth % 4 != 0) throw new Exception($"Overall bitDepth has to be dividable by 4. Given bitDepth: {BitDepth}");
+            if (BitDepth > 16) throw new Exception($"Overall bitDepth can't be bigger than 16. Given bitDepth: {BitDepth}");
+            if (BitDepth < 4) throw new Exception($"Overall bitDepth can't be smaller than 4. Given bitDepth: {BitDepth}");
+            if (r < 4 && g < 4) throw new Exception($"Red and Green value can't be smaller than 4.\nGiven Red: {r}; Given Green: {g}");
 
             rDepth = r;
             gDepth = g;
+
+            FormatName = "HL" + r.ToString() + g.ToString();
 
             this.byteOrder = byteOrder;
         }
@@ -46,7 +50,7 @@ namespace Kontract.Image.Format
                 {
                     long value = 0;
 
-                    switch (bitDepth)
+                    switch (BitDepth)
                     {
                         case 4:
                             value = br.ReadNibble();
@@ -58,7 +62,7 @@ namespace Kontract.Image.Format
                             value = br.ReadUInt16();
                             break;
                         default:
-                            throw new Exception($"BitDepth {bitDepth} not supported!");
+                            throw new Exception($"BitDepth {BitDepth} not supported!");
                     }
 
                     yield return Color.FromArgb(

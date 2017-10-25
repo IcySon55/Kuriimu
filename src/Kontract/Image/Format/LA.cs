@@ -12,7 +12,9 @@ namespace Kontract.Image.Format
 {
     public class LA : IImageFormat
     {
-        public int bitDepth { get; set; }
+        public int BitDepth { get; set; }
+
+        public string FormatName { get; set; }
 
         int lDepth;
         int aDepth;
@@ -21,14 +23,16 @@ namespace Kontract.Image.Format
 
         public LA(int l, int a, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            bitDepth = a + l;
-            if (bitDepth % 4 != 0) throw new Exception($"Overall bitDepth has to be dividable by 4. Given bitDepth: {bitDepth}");
-            if (bitDepth > 16) throw new Exception($"Overall bitDepth can't be bigger than 16. Given bitDepth: {bitDepth}");
-            if (bitDepth < 4) throw new Exception($"Overall bitDepth can't be smaller than 4. Given bitDepth: {bitDepth}");
-            if (l < 4 || a < 4) throw new Exception($"Luminance and Alpha value can't be smaller than 4.\nGiven Luminance: {l}; Given Alpha: {a}");
+            BitDepth = a + l;
+            if (BitDepth % 4 != 0) throw new Exception($"Overall bitDepth has to be dividable by 4. Given bitDepth: {BitDepth}");
+            if (BitDepth > 16) throw new Exception($"Overall bitDepth can't be bigger than 16. Given bitDepth: {BitDepth}");
+            if (BitDepth < 4) throw new Exception($"Overall bitDepth can't be smaller than 4. Given bitDepth: {BitDepth}");
+            if (l < 4 && a < 4) throw new Exception($"Luminance and Alpha value can't be smaller than 4.\nGiven Luminance: {l}; Given Alpha: {a}");
 
             lDepth = l;
             aDepth = a;
+
+            FormatName = "LA" + ((l != 0) ? l.ToString() : "") + ((a != 0) ? a.ToString() : "");
 
             this.byteOrder = byteOrder;
         }
@@ -46,7 +50,7 @@ namespace Kontract.Image.Format
                 {
                     long value = 0;
 
-                    switch (bitDepth)
+                    switch (BitDepth)
                     {
                         case 4:
                             value = br.ReadNibble();
@@ -58,7 +62,7 @@ namespace Kontract.Image.Format
                             value = br.ReadUInt16();
                             break;
                         default:
-                            throw new Exception($"BitDepth {bitDepth} not supported!");
+                            throw new Exception($"BitDepth {BitDepth} not supported!");
                     }
 
                     yield return Color.FromArgb(

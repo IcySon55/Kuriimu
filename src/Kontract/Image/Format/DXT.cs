@@ -19,8 +19,10 @@ namespace Kontract.Image.Format
             DXT5
         }
 
-        public int bitDepth { get; set; }
-        public int blockBitDepth { get; set; }
+        public int BitDepth { get; set; }
+        public int BlockBitDepth { get; set; }
+
+        public string FormatName { get; set; }
 
         Version version;
         bool standard;
@@ -29,11 +31,13 @@ namespace Kontract.Image.Format
 
         public DXT(Version version, bool standard = false, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            bitDepth = (version == Version.DXT1) ? 4 : 8;
-            blockBitDepth = (version == Version.DXT1) ? 64 : 128;
+            BitDepth = (version == Version.DXT1) ? 4 : 8;
+            BlockBitDepth = (version == Version.DXT1) ? 64 : 128;
 
             this.version = version;
             this.standard = standard;
+
+            FormatName = version.ToString();
 
             this.byteOrder = byteOrder;
         }

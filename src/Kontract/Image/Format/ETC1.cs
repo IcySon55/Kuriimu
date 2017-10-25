@@ -12,8 +12,10 @@ namespace Kontract.Image.Format
 {
     public class ETC1 : IImageFormat
     {
-        public int bitDepth { get; set; }
-        public int blockBitDepth { get; set; }
+        public int BitDepth { get; set; }
+        public int BlockBitDepth { get; set; }
+
+        public string FormatName { get; set; }
 
         bool alpha;
 
@@ -21,10 +23,12 @@ namespace Kontract.Image.Format
 
         public ETC1(bool alpha = false, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            bitDepth = (alpha == false) ? 4 : 8;
-            blockBitDepth = (alpha == false) ? 64 : 128;
+            BitDepth = (alpha == false) ? 4 : 8;
+            BlockBitDepth = (alpha == false) ? 64 : 128;
 
             this.alpha = alpha;
+
+            FormatName = (alpha) ? "ETC1A4" : "ETC1";
 
             this.byteOrder = byteOrder;
         }
