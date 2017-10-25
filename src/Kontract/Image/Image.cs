@@ -17,6 +17,10 @@ namespace Kontract.Image
         public int Width { get; set; }
         public int Height { get; set; }
         public IImageFormat Format { get; set; }
+
+        public int padWidth { get; set; } = 0;
+        public int padHeight { get; set; } = 0;
+
         public IImageSwizzle InnerSwizzle { get; set; } = null;
         public IImageSwizzle OuterSwizzle { get; set; } = null;
         public IImageTransformation Transformation { get; set; } = null;
@@ -48,8 +52,11 @@ namespace Kontract.Image
                 strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
                 strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
             }
-
-            int stride = strideWidth;
+            else if (settings.padWidth != 0 || settings.padHeight != 0)
+            {
+                strideWidth = (settings.padWidth != 0) ? settings.padWidth : strideWidth;
+                strideHeight = (settings.padHeight != 0) ? settings.padHeight : strideHeight;
+            }
 
             for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
             {
@@ -59,8 +66,8 @@ namespace Kontract.Image
                     if (settings.OuterSwizzle == null)
                     {
                         var point2 = new Point(
-                            ((i / powTileSize % (stride / tileSize)) * tileSize) + point.X,
-                            ((i / powTileSize / (stride / tileSize)) * tileSize) + point.Y);
+                            ((i / powTileSize % (strideWidth / tileSize)) * tileSize) + point.X,
+                            ((i / powTileSize / (strideWidth / tileSize)) * tileSize) + point.Y);
                         yield return point2;
                     }
                     else
@@ -84,135 +91,6 @@ namespace Kontract.Image
                 else
                     yield return settings.InnerSwizzle.InnerLoad(i, tileSize);
         }
-
-        /*static IEnumerable<Point> GetPointSequence(ImageSettings settings)
-        {
-            switch (settings.Format)
-            {
-                case Format.ATI1A:
-                case Format.ATI1L:
-                case Format.ATI2:
-                case Format.ETC1:
-                case Format.ETC1A4:
-                case Format.DXT1:
-                case Format.DXT3:
-                case Format.DXT5:
-                    settings.TileSize = settings.TileSize + 3 & ~0x3;
-                    break;
-            }
-
-            int strideWidth = (settings.Width + 7) & ~7;
-            int strideHeight = (settings.Height + 7) & ~7;
-            if (settings.PadToPowerOf2)
-            {
-                strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
-                strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
-            }
-
-            //stride TileSize
-            var tileSize = 0;
-            if (settings.ZOrder)
-                tileSize = 2 << (int)(Math.Log(((settings.TileSize + 7) & ~7) - 1, 2));
-            else
-                tileSize = settings.TileSize;
-            int powTileSize = (int)Math.Pow(tileSize, 2);
-
-            int stride = strideWidth;
-            switch (settings.Orientation)
-            {
-                case Orientation.Rotate90:
-                case Orientation.Transpose:
-                    stride = strideHeight;
-                    break;
-            }
-
-            for (int i = 0; i < strideWidth * strideHeight; i++)
-            {
-                //in == order inside a tile
-                //out == order of tiles themselves
-                int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
-                if (settings.ZOrder)
-                {
-                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
-                    x_in = ZOrderX(tileSize, i);
-                    y_in = ZOrderY(tileSize, i);
-                }
-                else
-                {
-                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
-
-                    switch (settings.Format)
-                    {
-                        case Format.ATI1A:
-                        case Format.ATI1L:
-                        case Format.ATI2:
-                        case Format.ETC1:
-                        case Format.ETC1A4:
-                        case Format.DXT1:
-                        case Format.DXT3:
-                        case Format.DXT5:
-                            x_in = (i % 4 + i % powTileSize / 16 * 4) % tileSize;
-                            y_in = (i % 16 / 4 + i / (tileSize * 4) * 4) % tileSize;
-                            break;
-                        default:
-                            x_in = i % powTileSize % tileSize;
-                            y_in = i % powTileSize / tileSize;
-                            break;
-                    }
-                }
-
-                switch (settings.Orientation)
-                {
-                    case Orientation.Default:
-                        yield return new Point(x_out + x_in, y_out + y_in);
-                        break;
-                    case Orientation.HorizontalFlip:
-                        yield return new Point(stride - 1 - (x_out + x_in), y_out + y_in);
-                        break;
-                    case Orientation.Rotate90:
-                        yield return new Point(y_out + y_in, stride - 1 - (x_out + x_in));
-                        break;
-                    case Orientation.Transpose:
-                        yield return new Point(y_out + y_in, x_out + x_in);
-                        break;
-                    case Orientation.TransposeTile:
-                        yield return new Point(x_out + y_in, y_out + x_in);
-                        break;
-                    default:
-                        throw new NotSupportedException($"Unknown orientation format {settings.Orientation}");
-                }
-            }
-        }
-        static int ZOrderX(int tileSize, int count)
-        {
-            var div = tileSize / 2;
-            var x_in = count / div & div;
-
-            while (div > 1)
-            {
-                div /= 2;
-                x_in |= count / div & div;
-            }
-
-            return x_in;
-        }
-        static int ZOrderY(int tileSize, int count)
-        {
-            var div = tileSize;
-            var div2 = tileSize / 2;
-            var y_in = count / div & div2;
-
-            while (div2 > 1)
-            {
-                div /= 2;
-                div2 /= 2;
-                y_in |= count / div & div2;
-            }
-
-            return y_in;
-        }*/
 
         /// <summary>
         /// Loads the binary data with given settings as an image
