@@ -175,10 +175,20 @@ namespace Cetera.Image
                             r = br.ReadNibble() * 17;
                             break;
                         case Format.RGBA8888:
-                            a = br.ReadByte();
-                            b = br.ReadByte();
-                            g = br.ReadByte();
-                            r = br.ReadByte();
+                            if (settings.ByteOrder == ByteOrder.LittleEndian)
+                            {
+                                a = br.ReadByte();
+                                b = br.ReadByte();
+                                g = br.ReadByte();
+                                r = br.ReadByte();
+                            }
+                            else
+                            {
+                                r = br.ReadByte();
+                                g = br.ReadByte();
+                                b = br.ReadByte();
+                                a = br.ReadByte();
+                            }
                             break;
                         case Format.RGBA1010102:
                             var pack = br.ReadUInt32();
