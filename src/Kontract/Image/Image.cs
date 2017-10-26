@@ -21,8 +21,8 @@ namespace Kontract.Image
         public int padWidth { get; set; } = 0;
         public int padHeight { get; set; } = 0;
 
-        public List<IImageSwizzle> InnerSwizzle { get; set; } = null;
-        public List<IImageSwizzle> OuterSwizzle { get; set; } = null;
+        public List<IImageSwizzle> InnerSwizzle { get; set; } = new List<IImageSwizzle>();
+        public List<IImageSwizzle> OuterSwizzle { get; set; } = new List<IImageSwizzle>();
         public Func<Color, Color> PixelShader { get; set; }
 
         public int TileSize { get; set; } = 8;
@@ -40,10 +40,10 @@ namespace Kontract.Image
         /// <summary>
         /// Gives back a sequence of points, modified by Swizzles if applied
         /// </summary>
-        static IEnumerable<Point> GetPointSequence(ImageSettings settings)
+        static IEnumerable<Point> GetPointSequence(ImageSettings settings, bool load = true)
         {
             int tileSize = settings.TileSize;
-            int powTileSize = (int)Math.Pow(tileSize, 2);
+            int powTileSize = tileSize * tileSize;
 
             int strideWidth = (settings.Width + (tileSize - 1)) & ~(tileSize - 1);
             int strideHeight = (settings.Height + (tileSize - 1)) & ~(tileSize - 1);
@@ -58,33 +58,51 @@ namespace Kontract.Image
                 strideHeight = (settings.padHeight != 0) ? settings.padHeight : strideHeight;
             }
 
-            var innerTile = GetInnerTile(settings);
+            var innerTile = GetInnerTile(settings, load);
             for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
             {
                 var outerPoint = new Point(i / powTileSize % (strideWidth / tileSize), i / (tileSize * strideWidth));
-                if (settings.OuterSwizzle != null)
-                    foreach (var swizzle in settings.OuterSwizzle)
-                        outerPoint = swizzle.Load(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
+                if (settings.OuterSwizzle.Count() != 0)
+                {
+                    if (load)
+                    {
+                        foreach (var swizzle in settings.OuterSwizzle)
+                            outerPoint = swizzle.Load(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
+                    }
+                    else
+                    {
+                        foreach (var swizzle in settings.OuterSwizzle.Select(c => c).Reverse().ToList())
+                            outerPoint = swizzle.Save(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
+                    }
 
-                foreach (var innerPoint in innerTile)
-                    yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
+                    foreach (var innerPoint in innerTile)
+                        yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
+                }
             }
         }
 
         /// <summary>
         /// Gives back a sequence of points in a tile, modified by inner Swizzles
         /// </summary>
-        static IEnumerable<Point> GetInnerTile(ImageSettings settings)
+        static IEnumerable<Point> GetInnerTile(ImageSettings settings, bool load = true)
         {
             int tileSize = settings.TileSize;
-            int powTileSize = (int)Math.Pow(tileSize, 2);
+            int powTileSize = tileSize * tileSize;
 
             for (int i = 0; i < powTileSize; i++)
             {
                 var point = new Point(i % powTileSize % tileSize, i % powTileSize / tileSize);
-                if (settings.InnerSwizzle != null)
-                    foreach (var swizzle in settings.InnerSwizzle)
-                        point = swizzle.Load(point, tileSize, tileSize);
+                if (settings.InnerSwizzle.Count() != 0)
+                    if (load)
+                    {
+                        foreach (var swizzle in settings.InnerSwizzle)
+                            point = swizzle.Load(point, tileSize, tileSize);
+                    }
+                    else
+                    {
+                        foreach (var swizzle in settings.InnerSwizzle.Select(c => c).Reverse().ToList())
+                            point = swizzle.Save(point, tileSize, tileSize);
+                    }
                 yield return point;
             }
         }
@@ -104,12 +122,7 @@ namespace Kontract.Image
 
             var points = GetPointSequence(settings);
 
-            if (settings.SwapWidthHeight)
-            {
-                var tmp = width;
-                width = height;
-                height = tmp;
-            }
+            if (settings.SwapWidthHeight) (width, height) = (height, width);
 
             var bmp = new Bitmap(width, height);
             var data = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
@@ -130,6 +143,38 @@ namespace Kontract.Image
             bmp.UnlockBits(data);
 
             return bmp;
+        }
+
+        /// <summary>
+        /// Converts a given Bitmap, modified by given settings, in binary data
+        /// </summary>
+        /// <param name="bmp">
+        /// the bitmap, which will be converted
+        /// </param>
+        /// <param name="settings">
+        /// Settings like Format, Dimensions and Swizzles
+        /// </param>
+        public static byte[] Save(Bitmap bmp, ImageSettings settings)
+        {
+            settings.Width = bmp.Width;
+            settings.Height = bmp.Height;
+
+            var points = GetPointSequence(settings);
+
+            var ms = new MemoryStream();
+
+            foreach (var point in points)
+            {
+                int x = Clamp(point.X, 0, bmp.Width);
+                int y = Clamp(point.Y, 0, bmp.Height);
+
+                var color = bmp.GetPixel(x, y);
+                if (settings.PixelShader != null) color = settings.PixelShader(color);
+
+                settings.Format.Save(color, ms);
+            }
+
+            return ms.ToArray();
         }
 
         /*static IEnumerable<Color> GetColorsFromTexture(byte[] tex, ImageSettings settings)

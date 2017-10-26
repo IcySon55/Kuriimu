@@ -52,10 +52,10 @@ namespace Kontract.Image.Format
                 var gShift = bShift + bDepth;
                 var rShift = gShift + gDepth;
 
-                var aBitMask = (int)Math.Pow(2, aDepth) - 1;
-                var bBitMask = (int)Math.Pow(2, bDepth) - 1;
-                var gBitMask = (int)Math.Pow(2, gDepth) - 1;
-                var rBitMask = (int)Math.Pow(2, rDepth) - 1;
+                var aBitMask = (1 << aDepth) - 1;
+                var bBitMask = (1 << bDepth) - 1;
+                var gBitMask = (1 << gDepth) - 1;
+                var rBitMask = (1 << rDepth) - 1;
 
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
@@ -97,7 +97,7 @@ namespace Kontract.Image.Format
                 case 3:
                     return value * 73 / 2;
                 case 4:
-                    return value * 15;
+                    return value * 17;
                 case 5:
                     return value * 33 / 4;
                 case 6:
@@ -115,6 +115,65 @@ namespace Kontract.Image.Format
 
         public void Save(Color color, Stream output)
         {
+            var a = (aDepth == 0) ? 0 : CompressValue(color.A, aDepth);
+            var r = CompressValue(color.R, rDepth);
+            var g = CompressValue(color.G, rDepth);
+            var b = CompressValue(color.B, rDepth);
+
+            var bShift = aDepth;
+            var gShift = bShift + bDepth;
+            var rShift = gShift + gDepth;
+
+            long value = a;
+            value |= (uint)(b << bShift);
+            value |= (uint)(g << gShift);
+            value |= (uint)(r << rShift);
+
+            using (var bw = new BinaryWriterX(output, true, byteOrder))
+                switch (BitDepth)
+                {
+                    case 16:
+                        bw.Write((ushort)value);
+                        break;
+                    case 24:
+                        var tmp = (byteOrder == ByteOrder.LittleEndian) ?
+                            new byte[] { (byte)(value & 0xff), (byte)(value >> 8 & 0xff), (byte)(value >> 16 & 0xff) } :
+                            new byte[] { (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
+                        bw.Write(tmp);
+                        break;
+                    case 32:
+                        bw.Write((uint)value);
+                        break;
+                    default:
+                        throw new Exception($"BitDepth {BitDepth} not supported!");
+                }
+        }
+
+        int CompressValue(int value, int depth)
+        {
+            switch (depth)
+            {
+                case 1:
+                    return value / 255;
+                case 2:
+                    return value / 85;
+                case 3:
+                    return (((value + 1) * 2) - 1) / 73;
+                case 4:
+                    return value / 17;
+                case 5:
+                    return (((value + 1) * 4) - 1) / 33;
+                case 6:
+                    return (((value + 1) * 16) - 1) / 65;
+                case 7:
+                    return (((value + 1) * 64) - 1) / 129;
+                case 9:
+                    return ((value + 1) * 2) - 1;
+                case 10:
+                    return ((value + 1) * 4) - 1;
+                default:
+                    return value;
+            }
         }
     }
 }

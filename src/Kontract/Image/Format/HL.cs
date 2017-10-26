@@ -43,8 +43,8 @@ namespace Kontract.Image.Format
             {
                 var rShift = gDepth;
 
-                var gBitMask = (int)Math.Pow(2, gDepth) - 1;
-                var rBitMask = (int)Math.Pow(2, rDepth) - 1;
+                var gBitMask = (1 << gDepth) - 1;
+                var rBitMask = (1 << rDepth) - 1;
 
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
@@ -79,7 +79,7 @@ namespace Kontract.Image.Format
             switch (depth)
             {
                 case 4:
-                    return value * 15;
+                    return value * 17;
                 case 5:
                     return value * 33 / 4;
                 case 6:
@@ -97,6 +97,27 @@ namespace Kontract.Image.Format
 
         public void Save(Color color, Stream output)
         {
+        }
+
+        int CompressValue(int value, int depth)
+        {
+            switch (depth)
+            {
+                case 4:
+                    return value / 17;
+                case 5:
+                    return (((value + 1) * 4) - 1) / 33;
+                case 6:
+                    return (((value + 1) * 16) - 1) / 65;
+                case 7:
+                    return (((value + 1) * 64) - 1) / 129;
+                case 9:
+                    return ((value + 1) * 2) - 1;
+                case 10:
+                    return ((value + 1) * 4) - 1;
+                default:
+                    return value;
+            }
         }
     }
 }

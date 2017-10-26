@@ -11,6 +11,6 @@ namespace Kontract.Interface
     public interface IImageSwizzle
     {
         Point Load(Point point, int width, int height);
-        Point Save(int pointCount, int tileSize, int width, int height);
+        Point Save(Point point, int width, int height);
     }
 }

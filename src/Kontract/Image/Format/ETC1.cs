@@ -23,8 +23,8 @@ namespace Kontract.Image.Format
 
         public ETC1(bool alpha = false, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            BitDepth = (alpha == false) ? 4 : 8;
-            BlockBitDepth = (alpha == false) ? 64 : 128;
+            BitDepth = alpha ? 8 : 4;
+            BlockBitDepth = alpha ? 128 : 64;
 
             this.alpha = alpha;
 
