@@ -178,8 +178,8 @@ namespace Cetera.Image
 
         void CreateSwizzleLists(byte orient, ByteOrder byteOrder, out List<IImageSwizzle> inner, out List<IImageSwizzle> outer)
         {
-            inner = null;
-            outer = null;
+            inner = new List<IImageSwizzle>();
+            outer = new List<IImageSwizzle>();
 
             if (byteOrder == ByteOrder.LittleEndian)
                 inner = new List<IImageSwizzle> { new ZOrder() };
@@ -201,19 +201,11 @@ namespace Cetera.Image
                             break;
                         //Transpose
                         case 0x8:
-                            if (inner == null)
-                                inner = new List<IImageSwizzle>();
-                            if (outer == null)
-                                outer = new List<IImageSwizzle>();
                             inner.Add(new Transpose());
                             outer.Add(new Transpose(true));
                             break;
                         //Rotated by 90
                         case 0x4:
-                            if (inner == null)
-                                inner = new List<IImageSwizzle>();
-                            if (outer == null)
-                                outer = new List<IImageSwizzle>();
                             inner.Add(new Rotate(270));
                             outer.Add(new Rotate(270, true));
                             break;
@@ -322,17 +314,15 @@ namespace Cetera.Image
         {
             using (var bw = new BinaryWriterX(output))
             {
-                var settings = new ImageSettings();
+                //var settings = new ImageSettings();
                 byte[] texture;
 
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
-                        settings.Width = BCLIMHeader.width;
-                        settings.Height = BCLIMHeader.height;
-                        settings.Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation);
-                        settings.Format = ImageSettings.ConvertFormat(BCLIMHeader.format);
-                        texture = Common.Save(Image, settings);
+                        /*settings.Width = BCLIMHeader.width;
+                        settings.Height = BCLIMHeader.height;*/
+                        texture = Kontract.Image.Image.Save(Image, Settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!
@@ -346,11 +336,9 @@ namespace Cetera.Image
                     case "FLIM":
                         if (byteOrder == ByteOrder.LittleEndian)
                         {
-                            settings.Width = BFLIMHeaderLE.width;
-                            settings.Height = BFLIMHeaderLE.height;
-                            settings.Orientation = ImageSettings.ConvertOrientation(BFLIMHeaderLE.orientation);
-                            settings.Format = ImageSettings.ConvertFormat(BFLIMHeaderLE.format);
-                            texture = Common.Save(Image, settings);
+                            /*settings.Width = BFLIMHeaderLE.width;
+                            settings.Height = BFLIMHeaderLE.height;*/
+                            texture = Kontract.Image.Image.Save(Image, Settings);
                             bw.Write(texture);
 
                             // We can now change the image width/height/filesize!
