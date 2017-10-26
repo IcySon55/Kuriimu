@@ -2,6 +2,10 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using Kontract.Image.Format;
+using Kontract.Interface;
+using Kontract.Image.Swizzle;
 using Cetera.IO;
 using Kontract.IO;
 using System.Linq;
@@ -15,8 +19,8 @@ namespace Cetera.Image
         {
             public short width;
             public short height;
-            public CLIMFormat format;
-            public Orientation orientation;
+            public byte format;
+            public byte orientation;
             public short alignment;
             public int datasize;
         }
@@ -27,8 +31,8 @@ namespace Cetera.Image
             public short width;
             public short height;
             public short alignment;
-            public FLIMFormat format;
-            public Orientation orientation;
+            public byte format;
+            public byte orientation;
             public int datasize;
         }
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -37,7 +41,7 @@ namespace Cetera.Image
             public short width;
             public short height;
             public short alignment;
-            public FLIMFormat format;
+            public byte format;
             private byte tmp;
             public int datasize;
 
@@ -45,26 +49,52 @@ namespace Cetera.Image
             public int tileMode => tmp & 0x1F;
         }
 
-        public enum CLIMFormat : byte
+        public Dictionary<byte, IImageFormat> DSFormat = new Dictionary<byte, IImageFormat>
         {
-            L8, A8, LA44, LA88, HL88,
-            RGB565, RGB888, RGBA5551,
-            RGBA4444, RGBA8888,
-            ETC1, ETC1A4, L4, A4
-        }
-        public enum FLIMFormat : byte
+            [0] = new LA(8, 0),
+            [1] = new LA(0, 8),
+            [2] = new LA(4, 4),
+            [3] = new LA(8, 8),
+            [4] = new HL(8, 8),
+            [5] = new RGBA(5, 6, 5),
+            [6] = new RGBA(8, 8, 8),
+            [7] = new RGBA(5, 5, 5, 1),
+            [8] = new RGBA(4, 4, 4, 4),
+            [9] = new RGBA(8, 8, 8, 8),
+            [10] = new Kontract.Image.Format.ETC1(),
+            [11] = new Kontract.Image.Format.ETC1(true),
+            [18] = new LA(4, 0),
+            [19] = new LA(0, 4),
+        };
+
+        public Dictionary<byte, IImageFormat> WiiUFormat = new Dictionary<byte, IImageFormat>
         {
-            L8, A8, LA44, LA88, HL88,
-            RGB565, RGB888, RGBA5551,
-            RGBA4444, RGBA8888,
-            ETC1, ETC1A4,
-            DXT1, DXT3, DXT5,
-            ATI1L, ATI1A, ATI2,
-            L4, A4,
-            sRGBA8888,
-            sDXT1, sDXT3, sDXT5,
-            RGBA1010102
-        }
+            [0] = new LA(8, 0, ByteOrder.BigEndian),
+            [1] = new LA(0, 8, ByteOrder.BigEndian),
+            [2] = new LA(4, 4, ByteOrder.BigEndian),
+            [3] = new LA(8, 8, ByteOrder.BigEndian),
+            [4] = new HL(8, 8, ByteOrder.BigEndian),
+            [5] = new RGBA(5, 6, 5, 0, ByteOrder.BigEndian),
+            [6] = new RGBA(8, 8, 8, 0, ByteOrder.BigEndian),
+            [7] = new RGBA(5, 5, 5, 1, ByteOrder.BigEndian),
+            [8] = new RGBA(4, 4, 4, 4, ByteOrder.BigEndian),
+            [9] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
+            [10] = new Kontract.Image.Format.ETC1(false, ByteOrder.BigEndian),
+            [11] = new Kontract.Image.Format.ETC1(true, ByteOrder.BigEndian),
+            [12] = new Kontract.Image.Format.DXT(Kontract.Image.Format.DXT.Version.DXT1, false, ByteOrder.BigEndian),
+            [13] = new Kontract.Image.Format.DXT(Kontract.Image.Format.DXT.Version.DXT3, false, ByteOrder.BigEndian),
+            [14] = new Kontract.Image.Format.DXT(Kontract.Image.Format.DXT.Version.DXT5, false, ByteOrder.BigEndian),
+            [15] = new Kontract.Image.Format.ATI(Kontract.Image.Format.ATI.Format.ATI1L, ByteOrder.BigEndian),
+            [16] = new Kontract.Image.Format.ATI(Kontract.Image.Format.ATI.Format.ATI1A, ByteOrder.BigEndian),
+            [17] = new Kontract.Image.Format.ATI(Kontract.Image.Format.ATI.Format.ATI2, ByteOrder.BigEndian),
+            [18] = new LA(4, 0, ByteOrder.BigEndian),
+            [19] = new LA(0, 4, ByteOrder.BigEndian),
+            [20] = null,
+            [21] = null,
+            [22] = null,
+            [23] = null,
+            [24] = new RGBA(10, 10, 10, 2, ByteOrder.BigEndian)
+        };
 
         public enum Orientation : byte
         {
@@ -74,12 +104,16 @@ namespace Cetera.Image
         }
 
         NW4CSectionList sections;
+
         private ByteOrder byteOrder { get; set; }
+
         public BCLIMImageHeader BCLIMHeader { get; private set; }
         public BFLIMImageHeaderLE BFLIMHeaderLE { get; private set; }
         public BFLIMImageHeaderBE BFLIMHeaderBE { get; private set; }
+
         public Bitmap Image { get; set; }
-        public ImageSettings Settings { get; set; }
+
+        public Kontract.Image.ImageSettings Settings { get; set; }
 
         public BXLIM(Stream input)
         {
@@ -88,51 +122,106 @@ namespace Cetera.Image
                 var tex = br.ReadBytes((int)br.BaseStream.Length - 40);
                 sections = br.ReadSections();
                 byteOrder = br.ByteOrder;
+
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(byteOrder);
-                        Settings = new ImageSettings
+
+                        CreateSwizzleLists(BCLIMHeader.orientation, byteOrder, out var innerS, out var outerS);
+
+                        Settings = new Kontract.Image.ImageSettings
                         {
                             Width = BCLIMHeader.width,
                             Height = BCLIMHeader.height,
-                            Format = ImageSettings.ConvertFormat(BCLIMHeader.format),
-                            Orientation = ImageSettings.ConvertOrientation(BCLIMHeader.orientation)
+                            Format = DSFormat[BCLIMHeader.format],
+                            InnerSwizzle = innerS,
+                            OuterSwizzle = outerS,
                         };
-                        Image = Common.Load(tex, Settings);
+                        Image = Kontract.Image.Image.Load(tex, Settings);
                         break;
                     case "FLIM":
                         if (byteOrder == ByteOrder.LittleEndian)
                         {
                             BFLIMHeaderLE = sections[0].Data.BytesToStruct<BFLIMImageHeaderLE>(byteOrder);
-                            Settings = new ImageSettings
+
+                            CreateSwizzleLists(BFLIMHeaderLE.orientation, byteOrder, out innerS, out outerS);
+
+                            Settings = new Kontract.Image.ImageSettings
                             {
                                 Width = BFLIMHeaderLE.width,
                                 Height = BFLIMHeaderLE.height,
-                                Format = ImageSettings.ConvertFormat(BFLIMHeaderLE.format),
-                                Orientation = ImageSettings.ConvertOrientation(BFLIMHeaderLE.orientation),
+                                Format = DSFormat[BFLIMHeaderLE.format],
+                                InnerSwizzle = innerS,
+                                OuterSwizzle = outerS,
                             };
-                            Image = Common.Load(tex, Settings);
+                            Image = Kontract.Image.Image.Load(tex, Settings);
                         }
                         else
                         {
                             BFLIMHeaderBE = sections[0].Data.BytesToStruct<BFLIMImageHeaderBE>(byteOrder);
-                            var padWidth = 2 << (int)Math.Log(BFLIMHeaderBE.width - 1, 2);
-                            var padHeight = 2 << (int)Math.Log(BFLIMHeaderBE.height - 1, 2);
-                            Settings = new ImageSettings
+
+                            Settings = new Kontract.Image.ImageSettings
                             {
-                                Width = padWidth,
-                                Height = padHeight,
-                                Format = ImageSettings.ConvertFormat(BFLIMHeaderBE.format),
-                                Orientation = Cetera.Image.Orientation.Default,
-                                PadToPowerOf2 = true,
-                                ZOrder = (br.ByteOrder == ByteOrder.LittleEndian) ? true : false
+                                Width = BFLIMHeaderBE.width,
+                                Height = BFLIMHeaderBE.height,
+                                Format = WiiUFormat[BFLIMHeaderBE.format],
                             };
-                            Image = SwizzleTiles(Common.Load(tex, Settings), padWidth, padHeight, BFLIMHeaderBE.width, BFLIMHeaderBE.height, 8, BFLIMHeaderBE.tileMode);
+                            Image = Kontract.Image.Image.Load(tex, Settings);
                         }
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");
+                }
+            }
+        }
+
+        void CreateSwizzleLists(byte orient, ByteOrder byteOrder, out List<IImageSwizzle> inner, out List<IImageSwizzle> outer)
+        {
+            inner = null;
+            outer = null;
+
+            if (byteOrder == ByteOrder.LittleEndian)
+                inner = new List<IImageSwizzle> { new ZOrder() };
+
+            if (orient != 0)
+            {
+                byte count = 8;
+                while (count != 0)
+                {
+                    switch (orient & (int)Math.Pow(2, --count))
+                    {
+                        case 0x80:
+                            break;
+                        case 0x40:
+                            break;
+                        case 0x20:
+                            break;
+                        case 0x10:
+                            break;
+                        //Transpose
+                        case 0x8:
+                            if (inner == null)
+                                inner = new List<IImageSwizzle>();
+                            if (outer == null)
+                                outer = new List<IImageSwizzle>();
+                            inner.Add(new Transpose());
+                            outer.Add(new Transpose(true));
+                            break;
+                        //Rotated by 90
+                        case 0x4:
+                            if (inner == null)
+                                inner = new List<IImageSwizzle>();
+                            if (outer == null)
+                                outer = new List<IImageSwizzle>();
+                            inner.Add(new Rotate(270));
+                            outer.Add(new Rotate(270, true));
+                            break;
+                        case 0x2:
+                            break;
+                        case 0x1:
+                            break;
+                    }
                 }
             }
         }

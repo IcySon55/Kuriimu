@@ -46,7 +46,7 @@ namespace image_nintendo.BXLIM
             if (FileInfo.Exists)
             {
                 _bxlim = new Cetera.Image.BXLIM(FileInfo.OpenRead());
-                _bitmaps = new List<BitmapInfo> { new BxlimBitmapInfo { Bitmap = _bxlim.Image, Format = _bxlim.Settings.Format } };
+                _bitmaps = new List<BitmapInfo> { new BxlimBitmapInfo { Bitmap = _bxlim.Image, Format = _bxlim.Settings.Format.FormatName } };
             }
         }
 
@@ -57,7 +57,6 @@ namespace image_nintendo.BXLIM
 
             var info = _bitmaps[0] as BxlimBitmapInfo;
             _bxlim.Image = info.Bitmap;
-            _bxlim.Settings.Format = info.Format;
             _bxlim.Save(FileInfo.Create());
         }
 
@@ -71,6 +70,6 @@ namespace image_nintendo.BXLIM
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public Cetera.Image.Format Format { get; set; }
+        public string Format { get; set; }
     }
 }
