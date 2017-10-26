@@ -32,7 +32,7 @@ namespace Kontract.Image.Format
             lDepth = l;
             aDepth = a;
 
-            FormatName = "LA" + ((l != 0) ? l.ToString() : "") + ((a != 0) ? a.ToString() : "");
+            FormatName = ((l != 0) ? "L" : "") + ((a != 0) ? "A" : "") + ((l != 0) ? l.ToString() : "") + ((a != 0) ? a.ToString() : "");
 
             this.byteOrder = byteOrder;
         }
@@ -95,6 +95,8 @@ namespace Kontract.Image.Format
             }
         }
 
+        BinaryWriterX bw = null;
+
         public void Save(Color color, Stream output)
         {
             var a = (aDepth == 0) ? 0 : CompressValue(color.A, aDepth);
@@ -105,21 +107,23 @@ namespace Kontract.Image.Format
             long value = a;
             value |= (uint)(l << lShift);
 
-            using (var bw = new BinaryWriterX(output, true, byteOrder))
-                switch (BitDepth)
-                {
-                    case 4:
-                        bw.WriteNibble((int)value);
-                        break;
-                    case 8:
-                        bw.Write((byte)value);
-                        break;
-                    case 16:
-                        bw.Write((ushort)value);
-                        break;
-                    default:
-                        throw new Exception($"BitDepth {BitDepth} not supported!");
-                }
+            if (bw == null)
+                bw = new BinaryWriterX(output, true, byteOrder);
+
+            switch (BitDepth)
+            {
+                case 4:
+                    bw.WriteNibble((int)value);
+                    break;
+                case 8:
+                    bw.Write((byte)value);
+                    break;
+                case 16:
+                    bw.Write((ushort)value);
+                    break;
+                default:
+                    throw new Exception($"BitDepth {BitDepth} not supported!");
+            }
         }
 
         int CompressValue(int value, int depth)
