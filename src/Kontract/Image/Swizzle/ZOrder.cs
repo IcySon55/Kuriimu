@@ -10,19 +10,11 @@ namespace Kontract.Image.Swizzle
 {
     public class ZOrder : IImageSwizzle
     {
-        public Point InnerLoad(int pointCount, int tileSize)
+        public Point Load(Point point, int width, int height)
         {
             return new Point(
-                ZOrderX(tileSize, pointCount),
-                ZOrderY(tileSize, pointCount));
-        }
-
-        public Point OuterLoad(int pointCount, int tileSize, int stride)
-        {
-            var powTileSize = (int)Math.Pow(tileSize, 2);
-            return new Point(
-                (pointCount / powTileSize % (stride / tileSize)) * tileSize,
-                (pointCount / powTileSize / (stride / tileSize)) * tileSize);
+                ZOrderX(width, point.Y * width + point.X),
+                ZOrderY(width, point.Y * width + point.X));
         }
 
         int ZOrderX(int tileSize, int count)

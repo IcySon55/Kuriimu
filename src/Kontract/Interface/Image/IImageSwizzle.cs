@@ -10,8 +10,7 @@ namespace Kontract.Interface
 {
     public interface IImageSwizzle
     {
-        Point InnerLoad(int pointCount, int tileSize);
-        Point OuterLoad(int pointCount, int tileSize, int stride);
+        Point Load(Point point, int width, int height);
         Point Save(int pointCount, int tileSize, int width, int height);
     }
 }
