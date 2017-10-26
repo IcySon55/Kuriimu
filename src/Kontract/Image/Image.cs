@@ -21,13 +21,13 @@ namespace Kontract.Image
         public int padWidth { get; set; } = 0;
         public int padHeight { get; set; } = 0;
 
-        public IImageSwizzle InnerSwizzle { get; set; } = null;
-        public IImageSwizzle OuterSwizzle { get; set; } = null;
-        public IImageTransformation Transformation { get; set; } = null;
+        public List<IImageSwizzle> InnerSwizzle { get; set; } = null;
+        public List<IImageSwizzle> OuterSwizzle { get; set; } = null;
         public Func<Color, Color> PixelShader { get; set; }
 
         public int TileSize { get; set; } = 8;
         public bool PadToPowerOf2 { get; set; } = false;
+        public bool SwapWidthHeight { get; set; } = false;
     }
 
     /// <summary>
@@ -60,36 +60,38 @@ namespace Kontract.Image
 
             for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
             {
+                var outerPoint = new Point(i / powTileSize % (strideWidth / tileSize), i / (tileSize * strideWidth));
+
                 var innerTile = GetInnerTile(settings);
-                foreach (var point in innerTile)
+                foreach (var innerPoint in innerTile)
                 {
-                    if (settings.OuterSwizzle == null)
+                    if (settings.OuterSwizzle != null)
                     {
-                        var point2 = new Point(
-                            ((i / powTileSize % (strideWidth / tileSize)) * tileSize) + point.X,
-                            ((i / powTileSize / (strideWidth / tileSize)) * tileSize) + point.Y);
-                        yield return point2;
+                        foreach (var swizzle in settings.OuterSwizzle)
+                            outerPoint = swizzle.Load(outerPoint, strideWidth, strideHeight);
                     }
-                    else
-                    {
-                        var point2 = settings.OuterSwizzle.OuterLoad(i, tileSize, strideWidth);
-                        point2.X += point.X;
-                        point2.Y += point.Y;
-                        yield return point2;
-                    }
+
+                    yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
                 }
             }
         }
+
+        /// <summary>
+        /// Gives back a sequence of points in a tile, modified by inner Swizzles
+        /// </summary>
         static IEnumerable<Point> GetInnerTile(ImageSettings settings)
         {
             int tileSize = settings.TileSize;
             int powTileSize = (int)Math.Pow(tileSize, 2);
 
             for (int i = 0; i < powTileSize; i++)
-                if (settings.InnerSwizzle == null)
-                    yield return new Point(i % powTileSize % tileSize, i % powTileSize / tileSize);
-                else
-                    yield return settings.InnerSwizzle.InnerLoad(i, tileSize);
+            {
+                var point = new Point(i % powTileSize % tileSize, i % powTileSize / tileSize);
+                if (settings.InnerSwizzle != null)
+                    foreach (var swizzle in settings.InnerSwizzle)
+                        point = swizzle.Load(point, tileSize, tileSize);
+                yield return point;
+            }
         }
 
         /// <summary>
@@ -106,6 +108,13 @@ namespace Kontract.Image
             int width = settings.Width, height = settings.Height;
 
             var points = GetPointSequence(settings);
+
+            if (settings.SwapWidthHeight)
+            {
+                var tmp = width;
+                width = height;
+                height = width;
+            }
 
             var bmp = new Bitmap(width, height);
             var data = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
