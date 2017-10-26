@@ -97,7 +97,29 @@ namespace Kontract.Image.Format
 
         public void Save(Color color, Stream output)
         {
+            var a = (aDepth == 0) ? 0 : CompressValue(color.A, aDepth);
+            var l = (lDepth == 0) ? 0 : CompressValue(color.G, lDepth);
 
+            var lShift = aDepth;
+
+            long value = a;
+            value |= (uint)(l << lShift);
+
+            using (var bw = new BinaryWriterX(output, true, byteOrder))
+                switch (BitDepth)
+                {
+                    case 4:
+                        bw.WriteNibble((int)value);
+                        break;
+                    case 8:
+                        bw.Write((byte)value);
+                        break;
+                    case 16:
+                        bw.Write((ushort)value);
+                        break;
+                    default:
+                        throw new Exception($"BitDepth {BitDepth} not supported!");
+                }
         }
 
         int CompressValue(int value, int depth)
