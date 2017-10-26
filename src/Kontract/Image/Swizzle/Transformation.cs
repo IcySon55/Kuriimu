@@ -30,7 +30,7 @@ namespace Kontract.Image.Swizzle
             this.sameDims = sameDims;
         }
 
-        public Point Load(Point point, int width, int height)
+        public Point Get(Point point, int width, int height)
         {
             switch (degree)
             {
@@ -69,11 +69,6 @@ namespace Kontract.Image.Swizzle
                     return point;
             }
         }
-
-        public Point Save(int pointCount, int tileSize, int width, int height)
-        {
-            return new Point(0, 0);
-        }
     }
 
     public class Transpose : IImageSwizzle
@@ -91,7 +86,7 @@ namespace Kontract.Image.Swizzle
             this.sameDims = sameDims;
         }
 
-        public Point Load(Point point, int width, int height)
+        public Point Get(Point point, int width, int height)
         {
             if (sameDims)
             {
@@ -104,11 +99,6 @@ namespace Kontract.Image.Swizzle
             {
                 return new Point(point.Y, point.X);
             }
-        }
-
-        public Point Save(int pointCount, int tileSize, int width, int height)
-        {
-            return new Point(0, 0);
         }
     }
 }

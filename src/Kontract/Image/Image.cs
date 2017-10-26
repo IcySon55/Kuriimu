@@ -40,7 +40,7 @@ namespace Kontract.Image
         /// <summary>
         /// Gives back a sequence of points, modified by Swizzles if applied
         /// </summary>
-        static IEnumerable<Point> GetPointSequence(ImageSettings settings, bool load = true)
+        static IEnumerable<Point> GetPointSequence(ImageSettings settings)
         {
             int tileSize = settings.TileSize;
             int powTileSize = tileSize * tileSize;
@@ -58,22 +58,14 @@ namespace Kontract.Image
                 strideHeight = (settings.padHeight != 0) ? settings.padHeight : strideHeight;
             }
 
-            var innerTile = GetInnerTile(settings, load);
+            var innerTile = GetInnerTile(settings);
             for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
             {
                 var outerPoint = new Point(i / powTileSize % (strideWidth / tileSize), i / (tileSize * strideWidth));
                 if (settings.OuterSwizzle.Count() != 0)
                 {
-                    if (load)
-                    {
-                        foreach (var swizzle in settings.OuterSwizzle)
-                            outerPoint = swizzle.Load(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
-                    }
-                    else
-                    {
-                        foreach (var swizzle in settings.OuterSwizzle.Select(c => c).Reverse().ToList())
-                            outerPoint = swizzle.Save(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
-                    }
+                    foreach (var swizzle in settings.OuterSwizzle)
+                        outerPoint = swizzle.Get(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
 
                     foreach (var innerPoint in innerTile)
                         yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
@@ -84,7 +76,7 @@ namespace Kontract.Image
         /// <summary>
         /// Gives back a sequence of points in a tile, modified by inner Swizzles
         /// </summary>
-        static IEnumerable<Point> GetInnerTile(ImageSettings settings, bool load = true)
+        static IEnumerable<Point> GetInnerTile(ImageSettings settings)
         {
             int tileSize = settings.TileSize;
             int powTileSize = tileSize * tileSize;
@@ -93,16 +85,8 @@ namespace Kontract.Image
             {
                 var point = new Point(i % powTileSize % tileSize, i % powTileSize / tileSize);
                 if (settings.InnerSwizzle.Count() != 0)
-                    if (load)
-                    {
-                        foreach (var swizzle in settings.InnerSwizzle)
-                            point = swizzle.Load(point, tileSize, tileSize);
-                    }
-                    else
-                    {
-                        foreach (var swizzle in settings.InnerSwizzle.Select(c => c).Reverse().ToList())
-                            point = swizzle.Save(point, tileSize, tileSize);
-                    }
+                    foreach (var swizzle in settings.InnerSwizzle)
+                        point = swizzle.Get(point, tileSize, tileSize);
                 yield return point;
             }
         }
