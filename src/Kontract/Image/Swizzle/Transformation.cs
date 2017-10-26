@@ -8,7 +8,7 @@ using Kontract.Interface;
 
 namespace Kontract.Image.Swizzle
 {
-    class Rotate : IImageSwizzle
+    public class Rotate : IImageSwizzle
     {
         int degree;
 
@@ -53,7 +53,7 @@ namespace Kontract.Image.Swizzle
         }
     }
 
-    class Transpose : IImageSwizzle
+    public class Transpose : IImageSwizzle
     {
         public Point Load(Point point, int width, int height)
         {
