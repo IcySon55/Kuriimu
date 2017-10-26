@@ -58,21 +58,16 @@ namespace Kontract.Image
                 strideHeight = (settings.padHeight != 0) ? settings.padHeight : strideHeight;
             }
 
+            var innerTile = GetInnerTile(settings);
             for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
             {
                 var outerPoint = new Point(i / powTileSize % (strideWidth / tileSize), i / (tileSize * strideWidth));
+                if (settings.OuterSwizzle != null)
+                    foreach (var swizzle in settings.OuterSwizzle)
+                        outerPoint = swizzle.Load(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
 
-                var innerTile = GetInnerTile(settings);
                 foreach (var innerPoint in innerTile)
-                {
-                    if (settings.OuterSwizzle != null)
-                    {
-                        foreach (var swizzle in settings.OuterSwizzle)
-                            outerPoint = swizzle.Load(outerPoint, strideWidth, strideHeight);
-                    }
-
                     yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
-                }
             }
         }
 
@@ -113,7 +108,7 @@ namespace Kontract.Image
             {
                 var tmp = width;
                 width = height;
-                height = width;
+                height = tmp;
             }
 
             var bmp = new Bitmap(width, height);
@@ -525,4 +520,3 @@ namespace Kontract.Image
         }*/
     }
 }
-
