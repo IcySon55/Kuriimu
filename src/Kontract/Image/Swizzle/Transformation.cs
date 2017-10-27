@@ -16,7 +16,7 @@ namespace Kontract.Image.Swizzle
 
         /// <summary>
         /// Swizzles points to accomplish a rotated image
-        /// Valid degree are: 0, 90, 180, 270
+        /// Valid degrees are: 0, 90, 180, 270
         /// Other values will be clamped to be one of those 4
         /// </summary>
         /// 
@@ -25,7 +25,7 @@ namespace Kontract.Image.Swizzle
         /// </param>
         public Rotate(int degree, bool sameDims = false)
         {
-            this.degree = degree % 360 / 90 * 90;
+            this.degree = (degree < 0) ? 360 - (degree * -1) % 360 : degree % 360 / 90 * 90;
 
             this.sameDims = sameDims;
         }
