@@ -10,7 +10,11 @@ namespace Kontract.Image.Support
     {
         public static int ChangeBitDepth(int value, int bitDepthFrom, int bitDepthTo)
         {
-            if (bitDepthFrom == bitDepthTo || bitDepthFrom == 0 || bitDepthTo == 0)
+            if (bitDepthTo < 0 || bitDepthFrom < 0)
+                throw new Exception("BitDepths can't be negative!");
+            if (bitDepthFrom == 0 || bitDepthTo == 0)
+                return 0;
+            if (bitDepthFrom == bitDepthTo)
                 return value;
 
             if (bitDepthFrom < bitDepthTo)
