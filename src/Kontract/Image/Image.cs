@@ -66,10 +66,10 @@ namespace Kontract.Image
                 {
                     foreach (var swizzle in settings.OuterSwizzle)
                         outerPoint = swizzle.Get(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
-
-                    foreach (var innerPoint in innerTile)
-                        yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
                 }
+
+                foreach (var innerPoint in innerTile)
+                    yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
             }
         }
 
