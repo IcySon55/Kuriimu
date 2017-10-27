@@ -79,7 +79,6 @@
     <Compile Include="Image\PVRTC\Vector4Int.cs" />
     <Compile Include="IO\Extensions.cs" />
     <Compile Include="Font\BCFNT.cs" />
-    <Compile Include="Image\BXLIM.cs" />
     <Compile Include="Layout\BCLYT.cs" />
     <Compile Include="Archive\DARC.cs" />
     <Compile Include="Image\Common.cs" />

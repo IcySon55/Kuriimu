@@ -111,7 +111,6 @@
     <Compile Include="Interface\IExtension.cs" />
     <Compile Include="Interface\Image\IImageFormat.cs" />
     <Compile Include="Interface\Image\IImageSwizzle.cs" />
-    <Compile Include="Interface\Image\ITransformation.cs" />
     <Compile Include="Interface\IPlugin.cs" />
     <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />
@@ -145,9 +144,7 @@
       <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Image\Transform\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>
