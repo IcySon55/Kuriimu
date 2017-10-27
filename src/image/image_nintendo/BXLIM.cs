@@ -42,11 +42,8 @@ namespace Cetera.Image
             public short height;
             public short alignment;
             public byte format;
-            private byte tmp;
+            public byte swizzleTileMode;
             public int datasize;
-
-            public Orientation orientation => (Orientation)(tmp >> 5);
-            public int tileMode => tmp & 0x1F;
         }
 
         public Dictionary<byte, IImageFormat> DSFormat = new Dictionary<byte, IImageFormat>
@@ -96,13 +93,6 @@ namespace Cetera.Image
             [24] = new RGBA(10, 10, 10, 2, ByteOrder.BigEndian)
         };
 
-        public enum Orientation : byte
-        {
-            Default = 0,
-            Rotate90 = 4,
-            Transpose = 8,
-        }
-
         NW4CSectionList sections;
 
         private ByteOrder byteOrder { get; set; }
@@ -128,7 +118,7 @@ namespace Cetera.Image
                     case "CLIM":
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(byteOrder);
 
-                        CreateSwizzleLists(BCLIMHeader.orientation, byteOrder, out var innerS, out var outerS);
+                        CreateSwizzleLists3DS(BCLIMHeader.orientation, byteOrder, out var innerS, out var outerS);
 
                         Settings = new Kontract.Image.ImageSettings
                         {
@@ -145,7 +135,7 @@ namespace Cetera.Image
                         {
                             BFLIMHeaderLE = sections[0].Data.BytesToStruct<BFLIMImageHeaderLE>(byteOrder);
 
-                            CreateSwizzleLists(BFLIMHeaderLE.orientation, byteOrder, out innerS, out outerS);
+                            CreateSwizzleLists3DS(BFLIMHeaderLE.orientation, byteOrder, out innerS, out outerS);
 
                             Settings = new Kontract.Image.ImageSettings
                             {
@@ -163,9 +153,12 @@ namespace Cetera.Image
 
                             Settings = new Kontract.Image.ImageSettings
                             {
-                                Width = BFLIMHeaderBE.width,
-                                Height = BFLIMHeaderBE.height,
+                                Width = 64,//BFLIMHeaderBE.width,
+                                Height = 64,//BFLIMHeaderBE.height,
+                                padWidth = (BFLIMHeaderBE.width % 32 != 0) ? (BFLIMHeaderBE.width / 32 + 1) * 32 : 0,
+                                padHeight = (BFLIMHeaderBE.height % 32 != 0) ? (BFLIMHeaderBE.height / 32 + 1) * 32 : 0,
                                 Format = WiiUFormat[BFLIMHeaderBE.format],
+                                OuterSwizzle = new List<IImageSwizzle> { new Kontract.Image.Swizzle.WiiU(BFLIMHeaderBE.swizzleTileMode) }
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
@@ -176,7 +169,7 @@ namespace Cetera.Image
             }
         }
 
-        void CreateSwizzleLists(byte orient, ByteOrder byteOrder, out List<IImageSwizzle> inner, out List<IImageSwizzle> outer)
+        void CreateSwizzleLists3DS(byte orient, ByteOrder byteOrder, out List<IImageSwizzle> inner, out List<IImageSwizzle> outer)
         {
             inner = new List<IImageSwizzle>();
             outer = new List<IImageSwizzle>();
@@ -202,12 +195,12 @@ namespace Cetera.Image
                         //Transpose
                         case 0x8:
                             inner.Add(new Transpose());
-                            outer.Add(new Transpose(true));
+                            outer.Add(new Transpose());
                             break;
                         //Rotated by 90
                         case 0x4:
                             inner.Add(new Rotate(270));
-                            outer.Add(new Rotate(270, true));
+                            outer.Add(new Rotate(270));
                             break;
                         case 0x2:
                             break;
