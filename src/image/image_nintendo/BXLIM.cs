@@ -153,8 +153,8 @@ namespace Cetera.Image
 
                             Settings = new Kontract.Image.ImageSettings
                             {
-                                Width = 64,//BFLIMHeaderBE.width,
-                                Height = 64,//BFLIMHeaderBE.height,
+                                Width = BFLIMHeaderBE.width,
+                                Height = BFLIMHeaderBE.height,
                                 padWidth = (BFLIMHeaderBE.width % 32 != 0) ? (BFLIMHeaderBE.width / 32 + 1) * 32 : 0,
                                 padHeight = (BFLIMHeaderBE.height % 32 != 0) ? (BFLIMHeaderBE.height / 32 + 1) * 32 : 0,
                                 Format = WiiUFormat[BFLIMHeaderBE.format],
@@ -211,101 +211,9 @@ namespace Cetera.Image
             }
         }
 
-        private Bitmap SwizzleTiles(Bitmap tex, int padWidth, int padHeight, int origWidth, int origHeight, int tileSize, int tileMode)
-        {
-            var newImage = new Bitmap(padWidth, padHeight);
-
-            var oldG = Graphics.FromImage(tex);
-            var newG = Graphics.FromImage(newImage);
-
-            switch (tileMode)
-            {
-                case 4:
-                    var swizzleY = new int[] { tileSize, 0, tileSize, 0 };
-                    var swizzleX = new int[] { 0, 0, tileSize, tileSize };
-                    var xValues = new int[] { 0, 0, padWidth, padWidth };
-                    var xValuesPos = 0;
-
-                    var newPosX = 0;
-                    var newPosY = 0;
-
-                    for (int y = 0; y < padHeight; y += 2 * tileSize)
-                    {
-                        if (xValues[xValuesPos] == 0)
-                            for (int x = 0; x < padWidth / 2; x += 2 * tileSize)
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    var tmpTile = new Bitmap(tileSize, tileSize);
-                                    Graphics.FromImage(tmpTile).DrawImage(tex, 0, 0, new Rectangle(new Point(x + swizzleX[i], y + swizzleY[i]), new Size(tileSize, tileSize)), GraphicsUnit.Pixel);
-
-                                    newG.DrawImage(tmpTile, new Point(newPosX, newPosY));
-                                    newPosX += tileSize;
-                                    if (newPosX >= padWidth)
-                                    {
-                                        newPosX = 0;
-                                        newPosY += tileSize;
-                                    }
-
-                                    tmpTile = new Bitmap(tileSize, tileSize);
-                                    Graphics.FromImage(tmpTile).DrawImage(tex, 0, 0, new Rectangle(new Point(padWidth - ((x + 2 * tileSize)) + swizzleX[i], y + swizzleY[i]), new Size(tileSize, tileSize)), GraphicsUnit.Pixel);
-                                    newG.DrawImage(tmpTile, new Point(newPosX, newPosY));
-                                    newPosX += tileSize;
-                                    if (newPosX >= padWidth)
-                                    {
-                                        newPosX = 0;
-                                        newPosY += tileSize;
-                                    }
-                                }
-                            }
-                        else
-                            for (int x = padWidth / 2 - 2 * tileSize; x >= 0; x -= 2 * tileSize)
-                            {
-                                for (int i = 0; i < 4; i++)
-                                {
-                                    var tmpTile = new Bitmap(tileSize, tileSize);
-                                    Graphics.FromImage(tmpTile).DrawImage(tex, 0, 0, new Rectangle(new Point(padWidth - ((x + 2 * tileSize)) + swizzleX[i], y + swizzleY[i]), new Size(tileSize, tileSize)), GraphicsUnit.Pixel);
-                                    newG.DrawImage(tmpTile, new Point(newPosX, newPosY));
-                                    newPosX += tileSize;
-                                    if (newPosX >= padWidth)
-                                    {
-                                        newPosX = 0;
-                                        newPosY += tileSize;
-                                    }
-
-                                    tmpTile = new Bitmap(tileSize, tileSize);
-                                    Graphics.FromImage(tmpTile).DrawImage(tex, 0, 0, new Rectangle(new Point(x + swizzleX[i], y + swizzleY[i]), new Size(tileSize, tileSize)), GraphicsUnit.Pixel);
-
-                                    newG.DrawImage(tmpTile, new Point(newPosX, newPosY));
-                                    newPosX += tileSize;
-                                    if (newPosX >= padWidth)
-                                    {
-                                        newPosX = 0;
-                                        newPosY += tileSize;
-                                    }
-                                }
-                            }
-
-                        xValuesPos++;
-                        swizzleY = swizzleY.Reverse().ToArray();
-                    }
-
-                    if (origWidth != padWidth || origHeight != padHeight)
-                    {
-                        var cropImage = new Bitmap(origWidth, origHeight);
-                        Graphics.FromImage(cropImage).DrawImage(newImage, 0, 0, new Rectangle(new Point(0, 0), new Size(origWidth, origHeight)), GraphicsUnit.Pixel);
-                        return cropImage;
-                    }
-
-                    return newImage;
-                default:
-                    return tex;
-            }
-        }
-
         public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(output))
+            using (var bw = new BinaryWriterX(output, byteOrder))
             {
                 //var settings = new ImageSettings();
                 byte[] texture;
@@ -344,7 +252,18 @@ namespace Cetera.Image
                         }
                         else
                         {
-                            throw new NotSupportedException($"Big Endian FLIM isn't savable yet!");
+                            /*settings.Width = BFLIMHeaderLE.width;
+                            settings.Height = BFLIMHeaderLE.height;*/
+                            texture = Kontract.Image.Image.Save(Image, Settings);
+                            bw.Write(texture);
+
+                            // We can now change the image width/height/filesize!
+                            BFLIMHeaderBE.width = (short)Image.Width;
+                            BFLIMHeaderBE.height = (short)Image.Height;
+                            BFLIMHeaderBE.datasize = texture.Length;
+                            sections[0].Data = BFLIMHeaderBE.StructToBytes(byteOrder);
+                            sections.Header.file_size = texture.Length + 40;
+                            bw.WriteSections(sections);
                         }
                         break;
                     default:
