@@ -10,6 +10,7 @@ namespace Kontract.Image.Swizzle
 {
     public class ZOrder : IImageSwizzle
     {
+
         public Point Get(Point point, int width, int height)
         {
             return new Point(

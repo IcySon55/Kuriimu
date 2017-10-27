@@ -50,8 +50,9 @@ namespace Kontract.Image.Format
             }
         }
 
-        public void Save(Color color, Stream output)
+        public byte[] Save(IEnumerable<Color> colors)
         {
+            return null;
         }
     }
 }

@@ -10,11 +10,11 @@ namespace Kontract.Interface
 {
     public interface IImageFormat
     {
-        int BitDepth { get; set; }
+        int BitDepth { get; }
 
-        string FormatName { get; set; }
+        string FormatName { get; }
 
         IEnumerable<Color> Load(byte[] input);
-        void Save(Color color, Stream output);
+        byte[] Save(IEnumerable<Color> colors);
     }
 }

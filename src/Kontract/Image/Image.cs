@@ -27,7 +27,6 @@ namespace Kontract.Image
 
         public int TileSize { get; set; } = 8;
         public bool PadToPowerOf2 { get; set; } = false;
-        public bool SwapWidthHeight { get; set; } = false;
     }
 
     /// <summary>
@@ -62,11 +61,8 @@ namespace Kontract.Image
             for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
             {
                 var outerPoint = new Point(i / powTileSize % (strideWidth / tileSize), i / (tileSize * strideWidth));
-                if (settings.OuterSwizzle.Count() != 0)
-                {
-                    foreach (var swizzle in settings.OuterSwizzle)
-                        outerPoint = swizzle.Get(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
-                }
+                foreach (var swizzle in settings.OuterSwizzle)
+                    outerPoint = swizzle.Get(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
 
                 foreach (var innerPoint in innerTile)
                     yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
@@ -84,9 +80,8 @@ namespace Kontract.Image
             for (int i = 0; i < powTileSize; i++)
             {
                 var point = new Point(i % powTileSize % tileSize, i % powTileSize / tileSize);
-                if (settings.InnerSwizzle.Count() != 0)
-                    foreach (var swizzle in settings.InnerSwizzle)
-                        point = swizzle.Get(point, tileSize, tileSize);
+                foreach (var swizzle in settings.InnerSwizzle)
+                    point = swizzle.Get(point, tileSize, tileSize);
                 yield return point;
             }
         }
@@ -105,8 +100,6 @@ namespace Kontract.Image
             int width = settings.Width, height = settings.Height;
 
             var points = GetPointSequence(settings);
-
-            if (settings.SwapWidthHeight) (width, height) = (height, width);
 
             var bmp = new Bitmap(width, height);
             var data = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
@@ -140,13 +133,12 @@ namespace Kontract.Image
         /// </param>
         public static byte[] Save(Bitmap bmp, ImageSettings settings)
         {
-            settings.Width = bmp.Width;
-            settings.Height = bmp.Height;
+            //settings.Width = bmp.Width;
+            //settings.Height = bmp.Height;
 
             var points = GetPointSequence(settings);
 
-            var ms = new MemoryStream();
-
+            var colors = new List<Color>();
             foreach (var point in points)
             {
                 int x = Clamp(point.X, 0, bmp.Width);
@@ -155,10 +147,10 @@ namespace Kontract.Image
                 var color = bmp.GetPixel(x, y);
                 if (settings.PixelShader != null) color = settings.PixelShader(color);
 
-                settings.Format.Save(color, ms);
+                colors.Add(color);
             }
 
-            return ms.ToArray();
+            return settings.Format.Save(colors);
         }
 
         /*static IEnumerable<Color> GetColorsFromTexture(byte[] tex, ImageSettings settings)

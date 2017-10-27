@@ -67,84 +67,44 @@ namespace Kontract.Image.Format
 
                     yield return Color.FromArgb(
                         255,
-                        (rDepth == 0) ? 255 : CorrectValue((int)(value >> rShift & rBitMask), rDepth),
-                        (gDepth == 0) ? 255 : CorrectValue((int)(value & gBitMask), gDepth),
+                        (rDepth == 0) ? 255 : Support.Support.ChangeBitDepth((int)(value >> rShift & rBitMask), rDepth, 8),
+                        (gDepth == 0) ? 255 : Support.Support.ChangeBitDepth((int)(value & gBitMask), gDepth, 8),
                         255);
                 }
             }
         }
 
-        int CorrectValue(int value, int depth)
+        public byte[] Save(IEnumerable<Color> colors)
         {
-            switch (depth)
-            {
-                case 4:
-                    return value * 17;
-                case 5:
-                    return value * 33 / 4;
-                case 6:
-                    return value * 65 / 16;
-                case 7:
-                    return value * 129 / 64;
-                case 9:
-                    return value / 2;
-                case 10:
-                    return value / 4;
-                default:
-                    return value;
-            }
-        }
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms, true, byteOrder))
+                foreach (var color in colors)
+                {
+                    var r = (rDepth == 0) ? 0 : Support.Support.ChangeBitDepth(color.R, 8, rDepth);
+                    var g = (gDepth == 0) ? 0 : Support.Support.ChangeBitDepth(color.G, 8, gDepth);
 
-        BinaryWriterX bw = null;
+                    var rShift = gDepth;
 
-        public void Save(Color color, Stream output)
-        {
-            var r = (rDepth == 0) ? 0 : CompressValue(color.R, rDepth);
-            var g = (gDepth == 0) ? 0 : CompressValue(color.G, gDepth);
+                    long value = g;
+                    value |= (uint)(r << rShift);
 
-            var rShift = gDepth;
+                    switch (BitDepth)
+                    {
+                        case 4:
+                            bw.WriteNibble((int)value);
+                            break;
+                        case 8:
+                            bw.Write((byte)value);
+                            break;
+                        case 16:
+                            bw.Write((ushort)value);
+                            break;
+                        default:
+                            throw new Exception($"BitDepth {BitDepth} not supported!");
+                    }
+                }
 
-            long value = g;
-            value |= (uint)(r << rShift);
-
-            if (bw == null)
-                bw = new BinaryWriterX(output, true, byteOrder);
-
-            switch (BitDepth)
-            {
-                case 4:
-                    bw.WriteNibble((int)value);
-                    break;
-                case 8:
-                    bw.Write((byte)value);
-                    break;
-                case 16:
-                    bw.Write((ushort)value);
-                    break;
-                default:
-                    throw new Exception($"BitDepth {BitDepth} not supported!");
-            }
-        }
-
-        int CompressValue(int value, int depth)
-        {
-            switch (depth)
-            {
-                case 4:
-                    return value / 17;
-                case 5:
-                    return (((value + 1) * 4) - 1) / 33;
-                case 6:
-                    return (((value + 1) * 16) - 1) / 65;
-                case 7:
-                    return (((value + 1) * 64) - 1) / 129;
-                case 9:
-                    return ((value + 1) * 2) - 1;
-                case 10:
-                    return ((value + 1) * 4) - 1;
-                default:
-                    return value;
-            }
+            return ms.ToArray();
         }
     }
 }
