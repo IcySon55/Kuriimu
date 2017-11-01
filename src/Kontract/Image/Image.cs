@@ -21,12 +21,8 @@ namespace Kontract.Image
         public int padWidth { get; set; } = 0;
         public int padHeight { get; set; } = 0;
 
-        public List<IImageSwizzle> InnerSwizzle { get; set; } = new List<IImageSwizzle>();
-        public List<IImageSwizzle> OuterSwizzle { get; set; } = new List<IImageSwizzle>();
+        public IImageSwizzle Swizzle { get; set; }
         public Func<Color, Color> PixelShader { get; set; }
-
-        public int TileSize { get; set; } = 8;
-        public bool PadToPowerOf2 { get; set; } = false;
     }
 
     /// <summary>
@@ -41,47 +37,15 @@ namespace Kontract.Image
         /// </summary>
         static IEnumerable<Point> GetPointSequence(ImageSettings settings)
         {
-            int tileSize = settings.TileSize;
-            int powTileSize = tileSize * tileSize;
+            int strideWidth = (settings.Swizzle != null) ? settings.Swizzle.Width : settings.Width;
+            int strideHeight = (settings.Swizzle != null) ? settings.Swizzle.Height : settings.Height;
 
-            int strideWidth = (settings.Width + (tileSize - 1)) & ~(tileSize - 1);
-            int strideHeight = (settings.Height + (tileSize - 1)) & ~(tileSize - 1);
-            if (settings.PadToPowerOf2)
+            for (int i = 0; i < strideWidth * strideHeight; i++)
             {
-                strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
-                strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
-            }
-            else if (settings.padWidth != 0 || settings.padHeight != 0)
-            {
-                strideWidth = (settings.padWidth != 0) ? settings.padWidth : strideWidth;
-                strideHeight = (settings.padHeight != 0) ? settings.padHeight : strideHeight;
-            }
+                var point = new Point(i % strideWidth, i / strideWidth);
+                if (settings.Swizzle != null)
+                    point = settings.Swizzle.Get(point);
 
-            var innerTile = GetInnerTile(settings);
-            for (int i = 0; i < strideWidth * strideHeight; i += powTileSize)
-            {
-                var outerPoint = new Point(i / powTileSize % (strideWidth / tileSize), i / (tileSize * strideWidth));
-                foreach (var swizzle in settings.OuterSwizzle)
-                    outerPoint = swizzle.Get(outerPoint, strideWidth / tileSize, strideHeight / tileSize);
-
-                foreach (var innerPoint in innerTile)
-                    yield return new Point(outerPoint.X * tileSize + innerPoint.X, outerPoint.Y * tileSize + innerPoint.Y);
-            }
-        }
-
-        /// <summary>
-        /// Gives back a sequence of points in a tile, modified by inner Swizzles
-        /// </summary>
-        static IEnumerable<Point> GetInnerTile(ImageSettings settings)
-        {
-            int tileSize = settings.TileSize;
-            int powTileSize = tileSize * tileSize;
-
-            for (int i = 0; i < powTileSize; i++)
-            {
-                var point = new Point(i % powTileSize % tileSize, i % powTileSize / tileSize);
-                foreach (var swizzle in settings.InnerSwizzle)
-                    point = swizzle.Get(point, tileSize, tileSize);
                 yield return point;
             }
         }

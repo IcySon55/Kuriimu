@@ -104,6 +104,8 @@
     <Compile Include="Image\Support\DXT.cs" />
     <Compile Include="Image\Support\ETC1.cs" />
     <Compile Include="Image\Support\sRGB.cs" />
+    <Compile Include="Image\Swizzle\CTR.cs" />
+    <Compile Include="Image\Swizzle\Master.cs" />
     <Compile Include="Image\Swizzle\Transformation.cs" />
     <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Image\Swizzle\ZOrder.cs" />

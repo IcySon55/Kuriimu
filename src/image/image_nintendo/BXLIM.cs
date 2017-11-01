@@ -8,9 +8,10 @@ using Kontract.Interface;
 using Kontract.Image.Swizzle;
 using Cetera.IO;
 using Kontract.IO;
+using Cetera;
 using System.Linq;
 
-namespace Cetera.Image
+namespace image_nintendo.BXLIM
 {
     public sealed class BXLIM
     {
@@ -58,8 +59,8 @@ namespace Cetera.Image
             [7] = new RGBA(5, 5, 5, 1),
             [8] = new RGBA(4, 4, 4, 4),
             [9] = new RGBA(8, 8, 8, 8),
-            [10] = new Kontract.Image.Format.ETC1(),
-            [11] = new Kontract.Image.Format.ETC1(true),
+            [10] = new ETC1(),
+            [11] = new ETC1(true),
             [18] = new LA(4, 0),
             [19] = new LA(0, 4),
         };
@@ -76,17 +77,17 @@ namespace Cetera.Image
             [7] = new RGBA(5, 5, 5, 1, ByteOrder.BigEndian),
             [8] = new RGBA(4, 4, 4, 4, ByteOrder.BigEndian),
             [9] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
-            [10] = new Kontract.Image.Format.ETC1(false, ByteOrder.BigEndian),
-            [11] = new Kontract.Image.Format.ETC1(true, ByteOrder.BigEndian),
-            [12] = new Kontract.Image.Format.DXT(Kontract.Image.Format.DXT.Version.DXT1, false, ByteOrder.BigEndian),
-            [13] = new Kontract.Image.Format.DXT(Kontract.Image.Format.DXT.Version.DXT3, false, ByteOrder.BigEndian),
-            [14] = new Kontract.Image.Format.DXT(Kontract.Image.Format.DXT.Version.DXT5, false, ByteOrder.BigEndian),
-            [15] = new Kontract.Image.Format.ATI(Kontract.Image.Format.ATI.Format.ATI1L, ByteOrder.BigEndian),
-            [16] = new Kontract.Image.Format.ATI(Kontract.Image.Format.ATI.Format.ATI1A, ByteOrder.BigEndian),
-            [17] = new Kontract.Image.Format.ATI(Kontract.Image.Format.ATI.Format.ATI2, ByteOrder.BigEndian),
+            [10] = new ETC1(false, ByteOrder.BigEndian),
+            [11] = new ETC1(true, ByteOrder.BigEndian),
+            [12] = new DXT(DXT.Version.DXT1, false, ByteOrder.BigEndian),
+            [13] = new DXT(DXT.Version.DXT3, false, ByteOrder.BigEndian),
+            [14] = new DXT(DXT.Version.DXT5, false, ByteOrder.BigEndian),
+            [15] = new ATI(ATI.Format.ATI1L),
+            [16] = new ATI(ATI.Format.ATI1A),
+            [17] = new ATI(ATI.Format.ATI2),
             [18] = new LA(4, 0, ByteOrder.BigEndian),
             [19] = new LA(0, 4, ByteOrder.BigEndian),
-            [20] = null,
+            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
             [21] = null,
             [22] = null,
             [23] = null,
@@ -118,15 +119,12 @@ namespace Cetera.Image
                     case "CLIM":
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(byteOrder);
 
-                        CreateSwizzleLists3DS(BCLIMHeader.orientation, byteOrder, out var innerS, out var outerS);
-
                         Settings = new Kontract.Image.ImageSettings
                         {
                             Width = BCLIMHeader.width,
                             Height = BCLIMHeader.height,
                             Format = DSFormat[BCLIMHeader.format],
-                            InnerSwizzle = innerS,
-                            OuterSwizzle = outerS,
+                            Swizzle = new CTR((BCLIMHeader.width + 7) & ~7, (BCLIMHeader.height + 7) & ~7, BCLIMHeader.orientation)
                         };
                         Image = Kontract.Image.Image.Load(tex, Settings);
                         break;
@@ -135,15 +133,12 @@ namespace Cetera.Image
                         {
                             BFLIMHeaderLE = sections[0].Data.BytesToStruct<BFLIMImageHeaderLE>(byteOrder);
 
-                            CreateSwizzleLists3DS(BFLIMHeaderLE.orientation, byteOrder, out innerS, out outerS);
-
                             Settings = new Kontract.Image.ImageSettings
                             {
                                 Width = BFLIMHeaderLE.width,
                                 Height = BFLIMHeaderLE.height,
                                 Format = DSFormat[BFLIMHeaderLE.format],
-                                InnerSwizzle = innerS,
-                                OuterSwizzle = outerS,
+                                Swizzle = new CTR((BFLIMHeaderLE.width + 7) & ~7, (BFLIMHeaderLE.height + 7) & ~7, BFLIMHeaderLE.orientation)
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
@@ -151,14 +146,13 @@ namespace Cetera.Image
                         {
                             BFLIMHeaderBE = sections[0].Data.BytesToStruct<BFLIMImageHeaderBE>(byteOrder);
 
+                            GetPaddedDimensions(BFLIMHeaderBE.width, BFLIMHeaderBE.height, BFLIMHeaderBE.format, out var padWidth, out var padHeight);
+
                             Settings = new Kontract.Image.ImageSettings
                             {
                                 Width = BFLIMHeaderBE.width,
                                 Height = BFLIMHeaderBE.height,
-                                padWidth = (BFLIMHeaderBE.width % 32 != 0) ? (BFLIMHeaderBE.width / 32 + 1) * 32 : 0,
-                                padHeight = (BFLIMHeaderBE.height % 32 != 0) ? (BFLIMHeaderBE.height / 32 + 1) * 32 : 0,
                                 Format = WiiUFormat[BFLIMHeaderBE.format],
-                                OuterSwizzle = new List<IImageSwizzle> { new Kontract.Image.Swizzle.WiiU(BFLIMHeaderBE.swizzleTileMode) }
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
@@ -169,45 +163,20 @@ namespace Cetera.Image
             }
         }
 
-        void CreateSwizzleLists3DS(byte orient, ByteOrder byteOrder, out List<IImageSwizzle> inner, out List<IImageSwizzle> outer)
+        void GetPaddedDimensions(int width, int height, byte format, out int padWidth, out int padHeight)
         {
-            inner = new List<IImageSwizzle>();
-            outer = new List<IImageSwizzle>();
+            padWidth = 0;
+            padHeight = 0;
 
-            if (byteOrder == ByteOrder.LittleEndian)
-                inner = new List<IImageSwizzle> { new ZOrder() };
-
-            if (orient != 0)
+            if (format >= 10 && format <= 17)
             {
-                byte count = 8;
-                while (count != 0)
-                {
-                    switch (orient & (int)Math.Pow(2, --count))
-                    {
-                        case 0x80:
-                            break;
-                        case 0x40:
-                            break;
-                        case 0x20:
-                            break;
-                        case 0x10:
-                            break;
-                        //Transpose
-                        case 0x8:
-                            inner.Add(new Transpose());
-                            outer.Add(new Transpose());
-                            break;
-                        //Rotated by 90
-                        case 0x4:
-                            inner.Add(new Rotate(270));
-                            outer.Add(new Rotate(270));
-                            break;
-                        case 0x2:
-                            break;
-                        case 0x1:
-                            break;
-                    }
-                }
+                padWidth = ((width / 4 + 32) & ~31) * 4;
+                padHeight = (height / 32 + 1) * 32;
+            }
+            else
+            {
+                padWidth = (width / 32 + 1) * 32;
+                padHeight = (height / 32 + 1) * 32;
             }
         }
 
