@@ -8,58 +8,67 @@ using System.Drawing;
 
 namespace Kontract.Image.Swizzle
 {
-    public class WiiU : IImageSwizzle
+    public class WiiU
     {
-        byte swizzleTileMode;
-
-        public WiiU(byte swizzleTileMode)
+        public class General : IImageSwizzle
         {
-            this.swizzleTileMode = swizzleTileMode;
-        }
+            byte swizzleTileMode;
+            public int Width { get; set; }
+            public int Height { get; set; }
 
-        public Point Get(Point point, int width, int height)
-        {
-            var pointCount = point.Y * width + point.X;
-            switch (swizzleTileMode)
+            MasterSwizzle swizzle84;
+            MasterSwizzle swizzle04;
+
+            public General(byte swizzleTileMode, int width, int height)
             {
-                case 0x84:
-                    //Get Y
-                    int n = pointCount / width;
-                    int s = n ^ (pointCount * 2) ^ pointCount;
-                    var y = (n & -2) | (s >> 2 & 1);
+                this.swizzleTileMode = swizzleTileMode;
 
-                    //Get X
-                    var x = 0;
-                    switch (pointCount % (width * 8) / (width * 2))
-                    {
-                        case 0:
-                            x = (pointCount % 2 == 0) ?
-                                width / 2 - (pointCount % (width * 2) / 8 + 1) * 2 + pointCount % width / 4 :
-                                width - (pointCount % (width * 2) / 8 + 1) * 2 + pointCount % width / 4;
-                            break;
-                        case 1:
-                            x = (pointCount % 2 == 0) ?
-                                0 + (pointCount % (width * 2) / 8) * 2 + pointCount % width / 4 :
-                                width / 2 + (pointCount % (width * 2) / 8) * 2 + pointCount % width / 4;
-                            break;
-                        case 2:
-                            x = (pointCount % 2 == 0) ?
-                                width / 2 - (pointCount % (width * 2) / 8 + 1) * 2 + (7 - pointCount % width) / 4 :
-                                width - (pointCount % (width * 2) / 8 + 1) * 2 + (7 - pointCount % width) / 4;
-                            break;
-                        case 3:
-                            x = (pointCount % 2 == 0) ?
-                                0 + (pointCount % (width * 2) / 8) * 2 + (7 - pointCount % width) / 4 :
-                                width / 2 + (pointCount % (width * 2) / 8) * 2 + (7 - pointCount % width) / 4;
-                            break;
-                    }
+                Width = width;
+                Height = height;
 
-                    return new Point(
-                        x,
-                        y);
-                default:
-                    return point;
+                //0x84
+                swizzle84 = new MasterSwizzle(new[] { (1, 0), (2, 0), (4, 0), (0, 1), (0, 2), (0, 4), (32, 0), (0, 8), (8, 8), (16, 0) }, width, 64, 16);
+                swizzle04 = new MasterSwizzle(new[] { (1, 0), (2, 0), (0, 1), (0, 2), (4, 0), (0, 4), (8, 0), (16, 0), (0, 8), (0, 32), (32, 32), (64, 0), (0, 16) }, width, 128, 64);
+            }
+
+            public Point Get(Point point)
+            {
+                var pointCount = point.Y * Width + point.X;
+                switch (swizzleTileMode)
+                {
+                    case 0x84:
+                        var initX = new[] { 16, 0, 24, 8 };
+                        var initY = new[] { 0, 0, 8, 8 };
+
+                        return swizzle84.Get(
+                            pointCount,
+                            new Point(
+                                initX[pointCount / (Width * 16) % 4],
+                                initY[pointCount / (Width * 16) % 4]));
+                    case 0x04:
+                        initX = new[] { 0, 64, 32, 96 };
+                        initY = new[] { 0, 0, 32, 32 };
+
+                        return swizzle04.Get(
+                            pointCount, 
+                            new Point(
+                                initX[pointCount / (Width * 64) % 4],
+                                initY[pointCount / (Width * 64) % 4]));
+                    default:
+                        return point;
+                }
             }
         }
+
+        /*public class Color16BlockFormats : IImageSwizzle
+        {
+            public Point Get(Point point, int width, int height)
+            {
+                var pointCount = point.Y * width + point.X;
+                return new Point(
+                    pointCount % 4 + pointCount % (width * 4) / 16 * 4,
+                    pointCount % 16 / 4 + pointCount / (width * 4) * 4);
+            }
+        }*/
     }
 }
