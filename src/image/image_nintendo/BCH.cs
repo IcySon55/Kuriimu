@@ -15,9 +15,11 @@ namespace image_nintendo.BCH
     {
         public List<Bitmap> bmps = new List<Bitmap>();
 
-        Header header;
-        List<PICACommandReader> picaEntries = new List<PICACommandReader>();
-        List<TexEntry> origValues = new List<TexEntry>();
+        private Header header;
+        private List<PICACommandReader> picaEntries = new List<PICACommandReader>();
+        private List<TexEntry> origValues = new List<TexEntry>();
+
+        public Format format;
 
         byte[] _file = null;
 
@@ -67,7 +69,7 @@ namespace image_nintendo.BCH
                         var size = picaEntries[i].getTexUnit0Size();
                         if (size.Height != 0 && size.Width != 0)
                         {
-                            var format = (Format)picaEntries[i].getTexUnit0Format();
+                            format = (Format)picaEntries[i].getTexUnit0Format();
                             int bitDepth = Common.GetBitDepth(format);
 
                             for (int j = 0; j <= picaEntries[i].getTexUnit0LoD(); j++)

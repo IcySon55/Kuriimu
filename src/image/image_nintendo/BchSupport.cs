@@ -1,11 +1,10 @@
-﻿using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using Kontract;
-using System;
+﻿using System.ComponentModel;
 using System.IO;
-using Kontract.IO;
+using System.Runtime.InteropServices;
 using Cetera.Image;
-using System.Drawing;
+using Kontract;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_nintendo.BCH
 {
@@ -133,5 +132,12 @@ namespace image_nintendo.BCH
         public int width;
         public int height;
         public Format format;
+    }
+
+    public sealed class BchBitmapInfo : BitmapInfo
+    {
+        [Category("Properties")]
+        [ReadOnly(true)]
+        public Format Format { get; set; }
     }
 }
