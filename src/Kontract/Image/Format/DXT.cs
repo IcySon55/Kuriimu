@@ -63,7 +63,19 @@ namespace Kontract.Image.Format
 
         public byte[] Save(IEnumerable<Color> colors)
         {
-            return null;
+            Enum.TryParse<Support.DXT.Formats>(version.ToString(), false, out var dxtFormat);
+            var dxtencoder = new Support.DXT.Encoder(dxtFormat);
+
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms))
+                foreach (var color in colors)
+                    dxtencoder.Set(color, data =>
+                    {
+                        if (version == Version.DXT5) bw.Write(data.alpha);
+                        bw.Write(data.block);
+                    });
+
+            return ms.ToArray();
         }
     }
 }

@@ -52,7 +52,20 @@ namespace Kontract.Image.Format
 
         public byte[] Save(IEnumerable<Color> colors)
         {
-            return null;
+            var etc1encoder = new Support.ETC1.Encoder();
+
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms))
+            {
+                foreach (var color in colors)
+                    etc1encoder.Set(color, data =>
+                    {
+                        if (alpha) bw.Write(data.Alpha);
+                        bw.WriteStruct(data.Block);
+                    });
+            }
+
+            return ms.ToArray();
         }
     }
 }

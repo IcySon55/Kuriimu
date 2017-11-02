@@ -59,7 +59,19 @@ namespace Kontract.Image.Format
 
         public byte[] Save(IEnumerable<Color> colors)
         {
-            return null;
+            Enum.TryParse<Support.ATI.Format>(format.ToString(), false, out var atiFormat);
+            var atiencoder = new Support.ATI.Encoder(atiFormat);
+
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms))
+                foreach (var color in colors)
+                    atiencoder.Set(color, data =>
+                    {
+                        bw.Write(data.block);
+                        if (format == Format.ATI2) bw.Write(data.alpha);
+                    });
+
+            return ms.ToArray();
         }
     }
 }
