@@ -19,13 +19,13 @@ namespace image_nintendo.BCH
         List<PICACommandReader> picaEntries = new List<PICACommandReader>();
         List<TexEntry> origValues = new List<TexEntry>();
 
-        Stream _stream = null;
+        byte[] _file = null;
 
         public BCH(string filename)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
+            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                _stream = br.BaseStream;
+                _file = br.ReadAllBytes();
 
                 //Header
                 header = new Header(br.BaseStream);
@@ -102,8 +102,7 @@ namespace image_nintendo.BCH
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                _stream.Position = 0;
-                _stream.CopyTo(bw.BaseStream);
+                bw.Write(_file);
 
                 bw.BaseStream.Position = header.dataOffset;
                 for (int i = 0; i < bmps.Count(); i++)
