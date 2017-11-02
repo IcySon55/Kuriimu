@@ -17,6 +17,7 @@ namespace Kontract.Image.Swizzle
             public int Height { get; set; }
 
             MasterSwizzle swizzle84;
+            MasterSwizzle swizzle44;
             MasterSwizzle swizzle04;
 
             public General(byte swizzleTileMode, int width, int height)
@@ -26,8 +27,8 @@ namespace Kontract.Image.Swizzle
                 Width = width;
                 Height = height;
 
-                //0x84
                 swizzle84 = new MasterSwizzle(new[] { (1, 0), (2, 0), (4, 0), (0, 1), (0, 2), (0, 4), (32, 0), (0, 8), (8, 8), (16, 0) }, width, 64, 16);
+                swizzle44 = new MasterSwizzle(new[] { (1, 0), (2, 0), (0, 1), (4, 0), (0, 2), (0, 4), (0, 8), (8, 8), (16, 0) }, width, 32, 16);
                 swizzle04 = new MasterSwizzle(new[] { (1, 0), (2, 0), (0, 1), (0, 2), (4, 0), (0, 4), (8, 0), (16, 0), (0, 8), (0, 32), (32, 32), (64, 0), (0, 16) }, width, 128, 64);
             }
 
@@ -45,12 +46,21 @@ namespace Kontract.Image.Swizzle
                             new Point(
                                 initX[pointCount / (Width * 16) % 4],
                                 initY[pointCount / (Width * 16) % 4]));
+                    case 0x44:
+                        initX = new[] { 8, 24, 0, 16 };
+                        initY = new[] { 8, 8, 0, 0 };
+
+                        return swizzle44.Get
+                            (pointCount,
+                            new Point(
+                                initX[pointCount / (Width * 16) % 4],
+                                initY[pointCount / (Width * 16) % 4]));
                     case 0x04:
                         initX = new[] { 0, 64, 32, 96 };
                         initY = new[] { 0, 0, 32, 32 };
 
                         return swizzle04.Get(
-                            pointCount, 
+                            pointCount,
                             new Point(
                                 initX[pointCount / (Width * 64) % 4],
                                 initY[pointCount / (Width * 64) % 4]));
