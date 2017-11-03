@@ -25,7 +25,6 @@ namespace Kontract.Image.Format
         public string FormatName { get; set; }
 
         Version version;
-        bool standard;
 
         ByteOrder byteOrder;
 
@@ -35,9 +34,8 @@ namespace Kontract.Image.Format
             BlockBitDepth = (version == Version.DXT1) ? 64 : 128;
 
             this.version = version;
-            this.standard = standard;
 
-            FormatName = version.ToString();
+            FormatName = ((standard) ? "s" : "") + version.ToString();
 
             this.byteOrder = byteOrder;
         }

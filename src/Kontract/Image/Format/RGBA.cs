@@ -23,8 +23,6 @@ namespace Kontract.Image.Format
 
         ByteOrder byteOrder;
 
-        bool standard;
-
         public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.LittleEndian, bool standard = false)
         {
             BitDepth = r + g + b + a;
@@ -39,9 +37,7 @@ namespace Kontract.Image.Format
             bDepth = b;
             aDepth = a;
 
-            FormatName = "RGB" + ((a != 0) ? "A" : "") + r.ToString() + g.ToString() + b.ToString() + ((a != 0) ? a.ToString() : "");
-
-            this.standard = standard;
+            FormatName = ((standard) ? "s" : "") + "RGB" + ((a != 0) ? "A" : "") + r.ToString() + g.ToString() + b.ToString() + ((a != 0) ? a.ToString() : "");
         }
 
         public IEnumerable<Color> Load(byte[] tex)
