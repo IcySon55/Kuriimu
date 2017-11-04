@@ -21,23 +21,13 @@ namespace image_nintendo.BXLIM
             public short width;
             public short height;
             public byte format;
-            public byte orientation;
+            public byte swizzleTileMode; // not used in BCLIM
             public short alignment;
             public int datasize;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public class BFLIMImageHeaderLE
-        {
-            public short width;
-            public short height;
-            public short alignment;
-            public byte format;
-            public byte orientation;
-            public int datasize;
-        }
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public class BFLIMImageHeaderBE
+        public class BFLIMImageHeader
         {
             public short width;
             public short height;
@@ -99,8 +89,7 @@ namespace image_nintendo.BXLIM
         private ByteOrder byteOrder { get; set; }
 
         public BCLIMImageHeader BCLIMHeader { get; private set; }
-        public BFLIMImageHeaderLE BFLIMHeaderLE { get; private set; }
-        public BFLIMImageHeaderBE BFLIMHeaderBE { get; private set; }
+        public BFLIMImageHeader BFLIMHeader { get; private set; }
 
         public Bitmap Image { get; set; }
 
@@ -124,36 +113,36 @@ namespace image_nintendo.BXLIM
                             Width = BCLIMHeader.width,
                             Height = BCLIMHeader.height,
                             Format = DSFormat[BCLIMHeader.format],
-                            Swizzle = new CTRSwizzle((BCLIMHeader.width + 7) & ~7, (BCLIMHeader.height + 7) & ~7, BCLIMHeader.orientation)
+                            Swizzle = new CTRSwizzle(BCLIMHeader.width, BCLIMHeader.height, BCLIMHeader.swizzleTileMode)
                         };
                         Image = Kontract.Image.Image.Load(tex, Settings);
                         break;
                     case "FLIM":
                         if (byteOrder == ByteOrder.LittleEndian)
                         {
-                            BFLIMHeaderLE = sections[0].Data.BytesToStruct<BFLIMImageHeaderLE>(byteOrder);
+                            BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(byteOrder);
 
                             Settings = new Kontract.Image.ImageSettings
                             {
-                                Width = BFLIMHeaderLE.width,
-                                Height = BFLIMHeaderLE.height,
-                                Format = DSFormat[BFLIMHeaderLE.format],
-                                Swizzle = new CTRSwizzle((BFLIMHeaderLE.width + 7) & ~7, (BFLIMHeaderLE.height + 7) & ~7, BFLIMHeaderLE.orientation)
+                                Width = BFLIMHeader.width,
+                                Height = BFLIMHeader.height,
+                                Format = DSFormat[BFLIMHeader.format],
+                                Swizzle = new CTRSwizzle(BFLIMHeader.width, BFLIMHeader.height, BFLIMHeader.swizzleTileMode)
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
                         else
                         {
-                            BFLIMHeaderBE = sections[0].Data.BytesToStruct<BFLIMImageHeaderBE>(byteOrder);
+                            BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(byteOrder);
 
-                            GetPaddedDimensions(BFLIMHeaderBE.width, BFLIMHeaderBE.height, BFLIMHeaderBE.swizzleTileMode >> 5, BFLIMHeaderBE.format, out var padWidth, out var padHeight);
+                            GetPaddedDimensions(BFLIMHeader.width, BFLIMHeader.height, BFLIMHeader.swizzleTileMode >> 5, BFLIMHeader.format, out var padWidth, out var padHeight);
 
                             Settings = new Kontract.Image.ImageSettings
                             {
                                 Width = padWidth,//BFLIMHeaderBE.width,
                                 Height = padHeight,//BFLIMHeaderBE.height,
-                                Format = WiiUFormat[BFLIMHeaderBE.format],
-                                Swizzle = new WiiU.General(BFLIMHeaderBE.swizzleTileMode, BFLIMHeaderBE.format, padWidth, padHeight)
+                                Format = WiiUFormat[BFLIMHeader.format],
+                                Swizzle = new WiiU.General(BFLIMHeader.swizzleTileMode, BFLIMHeader.format, padWidth, padHeight)
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
@@ -207,7 +196,7 @@ namespace image_nintendo.BXLIM
                     case "CLIM":
                         Settings.Width = Image.Width;
                         Settings.Height = Image.Height;
-                        Settings.Swizzle = new CTRSwizzle((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BCLIMHeader.orientation);
+                        Settings.Swizzle = new CTRSwizzle(Image.Width, Image.Height, BCLIMHeader.swizzleTileMode);
 
                         texture = Kontract.Image.Image.Save(Image, Settings);
                         bw.Write(texture);
@@ -223,44 +212,29 @@ namespace image_nintendo.BXLIM
                         bw.WriteSections(sections);
                         break;
                     case "FLIM":
+                        Settings.Width = Image.Width;
+                        Settings.Height = Image.Height;
                         if (byteOrder == ByteOrder.LittleEndian)
                         {
-                            Settings.Width = Image.Width;
-                            Settings.Height = Image.Height;
-                            Settings.Swizzle = new CTRSwizzle((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BFLIMHeaderLE.orientation);
-
-                            texture = Kontract.Image.Image.Save(Image, Settings);
-                            bw.Write(texture);
-
-                            // We can now change the image width/height/filesize!
-                            BFLIMHeaderLE.width = (short)Image.Width;
-                            BFLIMHeaderLE.height = (short)Image.Height;
-                            BFLIMHeaderLE.datasize = texture.Length;
-
-                            sections[0].Data = BFLIMHeaderLE.StructToBytes();
-                            sections.Header.file_size = texture.Length + 40;
-
-                            bw.WriteSections(sections);
+                            Settings.Swizzle = new CTRSwizzle(Image.Width, Image.Height, BFLIMHeader.swizzleTileMode);
                         }
                         else
                         {
-                            Settings.Width = Image.Width;
-                            Settings.Height = Image.Height;
                             //Set Swizzle with new padded dimension here
-
-                            texture = Kontract.Image.Image.Save(Image, Settings);
-                            bw.Write(texture);
-
-                            // We can now change the image width/height/filesize!
-                            BFLIMHeaderBE.width = (short)Image.Width;
-                            BFLIMHeaderBE.height = (short)Image.Height;
-                            BFLIMHeaderBE.datasize = texture.Length;
-
-                            sections[0].Data = BFLIMHeaderBE.StructToBytes(byteOrder);
-                            sections.Header.file_size = texture.Length + 40;
-
-                            bw.WriteSections(sections);
                         }
+
+                        texture = Kontract.Image.Image.Save(Image, Settings);
+                        bw.Write(texture);
+
+                        // We can now change the image width/height/filesize!
+                        BFLIMHeader.width = (short)Image.Width;
+                        BFLIMHeader.height = (short)Image.Height;
+                        BFLIMHeader.datasize = texture.Length;
+
+                        sections[0].Data = BFLIMHeader.StructToBytes();
+                        sections.Header.file_size = texture.Length + 40;
+
+                        bw.WriteSections(sections);
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");
