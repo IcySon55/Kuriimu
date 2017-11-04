@@ -24,32 +24,32 @@ namespace Kontract.Image.Swizzle
             Height = 2 << (int)Math.Log(height - 1, 2);
 
             _orientation = orientation;
-            _zorder = new MasterSwizzle(Width, new[] { (1, 0), (0, 1), (2, 0), (0, 2), (4, 0), (0, 4) });
-            _transform = new MasterSwizzle(Width, new[] { (0, 1), (0, 2), (0, 4), (1, 0), (2, 0), (4, 0) });
+            _zorder = new MasterSwizzle(Width, new Point(0, 0), new[] { (1, 0), (0, 1), (2, 0), (0, 2), (4, 0), (0, 4) });
+            _transform = new MasterSwizzle(Width, new Point(0, 0), new[] { (0, 1), (0, 2), (0, 4), (1, 0), (2, 0), (4, 0) });
         }
 
         public Point Get(Point point)
         {
             int pointCount = point.Y * Width + point.X;
-            var newPoint = _zorder.Get(pointCount, new Point(0, 0));
+            var newPoint = _zorder.Get(pointCount);
 
             // @todo: Refactor this out [Neobeo]
             switch (_orientation)
             {
                 case 8:
                     var pointCountTrans = (newPoint.Y / 8 * (Width / 8)) + newPoint.X / 8;
-                    return _transform.Get(
-                        newPoint.Y % 8 * 8 + newPoint.X % 8,
-                        new Point(
+                    _transform.init = new Point(
                             pointCountTrans / (Height / 8) * 8,
-                            (newPoint.X / 8) % (Height / 8) * 8));
+                            (newPoint.X / 8) % (Height / 8) * 8);
+                    return _transform.Get(
+                        newPoint.Y % 8 * 8 + newPoint.X % 8);
                 case 4:
                     var pointCountRot90 = (newPoint.Y / 8 * (Width / 8)) + newPoint.X / 8;
-                    return _transform.Get(
-                        newPoint.Y % 8 * 8 + newPoint.X % 8,
-                        new Point(
+                    _transform.init = new Point(
                             pointCountRot90 / (Height / 8) * 8,
-                            ((Height / 8) - 1 - (newPoint.X / 8) % (Height / 8)) * 8 + 7));
+                            ((Height / 8) - 1 - (newPoint.X / 8) % (Height / 8)) * 8 + 7);
+                    return _transform.Get(
+                        newPoint.Y % 8 * 8 + newPoint.X % 8);
                 default:
                     return newPoint;
             }

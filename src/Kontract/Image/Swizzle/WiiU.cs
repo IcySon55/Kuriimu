@@ -12,7 +12,7 @@ namespace Kontract.Image.Swizzle
     {
         public int Height { get; set; }
         public int Width { get; set; }
-        NeoMasterSwizzle swizzle;
+        MasterSwizzle swizzle;
 
         (int, int)[] coordsBlock4bpp = new[] { (1, 0), (2, 0), (0, 1), (0, 2), (4, 0), (0, 4), (8, 0), (16, 0), (0, 8), (0, 32), (32, 32), (64, 0), (0, 16) };
         (int, int)[] coordsBlock8bpp = new[] { (1, 0), (2, 0), (0, 1), (0, 2), (0, 4), (4, 0), (8, 0), (16, 0), (0, 32), (32, 32), (64, 0), (0, 8), (0, 16) };
@@ -30,7 +30,7 @@ namespace Kontract.Image.Swizzle
                 init.Y ^= swizzleTileMode & 32;
 
                 var coords = bitDepth == 4 ? coordsBlock4bpp : bitDepth == 8 ? coordsBlock8bpp : throw new Exception();
-                swizzle = new NeoMasterSwizzle(init, width, coords, new[] { (64, 0), (32, 32) });
+                swizzle = new MasterSwizzle(width, init, coords, new[] { (64, 0), (32, 32) });
             }
             else
             {
@@ -38,7 +38,7 @@ namespace Kontract.Image.Swizzle
                 // init.Y ^= ??? // what does the so-called pipeSwizzle affect in this case?
 
                 var coords = bitDepth == 16 ? coordsRegular16bpp : bitDepth == 32 ? coordsRegular32bpp : throw new Exception();
-                swizzle = new NeoMasterSwizzle(init, width, coords, new[] { (16, 0), (8, 8) });
+                swizzle = new MasterSwizzle(width, init, coords, new[] { (16, 0), (8, 8) });
             }
             Width = (width + swizzle.macroTileWidth - 1) & -swizzle.macroTileWidth;
             Height = (height + swizzle.macroTileHeight - 1) & -swizzle.macroTileHeight;
