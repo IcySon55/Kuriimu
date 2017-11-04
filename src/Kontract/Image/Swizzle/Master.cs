@@ -10,15 +10,17 @@ namespace Kontract.Image.Swizzle
     public class MasterSwizzle
     {
         IEnumerable<(int, int)> bitFieldCoords;
+        IEnumerable<(int, int)> initPointTransform;
         int imageWidth;
 
         int macroTileWidth;
         int macroTileHeight;
         int widthInTiles;
 
-        public MasterSwizzle(IEnumerable<(int, int)> bitFieldCoords, int imageWidth)
+        public MasterSwizzle(int imageWidth, IEnumerable<(int, int)> bitFieldCoords, IEnumerable<(int, int)> initPointTransform = null)
         {
             this.bitFieldCoords = bitFieldCoords;
+            this.initPointTransform = (initPointTransform == null) ? new[] { (0, 0) } : initPointTransform;
             this.imageWidth = imageWidth;
 
             macroTileWidth = bitFieldCoords.Select(p => p.Item1).Aggregate((x, y) => x | y) + 1;
@@ -33,12 +35,11 @@ namespace Kontract.Image.Swizzle
 
             return new[] { (macroX * macroTileWidth, macroY * macroTileHeight) }
                 .Concat(bitFieldCoords.Where((v, j) => (pointCount >> j) % 2 == 1))
-                //.Concat(srcY.Where((v, j) => (macroY >> j) % 2 == 1))
+                .Concat(initPointTransform.Where((v, j) => (macroY >> j) % 2 == 1))
                 .Aggregate(init, (a, b) => new Point(a.X ^ b.Item1, a.Y ^ b.Item2));
         }
     }
 
-    //Merge Neo's point creation code - Only srcY is missing to be implemented
     //Move initpoint to constructor when srcY is implemented
 
     // @todo: To be consolidated with the former MasterSwizzle [Neobeo]
