@@ -124,7 +124,7 @@ namespace image_nintendo.BXLIM
                             Width = BCLIMHeader.width,
                             Height = BCLIMHeader.height,
                             Format = DSFormat[BCLIMHeader.format],
-                            Swizzle = new CTR((BCLIMHeader.width + 7) & ~7, (BCLIMHeader.height + 7) & ~7, BCLIMHeader.orientation)
+                            Swizzle = new CTRSwizzle((BCLIMHeader.width + 7) & ~7, (BCLIMHeader.height + 7) & ~7, BCLIMHeader.orientation)
                         };
                         Image = Kontract.Image.Image.Load(tex, Settings);
                         break;
@@ -138,7 +138,7 @@ namespace image_nintendo.BXLIM
                                 Width = BFLIMHeaderLE.width,
                                 Height = BFLIMHeaderLE.height,
                                 Format = DSFormat[BFLIMHeaderLE.format],
-                                Swizzle = new CTR((BFLIMHeaderLE.width + 7) & ~7, (BFLIMHeaderLE.height + 7) & ~7, BFLIMHeaderLE.orientation)
+                                Swizzle = new CTRSwizzle((BFLIMHeaderLE.width + 7) & ~7, (BFLIMHeaderLE.height + 7) & ~7, BFLIMHeaderLE.orientation)
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
@@ -207,7 +207,7 @@ namespace image_nintendo.BXLIM
                     case "CLIM":
                         Settings.Width = Image.Width;
                         Settings.Height = Image.Height;
-                        Settings.Swizzle = new CTR((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BCLIMHeader.orientation);
+                        Settings.Swizzle = new CTRSwizzle((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BCLIMHeader.orientation);
 
                         texture = Kontract.Image.Image.Save(Image, Settings);
                         bw.Write(texture);
@@ -227,7 +227,7 @@ namespace image_nintendo.BXLIM
                         {
                             Settings.Width = Image.Width;
                             Settings.Height = Image.Height;
-                            Settings.Swizzle = new CTR((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BFLIMHeaderLE.orientation);
+                            Settings.Swizzle = new CTRSwizzle((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BFLIMHeaderLE.orientation);
 
                             texture = Kontract.Image.Image.Save(Image, Settings);
                             bw.Write(texture);

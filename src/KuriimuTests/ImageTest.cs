@@ -57,7 +57,7 @@ namespace KuriimuTests
                 Width = 4,
                 Height = 4,
                 Format = new RGBA(8, 8, 8, 8),
-                Swizzle = new CTR(4, 4)
+                Swizzle = new CTRSwizzle(4, 4)
             };
             var tex = new byte[] {
                 255,0xff,0xff,0xff,
