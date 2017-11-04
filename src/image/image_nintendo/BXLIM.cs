@@ -79,18 +79,18 @@ namespace image_nintendo.BXLIM
             [9] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
             [10] = new ETC1(false, ByteOrder.BigEndian),
             [11] = new ETC1(true, ByteOrder.BigEndian),
-            [12] = new DXT(DXT.Version.DXT1, false, ByteOrder.BigEndian),
-            [13] = new DXT(DXT.Version.DXT3, false, ByteOrder.BigEndian),
-            [14] = new DXT(DXT.Version.DXT5, false, ByteOrder.BigEndian),
+            [12] = new DXT(DXT.Version.DXT1, false),
+            [13] = new DXT(DXT.Version.DXT3, false),
+            [14] = new DXT(DXT.Version.DXT5, false),
             [15] = new ATI(ATI.Format.ATI1L),
             [16] = new ATI(ATI.Format.ATI1A),
             [17] = new ATI(ATI.Format.ATI2),
             [18] = new LA(4, 0, ByteOrder.BigEndian),
             [19] = new LA(0, 4, ByteOrder.BigEndian),
-            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
-            [21] = null,
-            [22] = null,
-            [23] = null,
+            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian, true),
+            [21] = new DXT(DXT.Version.DXT1, true),
+            [22] = new DXT(DXT.Version.DXT3, true),
+            [23] = new DXT(DXT.Version.DXT5, true),
             [24] = new RGBA(10, 10, 10, 2, ByteOrder.BigEndian)
         };
 
@@ -146,13 +146,14 @@ namespace image_nintendo.BXLIM
                         {
                             BFLIMHeaderBE = sections[0].Data.BytesToStruct<BFLIMImageHeaderBE>(byteOrder);
 
-                            GetPaddedDimensions(BFLIMHeaderBE.width, BFLIMHeaderBE.height, BFLIMHeaderBE.format, out var padWidth, out var padHeight);
+                            GetPaddedDimensions(BFLIMHeaderBE.width, BFLIMHeaderBE.height, BFLIMHeaderBE.swizzleTileMode >> 5, BFLIMHeaderBE.format, out var padWidth, out var padHeight);
 
                             Settings = new Kontract.Image.ImageSettings
                             {
-                                Width = BFLIMHeaderBE.width,
-                                Height = BFLIMHeaderBE.height,
+                                Width = padWidth,//BFLIMHeaderBE.width,
+                                Height = padHeight,//BFLIMHeaderBE.height,
                                 Format = WiiUFormat[BFLIMHeaderBE.format],
+                                Swizzle = new WiiU.General(BFLIMHeaderBE.swizzleTileMode, BFLIMHeaderBE.format, padWidth, padHeight)
                             };
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
@@ -163,20 +164,35 @@ namespace image_nintendo.BXLIM
             }
         }
 
-        void GetPaddedDimensions(int width, int height, byte format, out int padWidth, out int padHeight)
+        void GetPaddedDimensions(int width, int height, int swizzle, byte format, out int padWidth, out int padHeight)
         {
-            padWidth = 0;
-            padHeight = 0;
+            padWidth = width;
+            padHeight = height;
 
-            if (format >= 10 && format <= 17)
+            switch (swizzle)
             {
-                padWidth = ((width / 4 + 32) & ~31) * 4;
-                padHeight = (height / 32 + 1) * 32;
-            }
-            else
-            {
-                padWidth = (width / 32 + 1) * 32;
-                padHeight = (height / 32 + 1) * 32;
+                case 0:
+                case 7:
+                case 6:
+                    if (format == 20)
+                    {
+                        padWidth = (width + 31) & ~31;
+                        padHeight = (height + 15) & ~15;
+                    }
+                    else
+                    {
+                        padWidth = (width + 127) & ~127;
+                        padHeight = (height + 63) & ~63;
+                    }
+                    break;
+                case 2:
+                    padWidth = (width + 31) & ~31;
+                    padHeight = (height + 15) & ~15;
+                    break;
+                case 4:
+                    padWidth = (width + 63) & ~63;
+                    padHeight = (height + 15) & ~15;
+                    break;
             }
         }
 
@@ -184,14 +200,15 @@ namespace image_nintendo.BXLIM
         {
             using (var bw = new BinaryWriterX(output, byteOrder))
             {
-                //var settings = new ImageSettings();
                 byte[] texture;
 
                 switch (sections.Header.magic)
                 {
                     case "CLIM":
-                        /*settings.Width = BCLIMHeader.width;
-                        settings.Height = BCLIMHeader.height;*/
+                        Settings.Width = Image.Width;
+                        Settings.Height = Image.Height;
+                        Settings.Swizzle = new CTR((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BCLIMHeader.orientation);
+
                         texture = Kontract.Image.Image.Save(Image, Settings);
                         bw.Write(texture);
 
@@ -199,15 +216,19 @@ namespace image_nintendo.BXLIM
                         BCLIMHeader.width = (short)Image.Width;
                         BCLIMHeader.height = (short)Image.Height;
                         BCLIMHeader.datasize = texture.Length;
+
                         sections[0].Data = BCLIMHeader.StructToBytes();
                         sections.Header.file_size = texture.Length + 40;
+
                         bw.WriteSections(sections);
                         break;
                     case "FLIM":
                         if (byteOrder == ByteOrder.LittleEndian)
                         {
-                            /*settings.Width = BFLIMHeaderLE.width;
-                            settings.Height = BFLIMHeaderLE.height;*/
+                            Settings.Width = Image.Width;
+                            Settings.Height = Image.Height;
+                            Settings.Swizzle = new CTR((Image.Width + 7) & ~7, (Image.Height + 7) & ~7, BFLIMHeaderLE.orientation);
+
                             texture = Kontract.Image.Image.Save(Image, Settings);
                             bw.Write(texture);
 
@@ -215,14 +236,18 @@ namespace image_nintendo.BXLIM
                             BFLIMHeaderLE.width = (short)Image.Width;
                             BFLIMHeaderLE.height = (short)Image.Height;
                             BFLIMHeaderLE.datasize = texture.Length;
+
                             sections[0].Data = BFLIMHeaderLE.StructToBytes();
                             sections.Header.file_size = texture.Length + 40;
+
                             bw.WriteSections(sections);
                         }
                         else
                         {
-                            /*settings.Width = BFLIMHeaderLE.width;
-                            settings.Height = BFLIMHeaderLE.height;*/
+                            Settings.Width = Image.Width;
+                            Settings.Height = Image.Height;
+                            //Set Swizzle with new padded dimension here
+
                             texture = Kontract.Image.Image.Save(Image, Settings);
                             bw.Write(texture);
 
@@ -230,8 +255,10 @@ namespace image_nintendo.BXLIM
                             BFLIMHeaderBE.width = (short)Image.Width;
                             BFLIMHeaderBE.height = (short)Image.Height;
                             BFLIMHeaderBE.datasize = texture.Length;
+
                             sections[0].Data = BFLIMHeaderBE.StructToBytes(byteOrder);
                             sections.Header.file_size = texture.Length + 40;
+
                             bw.WriteSections(sections);
                         }
                         break;
