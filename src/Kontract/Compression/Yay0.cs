@@ -12,6 +12,8 @@ using System.Collections;
  
   Python Compressor Source
   https://pastebin.com/GUHMwpjT
+
+  C# Compressor Optimization in Index search by Kosmos
   */
 
 namespace Kontract.Compression
@@ -223,7 +225,7 @@ namespace Kontract.Compression
 
                 if (mp < pos)
                 {
-                    var hl = IndexOf(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
+                    var hl = (int)FirstIndexOfNeedleInHaystack(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
                     while (hl < (pos - mp))
                     {
                         while ((hitl < ml) && (br.ScanBytes(pos + hitl)[0] == br.ScanBytes(mp + hl + hitl)[0]))
@@ -239,7 +241,7 @@ namespace Kontract.Compression
                         if (mp >= pos)
                             break;
 
-                        hl = IndexOf(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
+                        hl = (int)FirstIndexOfNeedleInHaystack(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
                     }
                 }
 
@@ -251,35 +253,31 @@ namespace Kontract.Compression
             }
         }
 
-        private static int IndexOf(byte[] input, byte[] search)
+        public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
         {
-            var index = -1;
-
-            var searchCount = 0;
-            for (int i = 0; i < input.Count(); i++)
+            fixed (byte* numPtr1 = haystack)
+            fixed (byte* numPtr2 = needle)
             {
-                if (searchCount != 0)
+                long num = 0;
+                byte* numPtr3 = numPtr1;
+                for (byte* numPtr4 = numPtr1 + haystack.Length; numPtr3 < numPtr4; ++numPtr3)
                 {
-                    index = i - 1;
-                    break;
-                }
-
-                if ((input.Count() - i < search.Count()) && (searchCount == 0))
-                    break;
-
-                for (int j = 0; j < search.Count(); j++)
-                {
-                    if (input[i + j] == search[j])
-                        searchCount++;
-                    else
+                    bool flag = true;
+                    byte* numPtr5 = numPtr3;
+                    byte* numPtr6 = numPtr2;
+                    byte* numPtr7 = numPtr2 + needle.Length;
+                    while (flag && numPtr6 < numPtr7)
                     {
-                        searchCount = 0;
-                        break;
+                        flag = (int)*numPtr6 == (int)*numPtr5;
+                        ++numPtr6;
+                        ++numPtr5;
                     }
+                    if (flag)
+                        return num;
+                    ++num;
                 }
+                return -1;
             }
-
-            return index;
         }
     }
 }

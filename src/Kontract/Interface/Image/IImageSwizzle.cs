@@ -10,6 +10,9 @@ namespace Kontract.Interface
 {
     public interface IImageSwizzle
     {
-        Point Get(Point point, int width, int height);
+        int Width { get; }
+        int Height { get; }
+
+        Point Get(Point point);
     }
 }

@@ -25,7 +25,6 @@ namespace Kontract.Image.Format
         public string FormatName { get; set; }
 
         Version version;
-        bool standard;
 
         ByteOrder byteOrder;
 
@@ -35,9 +34,8 @@ namespace Kontract.Image.Format
             BlockBitDepth = (version == Version.DXT1) ? 64 : 128;
 
             this.version = version;
-            this.standard = standard;
 
-            FormatName = version.ToString();
+            FormatName = ((standard) ? "s" : "") + version.ToString();
 
             this.byteOrder = byteOrder;
         }
@@ -63,7 +61,19 @@ namespace Kontract.Image.Format
 
         public byte[] Save(IEnumerable<Color> colors)
         {
-            return null;
+            Enum.TryParse<Support.DXT.Formats>(version.ToString(), false, out var dxtFormat);
+            var dxtencoder = new Support.DXT.Encoder(dxtFormat);
+
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms))
+                foreach (var color in colors)
+                    dxtencoder.Set(color, data =>
+                    {
+                        if (version == Version.DXT5) bw.Write(data.alpha);
+                        bw.Write(data.block);
+                    });
+
+            return ms.ToArray();
         }
     }
 }
