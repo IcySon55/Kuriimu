@@ -30,13 +30,10 @@ namespace Kontract.Image.Swizzle
         public Point Get(Point point)
         {
             int pointCount = point.Y * Width + point.X;
-            var newPoint = zorder.Get(pointCount, new Point(0, 0))//new Point(pointCount / 64 % (Width / 8) * 8, pointCount / (Width * 8) * 8));
+            var newPoint = zorder.Get(pointCount, new Point(0, 0))
             ;
             if (orientation != 0)
             {
-                //var transpose = new Transpose(Width, Height);
-                //var rota270 = new Rotate(270, Width, Height);
-
                 byte count = 8;
                 while (count != 0)
                 {
