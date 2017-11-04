@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Kontract.Interface
 {
-    public interface ITextAdapter : IPlugin
+    public interface ITextAdapter : IFilePlugin
     {
         // Feature Support
         bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Kontract.Interface
 {
-    public interface IImageAdapter : IPlugin
+    public interface IImageAdapter : IFilePlugin
     {
         // Feature Support
         bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?

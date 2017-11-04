@@ -1,6 +1,6 @@
 ﻿namespace Kontract.Interface
 {
-    public interface IPlugin
+    public interface IFilePlugin
     {
         // Information
         string Name { get; }

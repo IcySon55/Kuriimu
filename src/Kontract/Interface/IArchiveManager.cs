@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Kontract.Interface
 {
-    public interface IArchiveManager : IPlugin
+    public interface IArchiveManager : IFilePlugin
     {
         // Feature Support
         bool ArchiveHasExtendedProperties { get; } // Format provides an extended properties dialog?

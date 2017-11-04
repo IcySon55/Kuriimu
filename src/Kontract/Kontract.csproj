@@ -107,13 +107,14 @@
     <Compile Include="Image\Swizzle\Transformation.cs" />
     <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Image\Swizzle\ZOrder.cs" />
+    <Compile Include="Interface\ILayoutInterpreter.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
     <Compile Include="Interface\Image\IImageFormat.cs" />
     <Compile Include="Interface\Image\IImageSwizzle.cs" />
-    <Compile Include="Interface\IPlugin.cs" />
+    <Compile Include="Interface\IFilePlugin.cs" />
     <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />
     <Compile Include="IO\BinaryWriterX.cs" />
