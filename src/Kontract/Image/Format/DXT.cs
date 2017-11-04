@@ -47,7 +47,8 @@ namespace Kontract.Image.Format
                 Enum.TryParse<Support.DXT.Formats>(version.ToString(), false, out var dxtFormat);
                 var dxtdecoder = new Support.DXT.Decoder(dxtFormat);
 
-                while (br.BaseStream.Position < br.BaseStream.Length)
+                //while (br.BaseStream.Position < br.BaseStream.Length)
+                while (true)
                 {
                     yield return dxtdecoder.Get(() =>
                     {

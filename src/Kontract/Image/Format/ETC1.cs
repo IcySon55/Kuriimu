@@ -39,7 +39,8 @@ namespace Kontract.Image.Format
             {
                 var etc1decoder = new Support.ETC1.Decoder();
 
-                while (br.BaseStream.Position < br.BaseStream.Length)
+                //while (br.BaseStream.Position < br.BaseStream.Length)
+                while (true)
                 {
                     yield return etc1decoder.Get(() =>
                     {
