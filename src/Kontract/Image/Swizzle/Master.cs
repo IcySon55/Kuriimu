@@ -14,31 +14,32 @@ namespace Kontract.Image.Swizzle
 
         int macroTileWidth;
         int macroTileHeight;
+        int widthInTiles;
 
-        public MasterSwizzle(IEnumerable<(int, int)> bitFieldCoords, int imageWidth, int macroTileWidth, int macroTileHeight)
+        public MasterSwizzle(IEnumerable<(int, int)> bitFieldCoords, int imageWidth)
         {
             this.bitFieldCoords = bitFieldCoords;
             this.imageWidth = imageWidth;
 
-            this.macroTileWidth = macroTileWidth;
-            this.macroTileHeight = macroTileHeight;
+            macroTileWidth = bitFieldCoords.Select(p => p.Item1).Aggregate((x, y) => x | y) + 1;
+            macroTileHeight = bitFieldCoords.Select(p => p.Item2).Aggregate((x, y) => x | y) + 1;
+            widthInTiles = (imageWidth + macroTileWidth - 1) / macroTileWidth;
         }
 
         public Point Get(int pointCount, Point init)
         {
-            //if (pointCount / (1 << bitFieldCoords.Count()) >= 1) throw new Exception("Too few bit Coordinates were given to calculate coord of given pointCount.");
+            var macroTileCount = pointCount / macroTileWidth / macroTileHeight;
+            var (macroX, macroY) = (macroTileCount % widthInTiles, macroTileCount / widthInTiles);
 
-            var newP = bitFieldCoords
-                .Where((v, j) => (pointCount >> j) % 2 == 1)
-                .Aggregate(init, (point, bitFields) =>
-                    new Point(point.X ^ bitFields.Item1, point.Y ^ bitFields.Item2));
-
-            newP.X ^= ((pointCount >> bitFieldCoords.Count()) % (imageWidth / macroTileWidth)) * macroTileWidth;
-            newP.Y ^= pointCount / (imageWidth * macroTileHeight) * macroTileHeight;
-
-            return newP;
+            return new[] { (macroX * macroTileWidth, macroY * macroTileHeight) }
+                .Concat(bitFieldCoords.Where((v, j) => (pointCount >> j) % 2 == 1))
+                //.Concat(srcY.Where((v, j) => (macroY >> j) % 2 == 1))
+                .Aggregate(init, (a, b) => new Point(a.X ^ b.Item1, a.Y ^ b.Item2));
         }
     }
+
+    //Merge Neo's point creation code - Only srcY is missing to be implemented
+    //Move initpoint to constructor when srcY is implemented
 
     // @todo: To be consolidated with the former MasterSwizzle [Neobeo]
     public class NeoMasterSwizzle
@@ -64,11 +65,11 @@ namespace Kontract.Image.Swizzle
 
         public Point Get(int i)
         {
-            var tmp = i / macroTileWidth / macroTileHeight;
-            var (sx, sy) = (tmp % widthInTiles, tmp / widthInTiles);
-            return new[] { (sx * macroTileWidth, sy * macroTileHeight) }
+            var macroTileCount = i / macroTileWidth / macroTileHeight;
+            var (macroX, macroY) = (macroTileCount % widthInTiles, macroTileCount / widthInTiles);
+            return new[] { (macroX * macroTileWidth, macroY * macroTileHeight) }
                 .Concat(src.Where((v, j) => (i >> j) % 2 == 1))
-                .Concat(srcY.Where((v, j) => (sy >> j) % 2 == 1))
+                .Concat(srcY.Where((v, j) => (macroY >> j) % 2 == 1))
                 .Aggregate(init, (a, b) => new Point(a.X ^ b.Item1, a.Y ^ b.Item2));
         }
     }

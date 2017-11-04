@@ -24,8 +24,8 @@ namespace Kontract.Image.Swizzle
             Height = 2 << (int)Math.Log(height - 1, 2);
 
             _orientation = orientation;
-            _zorder = new MasterSwizzle(new[] { (1, 0), (0, 1), (2, 0), (0, 2), (4, 0), (0, 4) }, Width, 8, 8);
-            _transform = new MasterSwizzle(new[] { (0, 1), (0, 2), (0, 4), (1, 0), (2, 0), (4, 0) }, Width, 8, 8);
+            _zorder = new MasterSwizzle(new[] { (1, 0), (0, 1), (2, 0), (0, 2), (4, 0), (0, 4) }, Width);
+            _transform = new MasterSwizzle(new[] { (0, 1), (0, 2), (0, 4), (1, 0), (2, 0), (4, 0) }, Width);
         }
 
         public Point Get(Point point)
