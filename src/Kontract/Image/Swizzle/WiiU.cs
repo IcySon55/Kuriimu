@@ -27,6 +27,8 @@ namespace Kontract.Image.Swizzle
 
             public General(byte swizzleTileMode, byte format, int width, int height)
             {
+                //swizzle is only 3bit
+                //tileMode is only 5bits, everything until now depends on tilemode 4
                 swizzle = (byte)(swizzleTileMode >> 5);
                 pipeSwizzle = (byte)(swizzle & 0x1);
                 bankSwizzle = (byte)(swizzle >> 1 & 0x3);
