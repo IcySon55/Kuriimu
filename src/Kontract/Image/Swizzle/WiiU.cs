@@ -17,8 +17,8 @@ namespace Kontract.Image.Swizzle
             byte bankSwizzle;
             byte tileMode;
             byte format;
-            public int Width { get; set; }
-            public int Height { get; set; }
+            public int Width { get; }
+            public int Height { get; }
 
             MasterSwizzle swizzle5;
             MasterSwizzle swizzle4;

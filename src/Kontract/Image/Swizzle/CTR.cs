@@ -14,8 +14,8 @@ namespace Kontract.Image.Swizzle
         MasterSwizzle zorder;
         MasterSwizzle transform;
 
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width { get; }
+        public int Height { get; }
 
         public CTR(int width, int height, byte orientation = 0)
         {
