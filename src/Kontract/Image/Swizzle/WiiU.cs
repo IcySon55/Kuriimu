@@ -40,8 +40,8 @@ namespace Kontract.Image.Swizzle
                 var coords = bitDepth == 16 ? coordsRegular16bpp : bitDepth == 32 ? coordsRegular32bpp : throw new Exception();
                 swizzle = new MasterSwizzle(width, init, coords, new[] { (16, 0), (8, 8) });
             }
-            Width = (width + swizzle.macroTileWidth - 1) & -swizzle.macroTileWidth;
-            Height = (height + swizzle.macroTileHeight - 1) & -swizzle.macroTileHeight;
+            Width = (width + swizzle.MacroTileWidth - 1) & -swizzle.MacroTileWidth;
+            Height = (height + swizzle.MacroTileHeight - 1) & -swizzle.MacroTileHeight;
         }
 
         public Point Get(Point point) => swizzle.Get(point.Y * Width + point.X);
