@@ -88,6 +88,7 @@
     <Compile Include="Image\Format\ETC1.cs" />
     <Compile Include="Image\Format\HL.cs" />
     <Compile Include="Image\Format\LA.cs" />
+    <Compile Include="Image\Format\Palette.cs" />
     <Compile Include="Image\Format\RGBA.cs" />
     <Compile Include="Image\Image.cs" />
     <Compile Include="Image\Support\ATI.cs" />
