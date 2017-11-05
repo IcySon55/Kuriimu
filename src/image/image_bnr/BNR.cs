@@ -2,7 +2,9 @@
 using System.Drawing;
 using System.IO;
 using CeteraDS.Hash;
-using CeteraDS.Image;
+//using CeteraDS.Image;
+using Kontract.Image;
+using Kontract.Image.Format;
 using Kontract.IO;
 
 /*Nintendo DS Banner*/
@@ -12,6 +14,7 @@ namespace image_bnr
     {
         Header header;
         byte[] titleInfo;
+        ImageSettings settings;
 
         public List<Bitmap> bmps = new List<Bitmap>();
 
@@ -24,15 +27,13 @@ namespace image_bnr
                 br.BaseStream.Position += 0x1c;
 
                 byte[] tileData = br.ReadBytes(0x200);
-                var palette = Common.GetPalette(br.ReadBytes(0x20), Format.BGR555);
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = 32,
                     Height = 32,
-                    BitPerIndex = BitLength.Bit4,
-                    TransparentColor = Color.FromArgb(255, 0, 255, 0)
+                    Format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4)
                 };
-                bmps.Add(Common.Load(tileData, settings, palette));
+                bmps.Add(Kontract.Image.Image.Load(tileData, settings));
 
                 titleInfo = br.ReadBytes(0x600);
             }
@@ -42,20 +43,12 @@ namespace image_bnr
         {
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
+                var palette = Palette.CreatePalette(bmps[0], new RGBA(5, 5, 5));
+                var tileData = Kontract.Image.Image.Save(bmps[0], settings);
+
                 List<byte> result = new List<byte>();
-                var settings = new ImageSettings
-                {
-                    Width = 32,
-                    Height = 32,
-                    BitPerIndex = BitLength.Bit4
-                };
-
-                var palette = Common.CreatePalette(bmps[0]);
-                var paletteB = Common.EncodePalette(palette, Format.BGR555);
-                var tileData = Common.Save(bmps[0], settings, palette);
-
                 result.AddRange(tileData);
-                result.AddRange(paletteB);
+                result.AddRange(palette);
                 result.AddRange(titleInfo);
                 var crc16 = Crc16.Create(result.ToArray());
                 header.crc16 = (ushort)crc16;
