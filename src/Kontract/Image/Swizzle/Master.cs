@@ -18,6 +18,13 @@ namespace Kontract.Image.Swizzle
         int _widthInTiles;
         Point _init;
 
+        /// <summary>
+        /// Creates an instance of MasterSwizzle
+        /// </summary>
+        /// <param name="imageStride">Pixelcount of dimension in which should get aligned</param>
+        /// <param name="init">the initial point, where the swizzle begins</param>
+        /// <param name="bitFieldCoords">Array of coordinates, assigned to every bit in the macroTile</param>
+        /// <param name="initPointTransformOnY">Defines a transformation array of the initial point with changing Y</param>
         public MasterSwizzle(int imageStride, Point init, IEnumerable<(int, int)> bitFieldCoords, IEnumerable<(int, int)> initPointTransformOnY = null)
         {
             _bitFieldCoords = bitFieldCoords;
@@ -30,6 +37,11 @@ namespace Kontract.Image.Swizzle
             _widthInTiles = (imageStride + MacroTileWidth - 1) / MacroTileWidth;
         }
 
+        /// <summary>
+        /// Transforms a given pointCount into a point
+        /// </summary>
+        /// <param name="pointCount">The overall pointCount to be transformed</param>
+        /// <returns>The Point, which got calculated by given settings</returns>
         public Point Get(int pointCount)
         {
             var macroTileCount = pointCount / MacroTileWidth / MacroTileHeight;
