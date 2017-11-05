@@ -2,32 +2,30 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using CeteraDS.Image;
+//using CeteraDS.Image;
+using Kontract.Image;
+using Kontract.Image.Format;
 using Kontract.IO;
 
 namespace image_aa
 {
     public class AA
     {
-        //[StructLayout(LayoutKind.Sequential, Pack = 1)]
-
         public List<Bitmap> bmps = new List<Bitmap>();
+        public ImageSettings settings;
 
         public AA(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
-                var palette = Common.GetPalette(br.ReadBytes(0x20), Format.BGR555);
-
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = 256,
                     Height = 192,
-                    BitPerIndex = BitLength.Bit4,
-                    PadToPowerOf2 = false
+                    Format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4)
                 };
 
-                bmps.Add(Common.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings, palette));
+                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
             }
         }
 
@@ -35,20 +33,10 @@ namespace image_aa
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                for (int i = 0; i < bmps.Count; i++)
-                {
-                    var settings = new ImageSettings
-                    {
-                        Width = 256,
-                        Height = 192,
-                        BitPerIndex = BitLength.Bit4,
-                        PadToPowerOf2 = false
-                    };
+                var imgData = Kontract.Image.Image.Save(bmps[0], settings);
 
-                    bw.Write(Common.EncodePalette(Common.CreatePalette(bmps[i]), Format.BGR555));
-
-                    bw.Write(Common.Save(bmps[i], settings, Common.CreatePalette(bmps[i])));
-                }
+                bw.Write(Palette.CreatePalette(bmps[0], new RGBA(5, 5, 5)));
+                bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
             }
         }
     }
