@@ -45,7 +45,7 @@ namespace image_aif
             {
                 _aif = new AIF(FileInfo.OpenRead());
 
-                var _bmpList = _aif.bmps.Select(o => new AIFBitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _aif.bmps.Select(o => new AIFBitmapInfo { Bitmap = o, Format = _aif.settings.Format.FormatName }).ToList();
                 _bitmaps = new List<BitmapInfo>();
                 _bitmaps.AddRange(_bmpList);
             }

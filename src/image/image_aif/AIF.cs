@@ -13,6 +13,7 @@ namespace image_aif
         byte[] header;
         public int dataOffset;
         public TexInfo texInfo;
+        public ImageSettings settings;
 
         public AIF(Stream input)
         {
@@ -47,7 +48,7 @@ namespace image_aif
 
                 //Add Image
                 br.BaseStream.Position = dataOffset;
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = texInfo.width,
                     Height = texInfo.height,
