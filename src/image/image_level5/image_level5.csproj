@@ -49,10 +49,10 @@
     <Compile Include="ImgaSupport.cs" />
     <Compile Include="XF.cs" />
     <Compile Include="XfAdapter.cs" />
-    <Compile Include="XI.cs" />
-    <Compile Include="XiAdapter.cs" />
+    <Compile Include="IMGC.cs" />
+    <Compile Include="ImgcAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XiSupport.cs" />
+    <Compile Include="ImgcSupport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Cetera\Cetera.csproj">
