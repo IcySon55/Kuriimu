@@ -47,8 +47,6 @@
     <Compile Include="IMGA.cs" />
     <Compile Include="ImgaAdapter.cs" />
     <Compile Include="ImgaSupport.cs" />
-    <Compile Include="XF.cs" />
-    <Compile Include="XfAdapter.cs" />
     <Compile Include="IMGC.cs" />
     <Compile Include="ImgcAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
