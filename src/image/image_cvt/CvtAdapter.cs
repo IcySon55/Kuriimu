@@ -43,7 +43,7 @@ namespace image_cvt
             if (FileInfo.Exists)
             {
                 _cvt = new CVT(FileInfo.OpenRead());
-                _bitmaps = _cvt.bmps.Select(b => new CvtBitmapInfo { Name = _cvt.Header.Name, Bitmap = b, Format = _cvt.Header.Format }).ToList<BitmapInfo>();
+                _bitmaps = _cvt.bmps.Select(b => new CvtBitmapInfo { Name = _cvt.Header.Name, Bitmap = b, Format = _cvt.settings.Format.FormatName }).ToList<BitmapInfo>();
             }
         }
 
