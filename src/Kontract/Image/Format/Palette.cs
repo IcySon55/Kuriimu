@@ -14,7 +14,7 @@ namespace Kontract.Image.Format
     {
         IImageFormat paletteFormat;
         List<Color> colors;
-        byte[] colorBytes;
+        public byte[] paletteBytes;
 
         ByteOrder byteOrder;
 
@@ -32,7 +32,8 @@ namespace Kontract.Image.Format
             FormatName = "Paletted " + paletteFormat.FormatName;
 
             this.paletteFormat = paletteFormat;
-            colors = paletteFormat.Load(colorBytes).ToList();
+            paletteBytes = paletteData;
+            colors = paletteFormat.Load(paletteData).ToList();
         }
 
         public IEnumerable<Color> Load(byte[] data)
@@ -52,12 +53,20 @@ namespace Kontract.Image.Format
                     }
         }
 
+        /// <summary>
+        /// Converts an Enumerable of colors into a byte[].
+        /// Palette will be written before the image data
+        /// </summary>
+        /// <param name="colors"></param>
+        /// <returns></returns>
         public byte[] Save(IEnumerable<Color> colors)
         {
             var redColors = CreatePalette(colors.ToList());
+            var paletteBytes = paletteFormat.Save(redColors);
 
             var ms = new MemoryStream();
             using (var bw = new BinaryWriterX(ms, true, byteOrder))
+            {
                 foreach (var color in colors)
                     switch (BitDepth)
                     {
@@ -70,6 +79,7 @@ namespace Kontract.Image.Format
                         default:
                             throw new Exception($"BitDepth {BitDepth} not supported!");
                     }
+            }
 
             return ms.ToArray();
         }
@@ -80,19 +90,7 @@ namespace Kontract.Image.Format
             foreach (var color in colors)
                 if (!reducedColors.Exists(c => c == color)) reducedColors.Add(color);
 
-            colorBytes = paletteFormat.Save(reducedColors);
-
             return reducedColors;
-        }
-
-        public static byte[] CreatePalette(Bitmap bmp, IImageFormat format)
-        {
-            List<Color> reducedColors = new List<Color>();
-            for (int y = 0; y < bmp.Height; y++)
-                for (int x = 0; x < bmp.Width; x++)
-                    if (!reducedColors.Exists(c => c == bmp.GetPixel(x, y))) reducedColors.Add(bmp.GetPixel(x, y));
-
-            return format.Save(reducedColors);
         }
     }
 }

@@ -12,16 +12,18 @@ namespace image_aa
     {
         public List<Bitmap> bmps = new List<Bitmap>();
         public ImageSettings settings;
+        Palette format;
 
         public AA(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
+                format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4);
                 settings = new ImageSettings
                 {
                     Width = 256,
                     Height = 192,
-                    Format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4)
+                    Format = format
                 };
 
                 bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
@@ -32,10 +34,11 @@ namespace image_aa
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var imgData = Kontract.Image.Image.Save(bmps[0], settings);
+                var tileData = Kontract.Image.Image.Save(bmps[0], settings);
+                var paletteData = format.paletteBytes;
 
-                bw.Write(Palette.CreatePalette(bmps[0], new RGBA(5, 5, 5)));
-                bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
+                bw.Write(paletteData);
+                bw.Write(tileData);
             }
         }
     }

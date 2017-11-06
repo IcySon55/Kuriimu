@@ -4,6 +4,7 @@ using System.IO;
 using CeteraDS.Hash;
 using Kontract.Image;
 using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 
 /*Nintendo DS Banner*/
@@ -14,6 +15,7 @@ namespace image_bnr
         Header header;
         byte[] titleInfo;
         public ImageSettings settings;
+        Palette format;
 
         public List<Bitmap> bmps = new List<Bitmap>();
 
@@ -26,11 +28,13 @@ namespace image_bnr
                 br.BaseStream.Position += 0x1c;
 
                 byte[] tileData = br.ReadBytes(0x200);
+                format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4);
                 settings = new ImageSettings
                 {
                     Width = 32,
                     Height = 32,
-                    Format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4)
+                    Format = format,
+                    Swizzle = new NitroSwizzle(32, 32)
                 };
                 bmps.Add(Kontract.Image.Image.Load(tileData, settings));
 
@@ -42,12 +46,12 @@ namespace image_bnr
         {
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
-                var palette = Palette.CreatePalette(bmps[0], new RGBA(5, 5, 5));
                 var tileData = Kontract.Image.Image.Save(bmps[0], settings);
+                var paletteData = format.paletteBytes;
 
                 List<byte> result = new List<byte>();
                 result.AddRange(tileData);
-                result.AddRange(palette);
+                result.AddRange(paletteData);
                 result.AddRange(titleInfo);
                 var crc16 = Crc16.Create(result.ToArray());
                 header.crc16 = (ushort)crc16;
