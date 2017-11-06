@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.IO;
 using CeteraDS.Hash;
-//using CeteraDS.Image;
 using Kontract.Image;
 using Kontract.Image.Format;
 using Kontract.IO;

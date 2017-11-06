@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
+using Kontract.Image.Swizzle;
+using Kontract.Image;
 using Kontract.IO;
 
 namespace image_comp
@@ -9,6 +10,7 @@ namespace image_comp
     public class COMP
     {
         public List<Bitmap> bmps = new List<Bitmap>();
+        public ImageSettings settings;
 
         public Header header;
 
@@ -21,14 +23,14 @@ namespace image_comp
 
                 //add image
                 br.BaseStream.Position = 0x10;
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = header.width,
                     Height = header.height,
-                    Format = header.format,
-                    PadToPowerOf2 = false
+                    Format = Support.Format[header.format],
+                    Swizzle = new CTRSwizzle(header.width, header.height)
                 };
-                bmps.Add(Common.Load(br.ReadBytes((int)header.dataSize), settings));
+                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)header.dataSize), settings));
             }
         }
 
@@ -37,14 +39,7 @@ namespace image_comp
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
                 //get texture
-                var settings = new ImageSettings
-                {
-                    Width = bmps[0].Width,
-                    Height = bmps[0].Height,
-                    Format = header.format,
-                    PadToPowerOf2 = false
-                };
-                byte[] tex = Common.Save(bmps[0], settings);
+                byte[] tex = Kontract.Image.Image.Save(bmps[0], settings);
 
                 //Write header
                 header.width = (short)bmps[0].Width;
