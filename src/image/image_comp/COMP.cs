@@ -39,6 +39,8 @@ namespace image_comp
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
                 //get texture
+                settings.Width = bmps[0].Width;
+                settings.Height = bmps[0].Height;
                 byte[] tex = Kontract.Image.Image.Save(bmps[0], settings);
 
                 //Write header
