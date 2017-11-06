@@ -14,7 +14,7 @@ namespace image_bnr
     {
         Header header;
         byte[] titleInfo;
-        ImageSettings settings;
+        public ImageSettings settings;
 
         public List<Bitmap> bmps = new List<Bitmap>();
 
