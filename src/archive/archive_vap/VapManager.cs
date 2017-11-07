@@ -35,6 +35,7 @@ namespace archive_vap
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 var fileCount = br.ReadInt32();
+                if (fileCount < 0 || (0xc + (fileCount - 1) * 0x8) < 0) return false;
                 br.BaseStream.Position = 0xc + (fileCount - 1) * 0x8;
 
                 var offset = br.ReadInt32();
