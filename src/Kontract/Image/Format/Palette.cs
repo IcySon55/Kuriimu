@@ -62,7 +62,7 @@ namespace Kontract.Image.Format
         public byte[] Save(IEnumerable<Color> colors)
         {
             var redColors = CreatePalette(colors.ToList());
-            var paletteBytes = paletteFormat.Save(redColors);
+            paletteBytes = paletteFormat.Save(redColors);
 
             var ms = new MemoryStream();
             using (var bw = new BinaryWriterX(ms, true, byteOrder))
