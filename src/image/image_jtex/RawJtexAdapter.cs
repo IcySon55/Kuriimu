@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
@@ -8,7 +9,7 @@ using System.Windows.Forms;
 
 namespace image_rawJtex
 {
-    class RawJtexAdapter : IImageAdapter
+    public class RawJtexAdapter : IImageAdapter
     {
         private RawJTEX _rawjtex;
         private List<BitmapInfo> _bitmaps;
@@ -51,7 +52,9 @@ namespace image_rawJtex
             {
                 _rawjtex = new RawJTEX(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _rawjtex.Image } };
+                var _bmpList = new List<BitmapInfo> { new RawJTEXBitmapInfo { Bitmap = _rawjtex.Image, Format = _rawjtex.settings.Format.FormatName } };
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -68,5 +71,12 @@ namespace image_rawJtex
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class RawJTEXBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

@@ -1,8 +1,8 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using Cetera.Image;
-using Kontract.Compression;
+using Kontract.Image;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 
 namespace image_rawJtex
@@ -11,6 +11,7 @@ namespace image_rawJtex
     {
         public RawHeader JTEXRawHeader;
         public Bitmap Image;
+        public ImageSettings settings;
 
         public RawJTEX(Stream input)
         {
@@ -21,14 +22,14 @@ namespace image_rawJtex
 
                 //Add image
                 br.BaseStream.Position = JTEXRawHeader.dataStart;
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = JTEXRawHeader.width,
                     Height = JTEXRawHeader.height,
-                    Format = ImageSettings.ConvertFormat(JTEXRawHeader.format),
-                    PadToPowerOf2 = false
+                    Format = Support.Format[JTEXRawHeader.format],
+                    Swizzle = new CTRSwizzle(JTEXRawHeader.width, JTEXRawHeader.height)
                 };
-                Image = Common.Load(br.ReadBytes((int)(br.BaseStream.Length - JTEXRawHeader.dataStart)), settings);
+                Image = Kontract.Image.Image.Load(br.ReadBytes((int)(br.BaseStream.Length - JTEXRawHeader.dataStart)), settings);
             }
         }
 
@@ -37,18 +38,18 @@ namespace image_rawJtex
             using (BinaryWriterX bw = new BinaryWriterX(output))
             {
                 //check for oringinal size
-                if (JTEXRawHeader.width != Image.Width || JTEXRawHeader.height != Image.Height)
-                    throw new System.Exception($"Image has to be {JTEXRawHeader.width}x{JTEXRawHeader.height}px!");
+                //if (JTEXRawHeader.width != Image.Width || JTEXRawHeader.height != Image.Height)
+                //    throw new System.Exception($"Image has to be {JTEXRawHeader.width}x{JTEXRawHeader.height}px!");
 
                 //get texture
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = Image.Width,
                     Height = Image.Height,
-                    Format = ImageSettings.ConvertFormat(JTEXRawHeader.format),
-                    PadToPowerOf2 = false
+                    Format = Support.Format[JTEXRawHeader.format],
+                    Swizzle = new CTRSwizzle(Image.Width, Image.Height)
                 };
-                byte[] resBmp = Common.Save(Image, settings);
+                byte[] resBmp = Kontract.Image.Image.Save(Image, settings);
 
                 //Header
                 JTEXRawHeader.width = Image.Width;
