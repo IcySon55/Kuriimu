@@ -8,11 +8,11 @@ using Kontract.Compression;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_nintendo.ZlibSARC
+namespace archive_nintendo.SARC
 {
     public class ZLibSarcManager : IArchiveManager
     {
-        private Cetera.Archive.SARC _sarc = null;
+        private SARC _sarc = null;
 
         #region Properties
 
@@ -64,7 +64,7 @@ namespace archive_nintendo.ZlibSARC
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
                 br.ReadBytes(4);
-                _sarc = new Cetera.Archive.SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
+                _sarc = new SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
             }
         }
 
