@@ -118,6 +118,22 @@
       <Project>{66fed61d-a19c-42a3-b53b-06ac651dca8d}</Project>
       <Name>image_cvt</Name>
     </ProjectReference>
+    <ProjectReference Include="..\image\image_f3xt\image_f3xt.csproj">
+      <Project>{269d0f0d-ae95-447b-8403-41f28d8de00c}</Project>
+      <Name>image_f3xt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_iobj\image_iobj.csproj">
+      <Project>{23554db6-6487-414c-a5ee-8ee389123353}</Project>
+      <Name>image_iobj</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_jtex\image_jtex.csproj">
+      <Project>{515d26a0-26dd-49de-a66d-bf4cad0029e8}</Project>
+      <Name>image_jtex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_level5\image_level5.csproj">
+      <Project>{1c9d7f75-2e04-441e-83d4-00a406809e09}</Project>
+      <Name>image_level5</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>Kontract</Name>

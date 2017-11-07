@@ -29,11 +29,20 @@ namespace KuriimuTests
         //CTX - unknown build errors (giving an error that namespace is missing, but VS and rebuilding manually doesn't give any build errors. Also Kukkii can handle CTX properly)
         //CTXB - Only ETC images available. Not testable through our ETC-Encoder
         //CVT - Only ETC images available. Not testable through our ETC-Encoder
+        //F3XT - no samples available
+        //IOBJ - Not revised, no sample files, seems unfinished
+        //jIMG - Only ETC images available. Not testable through our ETC-Encoder
 
         [TestMethod]
         public void AIFTest() => Test<image_aif.AifAdapter>("com_bg_b1.aif");
 
         [TestMethod]
         public void COMPTest() => Test<image_comp.CompAdapter>("mz_Name_000.comp");
+
+        [TestMethod]
+        public void RawJTEXTest() => Test<image_rawJtex.RawJtexAdapter>("Character.jtex");
+
+        [TestMethod]
+        public void ImgcTest() => Test<image_level5.imgc.ImgcAdapter>("AR_Tourbillon.xi");
     }
 }
