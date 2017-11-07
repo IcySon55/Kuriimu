@@ -23,6 +23,12 @@ namespace Kontract.Interface
         //void New();
         //void Load(string filename);
         //void Save(string filename = ""); // A non-blank filename is provided when using Save As...
+        /*
+         * Identification Identify(Stream file, string filename);
+         * void Load(Stream file, string filename);
+         * void Save(Stream file, string filename);
+         * void New(Stream file, string filename)
+         */
 
         // Features
         bool ShowProperties(Icon icon);
