@@ -46,7 +46,7 @@ namespace Kontract.Image.Format
                 var aBitMask = (1 << aDepth) - 1;
                 var lBitMask = (1 << lDepth) - 1;
 
-                while (br.BaseStream.Position < br.BaseStream.Length)
+                while (true)
                 {
                     long value = 0;
 

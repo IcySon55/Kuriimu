@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using Kontract.Interface;
 using Kontract.Image.Format;
+using Kontract;
 
-namespace image_comp
+namespace image_f3xt
 {
     public class Support
     {
@@ -27,12 +28,16 @@ namespace image_comp
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Header
+    public struct Header
     {
-        public uint dataSize;
-        public byte format;
-        public byte unk1;
-        public short width;
-        public short height;
+        Magic magic;
+        uint texEntries;
+        uint flags;
+        uint unk1;
+        public ushort width;
+        public ushort height;
+        public uint dataStart;
+
+        public byte format => (byte)(flags & 0xFF);
     }
 }

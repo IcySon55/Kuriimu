@@ -4,13 +4,6 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kontract.Compression;
 using Kontract.IO;
-using static Kontract.Compression.LZ10;
-using static Kontract.Compression.LZ11;
-using static Kontract.Compression.LZ77;
-using static Kontract.Compression.RevLZ77;
-using static Kontract.Compression.LZECD;
-using static Kontract.Compression.LZ60;
-using static Kontract.Compression.LZ4;
 
 namespace KuriimuTests
 {

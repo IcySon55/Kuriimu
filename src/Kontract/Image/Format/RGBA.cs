@@ -26,8 +26,7 @@ namespace Kontract.Image.Format
         public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.LittleEndian, bool standard = false)
         {
             BitDepth = r + g + b + a;
-            if (BitDepth % 8 != 0) throw new Exception($"Overall bitDepth has to be dividable by 8. Given bitDepth: {BitDepth}");
-            if (BitDepth <= 8) throw new Exception($"Overall bitDepth can't be smaller than 16. Given bitDepth: {BitDepth}");
+            if (BitDepth < 8) throw new Exception($"Overall bitDepth can't be smaller than 8. Given bitDepth: {BitDepth}");
             if (BitDepth > 32) throw new Exception($"Overall bitDepth can't be bigger than 32. Given bitDepth: {BitDepth}");
 
             this.byteOrder = byteOrder;
@@ -57,21 +56,19 @@ namespace Kontract.Image.Format
                 {
                     long value = 0;
 
-                    switch (BitDepth)
+                    if (BitDepth <= 8)
+                        value = br.ReadByte();
+                    else if (BitDepth <= 16)
+                        value = br.ReadUInt16();
+                    else if (BitDepth <= 24)
                     {
-                        case 16:
-                            value = br.ReadUInt16();
-                            break;
-                        case 24:
-                            var tmp = br.ReadBytes(3);
-                            value = (byteOrder == ByteOrder.LittleEndian) ? tmp[2] << 16 | tmp[1] << 8 | tmp[0] : tmp[0] << 16 | tmp[1] << 8 | tmp[0];
-                            break;
-                        case 32:
-                            value = br.ReadUInt32();
-                            break;
-                        default:
-                            throw new Exception($"BitDepth {BitDepth} not supported!");
+                        var tmp = br.ReadBytes(3);
+                        value = (byteOrder == ByteOrder.LittleEndian) ? tmp[2] << 16 | tmp[1] << 8 | tmp[0] : tmp[0] << 16 | tmp[1] << 8 | tmp[0];
                     }
+                    else if (BitDepth <= 32)
+                        value = br.ReadUInt32();
+                    else
+                        throw new Exception($"BitDepth {BitDepth} not supported!");
 
                     yield return Color.FromArgb(
                         (aDepth == 0) ? 255 : Support.Support.ChangeBitDepth((int)(value & aBitMask), aDepth, 8),
@@ -102,23 +99,21 @@ namespace Kontract.Image.Format
                     value |= (uint)(g << gShift);
                     value |= (uint)(r << rShift);
 
-                    switch (BitDepth)
+                    if (BitDepth <= 8)
+                        bw.Write((byte)value);
+                    else if (BitDepth <= 16)
+                        bw.Write((ushort)value);
+                    else if (BitDepth <= 24)
                     {
-                        case 16:
-                            bw.Write((ushort)value);
-                            break;
-                        case 24:
-                            var tmp = (byteOrder == ByteOrder.LittleEndian) ?
+                        var tmp = (byteOrder == ByteOrder.LittleEndian) ?
                                 new byte[] { (byte)(value & 0xff), (byte)(value >> 8 & 0xff), (byte)(value >> 16 & 0xff) } :
                                 new byte[] { (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
-                            bw.Write(tmp);
-                            break;
-                        case 32:
-                            bw.Write((uint)value);
-                            break;
-                        default:
-                            throw new Exception($"BitDepth {BitDepth} not supported!");
+                        bw.Write(tmp);
                     }
+                    else if (BitDepth <= 32)
+                        bw.Write((uint)value);
+                    else
+                        throw new Exception($"BitDepth {BitDepth} not supported!");
                 }
 
             return ms.ToArray();

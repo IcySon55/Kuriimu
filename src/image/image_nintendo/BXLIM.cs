@@ -135,53 +135,26 @@ namespace image_nintendo.BXLIM
                         {
                             BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(byteOrder);
 
-                            GetPaddedDimensions(BFLIMHeader.width, BFLIMHeader.height, BFLIMHeader.swizzleTileMode >> 5, BFLIMHeader.format, out var padWidth, out var padHeight);
+                            var format = WiiUFormat[BFLIMHeader.format];
+                            var isBlockBased = new[] { 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23 }.Contains(BFLIMHeader.format); // hax
 
                             Settings = new Kontract.Image.ImageSettings
                             {
-                                Width = padWidth,//BFLIMHeaderBE.width,
-                                Height = padHeight,//BFLIMHeaderBE.height,
-                                Format = WiiUFormat[BFLIMHeader.format],
-                                Swizzle = new WiiU.General(BFLIMHeader.swizzleTileMode, BFLIMHeader.format, padWidth, padHeight)
+                                Width = BFLIMHeader.width,
+                                Height = BFLIMHeader.height,
+                                Format = format,
+                                Swizzle = new WiiUSwizzle(BFLIMHeader.swizzleTileMode, isBlockBased, format.BitDepth, BFLIMHeader.width, BFLIMHeader.height)
                             };
+
+                            // Uncomment the following line to use the padded width/height instead 
+                            //(Settings.Width, Settings.Height) = (Settings.Swizzle.Width, Settings.Swizzle.Height);
+
                             Image = Kontract.Image.Image.Load(tex, Settings);
                         }
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");
                 }
-            }
-        }
-
-        void GetPaddedDimensions(int width, int height, int swizzle, byte format, out int padWidth, out int padHeight)
-        {
-            padWidth = width;
-            padHeight = height;
-
-            switch (swizzle)
-            {
-                case 0:
-                case 7:
-                case 6:
-                    if (format == 20)
-                    {
-                        padWidth = (width + 31) & ~31;
-                        padHeight = (height + 15) & ~15;
-                    }
-                    else
-                    {
-                        padWidth = (width + 127) & ~127;
-                        padHeight = (height + 63) & ~63;
-                    }
-                    break;
-                case 2:
-                    padWidth = (width + 31) & ~31;
-                    padHeight = (height + 15) & ~15;
-                    break;
-                case 4:
-                    padWidth = (width + 63) & ~63;
-                    padHeight = (height + 15) & ~15;
-                    break;
             }
         }
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
-using Kontract.Interface;
+using Kontract.Image;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 
 namespace image_ctx
@@ -12,6 +12,7 @@ namespace image_ctx
         public Header header;
 
         public List<Bitmap> bmps = new List<Bitmap>();
+        public ImageSettings settings;
 
         public CTX(Stream input)
         {
@@ -22,13 +23,14 @@ namespace image_ctx
 
                 //Image
                 br.BaseStream.Position = (br.BaseStream.Position + 0x3f) & ~0x3f;
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = (int)header.width,
                     Height = (int)header.height,
-                    Format = ImageSettings.ConvertFormat(header.format)
+                    Format = Support.Format[header.format],
+                    Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
-                bmps.Add(Common.Load(br.ReadBytes((int)header.dataSize), settings));
+                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)header.dataSize), settings));
             }
         }
 
@@ -44,14 +46,15 @@ namespace image_ctx
                 bw.WriteStruct(header);
 
                 //Image
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = (int)header.width,
                     Height = (int)header.height,
-                    Format = ImageSettings.ConvertFormat(header.format)
+                    Format = Support.Format[header.format],
+                    Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
                 bw.BaseStream.Position = (bw.BaseStream.Position + 0x3f) & ~0x3f;
-                bw.Write(Common.Save(bmps[0], settings));
+                bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
             }
         }
     }

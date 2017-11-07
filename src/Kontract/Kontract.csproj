@@ -88,6 +88,7 @@
     <Compile Include="Image\Format\ETC1.cs" />
     <Compile Include="Image\Format\HL.cs" />
     <Compile Include="Image\Format\LA.cs" />
+    <Compile Include="Image\Format\Palette.cs" />
     <Compile Include="Image\Format\RGBA.cs" />
     <Compile Include="Image\Image.cs" />
     <Compile Include="Image\Support\ATI.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Image\Support\sRGB.cs" />
     <Compile Include="Image\Swizzle\CTR.cs" />
     <Compile Include="Image\Swizzle\Master.cs" />
+    <Compile Include="Image\Swizzle\Nitro.cs" />
     <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Interface\ILayoutInterpreter.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />

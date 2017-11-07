@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CTXB.cs" />
     <Compile Include="CtxbAdapter.cs" />
+    <Compile Include="CtxbSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,34 +9,48 @@ namespace Kontract.Image.Swizzle
 {
     public class MasterSwizzle
     {
-        IEnumerable<(int, int)> bitFieldCoords;
-        int imageWidth;
+        IEnumerable<(int, int)> _bitFieldCoords;
+        IEnumerable<(int, int)> _initPointTransformOnY;
 
-        int macroTileWidth;
-        int macroTileHeight;
+        public int MacroTileWidth { get; }
+        public int MacroTileHeight { get; }
 
-        public MasterSwizzle(IEnumerable<(int, int)> bitFieldCoords, int imageWidth, int macroTileWidth, int macroTileHeight)
+        int _widthInTiles;
+        Point _init;
+
+        /// <summary>
+        /// Creates an instance of MasterSwizzle
+        /// </summary>
+        /// <param name="imageStride">Pixelcount of dimension in which should get aligned</param>
+        /// <param name="init">the initial point, where the swizzle begins</param>
+        /// <param name="bitFieldCoords">Array of coordinates, assigned to every bit in the macroTile</param>
+        /// <param name="initPointTransformOnY">Defines a transformation array of the initial point with changing Y</param>
+        public MasterSwizzle(int imageStride, Point init, IEnumerable<(int, int)> bitFieldCoords, IEnumerable<(int, int)> initPointTransformOnY = null)
         {
-            this.bitFieldCoords = bitFieldCoords;
-            this.imageWidth = imageWidth;
+            _bitFieldCoords = bitFieldCoords;
+            _initPointTransformOnY = initPointTransformOnY ?? Enumerable.Empty<(int, int)>();
 
-            this.macroTileWidth = macroTileWidth;
-            this.macroTileHeight = macroTileHeight;
+            _init = init;
+
+            MacroTileWidth = bitFieldCoords.Select(p => p.Item1).Aggregate((x, y) => x | y) + 1;
+            MacroTileHeight = bitFieldCoords.Select(p => p.Item2).Aggregate((x, y) => x | y) + 1;
+            _widthInTiles = (imageStride + MacroTileWidth - 1) / MacroTileWidth;
         }
 
-        public Point Get(int pointCount, Point init)
+        /// <summary>
+        /// Transforms a given pointCount into a point
+        /// </summary>
+        /// <param name="pointCount">The overall pointCount to be transformed</param>
+        /// <returns>The Point, which got calculated by given settings</returns>
+        public Point Get(int pointCount)
         {
-            //if (pointCount / (1 << bitFieldCoords.Count()) >= 1) throw new Exception("Too few bit Coordinates were given to calculate coord of given pointCount.");
+            var macroTileCount = pointCount / MacroTileWidth / MacroTileHeight;
+            var (macroX, macroY) = (macroTileCount % _widthInTiles, macroTileCount / _widthInTiles);
 
-            var newP = bitFieldCoords
-                .Where((v, j) => (pointCount >> j) % 2 == 1)
-                .Aggregate(init, (point, bitFields) =>
-                    new Point(point.X ^ bitFields.Item1, point.Y ^ bitFields.Item2));
-
-            newP.X ^= ((pointCount >> bitFieldCoords.Count()) % (imageWidth / macroTileWidth)) * macroTileWidth;
-            newP.Y ^= pointCount / (imageWidth * macroTileHeight) * macroTileHeight;
-
-            return newP;
+            return new[] { (macroX * MacroTileWidth, macroY * MacroTileHeight) }
+                .Concat(_bitFieldCoords.Where((v, j) => (pointCount >> j) % 2 == 1))
+                .Concat(_initPointTransformOnY.Where((v, j) => (macroY >> j) % 2 == 1))
+                .Aggregate(_init, (a, b) => new Point(a.X ^ b.Item1, a.Y ^ b.Item2));
         }
     }
 }

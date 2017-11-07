@@ -2,32 +2,31 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using CeteraDS.Image;
+using Kontract.Image;
+using Kontract.Image.Format;
 using Kontract.IO;
 
 namespace image_aa
 {
     public class AA
     {
-        //[StructLayout(LayoutKind.Sequential, Pack = 1)]
-
         public List<Bitmap> bmps = new List<Bitmap>();
+        public ImageSettings settings;
+        Palette format;
 
         public AA(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
-                var palette = Common.GetPalette(br.ReadBytes(0x20), Format.BGR555);
-
-                var settings = new ImageSettings
+                format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4);
+                settings = new ImageSettings
                 {
                     Width = 256,
                     Height = 192,
-                    BitPerIndex = BitLength.Bit4,
-                    PadToPowerOf2 = false
+                    Format = format
                 };
 
-                bmps.Add(Common.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings, palette));
+                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
             }
         }
 
@@ -35,20 +34,11 @@ namespace image_aa
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                for (int i = 0; i < bmps.Count; i++)
-                {
-                    var settings = new ImageSettings
-                    {
-                        Width = 256,
-                        Height = 192,
-                        BitPerIndex = BitLength.Bit4,
-                        PadToPowerOf2 = false
-                    };
+                var tileData = Kontract.Image.Image.Save(bmps[0], settings);
+                var paletteData = format.paletteBytes;
 
-                    bw.Write(Common.EncodePalette(Common.CreatePalette(bmps[i]), Format.BGR555));
-
-                    bw.Write(Common.Save(bmps[i], settings, Common.CreatePalette(bmps[i])));
-                }
+                bw.Write(paletteData);
+                bw.Write(tileData);
             }
         }
     }
