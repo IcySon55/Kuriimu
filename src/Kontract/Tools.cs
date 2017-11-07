@@ -11,7 +11,7 @@ namespace Kontract
 {
     public static class Tools
     {
-        public static string LoadFilters(IEnumerable<IPlugin> plugins)
+        public static string LoadFilters(IEnumerable<IFilePlugin> plugins)
         {
             var alltypes = plugins.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).OrderBy(o => o.Description).ToList();
 

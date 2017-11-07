@@ -24,7 +24,7 @@ namespace archive_rgssad
         public string About => "This is the RGSSAD archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
 
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;

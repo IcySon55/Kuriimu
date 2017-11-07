@@ -20,7 +20,7 @@ namespace archive_zdp
         public string About => "This is the ZDP archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;

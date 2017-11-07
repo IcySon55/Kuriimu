@@ -19,7 +19,7 @@ namespace archive_nintendo.SARC
         public string About => "This is the SARC archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => true;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
