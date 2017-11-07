@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Archive;
 using Kontract.Interface;
 using Kontract.IO;
 
@@ -9,7 +8,7 @@ namespace archive_nintendo.SimpleSARC
 {
     public class SimpleSarcManager : IArchiveManager
     {
-        private Cetera.Archive.SimpleSARC _sarc = null;
+        private SimpleSARC _sarc = null;
 
         #region Properties
 
@@ -47,7 +46,7 @@ namespace archive_nintendo.SimpleSARC
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _sarc = new Cetera.Archive.SimpleSARC(FileInfo.OpenRead());
+                _sarc = new SimpleSARC(FileInfo.OpenRead());
         }
 
         public void Save(string filename)

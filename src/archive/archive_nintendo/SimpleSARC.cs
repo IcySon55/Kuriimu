@@ -6,7 +6,7 @@ using Kontract.Interface;
 using Kontract;
 using Kontract.IO;
 
-namespace Cetera.Archive
+namespace archive_nintendo.SimpleSARC
 {
     public class SimpleSARC
     {

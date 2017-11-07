@@ -9,7 +9,7 @@ namespace archive_nintendo.DARC
 {
     public class DarcManager : IArchiveManager
     {
-        private Cetera.Archive.DARC _darc = null;
+        private DARC _darc = null;
 
         #region Properties
 
@@ -45,7 +45,7 @@ namespace archive_nintendo.DARC
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _darc = new Cetera.Archive.DARC(FileInfo.OpenRead());
+                _darc = new DARC(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")

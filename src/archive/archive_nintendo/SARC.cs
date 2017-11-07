@@ -8,7 +8,7 @@ using Kontract.Interface;
 using Kontract;
 using Kontract.IO;
 
-namespace Cetera.Archive
+namespace archive_nintendo.SARC
 {
     public sealed class SARC
     {

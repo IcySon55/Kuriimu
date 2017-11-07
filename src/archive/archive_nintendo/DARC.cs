@@ -7,7 +7,7 @@ using Kontract.Interface;
 using Kontract;
 using System.Text;
 
-namespace Cetera.Archive
+namespace archive_nintendo.DARC
 {
     public sealed class DARC
     {

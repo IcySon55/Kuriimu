@@ -8,7 +8,7 @@ namespace archive_nintendo.SARC
 {
     public class SarcManager : IArchiveManager
     {
-        private Cetera.Archive.SARC _sarc = null;
+        private SARC _sarc = null;
 
         #region Properties
 
@@ -46,7 +46,7 @@ namespace archive_nintendo.SARC
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _sarc = new Cetera.Archive.SARC(FileInfo.OpenRead());
+                _sarc = new SARC(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
