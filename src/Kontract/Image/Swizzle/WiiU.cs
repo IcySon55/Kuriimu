@@ -35,7 +35,7 @@ namespace Kontract.Image.Swizzle
             else
             {
                 var init = new[] { new Point(0, 0), new Point(8, 8), new Point(16, 0), new Point(24, 8) }[swizzleTileMode >> 6];
-                // init.Y ^= ??? // what does the so-called pipeSwizzle affect in this case?
+                init.Y ^= (swizzleTileMode & 32)>>2;
 
                 var coords = bitDepth == 16 ? coordsRegular16bpp : bitDepth == 32 ? coordsRegular32bpp : throw new Exception();
                 swizzle = new MasterSwizzle(width, init, coords, new[] { (16, 0), (8, 8) });
