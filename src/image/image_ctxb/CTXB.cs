@@ -40,14 +40,6 @@ namespace image_ctxb
                             Height = chunks[i].textures[j].height,
                             Format = Support.Format[chunks[i].textures[j].imageFormat],
                             Swizzle = new CTRSwizzle(chunks[i].textures[j].width, chunks[i].textures[j].height)
-                            /*Format = (chunks[i].textures[j].dataType == DataTypes.UnsignedShort565)
-                                ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGB565)
-                                : (chunks[i].textures[j].dataType == DataTypes.UnsignedShort5551)
-                                    ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA5551)
-                                    : (chunks[i].textures[j].dataType == DataTypes.UnsignedShort4444)
-                                        ? ImageSettings.ConvertFormat(Cetera.Image.Format.RGBA4444)
-                                        : ImageSettings.ConvertFormat(chunks[i].textures[j].imageFormat),
-                            PadToPowerOf2 = false*/
                         };
 
                         settingsList.Add(settings);
@@ -67,8 +59,13 @@ namespace image_ctxb
                 {
                     for (int j = 0; j < chunks[i].texCount; j++)
                     {
-                        settingsList[count].Width = bmps[count].Width;
-                        settingsList[count].Height = bmps[count].Height;
+                        settingsList[count] = new ImageSettings
+                        {
+                            Width = bmps[count].Width,
+                            Height = bmps[count].Height,
+                            Format = Support.Format[chunks[i].textures[j].imageFormat],
+                            Swizzle = new CTRSwizzle(bmps[count].Width, bmps[count].Height)
+                        };
 
                         var resBmp = Kontract.Image.Image.Save(bmps[count], settingsList[count]);
                         bw.Write(resBmp);

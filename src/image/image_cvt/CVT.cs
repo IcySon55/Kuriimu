@@ -39,9 +39,13 @@ namespace image_cvt
             {
                 bw.WriteStruct(Header);
 
-                settings.Width = bmps[0].Width;
-                settings.Height = bmps[0].Height;
-
+                settings = new ImageSettings
+                {
+                    Width = bmps[0].Width,
+                    Height = bmps[0].Height,
+                    Format = Support.Format[Header.Format],
+                    Swizzle = new CTRSwizzle(bmps[0].Width, bmps[0].Height)
+                };
                 bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
             }
         }

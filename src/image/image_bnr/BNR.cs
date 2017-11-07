@@ -44,6 +44,8 @@ namespace image_bnr
 
         public void Save(string filename)
         {
+            if (bmps[0].Width != 32 || bmps[0].Height != 32) throw new System.Exception("Banner needs to be 32x32");
+
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
                 var tileData = Kontract.Image.Image.Save(bmps[0], settings);

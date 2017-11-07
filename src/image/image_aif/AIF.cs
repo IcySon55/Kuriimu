@@ -71,7 +71,7 @@ namespace image_aif
                 bw.Write(header);
 
                 //Write Image
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = texInfo.width,
                     Height = texInfo.height,

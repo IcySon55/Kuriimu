@@ -46,8 +46,13 @@ namespace image_ctx
                 bw.WriteStruct(header);
 
                 //Image
-                settings.Width = (int)header.width;
-                settings.Height = (int)header.height;
+                settings = new ImageSettings
+                {
+                    Width = (int)header.width,
+                    Height = (int)header.height,
+                    Format = Support.Format[header.format],
+                    Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
+                };
                 bw.BaseStream.Position = (bw.BaseStream.Position + 0x3f) & ~0x3f;
                 bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
             }
