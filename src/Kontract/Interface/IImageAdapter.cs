@@ -1,27 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.IO;
 
 namespace Kontract.Interface
 {
-    public interface IImageAdapter : IPlugin
+    public interface IImageAdapter : IFilePlugin
     {
-        // Feature Support
-        bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
-        bool CanSave { get; } // Is saving supported?
-
         // I/O
-        FileInfo FileInfo { get; set; }
-        bool Identify(string filename); // Determines if the given file is opened by the plugin.
         void Load(string filename);
         void Save(string filename = ""); // A non-blank filename is provided when using Save As...
 
         // Images
         IList<BitmapInfo> Bitmaps { get; }
-
-        // Features
-        bool ShowProperties(Icon icon);
     }
 
     public class BitmapInfo

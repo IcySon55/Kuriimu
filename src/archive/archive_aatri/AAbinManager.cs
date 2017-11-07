@@ -20,7 +20,7 @@ namespace archive_aatri.aabin
         public string About => "This is the Ace Attorney bin archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
