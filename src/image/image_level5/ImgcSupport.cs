@@ -7,24 +7,20 @@ using System.Runtime.InteropServices;
 using Kontract;
 using Kontract.IO;
 using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.Image.Format;
+using System.Drawing;
+using Kontract.Image.Swizzle;
 
 namespace image_level5.imgc
 {
-    public enum Format : byte
-    {
-        RGBA8888, RGBA4444,
-        RGBA5551, RGB888, RGB565,
-        LA88 = 11, LA44, L8, HL88, A8,
-        L4 = 26, A4, ETC1, ETC1A4
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Header
     {
         public Magic magic; // IMGC
         public int const1; // 30 30 00 00
         public short const2; // 30 00
-        public Format imageFormat;
+        public byte imageFormat;
         public byte const3; // 01
         public byte combineFormat;
         public byte bitDepth;
@@ -46,12 +42,45 @@ namespace image_level5.imgc
         public int const12; // 00 00 00 00
     }
 
-    public class ImgcSupport
+    public class Support
     {
-        public static byte[] Decomp(BinaryReaderX br)
+        public static Dictionary<byte, IImageFormat> Format = new Dictionary<byte, IImageFormat>
         {
-            // above to be restored eventually with some changes to Cetera
-            return Level5.Decompress(br.BaseStream);
+            [0] = new RGBA(8, 8, 8, 8),
+            [1] = new RGBA(4, 4, 4, 4),
+            [2] = new RGBA(5, 5, 5, 1),
+            [3] = new RGBA(8, 8, 8),
+            [4] = new RGBA(5, 6, 5),
+            [11] = new LA(8, 8),
+            [12] = new LA(4, 4),
+            [13] = new LA(8, 0),
+            [14] = new HL(8, 8),
+            [15] = new LA(0, 8),
+            [26] = new LA(4, 0),
+            [27] = new LA(0, 4),
+            [28] = new ETC1(),
+            [29] = new ETC1(true)
+        };
+    }
+
+    public class ImgcSwizzle : IImageSwizzle
+    {
+        MasterSwizzle _zorderTrans;
+
+        public int Width { get; }
+        public int Height { get; }
+
+        public ImgcSwizzle(int width, int height)
+        {
+            Width = (width + 0x7) & ~0x7;
+            Height = (height + 0x7) & ~0x7;
+
+            _zorderTrans = new MasterSwizzle(Width, new Point(0, 0), new[] { (0, 1), (1, 0), (0, 2), (2, 0), (0, 4), (4, 0) });
+        }
+
+        public Point Get(Point point)
+        {
+            return _zorderTrans.Get(point.Y * Width + point.X);
         }
     }
 }
