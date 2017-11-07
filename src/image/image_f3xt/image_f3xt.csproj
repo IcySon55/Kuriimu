@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="F3xtSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="F3XT.cs" />
     <Compile Include="F3xtAdapter.cs" />
