@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cyotek.Windows.Forms.ImageBox">
+      <HintPath>.\Cyotek.Windows.Forms.ImageBox.dll</HintPath>
+    </Reference>
+    <Reference Include="MvvmFx.Windows.WinForms, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8891034390f17223, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MvvmFx-WinForms.2.0.2\lib\net40\MvvmFx.Windows.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,6 +49,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase.WinForms, Version=2.0.2.0, Culture=neutral, PublicKeyToken=8891034390f17223, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MvvmFx-WinForms.2.0.2\lib\net40\WindowsBase.WinForms.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interpreter.cs">
@@ -64,7 +73,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -77,6 +88,42 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\kukkii.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\kuriimu.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-about.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-compression.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-exit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-gbatemp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-git.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-properties.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\menu-save-as.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\karameru.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
