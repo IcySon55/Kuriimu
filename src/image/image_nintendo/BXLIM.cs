@@ -179,7 +179,7 @@ namespace image_nintendo.BXLIM
                         BCLIMHeader.height = (short)Image.Height;
                         BCLIMHeader.datasize = texture.Length;
 
-                        sections[0].Data = BCLIMHeader.StructToBytes();
+                        sections[0].Data = BCLIMHeader.StructToBytes(byteOrder);
                         sections.Header.file_size = texture.Length + 40;
 
                         bw.WriteSections(sections);
@@ -193,7 +193,8 @@ namespace image_nintendo.BXLIM
                         }
                         else
                         {
-                            //Set Swizzle with new padded dimension here
+                            var isBlockBased = new[] { 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23 }.Contains(BFLIMHeader.format); // hax
+                            Settings.Swizzle = new WiiUSwizzle(BFLIMHeader.swizzleTileMode, isBlockBased, Settings.Format.BitDepth, Image.Width, Image.Height);
                         }
 
                         texture = Kontract.Image.Image.Save(Image, Settings);
@@ -204,7 +205,7 @@ namespace image_nintendo.BXLIM
                         BFLIMHeader.height = (short)Image.Height;
                         BFLIMHeader.datasize = texture.Length;
 
-                        sections[0].Data = BFLIMHeader.StructToBytes();
+                        sections[0].Data = BFLIMHeader.StructToBytes(byteOrder);
                         sections.Header.file_size = texture.Length + 40;
 
                         bw.WriteSections(sections);
