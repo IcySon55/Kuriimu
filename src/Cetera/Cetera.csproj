@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Font\BFFNT.cs" />
     <Compile Include="Font\GZF.cs" />
     <Compile Include="Font\QBF.cs" />
     <Compile Include="Hash\Crc32.cs" />

@@ -52,6 +52,7 @@
     <Compile Include="BCLYT.cs" />
     <Compile Include="BclytAdapter.cs" />
     <Compile Include="BclytSupport.cs" />
+    <Compile Include="BffntAdapter.cs" />
     <Compile Include="BXLIM.cs" />
     <Compile Include="BxlimAdapter.cs" />
     <Compile Include="CGFX.cs" />
