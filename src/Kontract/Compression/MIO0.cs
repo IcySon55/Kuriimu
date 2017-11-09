@@ -237,6 +237,40 @@ namespace Kontract.Compression
 
         public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
         {
+            int m = needle.Length;
+            int n = haystack.Length;
+
+            int[] badChar = new int[256];
+
+            BadCharHeuristic(needle, m, ref badChar);
+
+            int s = 0;
+            while (s <= (n - m))
+            {
+                int j = m - 1;
+
+                while (j >= 0 && needle[j] == haystack[s + j])
+                    --j;
+
+                if (j < 0) return s;
+                else s += Math.Max(1, j - badChar[haystack[s + j]]);
+            }
+
+            return -1;
+        }
+        private static void BadCharHeuristic(byte[] input, int size, ref int[] badChar)
+        {
+            int i;
+
+            for (i = 0; i < 256; i++)
+                badChar[i] = -1;
+
+            for (i = 0; i < size; i++)
+                badChar[input[i]] = i;
+        }
+
+        /*public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
+        {
             fixed (byte* numPtr1 = haystack)
             fixed (byte* numPtr2 = needle)
             {
@@ -260,6 +294,6 @@ namespace Kontract.Compression
                 }
                 return -1;
             }
-        }
+        }*/
     }
 }

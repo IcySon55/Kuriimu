@@ -183,9 +183,6 @@ namespace Kontract.Compression
 
         public static void _search(Stream data, int pos, long sz, int cap, ref int hitp, ref int hitl)
         {
-            var t = 0;
-            if (pos == 734)
-                t = 0;
             using (var br = new BinaryReaderX(data, true))
             {
                 var ml = Math.Min(cap, sz - pos);
@@ -228,29 +225,63 @@ namespace Kontract.Compression
 
         public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
         {
-            fixed (byte* numPtr1 = haystack)
-            fixed (byte* numPtr2 = needle)
+            int m = needle.Length;
+            int n = haystack.Length;
+
+            int[] badChar = new int[256];
+
+            BadCharHeuristic(needle, m, ref badChar);
+
+            int s = 0;
+            while (s <= (n - m))
             {
-                long num = 0;
-                byte* numPtr3 = numPtr1;
-                for (byte* numPtr4 = numPtr1 + haystack.Length; numPtr3 < numPtr4; ++numPtr3)
-                {
-                    bool flag = true;
-                    byte* numPtr5 = numPtr3;
-                    byte* numPtr6 = numPtr2;
-                    byte* numPtr7 = numPtr2 + needle.Length;
-                    while (flag && numPtr6 < numPtr7)
-                    {
-                        flag = (int)*numPtr6 == (int)*numPtr5;
-                        ++numPtr6;
-                        ++numPtr5;
-                    }
-                    if (flag)
-                        return num;
-                    ++num;
-                }
-                return -1;
+                int j = m - 1;
+
+                while (j >= 0 && needle[j] == haystack[s + j])
+                    --j;
+
+                if (j < 0) return s;
+                else s += Math.Max(1, j - badChar[haystack[s + j]]);
             }
+
+            return -1;
         }
+        private static void BadCharHeuristic(byte[] input, int size, ref int[] badChar)
+        {
+            int i;
+
+            for (i = 0; i < 256; i++)
+                badChar[i] = -1;
+
+            for (i = 0; i < size; i++)
+                badChar[input[i]] = i;
+        }
+
+        /*public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
+                {
+                    fixed (byte* numPtr1 = haystack)
+                    fixed (byte* numPtr2 = needle)
+                    {
+                        long num = 0;
+                        byte* numPtr3 = numPtr1;
+                        for (byte* numPtr4 = numPtr1 + haystack.Length; numPtr3 < numPtr4; ++numPtr3)
+                        {
+                            bool flag = true;
+                            byte* numPtr5 = numPtr3;
+                            byte* numPtr6 = numPtr2;
+                            byte* numPtr7 = numPtr2 + needle.Length;
+                            while (flag && numPtr6 < numPtr7)
+                            {
+                                flag = (int)*numPtr6 == (int)*numPtr5;
+                                ++numPtr6;
+                                ++numPtr5;
+                            }
+                            if (flag)
+                                return num;
+                            ++num;
+                        }
+                        return -1;
+                    }
+                }*/
     }
 }
