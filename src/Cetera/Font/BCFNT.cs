@@ -6,7 +6,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Cetera.Image;
+using Kontract.Interface;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
+using Kontract.Image;
 using Cetera.Properties;
 using Kontract.Compression;
 using Kontract.IO;
@@ -15,6 +18,24 @@ namespace Cetera.Font
 {
     public class BCFNT
     {
+        public static Dictionary<byte, IImageFormat> CTRFormat = new Dictionary<byte, IImageFormat>
+        {
+            [0] = new RGBA(8, 8, 8, 8),
+            [1] = new RGBA(8, 8, 8),
+            [2] = new RGBA(5, 5, 5, 1),
+            [3] = new RGBA(5, 6, 5),
+            [4] = new RGBA(4, 4, 4, 4),
+            [5] = new LA(8, 8),
+            [6] = new HL(8, 8),
+            [7] = new LA(8, 0),
+            [8] = new LA(0, 8),
+            [9] = new LA(4, 4),
+            [10] = new LA(4, 0),
+            [11] = new LA(0, 4),
+            [12] = new ETC1(),
+            [13] = new ETC1(true)
+        };
+
         static Lazy<BCFNT> StdFntLoader = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.cbf_std_bcfnt)))));
         public static BCFNT StandardFont => StdFntLoader.Value;
 
@@ -171,6 +192,8 @@ namespace Cetera.Font
             }
         }
 
+        public List<ImageSettings> _settings = new List<ImageSettings>();
+
         public BCFNT(Stream input)
         {
             using (var br = new BinaryReaderX(input))
@@ -207,22 +230,35 @@ namespace Cetera.Font
                     {
                         var compSize = br.ReadInt32();
                         var decomp = Huffman.Decompress(new MemoryStream(br.ReadBytes(compSize)), 8, 0);
-                        bmps[i] = Image.Common.Load(decomp, new ImageSettings
+
+                        var settings = new ImageSettings
                         {
                             Width = width,
                             Height = height,
-                            Format = ImageSettings.ConvertFormat(tglp.sheet_image_format & 0x7fff)
-                        });
+                            Format = CTRFormat[(byte)(tglp.sheet_image_format & 0x7fff)],
+                            Swizzle = new CTRSwizzle(width, height)
+                        };
+                        _settings.Add(settings);
+                        bmps[i] = Kontract.Image.Image.Load(decomp, settings);
                     }
                 }
                 else
                 {
-                    bmps = Enumerable.Range(0, tglp.num_sheets).Select(_ => Image.Common.Load(br.ReadBytes(tglp.sheet_size), new ImageSettings
+                    bmps = new Bitmap[tglp.num_sheets];
+                    for (int i = 0; i < tglp.num_sheets; i++)
                     {
-                        Width = width,
-                        Height = height,
-                        Format = ImageSettings.ConvertFormat(tglp.sheet_image_format)
-                    })).ToArray();
+                        var tex = br.ReadBytes(tglp.sheet_size);
+
+                        var settings = new ImageSettings
+                        {
+                            Width = width,
+                            Height = height,
+                            Format = CTRFormat[(byte)(tglp.sheet_image_format & 0x7fff)],
+                            Swizzle = new CTRSwizzle(width, height)
+                        };
+                        _settings.Add(settings);
+                        bmps[i] = Kontract.Image.Image.Load(tex, settings);
+                    }
                 }
 
                 // read CWDH
