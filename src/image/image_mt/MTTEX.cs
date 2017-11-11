@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-//using Cetera.Image;
 using Kontract.Image;
-using Kontract.Image.Format;
 using Kontract.Image.Swizzle;
 using Kontract.IO;
 
 namespace image_mt
 {
-    public class MTTEX
+    public partial class MTTEX
     {
         public List<Bitmap> Bitmaps = new List<Bitmap>();
         private const int MinHeight = 8;
@@ -52,7 +50,7 @@ namespace image_mt
                 // @todo: Consider whether the following settings make more sense if conditioned by the ByteOrder (or Platform)
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
-                Settings.Format = Support.Format[HeaderInfo.Format];
+                Settings.Format = Formats[HeaderInfo.Format];
 
                 var mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
 
@@ -68,11 +66,11 @@ namespace image_mt
                         Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
 
                     if ((Format)HeaderInfo.Format == Format.DXT5_B)
-                        Settings.PixelShader = PixelShader.ToNoAlpha;
+                        Settings.PixelShader = ToNoAlpha;
                     else if ((Format)HeaderInfo.Format == Format.DXT5_YCbCr)
-                        Settings.PixelShader = PixelShader.ToProperColors;
+                        Settings.PixelShader = ToProperColors;
 
-                    Bitmaps.Add(Kontract.Image.Image.Load(br.ReadBytes(texDataSize), Settings));
+                    Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
             }
         }
@@ -87,16 +85,16 @@ namespace image_mt
                 bw.WriteStruct(Header);
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
-                Settings.Format = Support.Format[HeaderInfo.Format];
+                Settings.Format = Formats[HeaderInfo.Format];
 
                 // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
 
                 if ((Format)HeaderInfo.Format == Format.DXT5_B)
-                    Settings.PixelShader = PixelShader.ToNoAlpha;
+                    Settings.PixelShader = ToNoAlpha;
                 else if ((Format)HeaderInfo.Format == Format.DXT5_YCbCr)
-                    Settings.PixelShader = PixelShader.ToOptimisedColors;
+                    Settings.PixelShader = ToOptimisedColors;
 
-                var bitmaps = Bitmaps.Select(bmp => Kontract.Image.Image.Save(bmp, Settings)).ToList();
+                var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
 
                 // Mipmaps
                 var offset = HeaderInfo.Version == Version.v154 ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;

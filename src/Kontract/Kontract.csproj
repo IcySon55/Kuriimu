@@ -8,7 +8,7 @@
     <ProjectGuid>{51E474F7-1497-4C30-BC18-C357C884B8B2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kuriimu.Kontract</RootNamespace>
+    <RootNamespace>Kontract</RootNamespace>
     <AssemblyName>Kontract</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -90,7 +90,7 @@
     <Compile Include="Image\Format\LA.cs" />
     <Compile Include="Image\Format\Palette.cs" />
     <Compile Include="Image\Format\RGBA.cs" />
-    <Compile Include="Image\Image.cs" />
+    <Compile Include="Image\Common.cs" />
     <Compile Include="Image\Support\ATI.cs" />
     <Compile Include="Image\Support\BCn\BC1BlockEncoder.cs" />
     <Compile Include="Image\Support\BCn\BC2ABlockEncoder.cs" />

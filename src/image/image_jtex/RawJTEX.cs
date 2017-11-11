@@ -29,7 +29,7 @@ namespace image_rawJtex
                     Format = Support.Format[JTEXRawHeader.format],
                     Swizzle = new CTRSwizzle(JTEXRawHeader.width, JTEXRawHeader.height)
                 };
-                Image = Kontract.Image.Image.Load(br.ReadBytes((int)(br.BaseStream.Length - JTEXRawHeader.dataStart)), settings);
+                Image = Kontract.Image.Common.Load(br.ReadBytes((int)(br.BaseStream.Length - JTEXRawHeader.dataStart)), settings);
             }
         }
 
@@ -49,7 +49,7 @@ namespace image_rawJtex
                     Format = Support.Format[JTEXRawHeader.format],
                     Swizzle = new CTRSwizzle(Image.Width, Image.Height)
                 };
-                byte[] resBmp = Kontract.Image.Image.Save(Image, settings);
+                byte[] resBmp = Kontract.Image.Common.Save(Image, settings);
 
                 //Header
                 JTEXRawHeader.width = Image.Width;

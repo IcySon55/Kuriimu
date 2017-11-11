@@ -55,7 +55,7 @@ namespace image_aif
                     Format = Support.Format[texInfo.format],
                     Swizzle = new AIFSwizzle(texInfo.width, texInfo.height)
                 };
-                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)dataSize), settings));
+                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)dataSize), settings));
             }
         }
 
@@ -78,7 +78,7 @@ namespace image_aif
                     Format = Support.Format[texInfo.format],
                     Swizzle = new AIFSwizzle(texInfo.width, texInfo.height)
                 };
-                bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
+                bw.Write(Kontract.Image.Common.Save(bmps[0], settings));
             }
         }
     }

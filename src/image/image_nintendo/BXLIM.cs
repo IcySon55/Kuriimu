@@ -115,7 +115,7 @@ namespace image_nintendo.BXLIM
                             Format = DSFormat[BCLIMHeader.format],
                             Swizzle = new CTRSwizzle(BCLIMHeader.width, BCLIMHeader.height, BCLIMHeader.swizzleTileMode)
                         };
-                        Image = Kontract.Image.Image.Load(tex, Settings);
+                        Image = Kontract.Image.Common.Load(tex, Settings);
                         break;
                     case "FLIM":
                         if (byteOrder == ByteOrder.LittleEndian)
@@ -129,7 +129,7 @@ namespace image_nintendo.BXLIM
                                 Format = DSFormat[BFLIMHeader.format],
                                 Swizzle = new CTRSwizzle(BFLIMHeader.width, BFLIMHeader.height, BFLIMHeader.swizzleTileMode)
                             };
-                            Image = Kontract.Image.Image.Load(tex, Settings);
+                            Image = Kontract.Image.Common.Load(tex, Settings);
                         }
                         else
                         {
@@ -149,7 +149,7 @@ namespace image_nintendo.BXLIM
                             // Uncomment the following line to use the padded width/height instead 
                             //(Settings.Width, Settings.Height) = (Settings.Swizzle.Width, Settings.Swizzle.Height);
 
-                            Image = Kontract.Image.Image.Load(tex, Settings);
+                            Image = Kontract.Image.Common.Load(tex, Settings);
                         }
                         break;
                     default:
@@ -171,7 +171,7 @@ namespace image_nintendo.BXLIM
                         Settings.Height = Image.Height;
                         Settings.Swizzle = new CTRSwizzle(Image.Width, Image.Height, BCLIMHeader.swizzleTileMode);
 
-                        texture = Kontract.Image.Image.Save(Image, Settings);
+                        texture = Kontract.Image.Common.Save(Image, Settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!
@@ -197,7 +197,7 @@ namespace image_nintendo.BXLIM
                             Settings.Swizzle = new WiiUSwizzle(BFLIMHeader.swizzleTileMode, isBlockBased, Settings.Format.BitDepth, Image.Width, Image.Height);
                         }
 
-                        texture = Kontract.Image.Image.Save(Image, Settings);
+                        texture = Kontract.Image.Common.Save(Image, Settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!

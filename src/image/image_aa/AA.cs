@@ -26,7 +26,7 @@ namespace image_aa
                     Format = format
                 };
 
-                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
+                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
             }
         }
 
@@ -34,7 +34,7 @@ namespace image_aa
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var tileData = Kontract.Image.Image.Save(bmps[0], settings);
+                var tileData = Kontract.Image.Common.Save(bmps[0], settings);
                 var paletteData = format.paletteBytes;
 
                 bw.Write(paletteData);

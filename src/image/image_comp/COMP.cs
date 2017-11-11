@@ -30,7 +30,7 @@ namespace image_comp
                     Format = Support.Format[header.format],
                     Swizzle = new CTRSwizzle(header.width, header.height)
                 };
-                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)header.dataSize), settings));
+                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)header.dataSize), settings));
             }
         }
 
@@ -46,7 +46,7 @@ namespace image_comp
                     Format = Support.Format[header.format],
                     Swizzle = new CTRSwizzle(bmps[0].Width, bmps[0].Height)
                 };
-                byte[] tex = Kontract.Image.Image.Save(bmps[0], settings);
+                byte[] tex = Kontract.Image.Common.Save(bmps[0], settings);
 
                 //Write header
                 header.width = (short)bmps[0].Width;

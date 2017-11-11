@@ -30,7 +30,7 @@ namespace image_f3xt
 
                 br.BaseStream.Position = header.dataStart;
 
-                Image = Kontract.Image.Image.Load(br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)), settings);
+                Image = Kontract.Image.Common.Load(br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)), settings);
             }
         }
 
@@ -45,7 +45,7 @@ namespace image_f3xt
                     Format = Support.Format[header.format],
                     Swizzle = new CTRSwizzle(Image.Width, Image.Height)
                 };
-                byte[] data = Kontract.Image.Image.Save(Image, settings);
+                byte[] data = Kontract.Image.Common.Save(Image, settings);
 
                 header.width = (ushort)Image.Width;
                 header.height = (ushort)Image.Height;

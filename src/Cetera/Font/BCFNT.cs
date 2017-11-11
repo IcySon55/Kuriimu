@@ -239,7 +239,7 @@ namespace Cetera.Font
                             Swizzle = new CTRSwizzle(width, height)
                         };
                         _settings.Add(settings);
-                        bmps[i] = Kontract.Image.Image.Load(decomp, settings);
+                        bmps[i] = Kontract.Image.Common.Load(decomp, settings);
                     }
                 }
                 else
@@ -257,7 +257,7 @@ namespace Cetera.Font
                             Swizzle = new CTRSwizzle(width, height)
                         };
                         _settings.Add(settings);
-                        bmps[i] = Kontract.Image.Image.Load(tex, settings);
+                        bmps[i] = Kontract.Image.Common.Load(tex, settings);
                     }
                 }
 

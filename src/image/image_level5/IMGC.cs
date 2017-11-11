@@ -58,7 +58,7 @@ namespace image_level5.imgc
                     Format = Support.Format[header.imageFormat],
                     Swizzle = new ImgcSwizzle(header.width, header.height)
                 };
-                Image = Kontract.Image.Image.Load(pic, settings);
+                Image = Kontract.Image.Common.Load(pic, settings);
             }
         }
 
@@ -118,7 +118,7 @@ namespace image_level5.imgc
                 Format = Support.Format[header.imageFormat],
                 Swizzle = new ImgcSwizzle(width, height)
             };
-            byte[] pic = Kontract.Image.Image.Save(Image, settings);
+            byte[] pic = Kontract.Image.Common.Save(Image, settings);
 
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {

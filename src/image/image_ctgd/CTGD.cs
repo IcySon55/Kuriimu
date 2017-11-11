@@ -44,7 +44,7 @@ namespace image_ctgd
                     Format = format
                 };
 
-                bmps.Add(Kontract.Image.Image.Load(entries.Find(e => e.magic == "nns_txel").data, settings));
+                bmps.Add(Kontract.Image.Common.Load(entries.Find(e => e.magic == "nns_txel").data, settings));
             }
         }
 
@@ -55,7 +55,7 @@ namespace image_ctgd
                 settings.Width = bmps[0].Width;
                 settings.Height = bmps[0].Height;
 
-                var texData = Kontract.Image.Image.Save(bmps[0], settings);
+                var texData = Kontract.Image.Common.Save(bmps[0], settings);
                 var palData = format.paletteBytes;
 
                 if (palData.Length > 0x200) throw new System.Exception("Your image contains more than 256 colors. The format doesn't allow more than 256 colors.");

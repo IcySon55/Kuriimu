@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Kontract;
-using System.Linq;
 using System.IO;
 using Kontract.IO;
 using System.Drawing;
@@ -12,8 +11,6 @@ using Kontract.Image;
 using Kontract.Interface;
 using Kontract.Image.Format;
 using Kontract.Image.Swizzle;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cetera.Font
 {
@@ -175,7 +172,7 @@ namespace Cetera.Font
                         };
 
                         _settings.Add(settings);
-                        bmps.Add(Kontract.Image.Image.Load(decomp, settings));
+                        bmps.Add(Kontract.Image.Common.Load(decomp, settings));
                     }
                 }
                 else
@@ -192,7 +189,7 @@ namespace Cetera.Font
                         };
 
                         _settings.Add(settings);
-                        bmps.Add(Kontract.Image.Image.Load(br.ReadBytes(tglp.sheet_size), settings));
+                        bmps.Add(Kontract.Image.Common.Load(br.ReadBytes(tglp.sheet_size), settings));
                     }
                 }
 

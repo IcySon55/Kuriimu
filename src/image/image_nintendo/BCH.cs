@@ -88,7 +88,7 @@ namespace image_nintendo.BCH
                                 };
 
                                 _settings.Add(settings);
-                                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
+                                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
                             }
 
                             br.BaseStream.Position = (br.BaseStream.Position + 0x7f) & ~0x7f;
@@ -120,7 +120,7 @@ namespace image_nintendo.BCH
                         Format = Support.CTRFormat[origValues[i].format],
                         Swizzle = new CTRSwizzle(bmps[i].Width, bmps[i].Height)
                     };
-                    bw.Write(Kontract.Image.Image.Save(bmps[i], settings));
+                    bw.Write(Kontract.Image.Common.Save(bmps[i], settings));
 
                     bw.WriteAlignment(0x80);
                 }

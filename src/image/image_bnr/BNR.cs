@@ -36,7 +36,7 @@ namespace image_bnr
                     Format = format,
                     Swizzle = new NitroSwizzle(32, 32)
                 };
-                bmps.Add(Kontract.Image.Image.Load(tileData, settings));
+                bmps.Add(Kontract.Image.Common.Load(tileData, settings));
 
                 titleInfo = br.ReadBytes(0x600);
             }
@@ -48,7 +48,7 @@ namespace image_bnr
 
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
-                var tileData = Kontract.Image.Image.Save(bmps[0], settings);
+                var tileData = Kontract.Image.Common.Save(bmps[0], settings);
                 var paletteData = format.paletteBytes;
 
                 List<byte> result = new List<byte>();

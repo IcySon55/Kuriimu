@@ -29,7 +29,7 @@ namespace image_jtex
                     Format = Support.Format[JTEXHeader.format],
                     Swizzle = new CTRSwizzle(JTEXHeader.width, JTEXHeader.height)
                 };
-                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes(JTEXHeader.unk3[2]), settings));
+                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes(JTEXHeader.unk3[2]), settings));
             }
         }
 
@@ -45,7 +45,7 @@ namespace image_jtex
                     Format = Support.Format[JTEXHeader.format],
                     Swizzle = new CTRSwizzle(bmps[0].Width, bmps[0].Height)
                 };
-                byte[] texture = Kontract.Image.Image.Save(bmps[0], settings);
+                byte[] texture = Kontract.Image.Common.Save(bmps[0], settings);
 
                 //edit header
                 JTEXHeader.width = (short)bmps[0].Width;
