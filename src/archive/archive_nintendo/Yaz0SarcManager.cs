@@ -11,17 +11,17 @@ using Kontract.IO;
 
 namespace archive_nintendo.SARC
 {
-    public class ZLibSarcManager : IArchiveManager
+    public class Yaz0SarcManager : IArchiveManager
     {
         private SARC _sarc = null;
 
         #region Properties
 
         // Information
-        public string Name => "ZLib-SARC";
-        public string Description => "ZLib-Compressed NW4C Sorted ARChive";
-        public string Extension => "*.zlib";
-        public string About => "This is the ZLib-Compressed SARC archive manager for Karameru.";
+        public string Name => "Yaz0-SARC";
+        public string Description => "Yaz0-Compressed NW4C Sorted ARChive";
+        public string Extension => "*.szs";
+        public string About => "This is the Yaz0-Compressed SARC archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -39,22 +39,10 @@ namespace archive_nintendo.SARC
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 10) return false;
-                br.ReadBytes(4);
-                if (br.ReadByte() != 0x78) return false;
-                var b = br.ReadByte();
-                if (b != 0x01 && b != 0x9C && b != 0xDA) return false;
-                try
-                {
-                    using (var br2 = new BinaryReaderX(new DeflateStream(br.BaseStream, CompressionMode.Decompress)))
-                    {
-                        return br2.ReadString(4) == "SARC";
-                    }
-                }
-                catch
-                {
-                    return false;
-                }
+                if (br.BaseStream.Length < 0x15) return false;
+                if (br.ReadString(4) != "Yaz0") return false;
+                br.BaseStream.Position = 0x11;
+                return br.ReadString(4) == "SARC";
             }
         }
 
@@ -64,8 +52,7 @@ namespace archive_nintendo.SARC
 
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
-                br.ReadBytes(4);
-                _sarc = new SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
+                _sarc = new SARC(new MemoryStream(Yaz0.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length)), ByteOrder.BigEndian)));
             }
         }
 
@@ -82,9 +69,7 @@ namespace archive_nintendo.SARC
                 _sarc.Close();
                 using (var bw = new BinaryWriterX(FileInfo.Create()))
                 {
-                    bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
-                    ms.Position = 0;
-                    bw.Write(ZLib.Compress(ms));
+                    bw.Write(Yaz0.Compress(ms, ByteOrder.BigEndian));
                 }
             }
             else
@@ -95,9 +80,7 @@ namespace archive_nintendo.SARC
                 _sarc.Close();
                 using (var bw = new BinaryWriterX(File.Create(FileInfo.FullName + ".tmp")))
                 {
-                    bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
-                    ms.Position = 0;
-                    bw.Write(ZLib.Compress(ms));
+                    bw.Write(Yaz0.Compress(ms, ByteOrder.BigEndian));
                 }
                 // Delete the original
                 FileInfo.Delete();

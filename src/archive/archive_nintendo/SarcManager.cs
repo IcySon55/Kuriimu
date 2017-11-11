@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using Cetera.Hash;
 using Kontract.Interface;
 using Kontract.IO;
 
@@ -85,7 +86,13 @@ namespace archive_nintendo.SARC
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            _sarc.Files.Add(afi);
+            _sarc.Files.Add(new SarcArchiveFileInfo
+            {
+                FileData = afi.FileData,
+                FileName = afi.FileName,
+                State = afi.State,
+                hash = SimpleHash.Create(afi.FileName, _sarc.hashMultiplier)
+            });
             return true;
         }
 
