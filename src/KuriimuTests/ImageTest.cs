@@ -32,6 +32,23 @@ namespace KuriimuTests
         //F3XT - no samples available
         //IOBJ - Not revised, no sample files, seems unfinished
         //jIMG - Only ETC images available. Not testable through our ETC-Encoder
+        //LMT - Not savable for now
+        //MODS - video format, not savable
+        //MOFLEX - video format, not savable
+        //MTTex - samples provided by IcySon55
+        //BCFNT - no samples available
+        //BCLYT - no real image
+        //BXLIM - somehow the alignement doesn't work properly
+        //CHNK - Not savable for now
+        //GZF - Not savable for now
+        //NCGR - Not savable for now
+        //QBF - Not savable for now
+        //VCG - Not savable for now
+        //PicaRg4 - no samples available
+        //SPR3 - Only ETC images available. Not testable through our ETC-Encoder
+        //TEXI - No samples available
+        //TIM2 - Not load-/savable
+        //TM2 - Not savable for now
 
         [TestMethod]
         public void AIFTest() => Test<image_aif.AifAdapter>("com_bg_b1.aif");
@@ -44,5 +61,20 @@ namespace KuriimuTests
 
         [TestMethod]
         public void ImgcTest() => Test<image_level5.imgc.ImgcAdapter>("AR_Tourbillon.xi");
+
+        [TestMethod]
+        public void BchTest() => Test<image_nintendo.BCH.BchAdapter>("por01.bch");
+
+        [TestMethod]
+        public void CgfxTest() => Test<image_nintendo.CGFX.CgfxAdapter>("00_PLAYER_M_face_000_normal.bctex");
+
+        [TestMethod]
+        public void CtpkTest() => Test<image_nintendo.CTPK.CtpkAdapter>("menu_field_9.ctpk");
+
+        [TestMethod]
+        public void StexTest() => Test<image_stex.StexAdapter>("GUILDCARD_05_TROPHY.STEX");
+
+        [TestMethod]
+        public void TmxTest() => Test<image_tmx.TmxAdapter>("BE_0001.TMX");
     }
 }
