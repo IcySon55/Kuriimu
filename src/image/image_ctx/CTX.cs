@@ -27,7 +27,7 @@ namespace image_ctx
                 {
                     Width = (int)header.width,
                     Height = (int)header.height,
-                    Format = Support.Format[header.format],
+                    Format = Support.Format[(uint)((header.type << 16) | header.format)],
                     Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
                 bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)header.dataSize), settings));
