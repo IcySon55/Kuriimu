@@ -13,6 +13,7 @@ using Kukkii.Properties;
 using Kontract.Interface;
 using Kontract;
 using Kontract.UI;
+using System.ComponentModel.Composition;
 
 namespace Kukkii
 {
@@ -47,7 +48,9 @@ namespace Kukkii
             InitializeComponent();
 
             // Load Plugins
-            _imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
+            var loader = new PluginLoaderMEF();
+            loader.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll");
+            _imageAdapters = loader._images;
 
             // Load passed in file
             if (args.Length > 0 && File.Exists(args[0]))
