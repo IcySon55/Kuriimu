@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -44,7 +45,9 @@ namespace image_picarg4
             {
                 _picaRg = new PICARG(FileInfo.OpenRead());
 
-                _bitmaps = _picaRg.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _picaRg.bmps.Select(o => new PicaRg4BitmapInfo { Bitmap = o, Format = _picaRg.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -61,5 +64,12 @@ namespace image_picarg4
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class PicaRg4BitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }
