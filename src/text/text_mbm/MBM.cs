@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Globalization;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using Kontract;
 using Kontract.IO;
 
@@ -26,7 +30,7 @@ namespace text_mbm
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct MBMEntry
+        public class MBMEntry
         {
             public int ID;
             public int stringSize;
@@ -36,6 +40,8 @@ namespace text_mbm
 
         public Header header;
         public List<MBMEntry> entries;
+        private const int headerLength = 0x20;
+        
 
         public MBM(string filename)
         {
@@ -54,10 +60,7 @@ namespace text_mbm
                         count++;
                     }
                 }
-                entries = entries.OrderBy(e => e.ID).ToList();
-
-                Encoding sjis = Encoding.GetEncoding("SJIS");
-
+                
                 foreach (var entry in entries)
                 {
                     br.BaseStream.Position = entry.stringOffset;
@@ -69,148 +72,73 @@ namespace text_mbm
                             TextID = entry.ID
                         });
                 }
+
+                                
             }
+        }
+
+        private byte[] ConvertStringToBytes(string input)
+        {
+            var sjis = Encoding.GetEncoding("sjis");
+
+            return Regex.Split(input, "<([0-9A-F]{2})([0-9A-F]{2})>").SelectMany((s, i) => i % 3 == 0 ? sjis.GetBytes(s) : new[] { Convert.ToByte(s, 16) }).ToArray();
         }
 
         public void Save(string filename)
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                Encoding sjis = Encoding.GetEncoding("SJIS");
+                int startOffset = entries[0].stringOffset;
+                bw.BaseStream.Position = startOffset;                    
 
-                bw.BaseStream.Position = 0x20;
-
-                int count = 0;
-                int entryCount = Labels.OrderBy(e => e.TextID).Last().TextID + 1;
-                int offset = 0x20 + entryCount * 0x10;
-                for (int i = 0; i < entryCount; i++)
+                for (var i = 0; i < header.entryCount; i++)
                 {
-                    if (count < Labels.Count)
-                        if (Labels[count].TextID == i)
-                        {
-                            long bk = bw.BaseStream.Position;
-
-                            bw.BaseStream.Position = offset;
-                            var byteText = ConvString(Labels[count].Text);
-                            bw.Write(byteText);
-
-                            bw.BaseStream.Position = bk;
-
-                            bw.Write(i);
-                            bw.Write(byteText.Count());
-                            bw.Write(offset);
-                            bw.Write(0);
-
-                            offset += byteText.Count();
-
-                            count++;
-                        }
-                        else
-                        {
-                            bw.Write(0);
-                            bw.Write(0);
-                            bw.Write(0);
-                            bw.Write(0);
-                        }
-                    else
-                    {
-                        bw.Write(0);
-                        bw.Write(0);
-                        bw.Write(0);
-                        bw.Write(0);
-                    }
+                    var bytes = ConvertStringToBytes(Labels[i].Text);
+                    entries[i].stringSize = bytes.Length + 2;
+                    entries[i].stringOffset = (int)bw.BaseStream.Position;
+                    bw.Write(bytes);
+                    bw.Write((byte)0xFF);
+                    bw.Write((byte)0xFF);
                 }
 
-                //update header
-                header.fileSize = (int)bw.BaseStream.Length - (entryCount * 0x10 - Labels.Count() * 0x10);
-                header.entryCount = Labels.Count();
-                bw.BaseStream.Position = 0;
+                //Update info
+                header.fileSize = (int)bw.BaseStream.Length - (startOffset - 0x20 - header.entryCount * 0x10);
+                bw.BaseStream.Position = 0x0;
                 bw.WriteStruct(header);
+                bw.BaseStream.Position = headerLength;
+                foreach (var entry in entries)
+                {
+                    bw.WriteStruct(entry);
+                }
+
             }
-        }
+        } 
 
         private string ReadString(byte[] input)
         {
             using (var br = new BinaryReaderX(new MemoryStream(input), ByteOrder.BigEndian))
             {
                 var sjis = Encoding.GetEncoding("sjis");
-                var unicode = Encoding.GetEncoding("unicode");
-
+                                
                 string result = "";
-
-                ushort symbol = br.ReadUInt16();
-                while (symbol != 0xffff)
+                var bytes = br.ReadBytes(2);
+                while (bytes[0] != 0xFF && bytes[1] != 0xFF)
                 {
-                    br.BaseStream.Position -= 2;
-
-                    var bytes = br.ReadBytes(2);
-                    var conv = sjis.GetString(bytes);
-
-                    if (bytes[1] == 0)
+                    var sjisbytes = sjis.GetBytes(sjis.GetString(bytes));
+                    var initialString = bytes[0].ToString("X2") + bytes[1].ToString("X2");
+                    var convString = sjis.GetString(bytes);
+                    if (!bytes.SequenceEqual(sjisbytes))
                     {
-                        result += unicode.GetString(bytes.Reverse().ToArray());
+                        result += $"<{initialString}>";
                     }
                     else
                     {
-                        if (conv == "\u30fb")
-                        {
-                            result += unicode.GetString(bytes.Reverse().ToArray());
-                        }
-                        else
-                        {
-                            if (bytes[0] < 0x81)
-                            {
-                                result += sjis.GetString(new byte[] { bytes[0] });
-                                br.BaseStream.Position--;
-                            }
-                            else
-                            {
-                                result += conv;
-                            }
-                        }
+                        result += convString;
                     }
-
-                    symbol = br.ReadUInt16();
+                    bytes = br.ReadBytes(2);
                 }
-
                 return result;
             }
-        }
-
-        private byte[] ConvString(string text)
-        {
-            var sjis = Encoding.GetEncoding("SJIS");
-            var unicode = Encoding.Unicode;
-
-            List<byte> result = new List<byte>();
-
-            foreach (var letter in text)
-            {
-                var conv = sjis.GetBytes(new char[] { letter });
-
-                if (conv.Length < 2)
-                {
-                    if (conv[0] == 0x3f)
-                    {
-                        result.AddRange(unicode.GetBytes(new char[] { letter }).Reverse().ToArray());
-                    }
-                    else
-                    {
-                        if (conv[0] == 0)
-                            result.AddRange(new byte[] { 0, 0 });
-                        else
-                            result.Add(conv[0]);
-                    }
-                }
-                else
-                {
-                    result.AddRange(conv);
-                }
-            }
-
-            result.AddRange(new byte[] { 0xff, 0xff });
-
-            return result.ToArray();
         }
     }
 }
