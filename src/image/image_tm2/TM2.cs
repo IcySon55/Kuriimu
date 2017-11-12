@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
 using Kontract.IO;
 
 namespace image_tm2
@@ -10,7 +9,6 @@ namespace image_tm2
     {
         public List<Bitmap> bmpList;
         public Bitmap bmp;
-        public ImageSettings settings;
 
         public TM2(Stream input)
         {
@@ -35,7 +33,6 @@ namespace image_tm2
             }
         }
 
-        //Save will be added after Kukkii multi image support
         public void Save(Stream input)
         {
 
