@@ -4,7 +4,8 @@ using System.IO;
 using Kontract.IO;
 using System.Xml.Serialization;
 using System.Xml;
-using Cetera.Image;
+using Kontract.Image;
+using Kontract.Image.Swizzle;
 using System;
 
 namespace image_texi
@@ -12,6 +13,7 @@ namespace image_texi
     public class TEXI
     {
         public List<Bitmap> bmps = new List<Bitmap>();
+        public ImageSettings settings;
 
         SERIList seri;
 
@@ -28,15 +30,15 @@ namespace image_texi
 
                 for (int i = 1; i <= ((mipMapCount.Value == 0) ? 1 : mipMapCount.Value); i++)
                 {
-                    var settings = new ImageSettings
+                    settings = new ImageSettings
                     {
                         Width = width.Value,
                         Height = height.Value,
-                        Format = ImageSettings.ConvertFormat((Format)format.Value),
-                        PadToPowerOf2 = false
+                        Format = Support.Format[format.Value],
+                        Swizzle = new CTRSwizzle(width.Value, height.Value)
                     };
 
-                    bmps.Add(Common.Load(br.ReadBytes(width.Value * height.Value * Common.GetBitDepth(ImageSettings.ConvertFormat((Format)format.Value)) / 8), settings));
+                    bmps.Add(Common.Load(br.ReadBytes(width.Value * height.Value * Support.Format[format.Value].BitDepth / 8), settings));
 
                     width.Value /= 2;
                     height.Value /= 2;
@@ -83,8 +85,8 @@ namespace image_texi
                     {
                         Width = bmp.Width,
                         Height = bmp.Height,
-                        Format = ImageSettings.ConvertFormat((Format)format.Value),
-                        PadToPowerOf2 = false,
+                        Format = Support.Format[format.Value],
+                        Swizzle = new CTRSwizzle(bmp.Width, bmp.Height)
                     };
 
                     bw.Write(Common.Save(bmp, settings));

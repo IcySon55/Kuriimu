@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -49,7 +50,9 @@ namespace image_texi
             {
                 _texi = new TEXI(FileInfo.OpenRead(), File.OpenRead(texiName));
 
-                _bitmaps = _texi.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _texi.bmps.Select(o => new TexiBitmapInfo { Bitmap = o, Format = _texi.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -68,5 +71,12 @@ namespace image_texi
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class TexiBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

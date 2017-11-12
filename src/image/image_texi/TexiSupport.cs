@@ -1,9 +1,19 @@
 ﻿using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using Kontract.Image.Format;
+using Kontract.Interface;
 
 namespace image_texi
 {
+    public class Support
+    {
+        public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>
+        {
+            [10] = new RGBA(8, 8, 8, 8),
+            [11] = new RGBA(8, 8, 8)
+        };
+    }
     public enum Format
     {
         RGBA8888 = 0xa, RGB888
