@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Kontract.Interface;
 using Kontract;
 
-namespace image_nintendo
+namespace image_nintendo.CHNK
 {
     public enum TXPLFormat : byte
     {

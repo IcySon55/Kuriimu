@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using CeteraDS.Image;
+//using CeteraDS.Image;
 using Kontract.Compression;
 using Kontract.IO;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
+using Kontract.Image;
 
 /**CHNK - Chunk, contains every partition and provides compression information
  * TXIF - Gives general information about the textures
@@ -16,7 +19,7 @@ using Kontract.IO;
  * TXLS - Light Source, seems to control some sort of lighting, not needed for image visualization
  **/
 
-namespace image_nintendo
+namespace image_nintendo.CHNK
 {
     class CHNKTEX
     {
@@ -47,7 +50,7 @@ namespace image_nintendo
             var bitDepth = 8 * txim.Data.Length / height / paddedWidth / (!IsMultiTXIM ? imgCount : 1);
             BitDepth = (TXIMBitDepth)bitDepth;
             var bmp = new Bitmap(paddedWidth, height);
-            var pal = Common.GetPalette(txpl.Data, Format.BGR555);
+            var pal = new Palette(txpl.Data, new RGBA(5, 5, 5)).colors;
 
             // TODO: This check needs to be replaced with something more concrete later
             var isL8 = bitDepth == 8 && txim.Data.Any(b => b > pal.Count());
@@ -85,11 +88,10 @@ namespace image_nintendo
                     {
                         Width = width,
                         Height = height,
-                        BitPerIndex = (bitDepth == 4) ? BitLength.Bit4 : BitLength.Bit8,
-                        TileSize = paddedWidth,
-                        TransparentColor = pal.ToList()[0]
+                        Format = new Palette(pal, bitDepth),
+                        Swizzle = new Linear(paddedWidth)
                     };
-                    Bitmaps.Add(Common.Load(txims[i].Data, settings, pal));
+                    Bitmaps.Add(Common.Load(txims[i].Data, settings));
                 }
             }
         }

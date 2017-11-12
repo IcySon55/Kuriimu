@@ -2,7 +2,8 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Image;
+using Kontract.Image;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 using System;
 
@@ -13,7 +14,8 @@ namespace image_nintendo.CTPK
         public Header header;
         public List<CtpkEntry> entries;
 
-        public List<BitmapClass> bmps = new List<BitmapClass>();
+        public List<Bitmap> bmps = new List<Bitmap>();
+        public List<ImageSettings> _settings = new List<ImageSettings>();
 
         public CTPK(Stream input)
         {
@@ -54,13 +56,12 @@ namespace image_nintendo.CTPK
                     {
                         Width = entries[i].texEntry.width,
                         Height = entries[i].texEntry.height,
-                        Format = ImageSettings.ConvertFormat(entries[i].texEntry.imageFormat),
+                        Format = Support.CTRFormat[entries[i].texEntry.imageFormat],
+                        Swizzle = new CTRSwizzle(entries[i].texEntry.width, entries[i].texEntry.height)
                     };
-                    bmps.Add(new BitmapClass
-                    {
-                        bmp = Common.Load(br.ReadBytes((int)entries[i].dataSizes[0]), settings),
-                        format = ImageSettings.ConvertFormat(entries[i].texEntry.imageFormat)
-                    });
+
+                    _settings.Add(settings);
+                    bmps.Add(Common.Load(br.ReadBytes((int)entries[i].dataSizes[0]), settings));
 
                     //Mipmaps
                     if (entries[i].texEntry.mipLvl > 1)
@@ -71,14 +72,12 @@ namespace image_nintendo.CTPK
                             {
                                 Width = settings.Width >> 1,
                                 Height = settings.Height >> 1,
-                                Format = ImageSettings.ConvertFormat(entries[i].mipmapEntry.mipmapFormat),
-                                PadToPowerOf2 = false
+                                Format = Support.CTRFormat[entries[i].mipmapEntry.mipmapFormat],
+                                Swizzle = new CTRSwizzle(settings.Width >> 1, settings.Height >> 1)
                             };
-                            bmps.Add(new BitmapClass
-                            {
-                                bmp = Common.Load(br.ReadBytes((int)entries[i].dataSizes[j]), settings),
-                                format = ImageSettings.ConvertFormat(entries[i].mipmapEntry.mipmapFormat)
-                            });
+
+                            _settings.Add(settings);
+                            bmps.Add(Common.Load(br.ReadBytes((int)entries[i].dataSizes[j]), settings));
                         }
                     }
                 }
@@ -121,12 +120,12 @@ namespace image_nintendo.CTPK
                 {
                     var settings = new ImageSettings
                     {
-                        Width = bmps[index].bmp.Width,
-                        Height = bmps[index].bmp.Height,
-                        Format = ImageSettings.ConvertFormat(entry.texEntry.imageFormat),
-                        PadToPowerOf2 = false
+                        Width = bmps[index].Width,
+                        Height = bmps[index].Height,
+                        Format = Support.CTRFormat[entry.texEntry.imageFormat],
+                        Swizzle = new CTRSwizzle(bmps[index].Width, bmps[index].Height)
                     };
-                    bw.Write(Common.Save(bmps[index++].bmp, settings));
+                    bw.Write(Common.Save(bmps[index++], settings));
 
                     if (entry.texEntry.mipLvl > 1)
                     {
@@ -134,12 +133,12 @@ namespace image_nintendo.CTPK
                         {
                             settings = new ImageSettings
                             {
-                                Width = bmps[index].bmp.Width << i,
-                                Height = bmps[index].bmp.Height << i,
-                                Format = ImageSettings.ConvertFormat(entry.mipmapEntry.mipmapFormat),
-                                PadToPowerOf2 = false
+                                Width = bmps[index].Width << i,
+                                Height = bmps[index].Height << i,
+                                Format = Support.CTRFormat[entry.mipmapEntry.mipmapFormat],
+                                Swizzle = new CTRSwizzle(bmps[index].Width << i, bmps[index].Height << i)
                             };
-                            bw.Write(Common.Save(bmps[index++].bmp, settings));
+                            bw.Write(Common.Save(bmps[index++], settings));
                         }
                     }
                 }
@@ -153,7 +152,7 @@ namespace image_nintendo.CTPK
             {
                 var width = entry.texEntry.width;
                 var height = entry.texEntry.height;
-                if (bmps[index].bmp.Width != width || bmps[index].bmp.Height != height)
+                if (bmps[index].Width != width || bmps[index].Height != height)
                     throw new Exception($"Image {index:00} has to be {width}x{height}px!");
                 index++;
                 if (entry.texEntry.mipLvl > 1)
@@ -162,7 +161,7 @@ namespace image_nintendo.CTPK
                     {
                         width >>= 1;
                         height >>= 1;
-                        if (bmps[index].bmp.Width != width || bmps[index].bmp.Height != height)
+                        if (bmps[index].Width != width || bmps[index].Height != height)
                             throw new Exception($"Image {index:00} (Mipmap) has to be {width}x{height}px!");
                         index++;
                     }

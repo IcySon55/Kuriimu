@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-//using Cetera.Image;
 using Kontract.Image;
 using Kontract.Interface;
 using Kontract.Image.Format;
@@ -88,7 +87,7 @@ namespace image_nintendo.BCH
                                 };
 
                                 _settings.Add(settings);
-                                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
+                                bmps.Add(Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
                             }
 
                             br.BaseStream.Position = (br.BaseStream.Position + 0x7f) & ~0x7f;
@@ -120,7 +119,7 @@ namespace image_nintendo.BCH
                         Format = Support.CTRFormat[origValues[i].format],
                         Swizzle = new CTRSwizzle(bmps[i].Width, bmps[i].Height)
                     };
-                    bw.Write(Kontract.Image.Common.Save(bmps[i], settings));
+                    bw.Write(Common.Save(bmps[i], settings));
 
                     bw.WriteAlignment(0x80);
                 }

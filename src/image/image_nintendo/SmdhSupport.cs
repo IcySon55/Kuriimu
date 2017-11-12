@@ -12,7 +12,7 @@ namespace image_nintendo.SMDH
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public Format Format { get; set; }
+        public string Format { get; set; }
     }
 
     public enum CERO : byte // Japan

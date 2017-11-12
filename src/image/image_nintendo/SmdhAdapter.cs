@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
+using Kontract.Image.Format;
 using Kontract.IO;
 
 namespace image_nintendo.SMDH
@@ -44,7 +45,7 @@ namespace image_nintendo.SMDH
             if (FileInfo.Exists)
             {
                 _smdh = new SMDH(FileInfo.OpenRead());
-                _bitmaps = _smdh.bmps.Select(o => new SMDHBitmapInfo { Bitmap = o, Format = Cetera.Image.Format.RGB565 }).ToList<BitmapInfo>();
+                _bitmaps = _smdh.bmps.Select(o => new SMDHBitmapInfo { Bitmap = o, Format = new RGBA(5, 6, 5).FormatName }).ToList<BitmapInfo>();
             }
         }
 

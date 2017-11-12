@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using CeteraDS.Hash;
 using Kontract.IO;
 using Kontract.Interface;
 

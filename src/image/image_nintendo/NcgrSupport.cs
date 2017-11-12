@@ -47,7 +47,7 @@ namespace image_nintendo.NCGLR
         public uint secSize;
         public ushort tileCount;
         public ushort tileSize;
-        public uint bitDepth;   //3 - 4bit, 4 - 8bit
+        public int bitDepth;   //3 - 4bit, 4 - 8bit
         public long zero1;
         public uint dataSize;
         public uint unk1;

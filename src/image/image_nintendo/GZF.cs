@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using Cetera.Image;
 using Kontract.IO;
 
 namespace image_nintendo.GZF

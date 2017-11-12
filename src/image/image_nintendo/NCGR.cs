@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using CeteraDS.Hash;
-using CeteraDS.Image;
+using Kontract.Image;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 using Microsoft.VisualBasic;
 using System;
@@ -43,7 +44,7 @@ namespace image_nintendo.NCGLR
                 var ttlpHeader = nclrR.ReadStruct<TTLPHeader>();
 
                 //get palette
-                var pal = Common.GetPalette(nclrR.ReadBytes((int)ttlpHeader.dataSize), Format.BGR555);
+                var pal = new Palette(nclrR.ReadBytes((int)ttlpHeader.dataSize), new RGBA(5, 5, 5)).colors;
 
                 //PMCP Header
                 var pmcpHeader = nclrR.ReadStruct<PMCPHeader>();
@@ -113,10 +114,10 @@ namespace image_nintendo.NCGLR
                     {
                         Width = width,
                         Height = height,
-                        TileSize = 8,
-                        BitPerIndex = (charHeader.bitDepth == 4) ? BitLength.Bit8 : BitLength.Bit4
+                        Format = new Palette(pal, (charHeader.bitDepth == 4) ? 8 : 4),
+                        Swizzle = new NitroSwizzle(width, height)
                     };
-                    bmps.Add(Common.Load(clr, settings, pal));
+                    bmps.Add(Common.Load(clr, settings));
                 }
             }
         }
@@ -144,13 +145,16 @@ namespace image_nintendo.NCGLR
 
         public void DrawTile(Bitmap img, byte[] tile, uint tileBitDepth, int tileWidth, int tileHeight, IEnumerable<Color> pal)
         {
+            var palette = new List<Color>();
+            palette.AddRange(pal);
             var settings = new ImageSettings
             {
                 Width = tileWidth,
                 Height = tileHeight,
-                BitPerIndex = (tileBitDepth == 3) ? BitLength.Bit4 : BitLength.Bit8
+                Format = new Palette(palette, (tileBitDepth == 3) ? 4 : 8),
+                Swizzle = new NitroSwizzle(tileWidth, tileHeight)
             };
-            var bmp = Common.Load(tile, settings, pal);
+            var bmp = Common.Load(tile, settings);
 
             using (var g = Graphics.FromImage(img))
                 g.DrawImage(bmp, new Point(20, 20));

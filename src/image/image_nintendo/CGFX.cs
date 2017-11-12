@@ -7,7 +7,8 @@ using System.Drawing;
 using System.IO;
 using Kontract.IO;
 using Kontract.Interface;
-using Cetera.Image;
+using Kontract.Image;
+using Kontract.Image.Swizzle;
 
 namespace image_nintendo.CGFX
 {
@@ -15,6 +16,8 @@ namespace image_nintendo.CGFX
     {
         List<TxobEntry> TxObs = new List<TxobEntry>();
         public List<Bitmap> bmps = new List<Bitmap>();
+
+        public List<ImageSettings> _settings = new List<ImageSettings>();
 
         byte[] list;
 
@@ -71,10 +74,12 @@ namespace image_nintendo.CGFX
                         {
                             Width = (int)width,
                             Height = (int)height,
-                            Format = ImageSettings.ConvertFormat(TxObs[i].format),
-                            PadToPowerOf2 = false
+                            Format = Support.CTRFormat[(byte)TxObs[i].format],
+                            Swizzle = new CTRSwizzle((int)width, (int)height, 4)
                         };
-                        bmps.Add(Common.Load(br.ReadBytes((int)(Common.GetBitDepth(ImageSettings.ConvertFormat(TxObs[i].format)) * width * height / 8)), settings));
+
+                        _settings.Add(settings);
+                        bmps.Add(Common.Load(br.ReadBytes((int)(Support.CTRFormat[(byte)TxObs[i].format].BitDepth * width * height / 8)), settings));
 
                         width /= 2;
                         height /= 2;
@@ -108,8 +113,8 @@ namespace image_nintendo.CGFX
                         {
                             Width = (int)width,
                             Height = (int)height,
-                            Format = ImageSettings.ConvertFormat(TxObs[i].format),
-                            PadToPowerOf2 = false
+                            Format = Support.CTRFormat[(byte)TxObs[i].format],
+                            Swizzle = new CTRSwizzle((int)width, (int)height, 4)
                         };
 
                         bw.Write(Common.Save(bmps[bmpCount++], settings));

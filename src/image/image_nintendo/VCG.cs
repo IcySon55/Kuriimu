@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using CeteraDS.Image;
+using Kontract.Image;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 
 namespace image_nintendo.VCG
@@ -14,7 +15,7 @@ namespace image_nintendo.VCG
 
         public VCG(Stream inputVCG, Stream inputVCL, Stream inputVCE)
         {
-            IEnumerable<Color> pal;
+            List<Color> pal;
             int transparentIndex;
 
             // Palette
@@ -24,16 +25,16 @@ namespace image_nintendo.VCG
                 var count = brVCL.ReadInt16();
                 transparentIndex = brVCL.ReadInt16();
 
-                pal = Common.GetPalette(brVCL.ReadBytes((int)(brVCL.BaseStream.Length - brVCL.BaseStream.Position)), Format.BGR555);
+                pal = new Palette(brVCL.ReadBytes((int)(brVCL.BaseStream.Length - brVCL.BaseStream.Position)), new RGBA(5, 5, 5)).colors;
             }
 
             var settings = new ImageSettings
             {
                 Width = 112,
                 Height = 112,
-                TileSize = 8,
-                BitPerIndex = BitLength.Bit4,
-                TransparentColor = pal.ToList()[transparentIndex - 1]
+                Format = new Palette(pal, 4),
+                Swizzle = new NitroSwizzle(112, 112)
+                //TransparentColor = pal.ToList()[transparentIndex - 1]
             };
 
             // Tiles
@@ -49,7 +50,7 @@ namespace image_nintendo.VCG
 
                 // Temporary
                 brVCG.BaseStream.Position = 0x10;
-                bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings, pal));
+                bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings));
             }
 
             // Tile Map

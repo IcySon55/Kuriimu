@@ -3,7 +3,9 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Cetera.Image;
+using Kontract.Image;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
 using Kontract;
 using Kontract.IO;
 
@@ -99,8 +101,8 @@ namespace image_nintendo.SMDH
                 {
                     Width = 24,
                     Height = 24,
-                    Format = Format.RGB565,
-                    PadToPowerOf2 = false
+                    Format = new RGBA(5, 6, 5),
+                    Swizzle = new CTRSwizzle(24, 24)
                 };
                 bmps.Add(Common.Load(br.ReadBytes(0x480), settings));
 
@@ -108,8 +110,8 @@ namespace image_nintendo.SMDH
                 {
                     Width = 48,
                     Height = 48,
-                    Format = Format.RGB565,
-                    PadToPowerOf2 = false
+                    Format = new RGBA(5, 6, 5),
+                    Swizzle = new CTRSwizzle(48, 48)
                 };
                 bmps.Add(Common.Load(br.ReadBytes(0x1200), settings));
             }
@@ -142,8 +144,8 @@ namespace image_nintendo.SMDH
                 {
                     Width = 24,
                     Height = 24,
-                    Format = Format.RGB565,
-                    PadToPowerOf2 = false
+                    Format = new RGBA(5, 6, 5),
+                    Swizzle = new CTRSwizzle(24, 24)
                 };
                 bw.Write(Common.Save(bmps[0], settings));
 
@@ -151,8 +153,8 @@ namespace image_nintendo.SMDH
                 {
                     Width = 48,
                     Height = 48,
-                    Format = Format.RGB565,
-                    PadToPowerOf2 = false
+                    Format = new RGBA(5, 6, 5),
+                    Swizzle = new CTRSwizzle(48, 48)
                 };
                 bw.Write(Common.Save(bmps[1], settings));
             }

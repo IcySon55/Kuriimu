@@ -3,7 +3,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Kontract.Image;
-//using Cetera.Image;
 using Kontract;
 using Kontract.Interface;
 using Kontract.Image.Format;
