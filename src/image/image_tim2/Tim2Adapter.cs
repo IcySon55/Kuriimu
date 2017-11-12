@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
@@ -45,7 +46,7 @@ namespace image_tim2
             {
                 _tim2 = new TIM2(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _tim2.bmp } };
+                _bitmaps = new List<BitmapInfo> { new Tim2BitmapInfo { Bitmap = _tim2.bmp, Format = _tim2.settings.Format.FormatName } };
             }
         }
 
@@ -62,5 +63,12 @@ namespace image_tim2
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class Tim2BitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }
