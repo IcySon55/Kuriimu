@@ -54,10 +54,6 @@
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>Kontract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kuriimu\Kuriimu.csproj">
-      <Project>{7c89ffaf-b638-4577-a1fc-9a783d242428}</Project>
-      <Name>Kuriimu</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Kuriimu.Kontract
+namespace Kontract
 {
     public enum LoadResult
     {

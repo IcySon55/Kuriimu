@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 using Cetera.Font;
 using game_rocket_slime_3ds.Properties;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
+using Kontract.Compression;
+using Kontract.Interface;
 
 namespace game_rocket_slime_3ds
 {

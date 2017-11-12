@@ -10,8 +10,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using Cyotek.Windows.Forms;
 using Kukkii.Properties;
-using Kuriimu.Kontract;
-using Kuriimu.UI;
+using Kontract.Interface;
+using Kontract;
+using Kontract.UI;
 
 namespace Kukkii
 {
@@ -496,23 +497,24 @@ namespace Kukkii
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                string path = fbd.SelectedPath;
-                int count = 0;
+                var path = fbd.SelectedPath;
+                var count = 0;
+                var errors = false;
 
                 if (Directory.Exists(path))
                 {
                     var types = _imageAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
-                    List<string> files = new List<string>();
-                    foreach (string type in types)
+                    var files = new List<string>();
+                    foreach (var type in types)
                         files.AddRange(Directory.GetFiles(path, type, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                    foreach (string file in files)
+                    foreach (var file in files)
                         if (File.Exists(file))
                             try
                             {
-                                FileInfo fi = new FileInfo(file);
-                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+                                var fi = new FileInfo(file);
+                                var currentAdapter = SelectImageAdapter(file, true);
 
                                 if (currentAdapter != null)
                                 {
@@ -522,9 +524,12 @@ namespace Kukkii
                                     count++;
                                 }
                             }
-                            catch (Exception) { }
+                            catch (Exception)
+                            {
+                                errors = true;
+                            }
 
-                    MessageBox.Show("Batch export completed successfully. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Batch export completed {(errors ? "with errors" : "successfully")}. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
 
@@ -546,24 +551,25 @@ namespace Kukkii
 
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                string path = fbd.SelectedPath;
-                int fileCount = 0;
-                int importCount = 0;
+                var path = fbd.SelectedPath;
+                var fileCount = 0;
+                var importCount = 0;
+                var errors = false;
 
                 if (Directory.Exists(path))
                 {
                     var types = _imageAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
-                    List<string> files = new List<string>();
-                    foreach (string type in types)
+                    var files = new List<string>();
+                    foreach (var type in types)
                         files.AddRange(Directory.GetFiles(path, type, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                    foreach (string file in files)
+                    foreach (var file in files)
                         if (File.Exists(file))
                             try
                             {
-                                FileInfo fi = new FileInfo(file);
-                                IImageAdapter currentAdapter = SelectImageAdapter(file, true);
+                                var fi = new FileInfo(file);
+                                var currentAdapter = SelectImageAdapter(file, true);
 
                                 if (currentAdapter != null && currentAdapter.CanSave)
                                 {
@@ -580,9 +586,12 @@ namespace Kukkii
 
                                 fileCount++;
                             }
-                            catch (Exception) { }
+                            catch (Exception)
+                            {
+                                errors = true;
+                            }
 
-                    MessageBox.Show("Batch import completed successfully. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Batch import completed {(errors ? "with errors" : "successfully")}. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
 

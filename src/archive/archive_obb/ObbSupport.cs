@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace archive_obb
 {
@@ -42,5 +43,20 @@ namespace archive_obb
         public uint offset;
         public int size;
         public uint unk2;
+    }
+
+    public class ObbSupport
+    {
+        public static Dictionary<String, String> extensions = new Dictionary<string, string>()
+        {
+            ["OggS"] = ".ogg",
+            ["ARCC"] = ".arc",
+            ["GUI\0"] = ".gui",
+            ["SBKR"] = ".sbkr",
+            ["TEX "] = ".tex",
+            ["FWSE"] = ".fwse",
+            ["SDL\0"] = ".sdl",
+            ["MOD\0"] = ".mod"
+        };
     }
 }

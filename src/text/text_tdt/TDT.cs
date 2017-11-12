@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace text_tdt
 {

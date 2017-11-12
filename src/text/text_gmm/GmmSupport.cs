@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.IO;
 
 namespace text_gmm

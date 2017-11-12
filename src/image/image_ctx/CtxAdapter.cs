@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Linq;
 
 namespace image_ctx
@@ -45,7 +46,9 @@ namespace image_ctx
             {
                 _ctx = new CTX(FileInfo.OpenRead());
 
-                _bitmaps = _ctx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _ctx.bmps.Select(o => new CTXBitmapInfo { Bitmap = o, Format = _ctx.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -62,5 +65,12 @@ namespace image_ctx
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class CTXBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

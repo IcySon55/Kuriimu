@@ -6,8 +6,8 @@ using System.Linq;
 using System.Windows.Forms;
 using Cetera.Image;
 using Kukkii.Properties;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract;
 
 namespace Kukkii
 {

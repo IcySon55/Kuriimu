@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.IO;
+using System.ComponentModel;
 using System.Linq;
 
 namespace image_f3xt
@@ -47,7 +48,9 @@ namespace image_f3xt
             {
                 _f3xt = new F3XT(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _f3xt.Image } };
+                var _bmpList = new List<BitmapInfo> { new F3XTBitmapInfo { Bitmap = _f3xt.Image, Format = _f3xt.settings.Format.FormatName } };
+                var _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -65,5 +68,12 @@ namespace image_f3xt
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class F3XTBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

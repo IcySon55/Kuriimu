@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using runext.Properties;
 
 namespace runext

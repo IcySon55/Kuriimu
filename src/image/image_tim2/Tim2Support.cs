@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract;
 
 namespace image_tim2
 {

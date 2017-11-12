@@ -4,7 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Cetera.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 using Cetera.PICA;
 
 //Code ported from Ohana3DS
@@ -15,17 +15,19 @@ namespace image_nintendo.BCH
     {
         public List<Bitmap> bmps = new List<Bitmap>();
 
-        Header header;
-        List<PICACommandReader> picaEntries = new List<PICACommandReader>();
-        List<TexEntry> origValues = new List<TexEntry>();
+        private Header header;
+        private List<PICACommandReader> picaEntries = new List<PICACommandReader>();
+        private List<TexEntry> origValues = new List<TexEntry>();
 
-        Stream _stream = null;
+        public Format format;
+
+        byte[] _file = null;
 
         public BCH(string filename)
         {
-            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename), true))
+            using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                _stream = br.BaseStream;
+                _file = br.ReadAllBytes();
 
                 //Header
                 header = new Header(br.BaseStream);
@@ -67,7 +69,7 @@ namespace image_nintendo.BCH
                         var size = picaEntries[i].getTexUnit0Size();
                         if (size.Height != 0 && size.Width != 0)
                         {
-                            var format = (Format)picaEntries[i].getTexUnit0Format();
+                            format = (Format)picaEntries[i].getTexUnit0Format();
                             int bitDepth = Common.GetBitDepth(format);
 
                             for (int j = 0; j <= picaEntries[i].getTexUnit0LoD(); j++)
@@ -102,8 +104,7 @@ namespace image_nintendo.BCH
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                _stream.Position = 0;
-                _stream.CopyTo(bw.BaseStream);
+                bw.Write(_file);
 
                 bw.BaseStream.Position = header.dataOffset;
                 for (int i = 0; i < bmps.Count(); i++)

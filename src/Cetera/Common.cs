@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace Cetera
 {

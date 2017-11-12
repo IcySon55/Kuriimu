@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
+using Kontract.Compression;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_nintendo.VIW
 {
@@ -9,6 +10,25 @@ namespace archive_nintendo.VIW
     {
         public override Stream FileData => State != ArchiveFileState.Archived ? base.FileData : new MemoryStream(Nintendo.Decompress(base.FileData));
         public override long? FileSize => base.FileData.Length;
+
+        public int Write(Stream output)
+        {
+            var compressedSize = (int)base.FileData.Length;
+
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                if (State == ArchiveFileState.Archived)
+                    base.FileData.CopyTo(bw.BaseStream);
+                else
+                {
+                    var bytes = Nintendo.Compress(base.FileData, Nintendo.Method.LZ10);
+                    compressedSize = bytes.Length;
+                    bw.Write(bytes);
+                }
+            }
+
+            return compressedSize;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

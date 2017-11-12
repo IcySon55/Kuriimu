@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract;
+using Kontract.Interface;
+using System.Linq;
 
 namespace text_gmd
 {
@@ -77,6 +79,10 @@ namespace text_gmd
             }
         }
 
+        public byte[] Deobfuscate(byte[] data) => data.Select((b, i) => (byte)(b ^ XOR1[i % XOR1.Length] ^ XOR2[i % XOR2.Length])).ToArray();
+
+        public byte[] Obfuscate(byte[] data) => Deobfuscate(data);
+
         public static bool IsXORed(Stream input)
         {
             var bk = input.Position;
@@ -86,20 +92,6 @@ namespace text_gmd
 
             return result;
         }
-
-        public static byte[] Deobfuscate(byte[] data)
-        {
-            for (int index = 0; index < data.Length; ++index)
-            {
-                char ch1 = XOR1[index % XOR1.Length];
-                char ch2 = XOR2[index % XOR2.Length];
-                data[index] = Convert.ToByte(data[index] ^ ch1 ^ ch2);
-            }
-
-            return data;
-        }
-
-        public static byte[] Obfuscate(byte[] data) => Deobfuscate(data);
     }
 
     #region Entry_Definition

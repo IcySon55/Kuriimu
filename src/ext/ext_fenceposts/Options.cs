@@ -2,7 +2,7 @@
 using System.Text;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
-using Kuriimu.Kontract;
+using Kontract;
 
 namespace ext_fenceposts
 {

@@ -1,5 +1,5 @@
-﻿using Kuriimu.IO;
-using Kuriimu.Kontract;
+﻿using Kontract.IO;
+using Kontract.Interface;
 using System;
 using System.Collections.Generic;
 using System.IO;

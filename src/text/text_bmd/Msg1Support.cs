@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 using System.Runtime.InteropServices;
 
 namespace text_bmd.msg1

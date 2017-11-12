@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Collections;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class LZECD
     {

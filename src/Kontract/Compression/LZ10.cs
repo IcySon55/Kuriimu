@@ -1,10 +1,10 @@
 using System;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 
 //Compression code from dsdecmp
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class LZ10
     {

@@ -1,6 +1,6 @@
 ﻿using System;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
@@ -21,7 +21,7 @@ namespace archive_hunex
         public string About => "This is the HuneX HED archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
 
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;

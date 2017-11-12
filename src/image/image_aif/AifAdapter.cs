@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Linq;
 
 namespace image_aif
@@ -44,7 +45,9 @@ namespace image_aif
             {
                 _aif = new AIF(FileInfo.OpenRead());
 
-                _bitmaps = _aif.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _aif.bmps.Select(o => new AIFBitmapInfo { Bitmap = o, Format = _aif.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -61,5 +64,12 @@ namespace image_aif
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class AIFBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

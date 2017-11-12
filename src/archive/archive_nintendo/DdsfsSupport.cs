@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract;
+using Kontract.IO;
 
 namespace archive_nintendo.DDSFS
 {

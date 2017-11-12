@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_level5.PCK
 {
@@ -33,7 +33,8 @@ namespace archive_level5.PCK
                             input,
                             entry.fileOffset + blockOffset * 4,
                             entry.fileLength - blockOffset * 4),
-                        FileName = $"0x{count++:X8}.bin",
+                        FileName = $"0x{entry.hash:X8}.bin",
+                        //FileName = $"0x{count++:X8}.bin",
                         State = ArchiveFileState.Archived,
                         Entry = entry,
                         Hashes = hashes

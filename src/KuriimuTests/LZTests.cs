@@ -2,15 +2,8 @@
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kuriimu.Compression;
-
-using static Kuriimu.Compression.LZ10;
-using static Kuriimu.Compression.LZ11;
-using static Kuriimu.Compression.LZ77;
-using static Kuriimu.Compression.RevLZ77;
-using static Kuriimu.Compression.LZECD;
-using static Kuriimu.Compression.LZ60;
-using static Kuriimu.Compression.LZ4;
+using Kontract.Compression;
+using Kontract.IO;
 
 namespace KuriimuTests
 {
@@ -61,7 +54,7 @@ namespace KuriimuTests
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.MIO0:
-                    bytes2 = MIO0.Decompress(new MemoryStream(MIO0.Compress(new MemoryStream(bytes))));
+                    bytes2 = MIO0.Decompress(new MemoryStream(MIO0.Compress(new MemoryStream(bytes), ByteOrder.LittleEndian)), ByteOrder.LittleEndian);
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
             }
@@ -125,6 +118,9 @@ namespace KuriimuTests
 
         [TestMethod]
         public void UnicodeHelloWorldLZ77Test() => Test(Encoding.Unicode.GetBytes("hello world"), Method.LZ77);
+
+        [TestMethod]
+        public void HalfKilobyteLZ77Test() => Test(Enumerable.Range(0, 512).Select(i => (byte)(i / 2)).ToArray(), Method.LZ77);
 
         [TestMethod]
         public void HundredZeroesLZ77Test() => Test(new byte[100], Method.LZ77);

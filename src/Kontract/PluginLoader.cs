@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace Kuriimu.Kontract
+namespace Kontract
 {
     public static class PluginLoader<T>
     {

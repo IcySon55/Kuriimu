@@ -5,7 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using text_gmml.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 
 namespace text_gmml
 {

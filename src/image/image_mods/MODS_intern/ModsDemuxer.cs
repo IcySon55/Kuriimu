@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using LibMobiclip.Utils;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_mods
 {

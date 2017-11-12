@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_level5.imgc
 {
     public sealed class ImgcAdapter : IImageAdapter
     {
-        private Bitmap _imgc = null;
+        private IMGC _imgc = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
@@ -42,9 +43,9 @@ namespace image_level5.imgc
 
             if (FileInfo.Exists)
             {
-                _imgc = IMGC.Load(FileInfo.OpenRead());
+                _imgc = new IMGC(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imgc } };
+                _bitmaps = new List<BitmapInfo> { new ImgcBitmapInfo { Bitmap = _imgc.Image, Format = _imgc.settings.Format.FormatName } };
             }
         }
 
@@ -53,13 +54,20 @@ namespace image_level5.imgc
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _imgc = _bitmaps[0].Bitmap;
-            IMGC.Save(FileInfo.FullName, _imgc);
+            _imgc.Image = _bitmaps[0].Bitmap;
+            _imgc.Save(FileInfo.FullName);
         }
 
         // Bitmaps
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class ImgcBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

@@ -9,9 +9,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using Kuriimu.Properties;
-using Kuriimu.UI;
+using Kontract.UI;
 
 namespace Kuriimu
 {
@@ -130,21 +131,37 @@ namespace Kuriimu
             search.Entries = _entries;
             search.ShowDialog();
 
-            if (search.Selected != null)
-            {
-                treEntries.SelectNodeByTextEntry(search.Selected);
+            if (search.Selected == null) return;
+            treEntries.SelectNodeByTextEntry(search.Selected);
 
-                if (txtEdit.Text.Contains(Settings.Default.FindWhat))
-                {
-                    txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
-                    txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
-                    txtEdit.Focus();
-                }
-            }
+            if (!txtEdit.Text.Contains(Settings.Default.FindWhat)) return;
+            txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
+            txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
+            txtEdit.Focus();
         }
         private void tsbFind_Click(object sender, EventArgs e)
         {
             findToolStripMenuItem_Click(sender, e);
+        }
+
+        private void searchDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SearchDirectory search = new SearchDirectory();
+            search.TextAdapters = _textAdapters;
+            search.ShowDialog();
+
+            if (search.Return == null) return;
+            OpenFile(search.Return.Filename);
+            treEntries.SelectNodeByNodeName(search.Return.Entry.Name);
+
+            if (!txtEdit.Text.Contains(Settings.Default.SearchDirectoryWhat)) return;
+            txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.SearchDirectoryWhat);
+            txtEdit.SelectionLength = Settings.Default.SearchDirectoryWhat.Length;
+            txtEdit.Focus();
+        }
+        private void tsbSearchDirectory_Click(object sender, EventArgs e)
+        {
+            searchDirectoryToolStripMenuItem_Click(sender, e);
         }
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -465,7 +482,7 @@ namespace Kuriimu
             if (filename == string.Empty)
                 filename = ofd.FileName;
 
-            var tempAdapter = SelectTextAdapter(filename);
+            var tempAdapter = SelectTextAdapter(_textAdapters, filename);
 
             try
             {
@@ -547,18 +564,18 @@ namespace Kuriimu
             return dr;
         }
 
-        private ITextAdapter SelectTextAdapter(string filename, bool batchMode = false)
+        public static ITextAdapter SelectTextAdapter(List<ITextAdapter> textAdapters, string filename, bool batchMode = false)
         {
             ITextAdapter result = null;
 
             // first look for adapters whose extension matches that of our filename
-            List<ITextAdapter> matchingAdapters = _textAdapters.Where(adapter => adapter.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
+            List<ITextAdapter> matchingAdapters = textAdapters.Where(adapter => adapter.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
 
             result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
 
-            // if none of them match, then try all other adapters
+            // if none of them match, then stry all other adapters
             if (result == null)
-                result = _textAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
+                result = textAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
 
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1139,7 +1156,7 @@ namespace Kuriimu
                         if (File.Exists(file))
                         {
                             FileInfo fi = new FileInfo(file);
-                            ITextAdapter currentAdapter = SelectTextAdapter(file, true);
+                            ITextAdapter currentAdapter = SelectTextAdapter(_textAdapters, file, true);
 
                             try
                             {
@@ -1219,7 +1236,7 @@ namespace Kuriimu
                         if (File.Exists(file))
                         {
                             FileInfo fi = new FileInfo(file);
-                            ITextAdapter currentAdapter = SelectTextAdapter(file, true);
+                            ITextAdapter currentAdapter = SelectTextAdapter(_textAdapters, file, true);
                             try
                             {
                                 if (currentAdapter != null && currentAdapter.CanSave && File.Exists(fi.FullName + ".kup"))

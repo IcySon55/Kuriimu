@@ -5,12 +5,12 @@ using System.Numerics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Collections.Generic;
 
 using Security.Cryptography;
 
-namespace Kuriimu.CTR
+namespace Kontract.CTR
 {
     public enum AesMode
     {

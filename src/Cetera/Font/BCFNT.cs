@@ -8,8 +8,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Cetera.Image;
 using Cetera.Properties;
-using Kuriimu.Compression;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.IO;
 
 namespace Cetera.Font
 {

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 using System.Linq;
 
 namespace image_aa
@@ -47,7 +48,9 @@ namespace image_aa
             {
                 _aa = new AA(FileInfo.OpenRead());
 
-                _bitmaps = _aa.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _aa.bmps.Select(o => new AABitmapInfo { Bitmap = o, Format = _aa.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -64,5 +67,12 @@ namespace image_aa
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class AABitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

@@ -42,8 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MobileMTTex.cs" />
     <Compile Include="MTTEX.cs" />
+    <Compile Include="MobileMTTexAdapter.cs" />
     <Compile Include="MTTexAdapter.cs" />
+    <Compile Include="MobileMTTexSupport.cs" />
     <Compile Include="MTTexSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

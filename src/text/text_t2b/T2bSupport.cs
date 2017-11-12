@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace text_t2b
 {

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using text_kup.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.Linq;
 
 namespace text_kup

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace text_gmd
 {
@@ -21,6 +21,8 @@ namespace text_gmd
         private List<EntryV1> EntriesV1 = new List<EntryV1>();
         private List<EntryV2> EntriesV2 = new List<EntryV2>();
         private List<String> Names = new List<String>();
+
+        private bool IsXORed;
 
         public GMD(Stream input)
         {
@@ -64,6 +66,12 @@ namespace text_gmd
 
                 // Text
                 var text = br.ReadBytes((int)Header.SectionSize);
+
+                // Text deobfuscation
+                var xor = new XOR(Header.Version);
+                IsXORed = XOR.IsXORed(new MemoryStream(text));
+                if (IsXORed)
+                    text = xor.Deobfuscate(text);
 
                 using (var brt = new BinaryReaderX(new MemoryStream(text), ByteOrder))
                 {
@@ -121,11 +129,26 @@ namespace text_gmd
 
                 // Sections
                 var textStart = bw.BaseStream.Position;
-                foreach (var label in Labels)
+
+                var textS = new MemoryStream();
+                using (var textW = new BinaryWriterX(textS, true))
                 {
-                    bw.Write(Encoding.UTF8.GetBytes(label.Text));
-                    bw.Write((byte)0);
+                    foreach (var label in Labels)
+                    {
+                        textW.Write(Encoding.UTF8.GetBytes(label.Text));
+                        textW.Write((byte)0);
+                    }
                 }
+                //ReXOR if needed, only for version 1 for now
+                if (Header.Version == Versions.Version1 && IsXORed)
+                {
+                    var xor = new XOR(Header.Version);
+                    var tmp = xor.Obfuscate(new BinaryReaderX(textS).ReadAllBytes());
+                    textS.Position = 0;
+                    new BinaryWriterX(textS, true).Write(tmp);
+                }
+                bw.Write(new BinaryReaderX(textS).ReadAllBytes());
+
                 Header.SectionSize = (uint)(bw.BaseStream.Position - textStart);
 
                 // Header

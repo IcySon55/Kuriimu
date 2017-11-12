@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_mt
 {
@@ -19,7 +19,7 @@ namespace archive_mt
         public string About => "This is the MT Framework archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
@@ -36,7 +36,7 @@ namespace archive_mt
             {
                 if (br.BaseStream.Length < 4) return false;
                 var magic = br.ReadString(4);
-                return magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH";
+                return magic == "ARCC" || magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH";
             }
         }
 

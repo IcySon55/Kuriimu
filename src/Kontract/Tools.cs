@@ -5,12 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using Kontract.Interface;
 
-namespace Kuriimu.Kontract
+namespace Kontract
 {
     public static class Tools
     {
-        public static string LoadFilters(IEnumerable<IPlugin> plugins)
+        public static string LoadFilters(IEnumerable<IFilePlugin> plugins)
         {
             var alltypes = plugins.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).OrderBy(o => o.Description).ToList();
 
@@ -21,7 +22,7 @@ namespace Kuriimu.Kontract
             return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
         }
 
-        public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, Image noGameIcon, EventHandler selectedIndexChanged)
+        public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, System.Drawing.Image noGameIcon, EventHandler selectedIndexChanged)
         {
             tsb.DropDownItems.Clear();
 
@@ -90,6 +91,30 @@ namespace Kuriimu.Kontract
                 if (result == null)
                     foreach (TreeNode subNode in node.Nodes)
                         if (subNode.Tag == entry)
+                        {
+                            result = subNode;
+                            break;
+                        }
+
+                if (result != null)
+                    break;
+            }
+
+            tre.SelectedNode = result;
+        }
+
+        public static void SelectNodeByNodeName(this TreeView tre, string name)
+        {
+            TreeNode result = null;
+
+            foreach (TreeNode node in tre.Nodes)
+            {
+                if (node.Text == name)
+                    result = node;
+
+                if (result == null)
+                    foreach (TreeNode subNode in node.Nodes)
+                        if (subNode.Text == name)
                         {
                             result = subNode;
                             break;

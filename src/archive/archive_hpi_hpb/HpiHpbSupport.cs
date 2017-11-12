@@ -1,8 +1,9 @@
 using System.IO;
 using System.Runtime.InteropServices;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract;
+using Kontract.IO;
 
 namespace archive_hpi_hpb
 {

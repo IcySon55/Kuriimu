@@ -4,9 +4,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kuriimu.Compression;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.Compression;
+using Kontract.IO;
+using Kontract.Interface;
+using Kontract;
 
 namespace archive_mt
 {

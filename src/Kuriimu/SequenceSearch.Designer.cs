@@ -1,36 +1,36 @@
 ﻿namespace Kuriimu
 {
-	partial class SequenceSearch
-	{
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class SequenceSearch
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && (components != null))
-			{
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.label1 = new System.Windows.Forms.Label();
             this.txtSearchText = new System.Windows.Forms.TextBox();
-            this.btnFindText = new System.Windows.Forms.Button();
+            this.btnSearch = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.lstResults = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -63,17 +63,17 @@
             this.txtSearchText.TabIndex = 2;
             this.txtSearchText.TextChanged += new System.EventHandler(this.txtSearchText_TextChanged);
             // 
-            // btnFindText
+            // btnSearch
             // 
-            this.btnFindText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFindText.Location = new System.Drawing.Point(402, 36);
-            this.btnFindText.Margin = new System.Windows.Forms.Padding(4);
-            this.btnFindText.Name = "btnFindText";
-            this.btnFindText.Size = new System.Drawing.Size(75, 23);
-            this.btnFindText.TabIndex = 3;
-            this.btnFindText.Text = "Find";
-            this.btnFindText.UseVisualStyleBackColor = true;
-            this.btnFindText.Click += new System.EventHandler(this.btnFindText_Click);
+            this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSearch.Location = new System.Drawing.Point(402, 36);
+            this.btnSearch.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnSearch.TabIndex = 3;
+            this.btnSearch.Text = "Find";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnFindText_Click);
             // 
             // btnCancel
             // 
@@ -120,6 +120,7 @@
             this.txtSearchDirectory.Size = new System.Drawing.Size(320, 20);
             this.txtSearchDirectory.TabIndex = 0;
             this.txtSearchDirectory.TabStop = false;
+            this.txtSearchDirectory.TextChanged += new System.EventHandler(this.txtSearchDirectory_TextChanged);
             // 
             // btnBrowse
             // 
@@ -175,7 +176,7 @@
             // 
             // SequenceSearch
             // 
-            this.AcceptButton = this.btnFindText;
+            this.AcceptButton = this.btnSearch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
@@ -189,31 +190,32 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lstResults);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnFindText);
+            this.Controls.Add(this.btnSearch);
             this.Controls.Add(this.txtSearchText);
             this.Controls.Add(this.label1);
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "SequenceSearch";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Sequence Search";
             this.Load += new System.EventHandler(this.frmSearchDirectory_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox txtSearchText;
-		private System.Windows.Forms.Button btnFindText;
-		private System.Windows.Forms.Button btnCancel;
-		private System.Windows.Forms.ListBox lstResults;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox txtSearchDirectory;
-		private System.Windows.Forms.Button btnBrowse;
-		private System.Windows.Forms.CheckBox chkSearchSubfolders;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtSearchText;
+        private System.Windows.Forms.Button btnSearch;
+        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.ListBox lstResults;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtSearchDirectory;
+        private System.Windows.Forms.Button btnBrowse;
+        private System.Windows.Forms.CheckBox chkSearchSubfolders;
         private System.Windows.Forms.ComboBox cmbEncoding;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblNote;

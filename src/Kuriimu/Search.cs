@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using Kuriimu.Properties;
 
 namespace Kuriimu
@@ -31,7 +32,7 @@ namespace Kuriimu
 
         private void btnFindText_Click(object sender, EventArgs e)
         {
-            if(txtFindText.Focused)
+            if (txtFindText.Focused)
                 Find();
             else
                 lstResults_DoubleClick(lstResults, EventArgs.Empty);

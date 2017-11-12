@@ -134,6 +134,12 @@
     <Compile Include="SequenceSearch.Designer.cs">
       <DependentUpon>SequenceSearch.cs</DependentUpon>
     </Compile>
+    <Compile Include="SearchDirectory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchDirectory.Designer.cs">
+      <DependentUpon>SearchDirectory.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -167,6 +173,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SequenceSearch.resx">
       <DependentUpon>SequenceSearch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SearchDirectory.resx">
+      <DependentUpon>SearchDirectory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

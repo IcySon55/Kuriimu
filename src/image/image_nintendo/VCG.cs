@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using CeteraDS.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_nintendo.VCG
 {

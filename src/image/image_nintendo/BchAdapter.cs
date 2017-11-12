@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace image_nintendo.BCH
 {
@@ -44,7 +44,7 @@ namespace image_nintendo.BCH
             if (FileInfo.Exists)
             {
                 _bch = new BCH(FileInfo.FullName);
-                _bitmaps = _bch.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _bitmaps = _bch.bmps.Select(o => new BchBitmapInfo { Bitmap = o, Format = _bch.format }).ToList<BitmapInfo>();
             }
         }
 

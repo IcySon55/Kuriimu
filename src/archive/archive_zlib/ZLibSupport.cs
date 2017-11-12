@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Compression;
+using Kontract.IO;
+using Kontract.Compression;
 
 namespace archive_zlib
 {

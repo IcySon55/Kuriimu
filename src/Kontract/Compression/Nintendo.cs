@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Compression;
+using Kontract.IO;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class Nintendo
     {

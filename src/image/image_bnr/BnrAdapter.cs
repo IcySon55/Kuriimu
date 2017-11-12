@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using CeteraDS.Hash;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace image_bnr
 {
@@ -58,7 +59,9 @@ namespace image_bnr
             {
                 _bnr = new BNR(FileInfo.OpenRead());
 
-                _bitmaps = _bnr.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _bnr.bmps.Select(o => new BNRBitmapInfo { Bitmap = o, Format = _bnr.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -75,5 +78,12 @@ namespace image_bnr
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class BNRBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

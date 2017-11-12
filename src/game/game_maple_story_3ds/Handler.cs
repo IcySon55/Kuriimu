@@ -6,7 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using Cetera.Font;
 using game_maple_story_3ds.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace game_maple_story_3ds
 {

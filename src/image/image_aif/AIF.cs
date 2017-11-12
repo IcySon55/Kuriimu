@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Image;
+using Kontract.IO;
 
 namespace image_aif
 {
@@ -14,6 +13,7 @@ namespace image_aif
         byte[] header;
         public int dataOffset;
         public TexInfo texInfo;
+        public ImageSettings settings;
 
         public AIF(Stream input)
         {
@@ -37,7 +37,7 @@ namespace image_aif
                 //Get information
                 texInfo = new TexInfo();
                 br.BaseStream.Position = 0x30;
-                texInfo.format = (Format)br.ReadByte();
+                texInfo.format = br.ReadByte();
                 br.BaseStream.Position = 0x38;
                 texInfo.width = br.ReadUInt16();
                 texInfo.height = br.ReadUInt16();
@@ -48,14 +48,14 @@ namespace image_aif
 
                 //Add Image
                 br.BaseStream.Position = dataOffset;
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = texInfo.width,
                     Height = texInfo.height,
-                    Format = ImageSettings.ConvertFormat(texInfo.format),
-                    PadToPowerOf2 = false
+                    Format = Support.Format[texInfo.format],
+                    Swizzle = new AIFSwizzle(texInfo.width, texInfo.height)
                 };
-                bmps.Add(Common.Load(br.ReadBytes((int)dataSize), settings));
+                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)dataSize), settings));
             }
         }
 
@@ -71,14 +71,14 @@ namespace image_aif
                 bw.Write(header);
 
                 //Write Image
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = texInfo.width,
                     Height = texInfo.height,
-                    Format = ImageSettings.ConvertFormat(texInfo.format),
-                    PadToPowerOf2 = false
+                    Format = Support.Format[texInfo.format],
+                    Swizzle = new AIFSwizzle(texInfo.width, texInfo.height)
                 };
-                bw.Write(Common.Save(bmps[0], settings));
+                bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
             }
         }
     }

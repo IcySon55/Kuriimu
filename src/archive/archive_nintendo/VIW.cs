@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace archive_nintendo.VIW
 {
     class VIW
     {
         public List<ArchiveFileInfo> Files = new List<ArchiveFileInfo>();
-        private Stream _infStream;
         private Stream _viwStream;
+        private Stream _infStream;
         private Stream _stream;
 
         private InfHeader Header;
@@ -17,7 +17,7 @@ namespace archive_nintendo.VIW
         private List<InfMetaEntry> MetaEntries;
         private List<ViwEntry> Names;
 
-        public VIW(Stream infInput, Stream viwInput, Stream input)
+        public VIW(Stream viwInput, Stream infInput, Stream input)
         {
             _infStream = infInput;
             _viwStream = viwInput;
@@ -52,21 +52,44 @@ namespace archive_nintendo.VIW
             }
         }
 
-        public void Save(Stream output)
+        public void Save(Stream viwOutput, Stream infOutput, Stream output)
         {
-            return;
+            using (output)
+                for (var i = 0; i < Files.Count; i++)
+                {
+                    Offsets[i].Offset = (int)output.Position;
+                    Offsets[i].CompressedSize = ((ViwFileInfo)Files[i]).Write(output);
+                }
+
+            using (var bw = new BinaryWriterX(infOutput))
+            {
+                bw.WriteStruct(Header);
+
+                foreach (var offset in Offsets)
+                    bw.WriteStruct(offset);
+
+                if (Header.MetaEntryCount > 0)
+                    foreach (var entry in MetaEntries)
+                        bw.WriteStruct(entry);
+            }
+
+            using (var bw = new BinaryWriterX(viwOutput))
+            {
+                foreach (var name in Names)
+                    bw.WriteStruct(name);
+            }
         }
 
         public void Close()
         {
-            _infStream?.Dispose();
             _viwStream?.Dispose();
+            _infStream?.Dispose();
             _stream?.Dispose();
             foreach (var afi in Files)
                 if (afi.State != ArchiveFileState.Archived)
                     afi.FileData?.Dispose();
-            _infStream = null;
             _viwStream = null;
+            _infStream = null;
             _stream = null;
         }
     }

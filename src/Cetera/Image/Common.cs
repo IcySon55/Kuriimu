@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace Cetera.Image
 {
@@ -16,20 +16,26 @@ namespace Cetera.Image
         L4, A4, ETC1, ETC1A4,
 
         // PS3
-        DXT1, DXT3, DXT5
+        DXT1, DXT3, DXT5,
+
+        // Mobile
+        PVRTC, PVRTCA,
+
+        //WiiU
+        ATI1L, ATI1A, ATI2,
+        sRGBA8888,
+        sDXT1, sDXT3, sDXT5,
+        RGBA1010102
+
     }
 
-    public enum Orientation : byte
+    public enum Orientation
     {
-        Default = 0,
-        XFlip = 1,
-        YFlip = 2,
-        XYFlip = 3,
-        Rotate90 = 4,
-        XFlip90 = 5,
-        YFlip90 = 6,
-        Rotate270 = 7,
-        TransposeTile = 8
+        Default,
+        HorizontalFlip,
+        Rotate90,
+        Transpose,
+        TransposeTile = 0x10000
     }
 
     public class ImageSettings
@@ -41,6 +47,7 @@ namespace Cetera.Image
         public bool PadToPowerOf2 { get; set; } = true;
         public bool ZOrder { get; set; } = true;
         public int TileSize { get; set; } = 8;
+        public ByteOrder ByteOrder { get; set; } = ByteOrder.LittleEndian;
         public Func<Color, Color> PixelShader { get; set; }
 
         /// <summary>
@@ -82,10 +89,14 @@ namespace Cetera.Image
                 case Format.A8:
                 case Format.LA44:
                 case Format.ETC1A4:
+                case Format.DXT3:
+                case Format.DXT5:
                     return 8;
                 case Format.L4:
                 case Format.A4:
                 case Format.ETC1:
+                case Format.DXT1:
+                case Format.PVRTC:
                     return 4;
                 default:
                     return 0;
@@ -94,13 +105,19 @@ namespace Cetera.Image
 
         static int Clamp(int value, int min, int max) => Math.Min(Math.Max(value, min), max - 1);
 
-        static IEnumerable<Color> GetColorsFromTexture(byte[] tex, Format format)
+        static IEnumerable<Color> GetColorsFromTexture(byte[] tex, ImageSettings settings)
         {
+            var format = settings.Format;
+
             using (var br = new BinaryReaderX(new MemoryStream(tex)))
             {
                 var etc1decoder = new ETC1.Decoder();
+
                 Enum.TryParse<DXT.Formats>(format.ToString(), false, out var dxtFormat);
                 var dxtdecoder = new DXT.Decoder(dxtFormat);
+
+                Enum.TryParse<ATI.Formats>(format.ToString(), false, out var atiFormat);
+                var atidecoder = new ATI.Decoder(atiFormat);
 
                 while (true)
                 {
@@ -118,8 +135,16 @@ namespace Cetera.Image
                             b = g = r = br.ReadNibble() * 17;
                             break;
                         case Format.LA88:
-                            a = br.ReadByte();
-                            b = g = r = br.ReadByte();
+                            if (settings.ByteOrder == ByteOrder.LittleEndian)
+                            {
+                                a = br.ReadByte();
+                                b = g = r = br.ReadByte();
+                            }
+                            else
+                            {
+                                b = g = r = br.ReadByte();
+                                a = br.ReadByte();
+                            }
                             break;
                         case Format.HL88:
                             g = br.ReadByte();
@@ -150,10 +175,27 @@ namespace Cetera.Image
                             r = br.ReadNibble() * 17;
                             break;
                         case Format.RGBA8888:
-                            a = br.ReadByte();
-                            b = br.ReadByte();
-                            g = br.ReadByte();
-                            r = br.ReadByte();
+                            if (settings.ByteOrder == ByteOrder.LittleEndian)
+                            {
+                                a = br.ReadByte();
+                                b = br.ReadByte();
+                                g = br.ReadByte();
+                                r = br.ReadByte();
+                            }
+                            else
+                            {
+                                r = br.ReadByte();
+                                g = br.ReadByte();
+                                b = br.ReadByte();
+                                a = br.ReadByte();
+                            }
+                            break;
+                        case Format.RGBA1010102:
+                            var pack = br.ReadUInt32();
+                            r = (int)((pack >> 22) / 4);
+                            g = (int)(((pack >> 12) & 0x3FF) / 4);
+                            b = (int)(((pack >> 2) & 0x3FF) / 4);
+                            a = (int)((pack & 0x3) * 85);
                             break;
                         case Format.ETC1:
                         case Format.ETC1A4:
@@ -173,12 +215,33 @@ namespace Cetera.Image
                                 return (dxt5Alpha, br.ReadUInt64());
                             });
                             continue;
+                        case Format.ATI1L:
+                        case Format.ATI1A:
+                        case Format.ATI2:
+                            yield return atidecoder.Get(() =>
+                            {
+                                if (br.BaseStream.Position == br.BaseStream.Length) return (0, 0);
+                                return (br.ReadUInt64(), format == Format.ATI2 ? br.ReadUInt64() : 0);
+                            });
+                            continue;
                         case Format.L4:
                             b = g = r = br.ReadNibble() * 17;
                             break;
                         case Format.A4:
                             a = br.ReadNibble() * 17;
                             break;
+                        case Format.PVRTC:
+                            var bmp = PVRTC.PvrtcDecompress.DecodeRgb4Bpp(tex, settings.Width);
+                            for (int y = 0; y < settings.Height; y++)
+                                for (int x = 0; x < settings.Width; x++)
+                                    yield return bmp.GetPixel(x, y);
+                            continue;
+                        case Format.PVRTCA:
+                            bmp = PVRTC.PvrtcDecompress.DecodeRgba4Bpp(tex, settings.Width);
+                            for (int y = 0; y < settings.Height; y++)
+                                for (int x = 0; x < settings.Width; x++)
+                                    yield return bmp.GetPixel(x, y);
+                            continue;
                         default:
                             throw new NotSupportedException($"Unknown image format {format}");
                     }
@@ -189,6 +252,20 @@ namespace Cetera.Image
 
         static IEnumerable<Point> GetPointSequence(ImageSettings settings)
         {
+            switch (settings.Format)
+            {
+                case Format.ATI1A:
+                case Format.ATI1L:
+                case Format.ATI2:
+                case Format.ETC1:
+                case Format.ETC1A4:
+                case Format.DXT1:
+                case Format.DXT3:
+                case Format.DXT5:
+                    settings.TileSize = settings.TileSize + 3 & ~0x3;
+                    break;
+            }
+
             int strideWidth = (settings.Width + 7) & ~7;
             int strideHeight = (settings.Height + 7) & ~7;
             if (settings.PadToPowerOf2)
@@ -196,7 +273,6 @@ namespace Cetera.Image
                 strideWidth = 2 << (int)Math.Log(strideWidth - 1, 2);
                 strideHeight = 2 << (int)Math.Log(strideHeight - 1, 2);
             }
-            //int stride = (int)settings.Orientation < 4 ? strideWidth : strideHeight;
 
             //stride TileSize
             var tileSize = 0;
@@ -206,6 +282,15 @@ namespace Cetera.Image
                 tileSize = settings.TileSize;
             int powTileSize = (int)Math.Pow(tileSize, 2);
 
+            int stride = strideWidth;
+            switch (settings.Orientation)
+            {
+                case Orientation.Rotate90:
+                case Orientation.Transpose:
+                    stride = strideHeight;
+                    break;
+            }
+
             for (int i = 0; i < strideWidth * strideHeight; i++)
             {
                 //in == order inside a tile
@@ -213,17 +298,34 @@ namespace Cetera.Image
                 int x_out = 0, y_out = 0, x_in = 0, y_in = 0;
                 if (settings.ZOrder)
                 {
-                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
+                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
                     x_in = ZOrderX(tileSize, i);
                     y_in = ZOrderY(tileSize, i);
                 }
                 else
                 {
-                    x_out = (i / powTileSize % (strideWidth / tileSize)) * tileSize;
-                    y_out = (i / powTileSize / (strideWidth / tileSize)) * tileSize;
-                    x_in = i % powTileSize % tileSize;
-                    y_in = i % powTileSize / tileSize;
+                    x_out = (i / powTileSize % (stride / tileSize)) * tileSize;
+                    y_out = (i / powTileSize / (stride / tileSize)) * tileSize;
+
+                    switch (settings.Format)
+                    {
+                        case Format.ATI1A:
+                        case Format.ATI1L:
+                        case Format.ATI2:
+                        case Format.ETC1:
+                        case Format.ETC1A4:
+                        case Format.DXT1:
+                        case Format.DXT3:
+                        case Format.DXT5:
+                            x_in = (i % 4 + i % powTileSize / 16 * 4) % tileSize;
+                            y_in = (i % 16 / 4 + i / (tileSize * 4) * 4) % tileSize;
+                            break;
+                        default:
+                            x_in = i % powTileSize % tileSize;
+                            y_in = i % powTileSize / tileSize;
+                            break;
+                    }
                 }
 
                 switch (settings.Orientation)
@@ -231,26 +333,14 @@ namespace Cetera.Image
                     case Orientation.Default:
                         yield return new Point(x_out + x_in, y_out + y_in);
                         break;
-                    case Orientation.XFlip:
-                        yield return new Point(x_out + x_in, strideHeight - 1 - (y_out + y_in));
-                        break;
-                    case Orientation.YFlip:
-                        yield return new Point(strideWidth - 1 - (x_out + x_in), y_out + y_in);
-                        break;
-                    case Orientation.XYFlip:
-                        yield return new Point(strideWidth - 1 - (x_out + x_in), strideHeight - 1 - (y_out + y_in));
+                    case Orientation.HorizontalFlip:
+                        yield return new Point(stride - 1 - (x_out + x_in), y_out + y_in);
                         break;
                     case Orientation.Rotate90:
-                        yield return new Point(strideWidth - 1 - (y_out + y_in), x_out + x_in);
+                        yield return new Point(y_out + y_in, stride - 1 - (x_out + x_in));
                         break;
-                    case Orientation.XFlip90:
+                    case Orientation.Transpose:
                         yield return new Point(y_out + y_in, x_out + x_in);
-                        break;
-                    case Orientation.YFlip90:
-                        yield return new Point(strideWidth - 1 - (y_out + y_in), strideHeight - 1 - (x_out + x_in));
-                        break;
-                    case Orientation.Rotate270:
-                        yield return new Point(y_out + y_in, strideHeight - 1 - (x_out + x_in));
                         break;
                     case Orientation.TransposeTile:
                         yield return new Point(x_out + y_in, y_out + x_in);
@@ -292,7 +382,8 @@ namespace Cetera.Image
         public static Bitmap Load(byte[] tex, ImageSettings settings)
         {
             int width = settings.Width, height = settings.Height;
-            var colors = GetColorsFromTexture(tex, settings.Format);
+            var colors = GetColorsFromTexture(tex, settings);
+
             var points = GetPointSequence(settings);
 
             // Now we just need to merge the points with the colors

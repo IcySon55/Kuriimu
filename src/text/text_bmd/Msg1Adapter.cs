@@ -4,8 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract;
+using Kontract.IO;
 using text_bmd.Properties;
 
 namespace text_bmd.msg1

@@ -2,8 +2,8 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_level5.PlainFA
 {
@@ -20,7 +20,7 @@ namespace archive_level5.PlainFA
         public string About => "This is the PlainFA archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;

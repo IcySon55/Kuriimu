@@ -2,9 +2,9 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class LZSSVLE
     {

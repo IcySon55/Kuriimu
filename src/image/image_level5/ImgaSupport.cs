@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
-using Kuriimu.Compression;
+using Kontract;
+using Kontract.IO;
+using Kontract.Compression;
 
 namespace image_level5.imga
 {

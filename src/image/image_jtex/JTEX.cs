@@ -1,8 +1,9 @@
 using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
-using Cetera.Image;
-using Kuriimu.IO;
+using Kontract.Image;
+using Kontract.Image.Swizzle;
+using Kontract.IO;
 
 namespace image_jtex
 {
@@ -11,6 +12,7 @@ namespace image_jtex
         public List<Bitmap> bmps = new List<Bitmap>();
 
         public Header JTEXHeader;
+        public ImageSettings settings;
 
         public JTEX(Stream input)
         {
@@ -20,13 +22,14 @@ namespace image_jtex
                 JTEXHeader = br.ReadStruct<Header>();
 
                 //Add image
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = JTEXHeader.width,
                     Height = JTEXHeader.height,
-                    Format = ImageSettings.ConvertFormat(JTEXHeader.format)
+                    Format = Support.Format[JTEXHeader.format],
+                    Swizzle = new CTRSwizzle(JTEXHeader.width, JTEXHeader.height)
                 };
-                bmps.Add(Common.Load(br.ReadBytes(JTEXHeader.unk3[0]), settings));
+                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes(JTEXHeader.unk3[2]), settings));
             }
         }
 
@@ -35,18 +38,19 @@ namespace image_jtex
             using (var bw = new BinaryWriterX(output))
             {
                 //get texture
-                var settings = new ImageSettings
+                settings = new ImageSettings
                 {
                     Width = bmps[0].Width,
                     Height = bmps[0].Height,
-                    Format = ImageSettings.ConvertFormat(JTEXHeader.format)
+                    Format = Support.Format[JTEXHeader.format],
+                    Swizzle = new CTRSwizzle(bmps[0].Width, bmps[0].Height)
                 };
-                byte[] texture = Common.Save(bmps[0], settings);
+                byte[] texture = Kontract.Image.Image.Save(bmps[0], settings);
 
                 //edit header
                 JTEXHeader.width = (short)bmps[0].Width;
                 JTEXHeader.height = (short)bmps[0].Height;
-                JTEXHeader.unk3[0] = texture.Length;
+                JTEXHeader.unk3[2] = texture.Length;
 
                 bw.WriteStruct(JTEXHeader);
                 bw.Write(texture);

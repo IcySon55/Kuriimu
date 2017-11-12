@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_nintendo.BCLYT
 {
@@ -123,14 +123,14 @@ namespace image_nintendo.BCLYT
                         //draw Window
                         //if (fileExists && withPicture)
                         //{
-                        Cetera.Image.BXLIM bxlim;
+                        BXLIM.BXLIM bxlim;
                         switch (wnd.nrFrames)
                         {
                             case 1:
                                 filename += names.nameList2[mats.maters[wnd.content.matID].texMaps[0].index];
                                 if (File.Exists(filename))
                                 {
-                                    bxlim = new Cetera.Image.BXLIM(File.OpenRead(filename));
+                                    bxlim = new BXLIM.BXLIM(File.OpenRead(filename));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, BclytSupport.Stretch(bxlim.Image, (int)(wndWidth - bxlim.Settings.Width), BclytSupport.StretchType.ToRight));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos, BclytSupport.Rotate(bxlim.Image, BclytSupport.WindowFrame.TexFlip.FlipV));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos + (int)wndHeight - bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, BclytSupport.WindowFrame.TexFlip.FlipHV));
@@ -141,28 +141,28 @@ namespace image_nintendo.BCLYT
                                 filename += names.nameList2[mats.maters[wnd.frames[0].matID].texMaps[0].index];
                                 if (File.Exists(filename))
                                 {
-                                    bxlim = new Cetera.Image.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[0].matID].texMaps[0].index]));
+                                    bxlim = new BXLIM.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[0].matID].texMaps[0].index]));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos, BclytSupport.Rotate(bxlim.Image, wnd.frames[0].textureFlip));
                                 }
 
                                 filename += names.nameList2[mats.maters[wnd.frames[1].matID].texMaps[0].index];
                                 if (File.Exists(filename))
                                 {
-                                    bxlim = new Cetera.Image.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[1].matID].texMaps[0].index]));
+                                    bxlim = new BXLIM.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[1].matID].texMaps[0].index]));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos, BclytSupport.Rotate(bxlim.Image, wnd.frames[1].textureFlip));
                                 }
 
                                 filename += names.nameList2[mats.maters[wnd.frames[2].matID].texMaps[0].index];
                                 if (File.Exists(filename))
                                 {
-                                    bxlim = new Cetera.Image.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[2].matID].texMaps[0].index]));
+                                    bxlim = new BXLIM.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[2].matID].texMaps[0].index]));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos + (int)wndWidth - bxlim.Settings.Width, (int)wndYPos - (int)wndHeight + bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, wnd.frames[2].textureFlip));
                                 }
 
                                 filename += names.nameList2[mats.maters[wnd.frames[3].matID].texMaps[0].index];
                                 if (File.Exists(filename))
                                 {
-                                    bxlim = new Cetera.Image.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[3].matID].texMaps[0].index]));
+                                    bxlim = new BXLIM.BXLIM(File.OpenRead(filename + names.nameList2[mats.maters[wnd.frames[3].matID].texMaps[0].index]));
                                     BclytSupport.DrawLYTPart(layout, (int)wndXPos, (int)wndYPos - (int)wndHeight + bxlim.Settings.Height, BclytSupport.Rotate(bxlim.Image, wnd.frames[3].textureFlip));
                                 }
                                 break;
@@ -224,7 +224,7 @@ namespace image_nintendo.BCLYT
 
                         //draw Picture
                         if (fileExistsp && withPicturep)
-                            BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, new Cetera.Image.BXLIM(File.OpenRead(filenamep)).Image);
+                            BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, new BXLIM.BXLIM(File.OpenRead(filenamep)).Image);
                         else
                             BclytSupport.DrawLYTPart(layout, (int)picXPos, (int)picYPos, (int)picWidth, (int)picHeight, Color.FromArgb(255, 0, 0, 255), Color.FromArgb(255, 255, 255, 255));
                         break;

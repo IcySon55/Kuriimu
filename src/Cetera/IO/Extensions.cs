@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace Cetera.IO
 {

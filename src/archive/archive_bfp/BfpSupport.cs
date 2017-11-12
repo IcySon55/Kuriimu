@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
+using Kontract;
 using System.IO;
-using Kuriimu.Compression;
+using Kontract.Compression;
 
 namespace archive_bfp
 {

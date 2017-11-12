@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace text_gmsg
 {

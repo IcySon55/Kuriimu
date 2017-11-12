@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 using System.Drawing;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.IO;
 
 namespace archive_dpk.DG2
@@ -23,7 +23,7 @@ namespace archive_dpk.DG2
         public string About => "This is the DPK archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;

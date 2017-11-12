@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_obb
 {
@@ -26,13 +26,18 @@ namespace archive_obb
                 //Files
                 var count = 0;
                 foreach (var entry in entries)
+                {
+                    br.BaseStream.Position = entry.offset;
+                    var tmp = br.PeekString(4);
+                    var ext = ObbSupport.extensions.ContainsKey(tmp) ? ObbSupport.extensions[tmp] : ".bin";
                     Files.Add(new OBBFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = $"{count++:00000000}.bin",
+                        FileName = $"{count++:00000000}{ext}",
                         FileData = new SubStream(br.BaseStream, entry.offset, entry.size),
                         entry = entry
                     });
+                }
             }
         }
 

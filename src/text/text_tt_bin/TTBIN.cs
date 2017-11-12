@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace tt.text_ttbin
 {

@@ -4,11 +4,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Cetera.Image;
-using Kuriimu.IO;
+using Kontract.IO;
 
 namespace image_mt
 {
-    class MTTEX
+    public class MTTEX
     {
         public List<Bitmap> Bitmaps = new List<Bitmap>();
         private const int MinHeight = 8;
@@ -100,7 +100,7 @@ namespace image_mt
                 0.299 * c.R + 0.587 * c.G + 0.114 * c.B,
                 CbCrThreshold - 0.168736 * c.R - 0.331264 * c.G + 0.5 * c.B,
                 CbCrThreshold + 0.5 * c.R - 0.418688 * c.G - 0.081312 * c.B);
-            return Color.FromArgb(Clamp(Y), Clamp(Cr), c.A, Clamp(Cb));
+            return Color.FromArgb(Clamp(Y), Clamp(Cr), A, Clamp(Cb));
         }
 
         public void Save(Stream output)
@@ -112,11 +112,14 @@ namespace image_mt
                 Header.Block3 = (uint)(HeaderInfo.Unknown2 | ((int)HeaderInfo.Format << 8) | (HeaderInfo.Unknown3 << 16));
                 bw.WriteStruct(Header);
 
-                Settings.Format = ImageSettings.ConvertFormat(HeaderInfo.Format);
+                var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
+                Settings.Format = ImageSettings.ConvertFormat(format);
 
                 // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
 
-                if (HeaderInfo.Format == Format.DXT5_YCbCr)
+                if (HeaderInfo.Format == Format.DXT5_B)
+                    Settings.PixelShader = ToNoAlpha;
+                else if (HeaderInfo.Format == Format.DXT5_YCbCr)
                     Settings.PixelShader = ToOptimisedColors;
 
                 var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();

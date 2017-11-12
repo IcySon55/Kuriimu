@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
-using System;
-using Cetera.Hash;
+using Kontract.Compression;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_level5.XPCK
 {

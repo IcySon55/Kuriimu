@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Kuriimu.IO
+namespace Kontract.IO
 {
     public static class Extensions
     {

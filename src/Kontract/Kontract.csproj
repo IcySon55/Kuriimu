@@ -80,12 +80,42 @@
     <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
+    <Compile Include="Encryption\BlowFish.cs" />
+    <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Hash\Crc32.cs" />
+    <Compile Include="Image\Format\ATI.cs" />
+    <Compile Include="Image\Format\DXT.cs" />
+    <Compile Include="Image\Format\ETC1.cs" />
+    <Compile Include="Image\Format\HL.cs" />
+    <Compile Include="Image\Format\LA.cs" />
+    <Compile Include="Image\Format\Palette.cs" />
+    <Compile Include="Image\Format\RGBA.cs" />
+    <Compile Include="Image\Image.cs" />
+    <Compile Include="Image\Support\ATI.cs" />
+    <Compile Include="Image\Support\BCn\BC1BlockEncoder.cs" />
+    <Compile Include="Image\Support\BCn\BC2ABlockEncoder.cs" />
+    <Compile Include="Image\Support\BCn\BC4BlockEncoder.cs" />
+    <Compile Include="Image\Support\BCn\BCnImage.cs" />
+    <Compile Include="Image\Support\BCn\Blocks.cs" />
+    <Compile Include="Image\Support\BCn\FloatImage.cs" />
+    <Compile Include="Image\Support\BCn\Helpers.cs" />
+    <Compile Include="Image\Support\BCn\ImageEncoder.cs" />
+    <Compile Include="Image\Support\BCn\ImageEncodingHelper.cs" />
+    <Compile Include="Image\Support\Support.cs" />
+    <Compile Include="Image\Support\DXT.cs" />
+    <Compile Include="Image\Support\ETC1.cs" />
+    <Compile Include="Image\Support\sRGB.cs" />
+    <Compile Include="Image\Swizzle\CTR.cs" />
+    <Compile Include="Image\Swizzle\Master.cs" />
+    <Compile Include="Image\Swizzle\Nitro.cs" />
+    <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
-    <Compile Include="Interface\IPlugin.cs" />
+    <Compile Include="Interface\Image\IImageFormat.cs" />
+    <Compile Include="Interface\Image\IImageSwizzle.cs" />
+    <Compile Include="Interface\IFilePlugin.cs" />
     <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />
     <Compile Include="IO\BinaryWriterX.cs" />
@@ -104,9 +134,21 @@
     <Compile Include="UI\Compression.cs" />
     <Compile Include="UI\Encryption.cs" />
     <Compile Include="UI\Hash.cs" />
+    <Compile Include="UI\InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\InputBox.Designer.cs">
+      <DependentUpon>InputBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Win32.cs" />
     <Compile Include="ValueTuple.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UI\InputBox.resx">
+      <DependentUpon>InputBox.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>

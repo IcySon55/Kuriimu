@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.Compression;
-using Kuriimu.IO;
+using Kontract.Compression;
+using Kontract.IO;
 
-namespace Kuriimu.UI
+namespace Kontract.UI
 {
     public static class CompressionTools
     {
@@ -76,14 +76,26 @@ namespace Kuriimu.UI
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Compress));
             tsb3.DropDownItems[7].Tag = Compression.LZOvl;
             //    MIO0
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("MIO0", null, Compress));
-            tsb3.DropDownItems[8].Tag = Compression.MIO0;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("MIO0", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[8];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.MIO0LE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Compress));
+            tsb4.DropDownItems[1].Tag = Compression.MIO0BE;
             //    Yay0
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null, Compress));
-            tsb3.DropDownItems[9].Tag = Compression.Yay0;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[9];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.Yay0LE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Compress));
+            tsb4.DropDownItems[1].Tag = Compression.Yay0BE;
             //    Yaz0
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null, Compress));
-            tsb3.DropDownItems[10].Tag = Compression.Yaz0;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[10];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Compress));
+            tsb4.DropDownItems[0].Tag = Compression.Yaz0LE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Compress));
+            tsb4.DropDownItems[1].Tag = Compression.Yaz0BE;
 
             //  Decompress
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decompress", null));
@@ -101,14 +113,26 @@ namespace Kuriimu.UI
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Decompress));
             tsb3.DropDownItems[3].Tag = Compression.LZOvl;
             //    MIO0
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("MIO0", null, Decompress));
-            tsb3.DropDownItems[4].Tag = Compression.MIO0;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("MIO0", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[4];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Decompress));
+            tsb4.DropDownItems[0].Tag = Compression.MIO0LE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.MIO0BE;
             //    Yay0
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null, Decompress));
-            tsb3.DropDownItems[5].Tag = Compression.Yay0;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[5];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Decompress));
+            tsb4.DropDownItems[0].Tag = Compression.Yay0LE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.Yay0BE;
             //    Yaz0
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null, Decompress));
-            tsb3.DropDownItems[6].Tag = Compression.Yaz0;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[6];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Decompress));
+            tsb4.DropDownItems[0].Tag = Compression.Yaz0LE;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Decompress));
+            tsb4.DropDownItems[1].Tag = Compression.Yaz0BE;
 
 
             //-------Level 5---------
@@ -156,42 +180,11 @@ namespace Kuriimu.UI
             tsb3.DropDownItems[1].Tag = Compression.LZ10VLE;
         }
 
-        public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile, bool compress = false)
-        {
-            openFile = null;
-            saveFile = null;
-
-            var ofd = new OpenFileDialog
-            {
-                Title = openCaption,
-                Filter = "All Files (*.*)|*.*"
-            };
-
-            if (ofd.ShowDialog() != DialogResult.OK) return false;
-            openFile = File.OpenRead(ofd.FileName);
-
-            var sfd = new SaveFileDialog()
-            {
-                Title = saveCaption,
-                FileName = !compress ? Path.GetFileNameWithoutExtension(ofd.FileName) + saveExtension + Path.GetExtension(ofd.FileName) : Path.GetFileName(ofd.FileName.Replace(saveExtension, string.Empty)),
-                Filter = "All Files (*.*)|*.*"
-            };
-
-            if (sfd.ShowDialog() != DialogResult.OK)
-            {
-                openFile.Dispose();
-                return false;
-            }
-            saveFile = File.Create(sfd.FileName);
-
-            return true;
-        }
-
         public static void Decompress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a " + tsi?.Tag + " compressed file...", "Save your decompressed file...", ".decomp", out var openFile, out var saveFile)) return;
+            if (!Shared.PrepareFiles("Open a " + tsi?.Tag + " compressed file...", "Save your decompressed file...", ".decomp", out var openFile, out var saveFile)) return;
 
             try
             {
@@ -215,16 +208,25 @@ namespace Kuriimu.UI
                             outFs.Write(LZOvl.Decompress(openFile));
                             break;
                         case Compression.LZ4:
-                            outFs.Write(Kuriimu.Compression.LZ4.Decompress(openFile));
+                            outFs.Write(Kontract.Compression.LZ4.Decompress(openFile));
                             break;
-                        case Compression.MIO0:
-                            outFs.Write(MIO0.Decompress(openFile));
+                        case Compression.MIO0LE:
+                            outFs.Write(MIO0.Decompress(openFile, ByteOrder.LittleEndian));
                             break;
-                        case Compression.Yay0:
-                            outFs.Write(Yay0.Decompress(openFile));
+                        case Compression.MIO0BE:
+                            outFs.Write(MIO0.Decompress(openFile, ByteOrder.BigEndian));
                             break;
-                        case Compression.Yaz0:
-                            outFs.Write(Yaz0.Decompress(openFile));
+                        case Compression.Yay0LE:
+                            outFs.Write(Yay0.Decompress(openFile, ByteOrder.LittleEndian));
+                            break;
+                        case Compression.Yay0BE:
+                            outFs.Write(Yay0.Decompress(openFile, ByteOrder.BigEndian));
+                            break;
+                        case Compression.Yaz0LE:
+                            outFs.Write(Yaz0.Decompress(openFile, ByteOrder.LittleEndian));
+                            break;
+                        case Compression.Yaz0BE:
+                            outFs.Write(Yaz0.Decompress(openFile, ByteOrder.BigEndian));
                             break;
                         case Compression.LZECD:
                             outFs.Write(LZECD.Decompress(openFile));
@@ -253,7 +255,7 @@ namespace Kuriimu.UI
         {
             var tsi = sender as ToolStripMenuItem;
 
-            if (!PrepareFiles("Open a decompressed " + tsi?.Tag + "file...", "Save your compressed file...", ".decomp", out var openFile, out var saveFile, true)) return;
+            if (!Shared.PrepareFiles("Open a decompressed " + tsi?.Tag + "file...", "Save your compressed file...", ".decomp", out var openFile, out var saveFile, true)) return;
 
             try
             {
@@ -301,16 +303,25 @@ namespace Kuriimu.UI
                             outFs.Write(LZOvl.Compress(openFile));
                             break;
                         case Compression.LZ4:
-                            outFs.Write(Kuriimu.Compression.LZ4.Compress(openFile));
+                            outFs.Write(Kontract.Compression.LZ4.Compress(openFile));
                             break;
-                        case Compression.MIO0:
-                            outFs.Write(MIO0.Compress(openFile));
+                        case Compression.MIO0LE:
+                            outFs.Write(MIO0.Compress(openFile, ByteOrder.LittleEndian));
                             break;
-                        case Compression.Yay0:
-                            outFs.Write(Yay0.Compress(openFile));
+                        case Compression.MIO0BE:
+                            outFs.Write(MIO0.Compress(openFile, ByteOrder.BigEndian));
                             break;
-                        case Compression.Yaz0:
-                            outFs.Write(Yaz0.Compress(openFile));
+                        case Compression.Yay0LE:
+                            outFs.Write(Yay0.Compress(openFile, ByteOrder.LittleEndian));
+                            break;
+                        case Compression.Yay0BE:
+                            outFs.Write(Yay0.Compress(openFile, ByteOrder.BigEndian));
+                            break;
+                        case Compression.Yaz0LE:
+                            outFs.Write(Yaz0.Compress(openFile, ByteOrder.LittleEndian));
+                            break;
+                        case Compression.Yaz0BE:
+                            outFs.Write(Yaz0.Compress(openFile, ByteOrder.BigEndian));
                             break;
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
@@ -355,10 +366,14 @@ namespace Kuriimu.UI
             LZ4,
             LZ10VLE,
             LZECD,
-            MIO0,
 
-            Yaz0,
-            Yay0
+            MIO0LE,
+            MIO0BE,
+
+            Yaz0LE,
+            Yaz0BE,
+            Yay0LE,
+            Yay0BE
         }
     }
 }

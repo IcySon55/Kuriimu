@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 
 namespace archive_ddt_img
 {

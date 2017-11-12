@@ -1,12 +1,17 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
+using System.Collections.Generic;
+using Kontract.Image.Format;
+using Kontract.Interface;
 
 namespace image_cvt
 {
-    public enum Format : short
+    public class Support
     {
-        ETC1A4 = 0x1006
+        public static Dictionary<short, IImageFormat> Format = new Dictionary<short, IImageFormat>
+        {
+            [0x1006] = new ETC1(true)
+        };
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -15,7 +20,7 @@ namespace image_cvt
         public ushort Magic;
         public short Width;
         public short Height;
-        public Format Format;
+        public short Format;
         public int Unknown1;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
         public string Name;
@@ -29,6 +34,6 @@ namespace image_cvt
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public Format Format { get; set; }
+        public string Format { get; set; }
     }
 }

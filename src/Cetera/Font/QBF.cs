@@ -8,9 +8,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Cetera.Image;
 using Cetera.Properties;
-using Kuriimu.Compression;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.Compression;
+using Kontract.IO;
+using Kontract;
 using System.Text;
 
 namespace Cetera.Font

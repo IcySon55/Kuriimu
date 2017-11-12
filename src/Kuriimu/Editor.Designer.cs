@@ -39,6 +39,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.entriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,6 +75,7 @@
             this.tsbSortEntries = new System.Windows.Forms.ToolStripButton();
             this.tsbShowTextPreview = new System.Windows.Forms.ToolStripButton();
             this.tsbManageLabels = new System.Windows.Forms.ToolStripDropDownButton();
+            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splContent = new System.Windows.Forms.SplitContainer();
             this.splText = new System.Windows.Forms.SplitContainer();
             this.txtEdit = new System.Windows.Forms.TextBox();
@@ -82,12 +84,12 @@
             this.tsbGameSelect = new System.Windows.Forms.ToolStripDropDownButton();
             this.txtOriginal = new System.Windows.Forms.TextBox();
             this.tlsOriginal = new System.Windows.Forms.ToolStrip();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.tslOriginal = new System.Windows.Forms.ToolStripLabel();
             this.splPreview = new System.Windows.Forms.SplitContainer();
             this.pnlPreview = new System.Windows.Forms.Panel();
             this.pbxPreview = new System.Windows.Forms.PictureBox();
             this.tlsPreview = new System.Windows.Forms.ToolStrip();
-            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.tslPreview = new System.Windows.Forms.ToolStripLabel();
             this.tsbPreviewEnabled = new System.Windows.Forms.ToolStripButton();
             this.tsbPreviewSave = new System.Windows.Forms.ToolStripButton();
             this.tsbPreviewCopy = new System.Windows.Forms.ToolStripButton();
@@ -106,8 +108,8 @@
             this.tsbScreenshotRename = new System.Windows.Forms.ToolStripButton();
             this.tsbScreenshotPaste = new System.Windows.Forms.ToolStripButton();
             this.tsbScreenshotDelete = new System.Windows.Forms.ToolStripButton();
-            this.tlsHexView = new System.Windows.Forms.ToolStrip();
-            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.tlsLot = new System.Windows.Forms.ToolStrip();
+            this.tslLot = new System.Windows.Forms.ToolStripLabel();
             this.tsbLotCreate = new System.Windows.Forms.ToolStripButton();
             this.tsbLotDelete = new System.Windows.Forms.ToolStripButton();
             this.tlsMain = new System.Windows.Forms.ToolStrip();
@@ -117,6 +119,7 @@
             this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbFind = new System.Windows.Forms.ToolStripButton();
+            this.tsbSearchDirectory = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
             this.tsbKukki = new System.Windows.Forms.ToolStripButton();
@@ -133,7 +136,6 @@
             this.scbFontSize = new System.Windows.Forms.ToolStripComboBox();
             this.imlEntries = new System.Windows.Forms.ImageList(this.components);
             this.imlScreenshots = new System.Windows.Forms.ImageList(this.components);
-            this.newLabelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
@@ -163,7 +165,7 @@
             this.tabNotes.SuspendLayout();
             this.tabScreenshots.SuspendLayout();
             this.tlsLotScreenshots.SuspendLayout();
-            this.tlsHexView.SuspendLayout();
+            this.tlsLot.SuspendLayout();
             this.tlsMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -251,6 +253,7 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.findToolStripMenuItem,
+            this.searchDirectoryToolStripMenuItem,
             this.toolStripMenuItem1,
             this.propertiesToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
@@ -263,14 +266,24 @@
             this.findToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_find;
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.findToolStripMenuItem.Text = "&Find";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
+            // searchDirectoryToolStripMenuItem
+            // 
+            this.searchDirectoryToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_search;
+            this.searchDirectoryToolStripMenuItem.Name = "searchDirectoryToolStripMenuItem";
+            this.searchDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.F)));
+            this.searchDirectoryToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.searchDirectoryToolStripMenuItem.Text = "&Search Directory";
+            this.searchDirectoryToolStripMenuItem.Click += new System.EventHandler(this.searchDirectoryToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(143, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(229, 6);
             // 
             // propertiesToolStripMenuItem
             // 
@@ -278,7 +291,7 @@
             this.propertiesToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_properties;
             this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
             this.propertiesToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.propertiesToolStripMenuItem.Text = "&Properties";
             this.propertiesToolStripMenuItem.Click += new System.EventHandler(this.propertiesToolStripMenuItem_Click);
             // 
@@ -623,6 +636,14 @@
             this.tsbManageLabels.Size = new System.Drawing.Size(29, 22);
             this.tsbManageLabels.Text = "Show Text Preview";
             // 
+            // newLabelToolStripMenuItem
+            // 
+            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
+            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
+            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.newLabelToolStripMenuItem.Text = "New Label...";
+            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
+            // 
             // splContent
             // 
             this.splContent.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -730,18 +751,18 @@
             this.tlsOriginal.BackColor = System.Drawing.Color.Transparent;
             this.tlsOriginal.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tlsOriginal.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel1});
+            this.tslOriginal});
             this.tlsOriginal.Location = new System.Drawing.Point(0, 0);
             this.tlsOriginal.Name = "tlsOriginal";
             this.tlsOriginal.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.tlsOriginal.Size = new System.Drawing.Size(444, 27);
             this.tlsOriginal.TabIndex = 3;
             // 
-            // toolStripLabel1
+            // tslOriginal
             // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(52, 22);
-            this.toolStripLabel1.Text = "Original:";
+            this.tslOriginal.Name = "tslOriginal";
+            this.tslOriginal.Size = new System.Drawing.Size(52, 22);
+            this.tslOriginal.Text = "Original:";
             // 
             // splPreview
             // 
@@ -758,7 +779,7 @@
             // splPreview.Panel2
             // 
             this.splPreview.Panel2.Controls.Add(this.tabLot);
-            this.splPreview.Panel2.Controls.Add(this.tlsHexView);
+            this.splPreview.Panel2.Controls.Add(this.tlsLot);
             this.splPreview.Size = new System.Drawing.Size(892, 317);
             this.splPreview.SplitterDistance = 442;
             this.splPreview.SplitterWidth = 6;
@@ -793,7 +814,7 @@
             this.tlsPreview.BackColor = System.Drawing.Color.Transparent;
             this.tlsPreview.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tlsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel2,
+            this.tslPreview,
             this.tsbPreviewEnabled,
             this.tsbPreviewSave,
             this.tsbPreviewCopy,
@@ -808,11 +829,11 @@
             this.tlsPreview.Size = new System.Drawing.Size(442, 27);
             this.tlsPreview.TabIndex = 3;
             // 
-            // toolStripLabel2
+            // tslPreview
             // 
-            this.toolStripLabel2.Name = "toolStripLabel2";
-            this.toolStripLabel2.Size = new System.Drawing.Size(51, 22);
-            this.toolStripLabel2.Text = "Preview:";
+            this.tslPreview.Name = "tslPreview";
+            this.tslPreview.Size = new System.Drawing.Size(51, 22);
+            this.tslPreview.Text = "Preview:";
             // 
             // tsbPreviewEnabled
             // 
@@ -1013,26 +1034,26 @@
             this.tsbScreenshotDelete.Size = new System.Drawing.Size(23, 22);
             this.tsbScreenshotDelete.Text = "Delete Screenshot";
             // 
-            // tlsHexView
+            // tlsLot
             // 
-            this.tlsHexView.AutoSize = false;
-            this.tlsHexView.BackColor = System.Drawing.Color.Transparent;
-            this.tlsHexView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tlsHexView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel3,
+            this.tlsLot.AutoSize = false;
+            this.tlsLot.BackColor = System.Drawing.Color.Transparent;
+            this.tlsLot.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tlsLot.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tslLot,
             this.tsbLotCreate,
             this.tsbLotDelete});
-            this.tlsHexView.Location = new System.Drawing.Point(0, 0);
-            this.tlsHexView.Name = "tlsHexView";
-            this.tlsHexView.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.tlsHexView.Size = new System.Drawing.Size(444, 27);
-            this.tlsHexView.TabIndex = 4;
+            this.tlsLot.Location = new System.Drawing.Point(0, 0);
+            this.tlsLot.Name = "tlsLot";
+            this.tlsLot.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.tlsLot.Size = new System.Drawing.Size(444, 27);
+            this.tlsLot.TabIndex = 4;
             // 
-            // toolStripLabel3
+            // tslLot
             // 
-            this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(27, 22);
-            this.toolStripLabel3.Text = "Lot:";
+            this.tslLot.Name = "tslLot";
+            this.tslLot.Size = new System.Drawing.Size(27, 22);
+            this.tslLot.Text = "Lot:";
             // 
             // tsbLotCreate
             // 
@@ -1069,6 +1090,7 @@
             this.tsbSaveAs,
             this.toolStripSeparator2,
             this.tsbFind,
+            this.tsbSearchDirectory,
             this.toolStripSeparator3,
             this.tsbKarameru,
             this.tsbKukki,
@@ -1146,6 +1168,16 @@
             this.tsbFind.Size = new System.Drawing.Size(23, 22);
             this.tsbFind.Text = "Find";
             this.tsbFind.Click += new System.EventHandler(this.tsbFind_Click);
+            // 
+            // tsbSearchDirectory
+            // 
+            this.tsbSearchDirectory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbSearchDirectory.Image = global::Kuriimu.Properties.Resources.menu_search;
+            this.tsbSearchDirectory.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbSearchDirectory.Name = "tsbSearchDirectory";
+            this.tsbSearchDirectory.Size = new System.Drawing.Size(23, 22);
+            this.tsbSearchDirectory.Text = "Search Directory";
+            this.tsbSearchDirectory.Click += new System.EventHandler(this.tsbSearchDirectory_Click);
             // 
             // toolStripSeparator3
             // 
@@ -1288,14 +1320,6 @@
             this.imlScreenshots.ImageSize = new System.Drawing.Size(96, 64);
             this.imlScreenshots.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // newLabelToolStripMenuItem
-            // 
-            this.newLabelToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_label;
-            this.newLabelToolStripMenuItem.Name = "newLabelToolStripMenuItem";
-            this.newLabelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.newLabelToolStripMenuItem.Text = "New Label...";
-            this.newLabelToolStripMenuItem.Click += new System.EventHandler(this.newLabelToolStripMenuItem_Click);
-            // 
             // Editor
             // 
             this.AllowDrop = true;
@@ -1352,8 +1376,8 @@
             this.tabScreenshots.ResumeLayout(false);
             this.tlsLotScreenshots.ResumeLayout(false);
             this.tlsLotScreenshots.PerformLayout();
-            this.tlsHexView.ResumeLayout(false);
-            this.tlsHexView.PerformLayout();
+            this.tlsLot.ResumeLayout(false);
+            this.tlsLot.PerformLayout();
             this.tlsMain.ResumeLayout(false);
             this.tlsMain.PerformLayout();
             this.ResumeLayout(false);
@@ -1381,7 +1405,7 @@
         private System.Windows.Forms.ToolStrip tlsEdit;
         private System.Windows.Forms.ToolStripLabel tslText;
         private System.Windows.Forms.ToolStrip tlsOriginal;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripLabel tslOriginal;
         private System.Windows.Forms.TextBox txtOriginal;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tsbEntryProperties;
@@ -1394,8 +1418,8 @@
         private System.Windows.Forms.ToolStripMenuItem gitHubToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.SplitContainer splPreview;
-        private System.Windows.Forms.ToolStrip tlsHexView;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+        private System.Windows.Forms.ToolStrip tlsLot;
+        private System.Windows.Forms.ToolStripLabel tslLot;
         private System.Windows.Forms.PictureBox pbxPreview;
         private System.Windows.Forms.ToolStrip tlsMain;
         private System.Windows.Forms.ToolStripButton tsbOpen;
@@ -1436,7 +1460,7 @@
         private System.Windows.Forms.ToolStripButton tsbBatchExportKUP;
         private System.Windows.Forms.ToolStripButton tsbBatchImportKUP;
         private System.Windows.Forms.ToolStrip tlsPreview;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripLabel tslPreview;
         private System.Windows.Forms.ToolStripButton tsbPreviewEnabled;
         private System.Windows.Forms.ToolStripButton tsbPreviewSave;
         private System.Windows.Forms.ToolStripButton tsbPreviewCopy;
@@ -1468,5 +1492,7 @@
         private System.Windows.Forms.ToolStripMenuItem removeLabelToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton tsbManageLabels;
         private System.Windows.Forms.ToolStripMenuItem newLabelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tsbSearchDirectory;
     }
 }

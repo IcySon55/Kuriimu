@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kuriimu.IO;
-using Kuriimu.Kontract;
+using Kontract.IO;
+using Kontract.Interface;
 
 namespace image_comp
 {
@@ -44,7 +45,9 @@ namespace image_comp
             {
                 _comp = new COMP(FileInfo.OpenRead());
 
-                _bitmaps = _comp.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                var _bmpList = _comp.bmps.Select(o => new COMPBitmapInfo { Bitmap = o, Format = _comp.settings.Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -61,5 +64,12 @@ namespace image_comp
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class COMPBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

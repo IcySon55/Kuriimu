@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Kuriimu.IO
+namespace Kontract.IO
 {
     public class BinaryWriterX : BinaryWriter
     {

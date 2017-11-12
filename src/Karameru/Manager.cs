@@ -11,8 +11,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Karameru.Properties;
-using Kuriimu.Kontract;
-using Kuriimu.UI;
+using Kontract.Interface;
+using Kontract;
+using Kontract.UI;
 
 namespace Karameru
 {
@@ -620,8 +621,8 @@ namespace Karameru
             closeToolStripMenuItem.Enabled = _fileOpen;
             //findToolStripMenuItem.Enabled = _fileOpen;
             //tsbFind.Enabled = _fileOpen;
-            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
-            tsbProperties.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
+            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
+            tsbProperties.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
 
             // Toolbar
             tsbFileAdd.Enabled = _canAddFiles;
@@ -876,60 +877,65 @@ namespace Karameru
 
             var path = fbd.SelectedPath;
             var count = 0;
+            var errors = false;
 
             if (Directory.Exists(path))
             {
                 var types = _archiveManagers.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
-                List<string> files = new List<string>();
-                foreach (string type in types)
+                var files = new List<string>();
+                foreach (var type in types)
                     files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                foreach (string file in files)
-                {
+                foreach (var file in files)
                     if (File.Exists(file))
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        IArchiveManager currentManager = SelectArchiveManager(file, true);
-
-                        if (currentManager != null)
+                        try
                         {
-                            currentManager.Load(file);
+                            var fi = new FileInfo(file);
+                            var currentManager = SelectArchiveManager(file, true);
 
-                            foreach (var afi in currentManager.Files)
+                            if (currentManager != null)
                             {
-                                var stream = afi.FileData;
-                                if (stream == null) continue;
+                                currentManager.Load(file);
 
-                                var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
-
-                                if (!Directory.Exists(exPath))
-                                    Directory.CreateDirectory(exPath);
-
-                                using (var fs = File.Create(Path.Combine(exPath, Path.GetFileName(afi.FileName))))
-                                {
-                                    if (stream.CanSeek)
-                                        stream.Position = 0;
-
+                                foreach (var afi in currentManager.Files)
                                     try
                                     {
-                                        if (afi.FileSize > 0)
+                                        var stream = afi.FileData;
+                                        if (stream == null) continue;
+
+                                        var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
+
+                                        if (!Directory.Exists(exPath))
+                                            Directory.CreateDirectory(exPath);
+
+                                        using (var fs = File.Create(Path.Combine(exPath, Path.GetFileName(afi.FileName))))
                                         {
-                                            stream.CopyTo(fs);
-                                            fs.Close();
+                                            if (stream.CanSeek)
+                                                stream.Position = 0;
+
+                                            if (afi.FileSize > 0)
+                                            {
+                                                stream.CopyTo(fs);
+                                                fs.Close();
+                                            }
                                         }
                                     }
-                                    catch (Exception ex) { }
-                                }
+                                    catch (Exception)
+                                    {
+                                        errors = true;
+                                    }
+
+                                count++;
+                                currentManager.Unload();
                             }
-
-                            count++;
-                            currentManager.Unload();
                         }
-                    }
-                }
+                        catch (Exception)
+                        {
+                            errors = true;
+                        }
 
-                MessageBox.Show("Batch extract completed successfully. " + count + " archive(s) succesfully extracted.", "Batch Extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Batch extract completed {(errors ? "with errors" : "successfully")}. " + count + " archive(s) succesfully extracted.", "Batch Extract", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -953,56 +959,63 @@ namespace Karameru
 
             var path = fbd.SelectedPath;
             var count = 0;
+            var errors = false;
 
             if (Directory.Exists(path))
             {
                 var types = _archiveManagers.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
-                List<string> files = new List<string>();
-                foreach (string type in types)
+                var files = new List<string>();
+                foreach (var type in types)
                     files.AddRange(Directory.GetFiles(path, type, browseSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                foreach (string file in files)
-                {
+                foreach (var file in files)
                     if (File.Exists(file))
-                    {
-                        FileInfo fi = new FileInfo(file);
-                        IArchiveManager currentManager = SelectArchiveManager(file, true);
-
-                        if (currentManager != null)
+                        try
                         {
-                            var madeChanges = false;
-                            currentManager.Load(file);
+                            var fi = new FileInfo(file);
+                            var currentManager = SelectArchiveManager(file, true);
 
-                            foreach (var afi in currentManager.Files)
+                            if (currentManager != null)
                             {
-                                var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
+                                var madeChanges = false;
+                                currentManager.Load(file);
 
-                                if (!Directory.Exists(exPath)) continue;
-                                var filePath = Path.Combine(exPath, Path.GetFileName(afi.FileName));
-
-                                if (!File.Exists(filePath)) continue;
-                                try
+                                foreach (var afi in currentManager.Files)
                                 {
-                                    afi.FileData = File.OpenRead(filePath);
-                                    afi.State = ArchiveFileState.Replaced;
-                                    madeChanges = true;
+                                    var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
+
+                                    if (!Directory.Exists(exPath)) continue;
+                                    var filePath = Path.Combine(exPath, Path.GetFileName(afi.FileName));
+
+                                    if (!File.Exists(filePath)) continue;
+                                    try
+                                    {
+                                        afi.FileData = File.OpenRead(filePath);
+                                        afi.State = ArchiveFileState.Replaced;
+                                        madeChanges = true;
+                                    }
+                                    catch (Exception)
+                                    {
+                                        errors = true;
+                                    }
                                 }
-                                catch (Exception ex) { }
-                            }
 
-                            if (madeChanges)
-                            {
-                                count++;
-                                currentManager.Save();
-                            }
+                                if (madeChanges)
+                                {
+                                    count++;
+                                    currentManager.Save();
+                                }
 
-                            currentManager.Unload();
+                                currentManager.Unload();
+                            }
                         }
-                    }
-                }
+                        catch (Exception)
+                        {
+                            errors = true;
+                        }
 
-                MessageBox.Show("Batch archive completed successfully. " + count + " archive(s) succesfully archived.", "Batch Archived", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Batch archive completed {(errors ? "with errors" : "successfully")}. " + count + " archive(s) succesfully archived.", "Batch Archived", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

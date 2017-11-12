@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace text_mbm
 {

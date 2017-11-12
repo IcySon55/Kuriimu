@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Cetera.Hash;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
+using Kontract.Interface;
+using Kontract;
+using Kontract.IO;
 
-namespace Cetera.Archive
+namespace archive_nintendo.SARC
 {
     public sealed class SARC
     {

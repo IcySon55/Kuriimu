@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kuriimu.Compression;
-using Kuriimu.IO;
-using Kuriimu.CTR;
+using Kontract.CTR;
+using Kontract.Encryption;
+using Kontract.IO;
+using Kontract;
 
-namespace Kuriimu.UI
+namespace Kontract.UI
 {
     public static class EncryptionTools
     {
@@ -13,19 +14,48 @@ namespace Kuriimu.UI
         {
             ToolStripMenuItem tsb2;
             ToolStripMenuItem tsb3;
+            ToolStripMenuItem tsb4;
             tsb.DropDownItems.Clear();
+
+            //General
+            tsb.DropDownItems.Add(new ToolStripMenuItem("General", null));
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Blowfish", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("CBC", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[0];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
+            tsb4.DropDownItems[0].Tag = Types.BlowFishCBC;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
+            tsb4.DropDownItems[1].Tag = Types.BlowFishCBC;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("EBC", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[1];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
+            tsb4.DropDownItems[0].Tag = Types.BlowFishECB;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
+            tsb4.DropDownItems[1].Tag = Types.BlowFishECB;
 
             // 3DS
             tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
-            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[1];
             tsb2.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
-            tsb3.DropDownItems[0].Tag = Types.normal;
+            tsb3.DropDownItems[0].Tag = Types.Normal;
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
             tsb3.DropDownItems[1].Tag = Types.CIA;
             /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
             tsb3.DropDownItems[2].Tag = Types.BOSS;*/
+
+            //Mobile
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Mobile", null));
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[2];
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("MT Framework", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
+            tsb3.DropDownItems[0].Tag = Types.MTMobile;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
+            tsb3.DropDownItems[1].Tag = Types.MTMobile;
         }
 
         public static void Decrypt(object sender, EventArgs e)
@@ -33,23 +63,45 @@ namespace Kuriimu.UI
             var tsi = sender as ToolStripMenuItem;
             var name = (tsi.Tag.ToString() == "normal") ? "3DS" : tsi.Tag.ToString();
 
-            if (!PrepareFiles("Open an encrypted " + name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
+            if (!Shared.PrepareFiles("Open an encrypted " + name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
 
             try
             {
                 using (var openBr = new BinaryReaderX(openFile))
                 using (var outFs = new BinaryWriterX(saveFile))
                 {
-                    var engine = new AesEngine();
                     switch (tsi.Tag)
                     {
-                        case Types.normal:
+                        case Types.BlowFishCBC:
+                            var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
+
+                            if (key == String.Empty) throw new Exception("Key can't be empty!");
+                            var bf = new BlowFish(key);
+                            outFs.Write(bf.Decrypt_CBC(openBr.ReadAllBytes()));
+                            break;
+                        case Types.BlowFishECB:
+                            key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
+
+                            if (key == String.Empty) throw new Exception("Key can't be empty!");
+                            bf = new BlowFish(key);
+                            outFs.Write(bf.Decrypt_ECB(openBr.ReadAllBytes()));
+                            break;
+                        case Types.MTMobile:
+                            var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTMobile");
+                            var key2 = InputBox.Show("Input 2nd decryption key:", "Decrypt MTMobile");
+
+                            if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
+                            outFs.Write(MTFramework.Decrypt(openBr.BaseStream, key1, key2));
+                            break;
+                        case Types.Normal:
+                            var engine = new AesEngine();
                             openBr.BaseStream.CopyTo(outFs.BaseStream);
                             openBr.BaseStream.Position = 0;
                             outFs.BaseStream.Position = 0;
                             engine.DecryptGameNCSD(openBr.BaseStream, outFs.BaseStream);
                             break;
                         case Types.CIA:
+                            engine = new AesEngine();
                             openBr.BaseStream.CopyTo(outFs.BaseStream);
                             openBr.BaseStream.Position = 0;
                             outFs.BaseStream.Position = 0;
@@ -60,51 +112,68 @@ namespace Kuriimu.UI
                                 break;*/
                     }
                 }
+
+                MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.Delete(saveFile.Name);
             }
-
-            MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public static bool PrepareFiles(string openCaption, string saveCaption, string saveExtension, out FileStream openFile, out FileStream saveFile)
+        public static void Encrypt(object sender, EventArgs e)
         {
-            openFile = null;
-            saveFile = null;
+            var tsi = sender as ToolStripMenuItem;
 
-            var ofd = new OpenFileDialog
+            if (!Shared.PrepareFiles("Open a decrypted " + tsi?.Tag + " file...", "Save your encrypted file...", ".dec", out var openFile, out var saveFile, true)) return;
+
+            try
             {
-                Title = openCaption,
-                Filter = "All Files (*.*)|*.*"
-            };
+                using (var openFs = new BinaryReaderX(openFile))
+                using (var outFs = new BinaryWriterX(saveFile))
+                    switch (tsi?.Tag)
+                    {
+                        case Types.BlowFishCBC:
+                            var key = InputBox.Show("Input encryption key:", "Encrypt Blowfish");
 
-            if (ofd.ShowDialog() != DialogResult.OK) return false;
-            openFile = File.OpenRead(ofd.FileName);
+                            if (key == String.Empty) throw new Exception("Key can't be empty!");
+                            var bf = new BlowFish(key);
+                            outFs.Write(bf.Encrypt_CBC(openFs.ReadAllBytes()));
+                            break;
+                        case Types.BlowFishECB:
+                            key = InputBox.Show("Input encryption key:", "Encrypt Blowfish");
 
-            var sfd = new SaveFileDialog()
-            {
-                Title = saveCaption,
-                FileName = Path.GetFileNameWithoutExtension(ofd.FileName) + saveExtension,
-                Filter = "All Files (*.*)|*.*"
-            };
+                            if (key == String.Empty) throw new Exception("Key can't be empty!");
+                            bf = new BlowFish(key);
+                            outFs.Write(bf.Encrypt_ECB(openFs.ReadAllBytes()));
+                            break;
+                        case Types.MTMobile:
+                            var key1 = InputBox.Show("Input 1st encryption key:", "Encrypt MTMobile");
+                            var key2 = InputBox.Show("Input 2nd encryption key:", "Encrypt MTMobile");
 
-            if (sfd.ShowDialog() != DialogResult.OK)
-            {
-                openFile.Dispose();
-                return false;
+                            if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
+                            outFs.Write(MTFramework.Encrypt(openFs.BaseStream, key1, key2));
+                            break;
+                    }
+
+                MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            saveFile = File.Create(sfd.FileName);
-
-            return true;
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.Delete(saveFile.Name);
+            }
         }
 
-        public enum Types : byte
+        public enum Types
         {
-            normal,
+            Normal,
             CIA,
-            BOSS
+            BOSS,
+            BlowFishCBC,
+            BlowFishECB,
+            MTMobile
         }
     }
 }

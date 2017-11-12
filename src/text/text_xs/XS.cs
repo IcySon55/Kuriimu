@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
-using Kuriimu.Kontract;
-using Kuriimu.IO;
-using Kuriimu.Compression;
+using Kontract.IO;
+using Kontract.Compression;
 using System.Text;
 
 namespace text_xs

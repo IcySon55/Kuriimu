@@ -1,5 +1,6 @@
 ﻿using System;
-using Kuriimu.Kontract;
+using Kontract.Interface;
+using Kontract;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 

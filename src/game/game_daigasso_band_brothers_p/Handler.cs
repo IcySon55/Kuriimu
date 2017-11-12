@@ -8,8 +8,8 @@ using System.Text;
 using Cetera.Font;
 using Cetera.Text;
 using game_daigasso_band_brothers_p.Properties;
-using Kuriimu.Compression;
-using Kuriimu.Kontract;
+using Kontract.Compression;
+using Kontract.Interface;
 
 namespace game_daigasso_band_brothers_p
 {

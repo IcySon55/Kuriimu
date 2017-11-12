@@ -4,16 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Kuriimu.IO;
+using Kontract.IO;
 using System.Collections;
 
-namespace Kuriimu.Compression
+/*C# Decompressor Source by LordNed
+ https://github.com/LordNed/WArchive-Tools/tree/master/ArchiveToolsLib/Compression
+ 
+  Python Compressor Source
+  https://pastebin.com/GUHMwpjT
+
+  C# Compressor Optimization in Index search by Kosmos
+  */
+
+namespace Kontract.Compression
 {
     public class MIO0
     {
-        public static byte[] Decompress(Stream instream)
+        public static byte[] Decompress(Stream instream, ByteOrder byteOrder)
         {
-            using (var br = new BinaryReaderX(instream, true, ByteOrder.BigEndian))
+            using (var br = new BinaryReaderX(instream, true, byteOrder))
             {
                 var offset = 0;
                 List<byte> output = new List<byte>();
@@ -92,226 +101,199 @@ namespace Kuriimu.Compression
             }
         }
 
-        public static byte[] Compress(Stream instream)
+        public static byte[] Compress(Stream input, ByteOrder byteOrder)
         {
-            int offset = 0;
-            var file = new BinaryReaderX(instream, true).ReadAllBytes();
-
-            List<byte> layoutBits = new List<byte>();
-            List<byte> dictionary = new List<byte>();
-
-            List<byte> uncompressedData = new List<byte>();
-            List<int[]> compressedData = new List<int[]>();
-
-            int maxDictionarySize = 4096;
-            int maxMatchLength = 18;
-            int minimumMatchSize = 2;
-            int decompressedSize = 0;
-
-            for (int i = 0; i < file.Length; i++)
+            using (var br = new BinaryReaderX(input, true))
             {
-                if (dictionary.Contains(file[i]))
+                var cap = 0x12;
+                var sz = input.Length;
+
+                var cmds = new List<byte>();
+                var ctrl = new List<byte>();
+                var raws = new List<byte>();
+
+                var cmdpos = 0;
+                cmds.Add(0);
+
+                var pos = 0;
+                byte flag = 0x80;
+
+                while (pos < sz)
                 {
-                    //check for best match
-                    int[] matches = findAllMatches(ref dictionary, file[i]);
-                    int[] bestMatch = findLargestMatch(ref dictionary, matches, ref file, i, maxMatchLength);
+                    var hitp = 0;
+                    var hitl = 0;
+                    _search(input, pos, sz, cap, ref hitp, ref hitl);
 
-                    if (bestMatch[1] > minimumMatchSize)
+                    if (hitl < 3)
                     {
-                        //add to compressedData
-                        layoutBits.Add(0);
-                        bestMatch[0] = dictionary.Count - bestMatch[0]; //sets offset in relation to end of dictionary
+                        raws.Add(br.ScanBytes(pos)[0]);
+                        cmds[cmdpos] |= flag;
+                        pos += 1;
+                    }
+                    else
+                    {
+                        var tstp = 0;
+                        var tstl = 0;
+                        _search(input, pos + 1, sz, cap, ref tstp, ref tstl);
 
-                        for (int j = 0; j < bestMatch[1]; j++)
+                        if ((hitl + 1) < tstl)
                         {
-                            dictionary.Add(file[i + j]);
+                            raws.Add(br.ScanBytes(pos)[0]);
+                            cmds[cmdpos] |= flag;
+                            pos += 1;
+                            flag >>= 1;
+                            if (flag == 0)
+                            {
+                                flag = 0x80;
+                                cmdpos = cmds.Count();
+                                cmds.Add(0);
+                            }
+
+                            hitl = tstl;
+                            hitp = tstp;
                         }
 
-                        i = i + bestMatch[1] - 1;
+                        var e = pos - hitp - 1;
+                        pos += hitl;
 
-                        compressedData.Add(bestMatch);
-                        decompressedSize += bestMatch[1];
+                        hitl -= 3;
+                        ctrl.AddRange(BitConverter.GetBytes((ushort)((hitl << 12) | e)).Reverse());
                     }
-                    else
+
+                    flag >>= 1;
+                    if (flag == 0)
                     {
-                        //add to uncompressed data
-                        layoutBits.Add(1);
-                        uncompressedData.Add(file[i]);
-                        dictionary.Add(file[i]);
-                        decompressedSize++;
+                        flag = 0x80;
+                        cmdpos = cmds.Count();
+                        cmds.Add(0);
                     }
                 }
-                else
-                {
-                    //uncompressed data
-                    layoutBits.Add(1);
-                    uncompressedData.Add(file[i]);
-                    dictionary.Add(file[i]);
-                    decompressedSize++;
-                }
 
-                if (dictionary.Count > maxDictionarySize)
-                {
-                    int overflow = dictionary.Count - maxDictionarySize;
-                    dictionary.RemoveRange(0, overflow);
-                }
+                if (flag == 0x80)
+                    cmds.RemoveAt(cmdpos);
+
+                var v = 4 - (cmds.Count() & 3);
+                cmds.AddRange(new byte[v & 3]);
+                var l = cmds.Count() + 16;
+                var o = ctrl.Count() + l;
+
+                List<byte> header = new List<byte>();
+                header.AddRange(Encoding.ASCII.GetBytes("MIO0"));
+                header.AddRange((byteOrder == ByteOrder.LittleEndian) ? BitConverter.GetBytes((int)sz) : BitConverter.GetBytes((int)sz).Reverse());
+                header.AddRange((byteOrder == ByteOrder.LittleEndian) ? BitConverter.GetBytes(l) : BitConverter.GetBytes(l).Reverse());
+                header.AddRange((byteOrder == ByteOrder.LittleEndian) ? BitConverter.GetBytes(o) : BitConverter.GetBytes(o).Reverse());
+                header.AddRange(cmds);
+                header.AddRange(ctrl);
+                header.AddRange(raws);
+
+                return header.ToArray();
             }
-
-            return buildMIO0CompressedBlock(ref layoutBits, ref uncompressedData, ref compressedData, decompressedSize, offset);
         }
 
-        public static byte[] buildMIO0CompressedBlock(ref List<byte> layoutBits, ref List<byte> uncompressedData, ref List<int[]> offsetLengthPairs, int decompressedSize, int offset)
+        public static void _search(Stream data, int pos, long sz, int cap, ref int hitp, ref int hitl)
         {
-            List<byte> finalMIO0Block = new List<byte>();           //the final compressed file
-            List<byte> layoutBytes = new List<byte>();              //holds the layout bits in byte form
-            List<byte> compressedDataBytes = new List<byte>();      //holds length/offset in 2byte form
-
-            int compressedOffset = 16 + offset; //header size
-            int uncompressedOffset;
-
-            //added magic number
-            finalMIO0Block.AddRange(Encoding.ASCII.GetBytes("MIO0")); //4 byte magic number
-
-            //add decompressed data size
-            byte[] decompressedSizeArray = BitConverter.GetBytes(decompressedSize);
-            Array.Reverse(decompressedSizeArray);
-            finalMIO0Block.AddRange(decompressedSizeArray);         //4 byte decompressed size
-
-            //assemble layout bits into bytes
-            while (layoutBits.Count > 0)                            //convert layout binary bits to bytes
+            var t = 0;
+            if (pos == 734)
+                t = 0;
+            using (var br = new BinaryReaderX(data, true))
             {
-                //pad bits to full byte if necessary
-                while (layoutBits.Count < 8)                         //pad last byte if necessary
+                var ml = Math.Min(cap, sz - pos);
+                if (ml < 3)
+                    return;
+
+                var mp = Math.Max(0, pos - 0x1000);
+                hitp = 0;
+                hitl = 3;
+
+                if (mp < pos)
                 {
-                    layoutBits.Add(0);
-                }
-
-                string layoutBitsString = layoutBits[0].ToString() + layoutBits[1].ToString() + layoutBits[2].ToString() + layoutBits[3].ToString()
-                                        + layoutBits[4].ToString() + layoutBits[5].ToString() + layoutBits[6].ToString() + layoutBits[7].ToString();
-
-                byte[] layoutByteArray = new byte[1];
-                layoutByteArray[0] = Convert.ToByte(layoutBitsString, 2);
-                layoutBytes.Add(layoutByteArray[0]);
-                layoutBits.RemoveRange(0, (layoutBits.Count < 8) ? layoutBits.Count : 8);
-
-            }
-
-
-            foreach (int[] offsetLengthPair in offsetLengthPairs)
-            {
-                offsetLengthPair[0] -= 1;                           //removes '1' that is added to offset on decompression
-                offsetLengthPair[1] -= 3;                           //removes '3' that is added to length on decompression
-
-                //combine offset and length into 16 bit block
-                int compressedInt = (offsetLengthPair[1] << 12) | (offsetLengthPair[0]);
-
-                //split int16 into two bytes to be written
-                byte[] compressed2Byte = new byte[2];
-                compressed2Byte[0] = (byte)(compressedInt & 0xFF);
-                compressed2Byte[1] = (byte)((compressedInt >> 8) & 0xFF);
-
-                compressedDataBytes.Add(compressed2Byte[1]);        //used to be 0 then 1, but this seems to be correct
-                compressedDataBytes.Add(compressed2Byte[0]);
-
-            }
-
-            //pad layout bits if needed
-            while (layoutBytes.Count % 4 != 0)
-            {
-                layoutBytes.Add(0);
-            }
-
-            compressedOffset += layoutBytes.Count;
-
-            //add final compressed offset
-            byte[] compressedOffsetArray = BitConverter.GetBytes(compressedOffset);
-            Array.Reverse(compressedOffsetArray);
-            finalMIO0Block.AddRange(compressedOffsetArray);
-
-            //add final uncompressed offset
-            uncompressedOffset = compressedOffset + compressedDataBytes.Count;
-            byte[] uncompressedOffsetArray = BitConverter.GetBytes(uncompressedOffset);
-            Array.Reverse(uncompressedOffsetArray);
-            finalMIO0Block.AddRange(uncompressedOffsetArray);
-
-            //add layout bits
-            foreach (byte layoutByte in layoutBytes)                 //add layout bytes to file
-            {
-                finalMIO0Block.Add(layoutByte);
-            }
-
-            //add compressed data
-            foreach (byte compressedByte in compressedDataBytes)     //add compressed bytes to file
-            {
-                finalMIO0Block.Add(compressedByte);
-            }
-
-            //add uncompressed data
-            foreach (byte uncompressedByte in uncompressedData)      //add noncompressed bytes to file
-            {
-                finalMIO0Block.Add(uncompressedByte);
-            }
-
-            return finalMIO0Block.ToArray();
-        }
-
-        public static int[] findAllMatches(ref List<byte> dictionary, byte match)
-        {
-            List<int> matchPositons = new List<int>();
-
-            for (int i = 0; i < dictionary.Count; i++)
-            {
-                if (dictionary[i] == match)
-                {
-                    matchPositons.Add(i);
-                }
-            }
-
-            return matchPositons.ToArray();
-        }
-
-        public static int[] findLargestMatch(ref List<byte> dictionary, int[] matchesFound, ref byte[] file, int fileIndex, int maxMatch)
-        {
-            int[] matchSizes = new int[matchesFound.Length];
-
-            for (int i = 0; i < matchesFound.Length; i++)
-            {
-                int matchSize = 1;
-                bool matchFound = true;
-
-                //NOTE: This could be relevant to compression issues? I suspect it's more related to writing
-                while (matchFound && matchSize < maxMatch && (fileIndex + matchSize < file.Length) && (matchesFound[i] + matchSize < dictionary.Count))
-                {
-                    if (file[fileIndex + matchSize] == dictionary[matchesFound[i] + matchSize])
+                    var hl = (int)FirstIndexOfNeedleInHaystack(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
+                    while (hl < (pos - mp))
                     {
-                        matchSize++;
-                    }
-                    else
-                    {
-                        matchFound = false;
-                    }
+                        while ((hitl < ml) && (br.ScanBytes(pos + hitl)[0] == br.ScanBytes(mp + hl + hitl)[0]))
+                            hitl += 1;
 
+                        mp += hl;
+                        hitp = mp;
+                        if (hitl == ml)
+                            return;
+
+                        mp += 1;
+                        hitl += 1;
+                        if (mp >= pos)
+                            break;
+
+                        hl = (int)FirstIndexOfNeedleInHaystack(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
+                    }
                 }
 
-                matchSizes[i] = matchSize;
+                if (hitl < 4)
+                    hitl = 1;
+
+                hitl -= 1;
+                return;
             }
-
-            int[] bestMatch = new int[2];
-
-            bestMatch[0] = matchesFound[0];
-            bestMatch[1] = matchSizes[0];
-
-            for (int i = 1; i < matchesFound.Length; i++)
-            {
-                if (matchSizes[i] > bestMatch[1])
-                {
-                    bestMatch[0] = matchesFound[i];
-                    bestMatch[1] = matchSizes[i];
-                }
-            }
-
-            return bestMatch;
-
         }
+
+        public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
+        {
+            int m = needle.Length;
+            int n = haystack.Length;
+
+            int[] badChar = new int[256];
+
+            BadCharHeuristic(needle, m, ref badChar);
+
+            int s = 0;
+            while (s <= (n - m))
+            {
+                int j = m - 1;
+
+                while (j >= 0 && needle[j] == haystack[s + j])
+                    --j;
+
+                if (j < 0) return s;
+                else s += Math.Max(1, j - badChar[haystack[s + j]]);
+            }
+
+            return -1;
+        }
+        private static void BadCharHeuristic(byte[] input, int size, ref int[] badChar)
+        {
+            int i;
+
+            for (i = 0; i < 256; i++)
+                badChar[i] = -1;
+
+            for (i = 0; i < size; i++)
+                badChar[input[i]] = i;
+        }
+
+        /*public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
+        {
+            fixed (byte* numPtr1 = haystack)
+            fixed (byte* numPtr2 = needle)
+            {
+                long num = 0;
+                byte* numPtr3 = numPtr1;
+                for (byte* numPtr4 = numPtr1 + haystack.Length; numPtr3 < numPtr4; ++numPtr3)
+                {
+                    bool flag = true;
+                    byte* numPtr5 = numPtr3;
+                    byte* numPtr6 = numPtr2;
+                    byte* numPtr7 = numPtr2 + needle.Length;
+                    while (flag && numPtr6 < numPtr7)
+                    {
+                        flag = (int)*numPtr6 == (int)*numPtr5;
+                        ++numPtr6;
+                        ++numPtr5;
+                    }
+                    if (flag)
+                        return num;
+                    ++num;
+                }
+                return -1;
+            }
+        }*/
     }
 }

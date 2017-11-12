@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace archive_level5.PCK
 {
@@ -18,7 +18,7 @@ namespace archive_level5.PCK
         public string About => "This is the PCK archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 using ext_director.Properties;
-using Kuriimu.Kontract;
+using Kontract.Interface;
 
 namespace ext_director
 {

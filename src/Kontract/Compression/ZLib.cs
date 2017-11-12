@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Kuriimu.IO;
+using Kontract.IO;
 
-namespace Kuriimu.Compression
+namespace Kontract.Compression
 {
     public class ZLib
     {
