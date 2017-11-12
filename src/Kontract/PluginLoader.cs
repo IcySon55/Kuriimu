@@ -1,11 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Kontract.Interface;
+using System.Linq;
 
 namespace Kontract
 {
+    public class PluginLoaderMEF
+    {
+        [ImportMany(typeof(IImageAdapter))]
+        public List<IImageAdapter> _images;
+
+        [ImportMany(typeof(IArchiveManager))]
+        public List<IArchiveManager> _archives;
+
+        public void LoadPlugins(string pluginPath, string filter = "*.dll")
+        {
+            var catalog = new DirectoryCatalog(pluginPath);
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+    }
+
     public static class PluginLoader<T>
     {
         public static IEnumerable<T> LoadPlugins(string pluginPath, string filter = "*.dll")
