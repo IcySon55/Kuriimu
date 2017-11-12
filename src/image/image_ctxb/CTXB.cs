@@ -38,7 +38,7 @@ namespace image_ctxb
                         {
                             Width = chunks[i].textures[j].width,
                             Height = chunks[i].textures[j].height,
-                            Format = Support.Format[chunks[i].textures[j].imageFormat],
+                            Format = Support.Format[(uint)((chunks[i].textures[j].dataType << 16) | chunks[i].textures[j].imageFormat)],
                             Swizzle = new CTRSwizzle(chunks[i].textures[j].width, chunks[i].textures[j].height)
                         };
 
