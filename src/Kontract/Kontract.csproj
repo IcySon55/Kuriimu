@@ -61,6 +61,7 @@
     <Compile Include="AES\BigEndian.cs" />
     <Compile Include="AES\CTRKeyScrambler.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Compression\CompressionMEF.cs" />
     <Compile Include="Compression\Level5.cs" />
     <Compile Include="Compression\GZip.cs" />
     <Compile Include="Compression\Huffman.cs" />
@@ -112,11 +113,11 @@
     <Compile Include="Image\Swizzle\Nitro.cs" />
     <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
+    <Compile Include="Interface\ICompression.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
-    <Compile Include="Interface\Image\IImageFormat.cs" />
-    <Compile Include="Interface\Image\IImageSwizzle.cs" />
+    <Compile Include="Interface\IImageKomponent.cs" />
     <Compile Include="Interface\IFilePlugin.cs" />
     <Compile Include="Interface\ITextAdapter.cs" />
     <Compile Include="IO\BinaryReaderX.cs" />

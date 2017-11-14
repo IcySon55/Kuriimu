@@ -4,15 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using System.Drawing;
 
 namespace Kontract.Interface
 {
-    public interface IImageSwizzle
+    public interface ICompression
     {
-        int Width { get; }
-        int Height { get; }
-
-        Point Get(Point point);
+        byte[] Compress(Stream input);
+        byte[] Decompress(Stream input);
     }
 }
