@@ -138,17 +138,17 @@
     <Compile Include="UI\Compression.cs" />
     <Compile Include="UI\Encryption.cs" />
     <Compile Include="UI\Hash.cs" />
-    <Compile Include="IO\InputBox.cs">
+    <Compile Include="InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IO\InputBox.Designer.cs">
+    <Compile Include="InputBox.Designer.cs">
       <DependentUpon>InputBox.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Win32.cs" />
     <Compile Include="ValueTuple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="IO\InputBox.resx">
+    <EmbeddedResource Include="InputBox.resx">
       <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

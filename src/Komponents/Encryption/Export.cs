@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Kontract;
 using Kontract.IO;
 using Kontract.Interface;
 
