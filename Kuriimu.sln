@@ -323,6 +323,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Image", "src\Komponents\Ima
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compression", "src\Komponents\Compression\Compression.csproj", "{E90E3959-7A5F-4B45-8931-A3D5EB9332D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hash", "src\Komponents\Hash\Hash.csproj", "{5E58C25E-7520-4BE2-849C-559BF511FA04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -757,6 +759,10 @@ Global
 		{E90E3959-7A5F-4B45-8931-A3D5EB9332D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E90E3959-7A5F-4B45-8931-A3D5EB9332D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E90E3959-7A5F-4B45-8931-A3D5EB9332D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E58C25E-7520-4BE2-849C-559BF511FA04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E58C25E-7520-4BE2-849C-559BF511FA04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E58C25E-7520-4BE2-849C-559BF511FA04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E58C25E-7520-4BE2-849C-559BF511FA04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -861,6 +867,7 @@ Global
 		{9CE7D988-FE3D-447E-9B0E-18587FC384D7} = {FA7A6EB6-4E0C-4E59-B024-6E8E94A2117C}
 		{B0ABA8A9-3202-4D00-9608-5E8371A30E36} = {401608BA-CB83-4EF0-BF0A-180DE01F0942}
 		{E90E3959-7A5F-4B45-8931-A3D5EB9332D3} = {401608BA-CB83-4EF0-BF0A-180DE01F0942}
+		{5E58C25E-7520-4BE2-849C-559BF511FA04} = {401608BA-CB83-4EF0-BF0A-180DE01F0942}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED651E5D-29BA-4588-933B-F512BBB01EE3}
