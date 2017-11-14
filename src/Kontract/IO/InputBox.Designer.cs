@@ -1,4 +1,4 @@
-﻿namespace Kontract
+﻿namespace Kontract.IO
 {
     partial class InputBox
     {

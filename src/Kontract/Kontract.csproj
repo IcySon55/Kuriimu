@@ -113,6 +113,7 @@
     <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\ICompression.cs" />
+    <Compile Include="Interface\IEncryption.cs" />
     <Compile Include="Interface\IHash.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
@@ -137,17 +138,17 @@
     <Compile Include="UI\Compression.cs" />
     <Compile Include="UI\Encryption.cs" />
     <Compile Include="UI\Hash.cs" />
-    <Compile Include="UI\InputBox.cs">
+    <Compile Include="IO\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\InputBox.Designer.cs">
+    <Compile Include="IO\InputBox.Designer.cs">
       <DependentUpon>InputBox.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Win32.cs" />
     <Compile Include="ValueTuple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="UI\InputBox.resx">
+    <EmbeddedResource Include="IO\InputBox.resx">
       <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
