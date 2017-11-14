@@ -10,6 +10,11 @@ namespace Kontract.Interface
     public interface ICompression
     {
         byte[] Compress(Stream input);
-        byte[] Decompress(Stream input);
+        byte[] Decompress(Stream input, long decompSize);
+    }
+
+    public interface ICompressionCollection : ICompression
+    {
+        void SetMethod(byte Method);
     }
 }

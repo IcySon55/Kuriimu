@@ -61,7 +61,6 @@
     <Compile Include="AES\BigEndian.cs" />
     <Compile Include="AES\CTRKeyScrambler.cs" />
     <Compile Include="Common.cs" />
-    <Compile Include="Compression\CompressionMEF.cs" />
     <Compile Include="Compression\Level5.cs" />
     <Compile Include="Compression\GZip.cs" />
     <Compile Include="Compression\Huffman.cs" />
