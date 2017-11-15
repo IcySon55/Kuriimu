@@ -10,8 +10,14 @@ using Kontract.Interface;
 namespace Compression
 {
     [Export("LZOvl", typeof(ICompression))]
-    public class LZOvl
+    [Export(typeof(ICompression))]
+    public class LZOvl : ICompression
     {
+        public string Name { get; } = "LZOvl";
+
+        public string TabPathCompress { get; } = "";
+        public string TabPathDecompress { get; } = "";
+
         public byte[] Decompress(Stream input, long decompSize = 0)
         {
             return null;

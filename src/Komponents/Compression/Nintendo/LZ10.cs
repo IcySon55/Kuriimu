@@ -9,8 +9,14 @@ using Kontract.Interface;
 namespace Compression
 {
     [Export("LZ10", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class LZ10 : ICompression
     {
+        public string Name { get; } = "LZ10";
+
+        public string TabPathCompress { get; } = "Nintendo/LZ10";
+        public string TabPathDecompress { get; } = "Nintendo/LZ10";
+
         public byte[] Decompress(Stream instream, long decompSize = 0)
         {
             #region format definition from GBATEK/NDSTEK

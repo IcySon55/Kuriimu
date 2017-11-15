@@ -7,8 +7,14 @@ using Kontract.Interface;
 namespace Compression
 {
     [Export("LZ11", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class LZ11 : ICompression
     {
+        public string Name { get; } = "LZ11";
+
+        public string TabPathCompress { get; } = "Nintendo/LZ11";
+        public string TabPathDecompress { get; } = "Nintendo/LZ11";
+
         public byte[] Decompress(Stream stream, long decompSize = 0)
         {
             using (BinaryReaderX br = new BinaryReaderX(stream, true))

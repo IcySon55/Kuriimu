@@ -21,17 +21,29 @@ using System.Collections;
 namespace Compression
 {
     [Export("MIO0LE", typeof(ICompression))]
-    public class MIO0LE
+    [Export(typeof(ICompression))]
+    public class MIO0LE : ICompression
     {
+        public string Name { get; } = "MIO0LE";
+
+        public string TabPathCompress { get; } = "Nintendo/MIO0/LE";
+        public string TabPathDecompress { get; } = "Nintendo/MIO0/LE";
+
         public byte[] Compress(Stream input) => MIO0.Compress(input, ByteOrder.LittleEndian);
-        public byte[] Decompress(Stream input) => MIO0.Decompress(input, ByteOrder.LittleEndian);
+        public byte[] Decompress(Stream input, long decompSize = 0) => MIO0.Decompress(input, ByteOrder.LittleEndian);
     }
 
     [Export("MIO0BE", typeof(ICompression))]
-    public class MIO0BE
+    [Export(typeof(ICompression))]
+    public class MIO0BE : ICompression
     {
+        public string Name { get; } = "MIO0BE";
+
+        public string TabPathCompress { get; } = "Nintendo/MIO0/BE";
+        public string TabPathDecompress { get; } = "Nintendo/MIO0/BE";
+
         public byte[] Compress(Stream input) => MIO0.Compress(input, ByteOrder.BigEndian);
-        public byte[] Decompress(Stream input) => MIO0.Decompress(input, ByteOrder.BigEndian);
+        public byte[] Decompress(Stream input, long decompSize = 0) => MIO0.Decompress(input, ByteOrder.BigEndian);
     }
 
     public class MIO0

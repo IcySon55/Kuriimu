@@ -9,6 +9,11 @@ namespace Kontract.Interface
 {
     public interface ICompression
     {
+        string Name { get; }
+
+        string TabPathCompress { get; }
+        string TabPathDecompress { get; }
+
         byte[] Compress(Stream input);
         byte[] Decompress(Stream input, long decompSize);
     }

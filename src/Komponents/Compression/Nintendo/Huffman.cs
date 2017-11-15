@@ -9,24 +9,42 @@ using Kontract.IO;
 namespace Compression
 {
     [Export("Huff4LE", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class Huff4LE : ICompression
     {
+        public string Name { get; } = "Huff4LE";
+
+        public string TabPathCompress { get; } = "Nintendo/Huffman/4 Bit/LE";
+        public string TabPathDecompress { get; } = "Nintendo/Huffman/4 Bit/LE";
+
         public byte[] Compress(Stream input) => Huffman.Compress(input, 4, ByteOrder.LittleEndian);
 
         public byte[] Decompress(Stream input, long decompSize = 0) => Huffman.Decompress(input, 4, decompSize, ByteOrder.LittleEndian);
     }
 
     [Export("Huff4BE", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class Huff4BE : ICompression
     {
+        public string Name { get; } = "Huff4BE";
+
+        public string TabPathCompress { get; } = "Nintendo/Huffman/4 Bit/BE";
+        public string TabPathDecompress { get; } = "Nintendo/Huffman/4 Bit/BE";
+
         public byte[] Compress(Stream input) => Huffman.Compress(input, 4, ByteOrder.BigEndian);
 
         public byte[] Decompress(Stream input, long decompSize = 0) => Huffman.Decompress(input, 4, decompSize, ByteOrder.BigEndian);
     }
 
     [Export("Huff8", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class Huff8 : ICompression
     {
+        public string Name { get; } = "Huff8";
+
+        public string TabPathCompress { get; } = "Nintendo/Huffman/8 Bit";
+        public string TabPathDecompress { get; } = "Nintendo/Huffman/8 Bit";
+
         public byte[] Compress(Stream input) => Huffman.Compress(input, 8);
 
         public byte[] Decompress(Stream input, long decompSize = 0) => Huffman.Decompress(input, 8, decompSize);

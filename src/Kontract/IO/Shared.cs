@@ -47,7 +47,7 @@ namespace Kontract.IO
         }
     }
 
-    [DebuggerDisplay("{(string)this}")]
+    /*[DebuggerDisplay("{(string)this}")]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Magic
     {
@@ -62,5 +62,5 @@ namespace Kontract.IO
     {
         long value;
         public static implicit operator string(Magic8 magic) => Encoding.ASCII.GetString(BitConverter.GetBytes(magic.value));
-    }
+    }*/
 }

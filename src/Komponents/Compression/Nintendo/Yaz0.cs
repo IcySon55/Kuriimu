@@ -20,17 +20,29 @@ using Kontract.Interface;
 namespace Compression
 {
     [Export("Yaz0LE", typeof(ICompression))]
-    public class Yaz0LE
+    [Export(typeof(ICompression))]
+    public class Yaz0LE : ICompression
     {
+        public string Name { get; } = "Yaz0LE";
+
+        public string TabPathCompress { get; } = "Nintendo/Yaz0/LE";
+        public string TabPathDecompress { get; } = "Nintendo/Yaz0/LE";
+
         public byte[] Compress(Stream input) => Yaz0.Compress(input, ByteOrder.LittleEndian);
-        public byte[] Decompress(Stream input) => Yaz0.Decompress(input, ByteOrder.LittleEndian);
+        public byte[] Decompress(Stream input, long decompSize = 0) => Yaz0.Decompress(input, ByteOrder.LittleEndian);
     }
 
     [Export("Yaz0BE", typeof(ICompression))]
-    public class Yaz0BE
+    [Export(typeof(ICompression))]
+    public class Yaz0BE : ICompression
     {
+        public string Name { get; } = "Yaz0BE";
+
+        public string TabPathCompress { get; } = "Nintendo/Yaz0/BE";
+        public string TabPathDecompress { get; } = "Nintendo/Yaz0/BE";
+
         public byte[] Compress(Stream input) => Yaz0.Compress(input, ByteOrder.BigEndian);
-        public byte[] Decompress(Stream input) => Yaz0.Decompress(input, ByteOrder.BigEndian);
+        public byte[] Decompress(Stream input, long decompSize = 0) => Yaz0.Decompress(input, ByteOrder.BigEndian);
     }
 
     public class Yaz0

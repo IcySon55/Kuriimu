@@ -9,8 +9,14 @@ using System.Linq;
 namespace Compression
 {
     [Export("Level5", typeof(ICompressionCollection))]
+    [Export(typeof(ICompressionCollection))]
     public class Level5 : ICompressionCollection
     {
+        public string Name { get; } = "Level5 Compression";
+
+        public string TabPathCompress { get; } = "";
+        public string TabPathDecompress { get; } = "Custom/Level 5";
+
         public enum Method
         {
             NoCompression = 0,

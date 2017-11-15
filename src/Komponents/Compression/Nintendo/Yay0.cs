@@ -21,17 +21,29 @@ using System.Collections;
 namespace Compression
 {
     [Export("Yay0LE", typeof(ICompression))]
-    public class Yay0LE
+    [Export(typeof(ICompression))]
+    public class Yay0LE : ICompression
     {
+        public string Name { get; } = "Yay0LE";
+
+        public string TabPathCompress { get; } = "Nintendo/Yay0/LE";
+        public string TabPathDecompress { get; } = "Nintendo/Yay0/LE";
+
         public byte[] Compress(Stream input) => Yay0.Compress(input, ByteOrder.LittleEndian);
-        public byte[] Decompress(Stream input) => Yay0.Decompress(input, ByteOrder.LittleEndian);
+        public byte[] Decompress(Stream input, long decompSize = 0) => Yay0.Decompress(input, ByteOrder.LittleEndian);
     }
 
     [Export("Yay0BE", typeof(ICompression))]
-    public class Yay0BE
+    [Export(typeof(ICompression))]
+    public class Yay0BE : ICompression
     {
+        public string Name { get; } = "Yay0BE";
+
+        public string TabPathCompress { get; } = "Nintendo/Yay0/BE";
+        public string TabPathDecompress { get; } = "Nintendo/Yay0/BE";
+
         public byte[] Compress(Stream input) => Yay0.Compress(input, ByteOrder.BigEndian);
-        public byte[] Decompress(Stream input) => Yay0.Decompress(input, ByteOrder.BigEndian);
+        public byte[] Decompress(Stream input, long decompSize = 0) => Yay0.Decompress(input, ByteOrder.BigEndian);
     }
 
     public class Yay0

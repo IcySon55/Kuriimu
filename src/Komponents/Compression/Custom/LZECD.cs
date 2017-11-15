@@ -12,8 +12,14 @@ using System.Collections;
 namespace Compression
 {
     [Export("LZECD", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class LZECD : ICompression
     {
+        public string Name { get; } = "LZECD";
+
+        public string TabPathCompress { get; } = "";
+        public string TabPathDecompress { get; } = "Custom/LZECD";
+
         public byte[] Decompress(Stream input, long decompSize = 0)
         {
             using (var br = new BinaryReaderX(input))

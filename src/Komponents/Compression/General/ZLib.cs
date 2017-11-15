@@ -9,8 +9,14 @@ using Kontract.Interface;
 namespace Compression
 {
     [Export("ZLib", typeof(ICompression))]
+    [Export(typeof(ICompression))]
     public class ZLib : ICompression
     {
+        public string Name { get; } = "ZLib";
+
+        public string TabPathCompress { get; } = "General/ZLib";
+        public string TabPathDecompress { get; } = "General/ZLib";
+
         public byte[] Compress(Stream instream)
         {
             var inData = new BinaryReaderX(instream, true).ReadBytes((int)instream.Length);

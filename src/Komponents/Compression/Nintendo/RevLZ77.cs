@@ -1,13 +1,22 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
 using Kontract.IO;
+using Kontract.Interface;
 using System.IO;
 
-namespace Kontract.Compression
+namespace Compression
 {
-    public sealed class RevLZ77
+    [Export("RevLZ77", typeof(ICompression))]
+    [Export(typeof(ICompression))]
+    public sealed class RevLZ77 : ICompression
     {
+        public string Name { get; } = "RevLZ77";
+
+        public string TabPathCompress { get; } = "Nintendo/RevLZ77";
+        public string TabPathDecompress { get; } = "Nintendo/RevLZ77";
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct CompFooter
         {
@@ -135,7 +144,7 @@ namespace Kontract.Compression
             }
         }
 
-        public static byte[] Decompress(Stream instream)
+        public byte[] Decompress(Stream instream, long decompSize = 0)
         {
             byte[] input = new BinaryReaderX(instream, true).ReadBytes((int)instream.Length);
 
@@ -176,7 +185,7 @@ namespace Kontract.Compression
             }
         }
 
-        public static byte[] Compress(Stream instream)
+        public byte[] Compress(Stream instream)
         {
             byte[] input = new BinaryReaderX(instream, true).ReadBytes((int)instream.Length);
 

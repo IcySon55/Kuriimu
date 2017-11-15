@@ -9,8 +9,14 @@ using Kontract.Interface;
 namespace Compression
 {
     [Export("Nintendo", typeof(ICompressionCollection))]
+    [Export(typeof(ICompressionCollection))]
     public class Nintendo : ICompressionCollection
     {
+        public string Name { get; } = "Nintendo Compression Header";
+
+        public string TabPathCompress { get; } = "";
+        public string TabPathDecompress { get; } = "Nintendo/Generic Header";
+
         public enum Method : byte
         {
             LZ10 = 0x10,
