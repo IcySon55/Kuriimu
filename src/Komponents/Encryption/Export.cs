@@ -12,8 +12,14 @@ using Kontract.Interface;
 namespace Encryption
 {
     [Export("BlowFishCBC", typeof(IEncryption))]
+    [Export(typeof(IEncryption))]
     public class BlowFishCBC : IEncryption
     {
+        public string Name { get; } = "BlowFish CBC";
+
+        public string TabPathEncrypt { get; } = "General/BlowFish/CBC";
+        public string TabPathDecrypt { get; } = "General/BlowFish/CBC";
+
         public byte[] Decrypt(Stream input)
         {
             var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish_CBC");
@@ -42,8 +48,14 @@ namespace Encryption
     }
 
     [Export("BlowFishECB", typeof(IEncryption))]
+    [Export(typeof(IEncryption))]
     public class BlowFishECB : IEncryption
     {
+        public string Name { get; } = "BlowFish ECB";
+
+        public string TabPathEncrypt { get; } = "General/BlowFish/ECB";
+        public string TabPathDecrypt { get; } = "General/BlowFish/ECB";
+
         public byte[] Decrypt(Stream input)
         {
             var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish_ECB");
@@ -71,8 +83,14 @@ namespace Encryption
     }
 
     [Export("MTFramework", typeof(IEncryption))]
+    [Export(typeof(IEncryption))]
     public class MTFrameworkEncryption : IEncryption
     {
+        public string Name { get; } = "MT Framework Encryption";
+
+        public string TabPathEncrypt { get; } = "Custom/MT Framework";
+        public string TabPathDecrypt { get; } = "Custom/MT Framework";
+
         public byte[] Decrypt(Stream input)
         {
             var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTFramework");
@@ -101,8 +119,14 @@ namespace Encryption
     }
 
     [Export("CTR_3DS", typeof(IEncryption))]
+    [Export(typeof(IEncryption))]
     public class CTR3DS : IEncryption
     {
+        public string Name { get; } = "Cardridge Encryption";
+
+        public string TabPathEncrypt { get; } = "3DS/.3ds";
+        public string TabPathDecrypt { get; } = "3DS/.3ds";
+
         public byte[] Decrypt(Stream input)
         {
             var engine = new CTR.AesEngine();
@@ -124,8 +148,14 @@ namespace Encryption
     }
 
     [Export("CTR_CIA", typeof(IEncryption))]
+    [Export(typeof(IEncryption))]
     public class CTRCIA : IEncryption
     {
+        public string Name { get; } = "CIA Encryption";
+
+        public string TabPathEncrypt { get; } = "3DS/.cia";
+        public string TabPathDecrypt { get; } = "3DS/.cia";
+
         public byte[] Decrypt(Stream input)
         {
             var engine = new CTR.AesEngine();

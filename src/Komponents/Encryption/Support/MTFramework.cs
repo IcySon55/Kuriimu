@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Kontract.IO;
+using Kontract;
 
 /*Dual Destinies Android:
     key1: imaguy_uyrag_igurustim_

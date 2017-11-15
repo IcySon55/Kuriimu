@@ -1,119 +1,109 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kontract.CTR;
-using Kontract.Encryption;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.Collections.Generic;
+using System.Linq;
 using Kontract.IO;
-using Kontract;
+using Kontract.Interface;
 
 namespace Kontract.UI
 {
+    class EncryptionLoad
+    {
+        [ImportMany(typeof(IEncryption))]
+        public List<IEncryption> encryptions;
+
+        public EncryptionLoad()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+    }
+
     public static class EncryptionTools
     {
+        static ToolStripMenuItem AddEncryptionTab(ToolStripMenuItem encryptTab, IEncryption encryption, bool encTab = true, int count = 0)
+        {
+            if (encTab)
+            {
+                if (encryption.TabPathEncrypt == "") return encryptTab;
+            }
+            else
+            {
+                if (encryption.TabPathDecrypt == "") return encryptTab;
+            }
+
+            string[] parts = encTab ? encryption.TabPathEncrypt.Split('/') : encryption.TabPathDecrypt.Split('/');
+
+            if (count == parts.Length - 1)
+            {
+                encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Encrypt));
+                encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Tag = encryption;
+                if (encryption.TabPathEncrypt.Contains(',')) encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Name = encryption.TabPathEncrypt.Split(',')[1];
+            }
+            else
+            {
+                ToolStripItem duplicate = null;
+                for (int i = 0; i < encryptTab.DropDownItems.Count; i++)
+                {
+                    if (encryptTab.DropDownItems[i].Text == parts[count])
+                    {
+                        duplicate = encryptTab.DropDownItems[i];
+                        break;
+                    }
+                }
+                if (duplicate != null)
+                {
+                    AddEncryptionTab((ToolStripMenuItem)duplicate, encryption, encTab, count + 1);
+                }
+                else
+                {
+                    encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null));
+                    AddEncryptionTab((ToolStripMenuItem)encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1], encryption, encTab, count + 1);
+                }
+            }
+
+            return encryptTab;
+        }
+
         public static void LoadEncryptionTools(ToolStripMenuItem tsb)
         {
-            ToolStripMenuItem tsb2;
-            ToolStripMenuItem tsb3;
-            ToolStripMenuItem tsb4;
             tsb.DropDownItems.Clear();
 
-            //General
-            tsb.DropDownItems.Add(new ToolStripMenuItem("General", null));
-            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Blowfish", null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("CBC", null));
-            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[0];
-            tsb4.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
-            tsb4.DropDownItems[0].Tag = Types.BlowFishCBC;
-            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
-            tsb4.DropDownItems[1].Tag = Types.BlowFishCBC;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("EBC", null));
-            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[1];
-            tsb4.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
-            tsb4.DropDownItems[0].Tag = Types.BlowFishECB;
-            tsb4.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
-            tsb4.DropDownItems[1].Tag = Types.BlowFishECB;
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null));
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null));
 
-            // 3DS
-            tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
-            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[1];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
-            tsb3.DropDownItems[0].Tag = Types.Normal;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
-            tsb3.DropDownItems[1].Tag = Types.CIA;
-            /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
-            tsb3.DropDownItems[2].Tag = Types.BOSS;*/
+            var encryptTab = (ToolStripMenuItem)tsb.DropDownItems[0];
+            var decryptTab = (ToolStripMenuItem)tsb.DropDownItems[1];
 
-            //Mobile
-            tsb.DropDownItems.Add(new ToolStripMenuItem("Mobile", null));
-            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[2];
-            tsb2.DropDownItems.Add(new ToolStripMenuItem("MT Framework", null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Encrypt", null, Encrypt));
-            tsb3.DropDownItems[0].Tag = Types.MTMobile;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
-            tsb3.DropDownItems[1].Tag = Types.MTMobile;
+            var loadedEncs = new EncryptionLoad();
+            var encryptions = loadedEncs.encryptions;
+
+            //Adding single compressions
+            for (int i = 0; i < encryptions.Count; i++)
+            {
+                encryptTab = AddEncryptionTab(encryptTab, encryptions[i]);
+                decryptTab = AddEncryptionTab(decryptTab, encryptions[i], false);
+            }
         }
 
         public static void Decrypt(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            var name = (tsi.Tag.ToString() == "normal") ? "3DS" : tsi.Tag.ToString();
+            var tag = (IEncryption)tsi.Tag;
 
-            if (!Shared.PrepareFiles("Open an encrypted " + name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
+            if (!Shared.PrepareFiles("Open an encrypted " + tag.Name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
 
             try
             {
-                using (var openBr = new BinaryReaderX(openFile))
+                using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                {
-                    switch (tsi.Tag)
-                    {
-                        case Types.BlowFishCBC:
-                            var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
+                    outFs.Write(tag.Decrypt(openFile));
 
-                            if (key == String.Empty) throw new Exception("Key can't be empty!");
-                            var bf = new BlowFish(key);
-                            outFs.Write(bf.Decrypt_CBC(openBr.ReadAllBytes()));
-                            break;
-                        case Types.BlowFishECB:
-                            key = InputBox.Show("Input decryption key:", "Decrypt Blowfish");
-
-                            if (key == String.Empty) throw new Exception("Key can't be empty!");
-                            bf = new BlowFish(key);
-                            outFs.Write(bf.Decrypt_ECB(openBr.ReadAllBytes()));
-                            break;
-                        case Types.MTMobile:
-                            var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTMobile");
-                            var key2 = InputBox.Show("Input 2nd decryption key:", "Decrypt MTMobile");
-
-                            if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
-                            outFs.Write(MTFramework.Decrypt(openBr.BaseStream, key1, key2));
-                            break;
-                        case Types.Normal:
-                            var engine = new AesEngine();
-                            openBr.BaseStream.CopyTo(outFs.BaseStream);
-                            openBr.BaseStream.Position = 0;
-                            outFs.BaseStream.Position = 0;
-                            engine.DecryptGameNCSD(openBr.BaseStream, outFs.BaseStream);
-                            break;
-                        case Types.CIA:
-                            engine = new AesEngine();
-                            openBr.BaseStream.CopyTo(outFs.BaseStream);
-                            openBr.BaseStream.Position = 0;
-                            outFs.BaseStream.Position = 0;
-                            engine.DecryptCIA(openBr.BaseStream, outFs.BaseStream);
-                            break;
-                            /*case Types.BOSS:
-                                outFs.Write(engine.DecryptBOSS(openBr.ReadBytes((int)openBr.BaseStream.Length)));
-                                break;*/
-                    }
-                }
-
-                MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -125,37 +115,15 @@ namespace Kontract.UI
         public static void Encrypt(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
+            var tag = (IEncryption)tsi.Tag;
 
-            if (!Shared.PrepareFiles("Open a decrypted " + tsi?.Tag + " file...", "Save your encrypted file...", ".dec", out var openFile, out var saveFile, true)) return;
+            if (!Shared.PrepareFiles("Open a decrypted " + tag.Name + " file...", "Save your encrypted file...", ".enc", out var openFile, out var saveFile, true)) return;
 
             try
             {
-                using (var openFs = new BinaryReaderX(openFile))
+                using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    switch (tsi?.Tag)
-                    {
-                        case Types.BlowFishCBC:
-                            var key = InputBox.Show("Input encryption key:", "Encrypt Blowfish");
-
-                            if (key == String.Empty) throw new Exception("Key can't be empty!");
-                            var bf = new BlowFish(key);
-                            outFs.Write(bf.Encrypt_CBC(openFs.ReadAllBytes()));
-                            break;
-                        case Types.BlowFishECB:
-                            key = InputBox.Show("Input encryption key:", "Encrypt Blowfish");
-
-                            if (key == String.Empty) throw new Exception("Key can't be empty!");
-                            bf = new BlowFish(key);
-                            outFs.Write(bf.Encrypt_ECB(openFs.ReadAllBytes()));
-                            break;
-                        case Types.MTMobile:
-                            var key1 = InputBox.Show("Input 1st encryption key:", "Encrypt MTMobile");
-                            var key2 = InputBox.Show("Input 2nd encryption key:", "Encrypt MTMobile");
-
-                            if (key1 == String.Empty || key2 == String.Empty) throw new Exception("Keys can't be empty!");
-                            outFs.Write(MTFramework.Encrypt(openFs.BaseStream, key1, key2));
-                            break;
-                    }
+                    outFs.Write(tag.Encrypt(openFile));
 
                 MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -164,16 +132,6 @@ namespace Kontract.UI
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 File.Delete(saveFile.Name);
             }
-        }
-
-        public enum Types
-        {
-            Normal,
-            CIA,
-            BOSS,
-            BlowFishCBC,
-            BlowFishECB,
-            MTMobile
         }
     }
 }
