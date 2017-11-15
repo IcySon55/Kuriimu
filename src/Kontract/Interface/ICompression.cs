@@ -20,6 +20,9 @@ namespace Kontract.Interface
 
     public interface ICompressionCollection : ICompression
     {
+        new string TabPathCompress { get; set; }
+        new string TabPathDecompress { get; set; }
+
         void SetMethod(byte Method);
     }
 }

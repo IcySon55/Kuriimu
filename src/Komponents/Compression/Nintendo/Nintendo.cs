@@ -14,8 +14,9 @@ namespace Compression
     {
         public string Name { get; } = "Nintendo Compression Header";
 
-        public string TabPathCompress { get; } = "";
-        public string TabPathDecompress { get; } = "Nintendo/Generic Header";
+        public string TabPathCompress { get; set; } = "Nintendo/Generic Header/LZ10,16;Nintendo/Generic Header/LZ11,17;Nintendo/Generic Header/Huffman/4 Bit,36;" +
+            "Nintendo/Generic Header/Huffman/8 Bit,40;Nintendo/Generic Header/RLE,48;Nintendo/Generic Header/LZ60,96";
+        public string TabPathDecompress { get; set; } = "Nintendo/Generic Header";
 
         public enum Method : byte
         {

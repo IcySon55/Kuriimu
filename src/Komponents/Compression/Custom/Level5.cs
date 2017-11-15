@@ -14,8 +14,9 @@ namespace Compression
     {
         public string Name { get; } = "Level5 Compression";
 
-        public string TabPathCompress { get; } = "";
-        public string TabPathDecompress { get; } = "Custom/Level 5";
+        public string TabPathCompress { get; set; } = "Custom/Level 5/Compressionless,0;Custom/Level 5/LZ10,1;" +
+            "Custom/Level 5/Huffman/4 Bit,2;Custom/Level 5/Huffman/8 Bit,3;Custom/Level 5/RLE,4";
+        public string TabPathDecompress { get; set; } = "Custom/Level 5";
 
         public enum Method
         {
