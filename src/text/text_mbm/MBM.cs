@@ -54,12 +54,11 @@ namespace text_mbm
                 while (count < header.entryCount)
                 {
                     var entry = br.ReadStruct<MBMEntry>();
+                    entries.Add(entry);
                     if (entry.stringOffset != 0)
-                    {
-                        entries.Add(entry);
                         count++;
-                    }
                 }
+
                 
                 foreach (var entry in entries)
                 {
@@ -94,8 +93,11 @@ namespace text_mbm
                 for (var i = 0; i < header.entryCount; i++)
                 {
                     var bytes = ConvertStringToBytes(Labels[i].Text);
-                    entries[i].stringSize = bytes.Length + 2;
-                    entries[i].stringOffset = (int)bw.BaseStream.Position;
+                    if (entries[i].stringOffset != 0)
+                    {
+                        entries[i].stringSize = bytes.Length + 2;
+                        entries[i].stringOffset = (int)bw.BaseStream.Position;
+                    }
                     bw.Write(bytes);
                     bw.Write((byte)0xFF);
                     bw.Write((byte)0xFF);

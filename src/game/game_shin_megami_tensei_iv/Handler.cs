@@ -28,16 +28,14 @@ namespace game_shin_megami_tensei_iv
         Dictionary<string, string> _pairs = new Dictionary<string, string>
         {
             // Control
-            ["\uD407"] = "<unk1>",
-            ["\uD507"] = "<unk2>",
+            ["<D407>"] = "<unk1>",
+            ["<D507>"] = "<unk2>",
 
-            ["\uE903"] = "<unk4>",
+            ["<E903>"] = "<unk4>",
 
-            ["\uF801"] = "\n",
-            ["\uF812"] = "<name>",
-            ["\uF813"] = "</name>",
-            ["\uF87A"] = "<unk3>",
-            ["\uE5E3"] = "<playername>",
+            ["<F801>"] = "\n",
+            ["<F87A>"] = "<unk3>",
+            ["<E5E3>"] = "<playername>",
             //Spanish localization
             ["\u30F3"] = "ñ", //ン
             ["\u30D9"] = "ä", //ベ
@@ -64,9 +62,9 @@ namespace game_shin_megami_tensei_iv
             ["\u30D7"] = "¿", //プ
             //End of spanish localization
 
-            ["\u0000"] = "<?>",
-            ["\u7000"] = "<7000>",
-            ["\u1400"] = "<1400>"
+            ["\u0000"] = "",
+            ["<7000>"] = "<7000>",
+            ["<1400>"] = "<1400>"
         };
 
         static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(Resources.MainFont)));
