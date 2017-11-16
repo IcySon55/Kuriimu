@@ -22,6 +22,17 @@ namespace Kontract
             return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
         }
 
+        public static string LoadFilters(IEnumerable<IFilePluginMetadata> plugins)
+        {
+            var alltypes = plugins.Select(x => new { x.Description, Extension = x.Extension.ToLower() }).OrderBy(o => o.Description).ToList();
+
+            // Add two special cases at start and end
+            if (alltypes.Count > 0) alltypes.Insert(0, new { Description = "All Supported Files", Extension = string.Join(";", alltypes.Select(x => x.Extension).Distinct()) });
+            alltypes.Add(new { Description = "All Files", Extension = "*.*" });
+
+            return string.Join("|", alltypes.Select(x => $"{x.Description} ({x.Extension})|{x.Extension}"));
+        }
+
         public static List<IGameHandler> LoadGameHandlers(string pluginPath, ToolStripDropDownButton tsb, System.Drawing.Image noGameIcon, EventHandler selectedIndexChanged)
         {
             tsb.DropDownItems.Clear();

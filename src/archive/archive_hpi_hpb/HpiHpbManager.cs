@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
@@ -6,18 +7,14 @@ using Kontract.IO;
 
 namespace archive_hpi_hpb
 {
+    [FilePluginMetadata(Name = "HPIHPB", Description = "Archive format used in Atlus games", Extension = "*.hpi", Author = "onepiecefreak",
+        About = "This is the HPI/HPB archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class HpiHpbManager : IArchiveManager
     {
         private HPIHPB _hpihpb = null;
 
         #region Properties
-
-        // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Atlus Archive (Etrian Odyssey Series)";
-        public string Extension => "*.hpi";
-        public string About => "This is the HPI/HPB archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,22 +22,26 @@ namespace archive_hpi_hpb
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
         public bool CanReplaceFiles => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var hpiFilename = filename;
             var hpbFilename = filename.Remove(filename.Length - 1) + "B";
 
-            if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return false;
+            if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return Identification.False;
 
-            using (var br = new BinaryReaderX(File.OpenRead(hpiFilename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return br.BaseStream.Length >= 4 && br.ReadString(4) == "HPIH";
+                if (br.BaseStream.Length >= 4 && br.ReadString(4) == "HPIH")
+                    return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -87,6 +88,11 @@ namespace archive_hpi_hpb
         public void Unload()
         {
             _hpihpb?.Close();
+        }
+
+        public void New()
+        {
+
         }
 
         // Files

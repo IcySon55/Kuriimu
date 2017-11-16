@@ -12,24 +12,25 @@ namespace Kontract.UI
 {
     public static class EncryptionTools
     {
-        static ToolStripMenuItem AddEncryptionTab(ToolStripMenuItem encryptTab, IEncryption encryption, bool encTab = true, int count = 0)
+        static ToolStripMenuItem AddEncryptionTab(ToolStripMenuItem encryptTab, Lazy<IEncryption, IEncryptionMetadata> encryption, bool encTab = true, int count = 0)
         {
             if (encTab)
             {
-                if (encryption.TabPathEncrypt == "") return encryptTab;
+                if (encryption.Metadata.TabPathEncrypt == "") return encryptTab;
             }
             else
             {
-                if (encryption.TabPathDecrypt == "") return encryptTab;
+                if (encryption.Metadata.TabPathDecrypt == "") return encryptTab;
             }
 
-            string[] parts = encTab ? encryption.TabPathEncrypt.Split('/') : encryption.TabPathDecrypt.Split('/');
+            string[] parts = encTab ? encryption.Metadata.TabPathEncrypt.Split('/') : encryption.Metadata.TabPathDecrypt.Split('/');
 
             if (count == parts.Length - 1)
             {
-                encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Encrypt));
+                if (encTab) encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Encrypt));
+                else encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decrypt));
                 encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Tag = encryption;
-                if (encryption.TabPathEncrypt.Contains(',')) encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Name = encryption.TabPathEncrypt.Split(',')[1];
+                if (encryption.Metadata.TabPathEncrypt.Contains(',')) encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Name = encryption.Metadata.TabPathEncrypt.Split(',')[1];
             }
             else
             {
@@ -56,7 +57,7 @@ namespace Kontract.UI
             return encryptTab;
         }
 
-        public static void LoadEncryptionTools(ToolStripMenuItem tsb, List<IEncryption> encryptions)
+        public static void LoadEncryptionTools(ToolStripMenuItem tsb, List<Lazy<IEncryption, IEncryptionMetadata>> encryptions)
         {
             tsb.DropDownItems.Clear();
 
@@ -77,15 +78,15 @@ namespace Kontract.UI
         public static void Decrypt(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            var tag = (IEncryption)tsi.Tag;
+            var tag = (Lazy<IEncryption, IEncryptionMetadata>)tsi.Tag;
 
-            if (!Shared.PrepareFiles("Open an encrypted " + tag.Name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
+            if (!Shared.PrepareFiles("Open an encrypted " + tag.Metadata.Name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
 
             try
             {
                 using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    outFs.Write(tag.Decrypt(openFile));
+                    outFs.Write(tag.Value.Decrypt(openFile));
 
                 MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -99,15 +100,15 @@ namespace Kontract.UI
         public static void Encrypt(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            var tag = (IEncryption)tsi.Tag;
+            var tag = (Lazy<IEncryption, IEncryptionMetadata>)tsi.Tag;
 
-            if (!Shared.PrepareFiles("Open a decrypted " + tag.Name + " file...", "Save your encrypted file...", ".enc", out var openFile, out var saveFile, true)) return;
+            if (!Shared.PrepareFiles("Open a decrypted " + tag.Metadata.Name + " file...", "Save your encrypted file...", ".enc", out var openFile, out var saveFile, true)) return;
 
             try
             {
                 using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    outFs.Write(tag.Encrypt(openFile));
+                    outFs.Write(tag.Value.Encrypt(openFile));
 
                 MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

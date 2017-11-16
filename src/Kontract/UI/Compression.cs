@@ -12,28 +12,73 @@ namespace Kontract.UI
 {
     public static class CompressionTools
     {
-        static ToolStripMenuItem AddCompressionTab(ToolStripMenuItem compressTab, ICompression compression, bool compTab = true, int count = 0)
+        static ToolStripMenuItem AddCompressionTab(ToolStripMenuItem compressTab, Lazy<ICompressionCollection, ICompressionMetaData> compression, string modTabPath = "", bool compTab = true, int count = 0)
         {
-            if (compTab)
-            {
-                if (compression.TabPathCompress == "") return compressTab;
-            }
-            else
-            {
-                if (compression.TabPathDecompress == "") return compressTab;
-            }
+            var tabPath = (modTabPath != "") ? modTabPath : compression.Metadata.TabPathCompress;
+
+            if (tabPath == "") return compressTab;
 
             string[] parts = compTab ?
-                (compression.TabPathCompress.Contains(',')) ?
-                    compression.TabPathCompress.Split(',')[0].Split('/') :
-                    compression.TabPathCompress.Split('/') :
-                compression.TabPathDecompress.Split('/');
+                (tabPath.Contains(',')) ?
+                    tabPath.Split(',')[0].Split('/') :
+                    tabPath.Split('/') :
+                compression.Metadata.TabPathDecompress.Split('/');
 
             if (count == parts.Length - 1)
             {
-                compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
+                if (compTab) compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
+                else compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decompress));
                 compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Tag = compression;
-                if (compression.TabPathCompress.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = compression.TabPathCompress.Split(',')[1];
+                if (tabPath.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = tabPath.Split(',')[1];
+            }
+            else
+            {
+                ToolStripItem duplicate = null;
+                for (int i = 0; i < compressTab.DropDownItems.Count; i++)
+                {
+                    if (compressTab.DropDownItems[i].Text == parts[count])
+                    {
+                        duplicate = compressTab.DropDownItems[i];
+                        break;
+                    }
+                }
+                if (duplicate != null)
+                {
+                    AddCompressionTab((ToolStripMenuItem)duplicate, compression, modTabPath, compTab, count + 1);
+                }
+                else
+                {
+                    compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null));
+                    AddCompressionTab((ToolStripMenuItem)compressTab.DropDownItems[compressTab.DropDownItems.Count - 1], compression, modTabPath, compTab, count + 1);
+                }
+            }
+
+            return compressTab;
+        }
+
+        static ToolStripMenuItem AddCompressionTab(ToolStripMenuItem compressTab, Lazy<ICompression, ICompressionMetaData> compression, bool compTab = true, int count = 0)
+        {
+            if (compTab)
+            {
+                if (compression.Metadata.TabPathCompress == "") return compressTab;
+            }
+            else
+            {
+                if (compression.Metadata.TabPathDecompress == "") return compressTab;
+            }
+
+            string[] parts = compTab ?
+                (compression.Metadata.TabPathCompress.Contains(',')) ?
+                    compression.Metadata.TabPathCompress.Split(',')[0].Split('/') :
+                    compression.Metadata.TabPathCompress.Split('/') :
+                compression.Metadata.TabPathDecompress.Split('/');
+
+            if (count == parts.Length - 1)
+            {
+                if (compTab) compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
+                else compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decompress));
+                compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Tag = compression;
+                if (compression.Metadata.TabPathCompress.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = compression.Metadata.TabPathCompress.Split(',')[1];
             }
             else
             {
@@ -60,7 +105,7 @@ namespace Kontract.UI
             return compressTab;
         }
 
-        public static void LoadCompressionTools(ToolStripMenuItem tsb, List<ICompression> compressions, List<ICompressionCollection> compressionColls)
+        public static void LoadCompressionTools(ToolStripMenuItem tsb, List<Lazy<ICompression, ICompressionMetaData>> compressions, List<Lazy<ICompressionCollection, ICompressionMetaData>> compressionColls)
         {
             tsb.DropDownItems.Clear();
 
@@ -73,18 +118,16 @@ namespace Kontract.UI
             //Adding compression collections
             for (int i = 0; i < compressionColls.Count; i++)
             {
-                if (CheckFormatting(compressionColls[i].TabPathCompress))
+                if (CheckFormatting(compressionColls[i].Metadata.TabPathCompress))
                 {
-                    var orig = compressionColls[i].TabPathCompress;
-                    var parts = compressionColls[i].TabPathCompress.Split(';');
+                    var orig = compressionColls[i].Metadata.TabPathCompress;
+                    var parts = compressionColls[i].Metadata.TabPathCompress.Split(';');
                     for (int j = 0; j < parts.Count(); j++)
                     {
-                        compressionColls[i].TabPathCompress = parts[j];
-                        compressTab = AddCompressionTab(compressTab, compressionColls[i]);
+                        compressTab = AddCompressionTab(compressTab, compressionColls[i], parts[j]);
                     }
-                    compressionColls[i].TabPathCompress = orig;
                 }
-                decompressTab = AddCompressionTab(decompressTab, compressionColls[i], false);
+                decompressTab = AddCompressionTab(decompressTab, compressionColls[i], "", false);
             }
 
             //Adding single compressions
@@ -111,15 +154,37 @@ namespace Kontract.UI
         public static void Decompress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            var tag = (ICompression)tsi.Tag;
 
-            if (!Shared.PrepareFiles("Open a " + tag.Name + " compressed file...", "Save your decompressed file...", ".decomp", out var openFile, out var saveFile)) return;
+            FileStream openFile;
+            FileStream saveFile;
+
+            ICompressionMetaData meta;
+            ICompression comp = null;
+            ICompressionCollection compColl = null;
+
+            try
+            {
+                var tag = (Lazy<ICompression, ICompressionMetaData>)tsi.Tag;
+                meta = tag.Metadata;
+                comp = tag.Value;
+                if (!Shared.PrepareFiles("Open a " + tag.Metadata.Name + " compressed file...", "Save your decompressed file...", ".decomp", out openFile, out saveFile)) return;
+            }
+            catch
+            {
+                var tag = (Lazy<ICompressionCollection, ICompressionMetaData>)tsi.Tag;
+                meta = tag.Metadata;
+                compColl = tag.Value;
+                if (!Shared.PrepareFiles("Open a " + tag.Metadata.Name + " compressed file...", "Save your decompressed file...", ".decomp", out openFile, out saveFile)) return;
+            }
 
             try
             {
                 using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    outFs.Write(tag.Decompress(openFile, 0));
+                    if (meta.TabPathCompress.Contains(','))
+                        outFs.Write(compColl.Decompress(openFile, 0));
+                    else
+                        outFs.Write(comp.Decompress(openFile, 0));
             }
             catch (Exception ex)
             {
@@ -133,24 +198,42 @@ namespace Kontract.UI
         public static void Compress(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
-            var tag = (ICompression)tsi.Tag;
 
-            if (!Shared.PrepareFiles("Open a decompressed " + tag.Name + " file...", "Save your compressed file...", ".decomp", out var openFile, out var saveFile, true)) return;
+            FileStream openFile;
+            FileStream saveFile;
+
+            ICompressionMetaData meta;
+            ICompression comp = null;
+            ICompressionCollection compColl = null;
+
+            try
+            {
+                var tag = (Lazy<ICompression, ICompressionMetaData>)tsi.Tag;
+                meta = tag.Metadata;
+                comp = tag.Value;
+                if (!Shared.PrepareFiles("Open a decompressed " + tag.Metadata.Name + " file...", "Save your compressed file...", ".comp", out openFile, out saveFile, true)) return;
+            }
+            catch
+            {
+                var tag = (Lazy<ICompressionCollection, ICompressionMetaData>)tsi.Tag;
+                meta = tag.Metadata;
+                compColl = tag.Value;
+                if (!Shared.PrepareFiles("Open a decompressed " + tag.Metadata.Name + " file...", "Save your compressed file...", ".comp", out openFile, out saveFile, true)) return;
+            }
 
             try
             {
                 using (openFile)
                 using (var outFs = new BinaryWriterX(saveFile))
-                    if (tag.TabPathCompress.Contains(','))
+                    if (meta.TabPathCompress.Contains(','))
                     {
-                        var coll = (ICompressionCollection)tag;
                         Byte.TryParse(tsi.Name, out var method);
-                        coll.SetMethod(method);
-                        outFs.Write(coll.Compress(openFile));
+                        compColl.SetMethod(method);
+                        outFs.Write(compColl.Compress(openFile));
                     }
                     else
                     {
-                        outFs.Write(tag.Compress(openFile));
+                        outFs.Write(comp.Compress(openFile));
                     }
             }
             catch (Exception ex)

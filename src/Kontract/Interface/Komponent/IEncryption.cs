@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +10,18 @@ namespace Kontract.Interface
 {
     public interface IEncryption
     {
-        string Name { get; }
-
-        string TabPathEncrypt { get; }
-        string TabPathDecrypt { get; }
-
         byte[] Decrypt(Stream input);
         byte[] Encrypt(Stream input);
+    }
+
+    public interface IEncryptionMetadata
+    {
+        [DefaultValue("")]
+        string Name { get; }
+
+        [DefaultValue("")]
+        string TabPathEncrypt { get; }
+        [DefaultValue("")]
+        string TabPathDecrypt { get; }
     }
 }

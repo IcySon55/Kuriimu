@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Kontract.Interface
 {
-    public interface IArchiveManager : IFilePlugin
+    public interface IArchiveManager : IFilePlugin2
     {
         // Feature Support
         bool CanAddFiles { get; } // Is the plugin able to add files?
@@ -13,8 +13,6 @@ namespace Kontract.Interface
         bool CanDeleteFiles { get; } // Is the plugin able to delete files?
 
         // I/O
-        void Load(string filename);
-        void Save(string filename = ""); // A non-blank filename is provided when using Save As...
         void Unload(); // Instructs the archive manager to close open file handles.
 
         // Files
