@@ -9,15 +9,13 @@ using Kontract.Interface;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "LZ77")]
+    [ExportMetadata("TabPathCompress", "Nintendo/LZ77")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/LZ77")]
     [Export("LZ77", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class LZ77 : ICompression
     {
-        public string Name { get; } = "LZ77";
-
-        public string TabPathCompress { get; } = "Nintendo/LZ77";
-        public string TabPathDecompress { get; } = "Nintendo/LZ77";
-
         static int searchBufferSize = 250;
         static int lookAheadBufferSize = 250;
 

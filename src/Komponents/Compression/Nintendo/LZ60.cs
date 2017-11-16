@@ -8,6 +8,9 @@ using Kontract.Interface;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "LZ60")]
+    [ExportMetadata("TabPathCompress", "")]
+    [ExportMetadata("TabPathDecompress", "")]
     [Export("LZ60", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class LZ60 : ICompression

@@ -8,14 +8,12 @@ using Kontract.Interface;
 
 namespace Hash
 {
+    [ExportMetadata("Name", "CRC16")]
+    [ExportMetadata("TabPathCreate", "CRC/CRC16")]
     [Export("CRC16", typeof(IHash))]
     [Export(typeof(IHash))]
     public class CRC16 : IHash
     {
-        public string Name { get; } = "CRC16";
-
-        public string TabPathCreate { get; } = "CRC/CRC16";
-
         public byte[] Create(byte[] buffer, uint seed = 0)
         {
             uint crc = 0xffff;

@@ -8,15 +8,13 @@ using Kontract.Interface;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "LZSS")]
+    [ExportMetadata("TabPathCompress", "")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/LZSS")]
     [Export("LZSS", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class LZSS : ICompression
     {
-        public string Name { get; } = "LZSS";
-
-        public string TabPathCompress { get; } = "";
-        public string TabPathDecompress { get; } = "Nintendo/LZSS";
-
         public byte[] Decompress(Stream instream, long decompSize = 0)
         {
             using (BinaryReaderX br = new BinaryReaderX(instream, true))

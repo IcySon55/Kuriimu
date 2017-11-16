@@ -9,15 +9,13 @@ using Kontract.Interface;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "LZOvl")]
+    [ExportMetadata("TabPathCompress", "")]
+    [ExportMetadata("TabPathDecompress", "")]
     [Export("LZOvl", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class LZOvl : ICompression
     {
-        public string Name { get; } = "LZOvl";
-
-        public string TabPathCompress { get; } = "";
-        public string TabPathDecompress { get; } = "";
-
         public byte[] Decompress(Stream input, long decompSize = 0)
         {
             return null;

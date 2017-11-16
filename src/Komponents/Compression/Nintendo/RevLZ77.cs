@@ -8,15 +8,13 @@ using System.IO;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "RevLZ77")]
+    [ExportMetadata("TabPathCompress", "Nintendo/RevLZ77")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/RevLZ77")]
     [Export("RevLZ77", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public sealed class RevLZ77 : ICompression
     {
-        public string Name { get; } = "RevLZ77";
-
-        public string TabPathCompress { get; } = "Nintendo/RevLZ77";
-        public string TabPathDecompress { get; } = "Nintendo/RevLZ77";
-
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct CompFooter
         {

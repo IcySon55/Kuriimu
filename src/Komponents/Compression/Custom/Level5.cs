@@ -8,16 +8,15 @@ using System.Linq;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "Level5 Compression")]
+    [ExportMetadata("TabPathCompress", "Custom/Level 5/Compressionless,0;Custom/Level 5/LZ10,1;" +
+            "Custom/Level 5/Huffman/4 Bit,2;Custom/Level 5/Huffman/8 Bit,3;Custom/Level 5/RLE,4")]
+    [ExportMetadata("TabPathDecompress", "Custom/Level 5")]
+    [Export("Nintendo", typeof(ICompressionCollection))]
     [Export("Level5", typeof(ICompressionCollection))]
     [Export(typeof(ICompressionCollection))]
     public class Level5 : ICompressionCollection
     {
-        public string Name { get; } = "Level5 Compression";
-
-        public string TabPathCompress { get; set; } = "Custom/Level 5/Compressionless,0;Custom/Level 5/LZ10,1;" +
-            "Custom/Level 5/Huffman/4 Bit,2;Custom/Level 5/Huffman/8 Bit,3;Custom/Level 5/RLE,4";
-        public string TabPathDecompress { get; set; } = "Custom/Level 5";
-
         public enum Method
         {
             NoCompression = 0,

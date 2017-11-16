@@ -45,13 +45,13 @@ namespace Karameru
         private bool _canDeleteFiles;
 
         [ImportMany(typeof(ICompression))]
-        public List<ICompression> compressions;
+        public List<Lazy<ICompression, ICompressionMetaData>> compressions;
         [ImportMany(typeof(ICompressionCollection))]
-        public List<ICompressionCollection> compressionColls;
+        public List<Lazy<ICompressionCollection, ICompressionMetaData>> compressionColls;
         [ImportMany(typeof(IEncryption))]
-        public List<IEncryption> encryptions;
+        public List<Lazy<IEncryption, IEncryptionMetadata>> encryptions;
         [ImportMany(typeof(IHash))]
-        public List<IHash> hashes;
+        public List<Lazy<IHash, IHashMetadata>> hashes;
 
         public Manager(string[] args)
         {

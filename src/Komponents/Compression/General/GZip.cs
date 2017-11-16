@@ -6,15 +6,13 @@ using Kontract.Interface;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "GZip")]
+    [ExportMetadata("TabPathCompress", "General/GZip")]
+    [ExportMetadata("TabPathDecompress", "General/GZip")]
     [Export("GZip", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class GZip : ICompression
     {
-        public string Name { get; } = "GZip";
-
-        public string TabPathCompress { get; } = "General/GZip";
-        public string TabPathDecompress { get; } = "General/GZip";
-
         public byte[] Compress(Stream input)
         {
             var ms = new MemoryStream();

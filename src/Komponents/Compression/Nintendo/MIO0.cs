@@ -20,28 +20,24 @@ using System.Collections;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "MIO0LE")]
+    [ExportMetadata("TabPathCompress", "Nintendo/MIO0/LE")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/MIO0/LE")]
     [Export("MIO0LE", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class MIO0LE : ICompression
     {
-        public string Name { get; } = "MIO0LE";
-
-        public string TabPathCompress { get; } = "Nintendo/MIO0/LE";
-        public string TabPathDecompress { get; } = "Nintendo/MIO0/LE";
-
         public byte[] Compress(Stream input) => MIO0.Compress(input, ByteOrder.LittleEndian);
         public byte[] Decompress(Stream input, long decompSize = 0) => MIO0.Decompress(input, ByteOrder.LittleEndian);
     }
 
+    [ExportMetadata("Name", "MIO0BE")]
+    [ExportMetadata("TabPathCompress", "Nintendo/MIO0/BE")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/MIO0/BE")]
     [Export("MIO0BE", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class MIO0BE : ICompression
     {
-        public string Name { get; } = "MIO0BE";
-
-        public string TabPathCompress { get; } = "Nintendo/MIO0/BE";
-        public string TabPathDecompress { get; } = "Nintendo/MIO0/BE";
-
         public byte[] Compress(Stream input) => MIO0.Compress(input, ByteOrder.BigEndian);
         public byte[] Decompress(Stream input, long decompSize = 0) => MIO0.Decompress(input, ByteOrder.BigEndian);
     }

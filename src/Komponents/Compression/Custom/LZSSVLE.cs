@@ -7,15 +7,13 @@ using Kontract.Interface;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "LZSSVLE")]
+    [ExportMetadata("TabPathCompress", "")]
+    [ExportMetadata("TabPathDecompress", "Custom/LZSSVLE")]
     [Export("LZSSVLE", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class LZSSVLE : ICompression
     {
-        public string Name { get; } = "LZSSVLE";
-
-        public string TabPathCompress { get; } = "";
-        public string TabPathDecompress { get; } = "Custom/LZSSVLE";
-
         public byte[] Decompress(Stream input, long decompSize = 0)
         {
             using (var br = new BinaryReader(input, Encoding.Default))

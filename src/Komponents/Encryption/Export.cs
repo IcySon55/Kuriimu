@@ -11,18 +11,16 @@ using Kontract.Interface;
 
 namespace Encryption
 {
+    [ExportMetadata("Name", "BlowFish CBC")]
+    [ExportMetadata("TabPathEncrypt", "General/BlowFish/CBC")]
+    [ExportMetadata("TabPathDecrypt", "General/BlowFish/CBC")]
     [Export("BlowFishCBC", typeof(IEncryption))]
     [Export(typeof(IEncryption))]
     public class BlowFishCBC : IEncryption
     {
-        public string Name { get; } = "BlowFish CBC";
-
-        public string TabPathEncrypt { get; } = "General/BlowFish/CBC";
-        public string TabPathDecrypt { get; } = "General/BlowFish/CBC";
-
         public byte[] Decrypt(Stream input)
         {
-            var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish_CBC");
+            var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish CBC");
             if (key == String.Empty) throw new Exception("Key can't be empty!");
 
             var bf = new BlowFish(key);
@@ -47,15 +45,13 @@ namespace Encryption
         }
     }
 
+    [ExportMetadata("Name", "BlowFish ECB")]
+    [ExportMetadata("TabPathEncrypt", "General/BlowFish/ECB")]
+    [ExportMetadata("TabPathDecrypt", "General/BlowFish/ECB")]
     [Export("BlowFishECB", typeof(IEncryption))]
     [Export(typeof(IEncryption))]
     public class BlowFishECB : IEncryption
     {
-        public string Name { get; } = "BlowFish ECB";
-
-        public string TabPathEncrypt { get; } = "General/BlowFish/ECB";
-        public string TabPathDecrypt { get; } = "General/BlowFish/ECB";
-
         public byte[] Decrypt(Stream input)
         {
             var key = InputBox.Show("Input decryption key:", "Decrypt Blowfish_ECB");
@@ -75,22 +71,20 @@ namespace Encryption
 
             var bf = new BlowFish(key);
             var ms = new MemoryStream();
-            var enc = bf.Decrypt_ECB(new BinaryReaderX(input, true).ReadAllBytes());
+            var enc = bf.Encrypt_ECB(new BinaryReaderX(input, true).ReadAllBytes());
             ms.Write(enc, 0, enc.Length);
 
             return ms.ToArray();
         }
     }
 
+    [ExportMetadata("Name", "MT Framework Encryption")]
+    [ExportMetadata("TabPathEncrypt", "Custom/MT Framework")]
+    [ExportMetadata("TabPathDecrypt", "Custom/MT Framework")]
     [Export("MTFramework", typeof(IEncryption))]
     [Export(typeof(IEncryption))]
     public class MTFrameworkEncryption : IEncryption
     {
-        public string Name { get; } = "MT Framework Encryption";
-
-        public string TabPathEncrypt { get; } = "Custom/MT Framework";
-        public string TabPathDecrypt { get; } = "Custom/MT Framework";
-
         public byte[] Decrypt(Stream input)
         {
             var key1 = InputBox.Show("Input 1st decryption key:", "Decrypt MTFramework");
@@ -118,15 +112,13 @@ namespace Encryption
         }
     }
 
+    [ExportMetadata("Name", "Cardridge Encryption")]
+    [ExportMetadata("TabPathEncrypt", "")]
+    [ExportMetadata("TabPathDecrypt", "3DS/.3ds")]
     [Export("CTR_3DS", typeof(IEncryption))]
     [Export(typeof(IEncryption))]
     public class CTR3DS : IEncryption
     {
-        public string Name { get; } = "Cardridge Encryption";
-
-        public string TabPathEncrypt { get; } = "3DS/.3ds";
-        public string TabPathDecrypt { get; } = "3DS/.3ds";
-
         public byte[] Decrypt(Stream input)
         {
             var engine = new CTR.AesEngine();
@@ -147,15 +139,13 @@ namespace Encryption
         }
     }
 
+    [ExportMetadata("Name", "CIA Encryption")]
+    [ExportMetadata("TabPathEncrypt", "")]
+    [ExportMetadata("TabPathDecrypt", "3DS/.cia")]
     [Export("CTR_CIA", typeof(IEncryption))]
     [Export(typeof(IEncryption))]
     public class CTRCIA : IEncryption
     {
-        public string Name { get; } = "CIA Encryption";
-
-        public string TabPathEncrypt { get; } = "3DS/.cia";
-        public string TabPathDecrypt { get; } = "3DS/.cia";
-
         public byte[] Decrypt(Stream input)
         {
             var engine = new CTR.AesEngine();

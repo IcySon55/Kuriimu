@@ -8,15 +8,13 @@ using System;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "RLE")]
+    [ExportMetadata("TabPathCompress", "Nintendo/RLE")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/RLE")]
     [Export("RLE", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class RLE : ICompression
     {
-        public string Name { get; } = "RLE";
-
-        public string TabPathCompress { get; } = "Nintendo/RLE";
-        public string TabPathDecompress { get; } = "Nintendo/RLE";
-
         public byte[] Decompress(Stream instream, long decompSize = 0)
         {
             using (var br = new BinaryReaderX(instream, true))

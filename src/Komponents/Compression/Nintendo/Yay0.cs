@@ -20,28 +20,24 @@ using System.Collections;
 
 namespace Compression
 {
+    [ExportMetadata("Name", "Yay0LE")]
+    [ExportMetadata("TabPathCompress", "Nintendo/Yay0/LE")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/Yay0/LE")]
     [Export("Yay0LE", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class Yay0LE : ICompression
     {
-        public string Name { get; } = "Yay0LE";
-
-        public string TabPathCompress { get; } = "Nintendo/Yay0/LE";
-        public string TabPathDecompress { get; } = "Nintendo/Yay0/LE";
-
         public byte[] Compress(Stream input) => Yay0.Compress(input, ByteOrder.LittleEndian);
         public byte[] Decompress(Stream input, long decompSize = 0) => Yay0.Decompress(input, ByteOrder.LittleEndian);
     }
 
+    [ExportMetadata("Name", "Yay0BE")]
+    [ExportMetadata("TabPathCompress", "Nintendo/Yay0/BE")]
+    [ExportMetadata("TabPathDecompress", "Nintendo/Yay0/BE")]
     [Export("Yay0BE", typeof(ICompression))]
     [Export(typeof(ICompression))]
     public class Yay0BE : ICompression
     {
-        public string Name { get; } = "Yay0BE";
-
-        public string TabPathCompress { get; } = "Nintendo/Yay0/BE";
-        public string TabPathDecompress { get; } = "Nintendo/Yay0/BE";
-
         public byte[] Compress(Stream input) => Yay0.Compress(input, ByteOrder.BigEndian);
         public byte[] Decompress(Stream input, long decompSize = 0) => Yay0.Decompress(input, ByteOrder.BigEndian);
     }
