@@ -9,8 +9,13 @@ using Kontract.Interface;
 namespace Hash
 {
     [Export("XBBHash", typeof(IHash))]
+    [Export(typeof(IHash))]
     public class XBBHash : IHash
     {
+        public string Name { get; } = "XBB Hash";
+
+        public string TabPathCreate { get; } = "Custom/XBB";
+
         public byte[] Create(byte[] input, uint seed = 0)
         {
             var aggHash = (uint)input.Aggregate(new int[] { 0, 0 }, (p, c) => new int[] { p[0] + (c << (p[1] += c) | c >> -p[1]), p[1] })[0];

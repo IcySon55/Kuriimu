@@ -1,54 +1,89 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.Collections.Generic;
+using System.Linq;
 using Kontract.IO;
-using Kontract.Hash;
+using Kontract.Interface;
 
 namespace Kontract.UI
 {
     public static class HashTools
     {
-        public static void LoadHashTools(ToolStripMenuItem tsb)
+        static ToolStripMenuItem AddCreateTab(ToolStripMenuItem createTab, IHash hash, int count = 0)
         {
-            ToolStripMenuItem tsb2;
-            ToolStripMenuItem tsb3;
+            if (hash.TabPathCreate == "") return createTab;
+
+            string[] parts = hash.TabPathCreate.Split('/');
+
+            if (count == parts.Length - 1)
+            {
+                createTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Create));
+                createTab.DropDownItems[createTab.DropDownItems.Count - 1].Tag = hash;
+                if (hash.TabPathCreate.Contains(',')) createTab.DropDownItems[createTab.DropDownItems.Count - 1].Name = hash.TabPathCreate.Split(',')[1];
+            }
+            else
+            {
+                ToolStripItem duplicate = null;
+                for (int i = 0; i < createTab.DropDownItems.Count; i++)
+                {
+                    if (createTab.DropDownItems[i].Text == parts[count])
+                    {
+                        duplicate = createTab.DropDownItems[i];
+                        break;
+                    }
+                }
+                if (duplicate != null)
+                {
+                    AddCreateTab((ToolStripMenuItem)duplicate, hash, count + 1);
+                }
+                else
+                {
+                    createTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null));
+                    AddCreateTab((ToolStripMenuItem)createTab.DropDownItems[createTab.DropDownItems.Count - 1], hash, count + 1);
+                }
+            }
+
+            return createTab;
+        }
+
+        public static void LoadHashTools(ToolStripMenuItem tsb, List<IHash> hashes)
+        {
             tsb.DropDownItems.Clear();
 
-            //3DS
-            tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
-            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[0];
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Create", null));
 
-            // CriWare
-            tsb2.DropDownItems.Add(new ToolStripMenuItem(Hash.CRC32.ToString(), null));
-            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
-            tsb3.DropDownItems.Add(new ToolStripMenuItem("Create", null, Create));
-            tsb3.DropDownItems[0].Tag = Hash.CRC32;
+            var createTab = (ToolStripMenuItem)tsb.DropDownItems[0];
+
+            //Adding single hashes
+            for (int i = 0; i < hashes.Count; i++)
+            {
+                createTab = AddCreateTab(createTab, hashes[i]);
+            }
         }
 
         public static void Create(object sender, EventArgs e)
         {
             var tsi = sender as ToolStripMenuItem;
+            var tag = (IHash)tsi.Tag;
 
-            switch (tsi.Tag)
+            if (!Shared.PrepareFiles("Open a file...", "Save your hashed value...", ".hash", out var openFile, out var saveFile)) return;
+
+            try
             {
-                case Hash.CRC32:
-                    FileStream openFile = null;
-                    var ofd = new OpenFileDialog
-                    {
-                        Title = Hash.CRC32.ToString(),
-                        Filter = "All Files (*.*)|*.*"
-                    };
-
-                    if (ofd.ShowDialog() != DialogResult.OK) break;
-                    openFile = File.OpenRead(ofd.FileName);
-                    MessageBox.Show($"0x{Crc32.Create(new BinaryReaderX(openFile).ReadBytes((int)openFile.Length)):x8}", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    break;
+                using (var inFs = new BinaryReaderX(openFile))
+                using (var outFs = new BinaryWriterX(saveFile))
+                    outFs.Write(tag.Create(inFs.ReadAllBytes(), 0));
             }
-        }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-        public enum Hash : byte
-        {
-            CRC32
+            MessageBox.Show($"Successfully hashed {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

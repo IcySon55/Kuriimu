@@ -9,8 +9,13 @@ using Kontract.Interface;
 namespace Hash
 {
     [Export("CRC32", typeof(IHash))]
+    [Export(typeof(IHash))]
     public class CRC32 : IHash
     {
+        public string Name { get; } = "CRC32";
+
+        public string TabPathCreate { get; } = "CRC/CRC32";
+
         public byte[] Create(byte[] input, uint seed = 0)
         {
             uint crc = 0xffffffff;

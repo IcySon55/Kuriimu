@@ -8,6 +8,10 @@ namespace Kontract.Interface
 {
     public interface IHash
     {
+        string Name { get; }
+
+        string TabPathCreate { get; }
+
         byte[] Create(byte[] input, uint seed);
     }
 }

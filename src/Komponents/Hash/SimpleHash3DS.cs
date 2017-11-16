@@ -9,8 +9,13 @@ using Kontract.Interface;
 namespace Hash
 {
     [Export("SimpleHash_3DS", typeof(IHash))]
+    [Export(typeof(IHash))]
     public class SimpleHash3DS : IHash
     {
+        public string Name { get; } = "3DS SimpleHash";
+
+        public string TabPathCreate { get; } = "Custom/SimpleHash";
+
         public byte[] Create(byte[] input, uint seed = 0)
         {
             var aggHash = input.Aggregate(0u, (hash, c) => hash * seed + c);

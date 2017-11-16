@@ -10,19 +10,6 @@ using Kontract.Interface;
 
 namespace Kontract.UI
 {
-    class EncryptionLoad
-    {
-        [ImportMany(typeof(IEncryption))]
-        public List<IEncryption> encryptions;
-
-        public EncryptionLoad()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     public static class EncryptionTools
     {
         static ToolStripMenuItem AddEncryptionTab(ToolStripMenuItem encryptTab, IEncryption encryption, bool encTab = true, int count = 0)
@@ -69,7 +56,7 @@ namespace Kontract.UI
             return encryptTab;
         }
 
-        public static void LoadEncryptionTools(ToolStripMenuItem tsb)
+        public static void LoadEncryptionTools(ToolStripMenuItem tsb, List<IEncryption> encryptions)
         {
             tsb.DropDownItems.Clear();
 
@@ -79,10 +66,7 @@ namespace Kontract.UI
             var encryptTab = (ToolStripMenuItem)tsb.DropDownItems[0];
             var decryptTab = (ToolStripMenuItem)tsb.DropDownItems[1];
 
-            var loadedEncs = new EncryptionLoad();
-            var encryptions = loadedEncs.encryptions;
-
-            //Adding single compressions
+            //Adding single encryptions
             for (int i = 0; i < encryptions.Count; i++)
             {
                 encryptTab = AddEncryptionTab(encryptTab, encryptions[i]);

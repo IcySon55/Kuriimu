@@ -10,21 +10,6 @@ using System.Linq;
 
 namespace Kontract.UI
 {
-    class CompressionLoad
-    {
-        [ImportMany(typeof(ICompression))]
-        public List<ICompression> compressions;
-        [ImportMany(typeof(ICompressionCollection))]
-        public List<ICompressionCollection> compressionColls;
-
-        public CompressionLoad()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     public static class CompressionTools
     {
         static ToolStripMenuItem AddCompressionTab(ToolStripMenuItem compressTab, ICompression compression, bool compTab = true, int count = 0)
@@ -75,7 +60,7 @@ namespace Kontract.UI
             return compressTab;
         }
 
-        public static void LoadCompressionTools(ToolStripMenuItem tsb)
+        public static void LoadCompressionTools(ToolStripMenuItem tsb, List<ICompression> compressions, List<ICompressionCollection> compressionColls)
         {
             tsb.DropDownItems.Clear();
 
@@ -84,10 +69,6 @@ namespace Kontract.UI
 
             var compressTab = (ToolStripMenuItem)tsb.DropDownItems[0];
             var decompressTab = (ToolStripMenuItem)tsb.DropDownItems[1];
-
-            var loadedComps = new CompressionLoad();
-            var compressions = loadedComps.compressions;
-            var compressionColls = loadedComps.compressionColls;
 
             //Adding compression collections
             for (int i = 0; i < compressionColls.Count; i++)
@@ -146,7 +127,7 @@ namespace Kontract.UI
                 return;
             }
 
-            MessageBox.Show($"Successfully decompressed {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"Successfully decompressed {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         public static void Compress(object sender, EventArgs e)

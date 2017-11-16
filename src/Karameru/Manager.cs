@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -41,6 +43,15 @@ namespace Karameru
         private bool _canRenameFiles;
         private bool _canReplaceFiles;
         private bool _canDeleteFiles;
+
+        [ImportMany(typeof(ICompression))]
+        public List<ICompression> compressions;
+        [ImportMany(typeof(ICompressionCollection))]
+        public List<ICompressionCollection> compressionColls;
+        [ImportMany(typeof(IEncryption))]
+        public List<IEncryption> encryptions;
+        [ImportMany(typeof(IHash))]
+        public List<IHash> hashes;
 
         public Manager(string[] args)
         {
@@ -92,10 +103,15 @@ namespace Karameru
 
             treDirectories.NodeMouseClick += (sender2, e2) => treDirectories.SelectedNode = e2.Node;
 
+            //Load dependencies
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+
             // Tools
-            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
-            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
-            HashTools.LoadHashTools(hashToolStripMenuItem);
+            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem, compressions, compressionColls);
+            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem, encryptions);
+            HashTools.LoadHashTools(hashToolStripMenuItem, hashes);
 
             Tools.DoubleBuffer(treDirectories, true);
             Tools.DoubleBuffer(lstFiles, true);

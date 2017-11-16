@@ -14,6 +14,7 @@ using Kontract.Interface;
 using Kontract;
 using Kontract.UI;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 
 namespace Kukkii
 {
@@ -57,14 +58,28 @@ namespace Kukkii
                 OpenFile(args[0]);
         }
 
+        [ImportMany(typeof(ICompression))]
+        public List<ICompression> compressions;
+        [ImportMany(typeof(ICompressionCollection))]
+        public List<ICompressionCollection> compressionColls;
+        [ImportMany(typeof(IEncryption))]
+        public List<IEncryption> encryptions;
+        [ImportMany(typeof(IHash))]
+        public List<IHash> hashes;
+
         private void frmConverter_Load(object sender, EventArgs e)
         {
             Icon = Resources.kukkii;
 
+            //Load dependencies
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+
             // Tools
-            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
-            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
-            HashTools.LoadHashTools(hashToolStripMenuItem);
+            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem, compressions, compressionColls);
+            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem, encryptions);
+            HashTools.LoadHashTools(hashToolStripMenuItem, hashes);
 
             // Image Border Styles
             tsbImageBorderStyle.DropDownItems.AddRange(Enum.GetNames(typeof(ImageBoxBorderStyle)).Select(s => new ToolStripMenuItem { Image = (Image)Resources.ResourceManager.GetObject(_stylesImages[s]), Text = _stylesText[s], Tag = s }).ToArray());

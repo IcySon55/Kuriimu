@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -35,6 +37,15 @@ namespace Kuriimu
         private List<TextEntry> _entries;
 
         private int _page;
+
+        [ImportMany(typeof(ICompression))]
+        public List<ICompression> compressions;
+        [ImportMany(typeof(ICompressionCollection))]
+        public List<ICompressionCollection> compressionColls;
+        [ImportMany(typeof(IEncryption))]
+        public List<IEncryption> encryptions;
+        [ImportMany(typeof(IHash))]
+        public List<IHash> hashes;
 
         public Editor(string[] args)
         {
@@ -612,10 +623,15 @@ namespace Kuriimu
 
             SetFont();
 
+            //Load dependencies
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+
             // Tools
-            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem);
-            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem);
-            HashTools.LoadHashTools(hashToolStripMenuItem);
+            CompressionTools.LoadCompressionTools(compressionToolStripMenuItem, compressions, compressionColls);
+            EncryptionTools.LoadEncryptionTools(encryptionToolStripMenuItem, encryptions);
+            HashTools.LoadHashTools(hashToolStripMenuItem, hashes);
 
             // Extensions
             if (_extensions.Count > 0)
