@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>archive_dpk</RootNamespace>
     <AssemblyName>archive_dpk</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -48,17 +50,11 @@
     <Compile Include="DpkSupport.cs" />
     <Compile Include="DpkManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Cetera\Cetera.csproj">
-      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
-      <Name>Cetera</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+      <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
+      <Name>Komponent</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
@@ -68,10 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

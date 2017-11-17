@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using Kontract.IO;
 
 namespace image_nintendo.BFFNT
 {
+    [Export(typeof(IImageAdapter))]
     public sealed class BffntAdapter : IImageAdapter
     {
         private Cetera.Font.BFFNT _bffnt;

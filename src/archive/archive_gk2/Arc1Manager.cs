@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_gk2.arc1
 {
+    [FilePluginMetadata(Name = "GK2 Arc1", Description = "Gyakuten Kenji 2 Archive 1", Extension = "*.bin", Author = "onepiecefreak", About = "This is the Arc1 archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class Arc1Manager : IArchiveManager
     {
         private ARC1 _arc1 = null;
 
         #region Properties
-
-        // Information
-        public string Name => "GK2 Arc1";
-        public string Description => "Gyakuten Kenji 2 Archive 1";
-        public string Extension => "*.bin";
-        public string About => "This is the Arc1 archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,26 +21,15 @@ namespace archive_gk2.arc1
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                try
-                {
-                    var entry = br.ReadStruct<Entry>();
-                    br.BaseStream.Position = entry.offset - 8;
-                    return br.ReadUInt32() == br.BaseStream.Length && br.ReadUInt32() == 0;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -79,6 +64,11 @@ namespace archive_gk2.arc1
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

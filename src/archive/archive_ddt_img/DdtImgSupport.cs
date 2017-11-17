@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Kontract.Interface;
-using Kontract;
 
 namespace archive_ddt_img
 {

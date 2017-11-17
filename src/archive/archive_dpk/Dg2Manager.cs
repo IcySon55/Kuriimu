@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Kontract.Interface;
 using System.Drawing;
-using Kontract.IO;
+using Komponent.IO;
 using System.IO;
 
 namespace archive_dpk.DG2
 {
+    [FilePluginMetadata(Name = "DPK", Description = "Drakengard PacKage", Extension = "*.bin", Author = "onepiecefreak", About = "This is the DPK archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class Dg2Manager : IArchiveManager
     {
         private DG2 _dpk = null;
 
         #region Properties
-
-        // Information
-        public string Name => "DPK";
-        public string Description => "Drakengard PacKage";
-        public string Extension => "*.bin";
-        public string About => "This is the DPK archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -29,15 +25,18 @@ namespace archive_dpk.DG2
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                return br.ReadString(4) == "dpk";
+            using (var br = new BinaryReaderX(stream, true))
+                if (br.ReadString(4) == "dpk") return Identification.True;
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -72,6 +71,11 @@ namespace archive_dpk.DG2
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

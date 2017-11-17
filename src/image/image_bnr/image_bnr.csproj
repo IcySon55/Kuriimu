@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -43,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BNR.cs" />
     <Compile Include="BnrAdapter.cs" />
+    <Compile Include="BnrImport.cs" />
     <Compile Include="BnrSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

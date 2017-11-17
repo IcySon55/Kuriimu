@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace image_aif
 {
+    [Export(typeof(IImageAdapter))]
     public sealed class AifAdapter : IImageAdapter
     {
         private AIF _aif = null;

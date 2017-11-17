@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cetera.Hash;
+using System.Text;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_hpi_hpb
 {
@@ -16,6 +16,7 @@ namespace archive_hpi_hpb
         const uint PathHashMagic = 0x25;
 
         private Stream _stream = null;
+        private Import imports = new Import();
 
         public HPIHPB(Stream hpiInput, Stream hpbInput)
         {
@@ -34,7 +35,8 @@ namespace archive_hpi_hpb
                     Entry = entry,
                     FileName = br.ReadCStringSJIS(), // String Table
                     FileData = new SubStream(hpbInput, Math.Max(0, entry.fileOffset), entry.fileSize),
-                    State = ArchiveFileState.Archived
+                    State = ArchiveFileState.Archived,
+                    imports = imports
                 }).ToList();
             }
         }
@@ -48,18 +50,18 @@ namespace archive_hpi_hpb
                 bw.WriteStruct(new HpiHeader { hashCount = (short)HashSlotCount, entryCount = Files.Count });
 
                 var sjis = System.Text.Encoding.GetEncoding("sjis");
-                string GetSJIS(string s) => string.Concat(sjis.GetBytes(s).Select(b => (char)(sbyte)b));
+                uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
 
                 int stringOffset = 0;
                 foreach (var afi in Files)
                 {
                     afi.Entry.stringOffset = stringOffset;
                     if (afi.Entry.fileSize != 0) afi.WriteToHpb(hpbOutput);
-                    stringOffset += GetSJIS(afi.FileName).Length + 1;
+                    stringOffset += sjis.GetByteCount(afi.FileName) + 1;
                 }
 
                 // Hash List
-                var lookup = Files.ToLookup(e => SimpleHash.Create(GetSJIS(e.FileName), PathHashMagic, HashSlotCount));
+                var lookup = Files.ToLookup(e => GetInt(imports.simplehash.Create(sjis.GetBytes(e.FileName), PathHashMagic)) % HashSlotCount);
                 for (int i = 0, offset = 0; i < HashSlotCount; i++)
                 {
                     var count = lookup[(uint)i].Count();

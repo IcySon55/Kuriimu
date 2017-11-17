@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_dpk.DPK4
 {
+    [FilePluginMetadata(Name = "CPK4", Description = "Data Package v4", Extension = "*.dpk", Author = "IcySon55", About = "This is the DPK4 archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class DpkManager : IArchiveManager
     {
         //private DPK4 _dpk4 = null;
 
         #region Properties
-
-        // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Data Package v4";
-        public string Extension => "*.dpk";
-        public string About => "This is the DPK4 archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,19 +21,22 @@ namespace archive_dpk.DPK4
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
+                if (br.BaseStream.Length < 4) return Identification.False;
                 var magic = br.ReadString(4);
-                return magic == "DPK4";
+                if (magic == "DPK4") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -54,6 +53,11 @@ namespace archive_dpk.DPK4
                 FileInfo = new FileInfo(filename);
 
             //_dpk4.Save(new FileStream(FileInfo.FullName, FileMode.Create, FileAccess.Write));
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
-using Kontract.Compression;
 
 namespace archive_aatri.aabin
 {
+    [FilePluginMetadata(Name = "AABin", Description = "Ace Attorney DS bin", Extension = "*.inc", Author = "onepiecefreak",
+        About = "This is the Ace Attorney DS bin archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class AAbinManager : IArchiveManager
     {
         private AABIN _aabin = null;
 
         #region Properties
-
-        // Information
-        public string Name => "AABIN";
-        public string Description => "Ace Attorney bin";
-        public string Extension => "*.inc";
-        public string About => "This is the Ace Attorney bin archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -26,50 +22,15 @@ namespace archive_aatri.aabin
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            try
-            {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                {
-                    uint dataOffset = 0;
-                    while (br.BaseStream.Position < br.BaseStream.Length)
-                    {
-                        var test = Nintendo.Decompress(br.BaseStream);
-                        if (test == null)
-                        {
-                            var count = br.ReadUInt32();
-                            br.BaseStream.Position += (count - 1) * 8;
-                            var offset = br.ReadUInt32();
-                            var size = br.ReadUInt32();
-                            br.BaseStream.Position = dataOffset + offset + size;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-
-                        while (br.BaseStream.Position % 4 != 0)
-                        {
-                            br.BaseStream.Position++;
-                        }
-                        dataOffset = (uint)br.BaseStream.Position;
-
-                        if (br.BaseStream.Position > br.BaseStream.Length) return false;
-                    }
-
-                    return true;
-                }
-            }
-            catch (System.Exception)
-            {
-                return false;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -105,6 +66,11 @@ namespace archive_aatri.aabin
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

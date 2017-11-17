@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_bfp
 {
+    [FilePluginMetadata(Name = "BFP", Description = "Binary File Package", Extension = "*.bfp", Author = "", About = "This is the BFP archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class BfpManager : IArchiveManager
     {
         private BFP _bfp = null;
 
         #region Properties
-
-        // Information
-        public string Name => "BFP";
-        public string Description => "Binary File Package";
-        public string Extension => "*.bfp";
-        public string About => "This is the BFP archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,17 +21,20 @@ namespace archive_bfp
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename), true))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return br.ReadString(4) == "RTFP";
+                if (br.ReadString(4) == "RTFP") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -70,6 +69,11 @@ namespace archive_bfp
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

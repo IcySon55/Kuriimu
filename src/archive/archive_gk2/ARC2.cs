@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Linq;
-using Kontract.Compression;
 
 namespace archive_gk2.arc2
 {

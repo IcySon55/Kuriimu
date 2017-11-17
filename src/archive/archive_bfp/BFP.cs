@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_bfp
 {
@@ -9,6 +9,7 @@ namespace archive_bfp
     {
         public List<BFPFileInfo> Files = new List<BFPFileInfo>();
         private Stream _stream = null;
+        Import imports = new Import();
 
         public Header header;
         public List<Entry> entries = new List<Entry>();
@@ -46,10 +47,11 @@ namespace archive_bfp
                     {
                         State = ArchiveFileState.Archived,
                         FileName = $"{count++:00000000}.bin",
-                        FileData = new SubStream(br.BaseStream, entry.offset, compSizePad+0x20),
+                        FileData = new SubStream(br.BaseStream, entry.offset, compSizePad + 0x20),
                         entry = entry,
                         entry2 = null,
-                        compressed = (entry.uncompSize == compSize) ? false : true
+                        compressed = (entry.uncompSize == compSize) ? false : true,
+                        imports = imports
                     });
                 }
                 foreach (var entry in entries2)
@@ -65,7 +67,7 @@ namespace archive_bfp
                         {
                             State = ArchiveFileState.Archived,
                             FileName = $"{count++:00000000}.bin",
-                            FileData = new SubStream(br.BaseStream, entry.offset, compSizePad+0x20),
+                            FileData = new SubStream(br.BaseStream, entry.offset, compSizePad + 0x20),
                             entry = null,
                             entry2 = entry,
                             compressed = (entry.uncompSize == compSize) ? false : true

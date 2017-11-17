@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_enc
 {
+    [FilePluginMetadata(Name = "ENC", Description = "ENC Archive", Extension = "*.enc", Author = "onepiecefreak", About = "This is the ENC archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class archive_encManager : IArchiveManager
     {
         private ENC _enc = null;
 
         #region Properties
-
-        // Information
-        public string Name => "ENC";
-        public string Description => "ENC Archive";
-        public string Extension => "*.enc";
-        public string About => "This is the ENC archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,36 +21,15 @@ namespace archive_enc
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            try
-            {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                {
-                    var count = br.ReadUInt32();
-                    uint offset = 0;
-                    for (int i = 0; i < count; i++)
-                    {
-                        br.ReadUInt64();
-                        var offset2 = br.ReadUInt32();
-                        if (offset > offset2)
-                            return false;
-
-                        offset = offset2;
-                    }
-
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -89,6 +64,11 @@ namespace archive_enc
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

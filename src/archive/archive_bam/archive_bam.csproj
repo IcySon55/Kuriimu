@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>archive_bam</RootNamespace>
     <AssemblyName>archive_bam</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -59,6 +61,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+      <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
+      <Name>Komponent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Kontract\Kontract.csproj">
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>Kontract</Name>

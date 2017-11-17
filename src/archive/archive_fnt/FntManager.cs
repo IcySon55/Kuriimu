@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_fnt
 {
+    [FilePluginMetadata(Name = "FNT", Description = "Whatever FNT should mean", Extension = "*.fnt", Author = "onepiecefreak", About = "This is the FNT archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class FntManager : IArchiveManager
     {
         private FNT _fnt = null;
 
         #region Properties
-
-        // Information
-        public string Name => "FNT";
-        public string Description => "Whatever FNT should mean";
-        public string Extension => "*.fnt";
-        public string About => "This is the FNT archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,27 +21,15 @@ namespace archive_fnt
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            try
-            {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                {
-                    if (br.BaseStream.Length < 4) return false;
-                    var entrycount = br.ReadInt32();
-                    if (br.BaseStream.Length < 4 + entrycount * 0x4) return false;
-                    br.BaseStream.Position = 4 + entrycount * 0x4;
-                    return (br.ReadInt32() == br.BaseStream.Length);
-                }
-            } catch
-            {
-                return false;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -80,6 +64,11 @@ namespace archive_fnt
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

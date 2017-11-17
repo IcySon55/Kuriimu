@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract.Compression;
 
 namespace archive_gk2.arc2
 {

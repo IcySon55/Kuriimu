@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using Kontract.Interface;
 
 namespace image_bnr
 {
+    [Export(typeof(IImageAdapter))]
     public sealed class BnrAdapter : IImageAdapter
     {
         private BNR _bnr = null;

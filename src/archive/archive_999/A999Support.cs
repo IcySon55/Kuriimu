@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract;
+using Komponent.IO;
 
 namespace archive_999
 {

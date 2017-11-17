@@ -1,24 +1,20 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_ddt_img
 {
+    [FilePluginMetadata(Name = "DDT_IMG", Description = "Shin Megami Tensei DDT/IMG Archive", Extension = "*.ddt", Author = "IcySon55", About = "This is the DDT/IMG archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class DdtImgManager : IArchiveManager
     {
         private DDTIMG _format = null;
 
         #region Properties
-
-        // Information
-        public string Name => "DDT_IMG";
-        public string Description => "Shin Megami Tensei DDT/IMG Archive";
-        public string Extension => "*.ddt";
-        public string About => "This is the DDT/IMG archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -26,25 +22,26 @@ namespace archive_ddt_img
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var imgFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".img");
-            if (!File.Exists(filename) || !File.Exists(imgFilename)) return false;
+            if (!File.Exists(filename) || !File.Exists(imgFilename)) return Identification.False;
 
             try
             {
                 var tmp = new DDTIMG(File.OpenRead(filename), File.OpenRead((imgFilename)));
                 tmp.Close();
-                return true;
+                return Identification.True;
             }
             catch (Exception)
             {
-                return false;
+                return Identification.False;
             }
         }
 
@@ -84,6 +81,11 @@ namespace archive_ddt_img
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

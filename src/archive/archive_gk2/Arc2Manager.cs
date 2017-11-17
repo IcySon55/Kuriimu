@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_gk2.arc2
 {
+    [FilePluginMetadata(Name = "GK2 Arc2", Description = "Gyakuten Kenji 2 Archive 2", Extension = "*.bin", Author = "onepiecefreak", About = "This is the Arc2 archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class Arc2Manager : IArchiveManager
     {
         private ARC2 _arc2 = null;
 
         #region Properties
-
-        // Information
-        public string Name => "GK2 Arc2";
-        public string Description => "Gyakuten Kenji 2 Archive 2";
-        public string Extension => "*.bin";
-        public string About => "This is the Arc2 archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,36 +21,15 @@ namespace archive_gk2.arc2
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                try
-                {
-                    var limit = br.ReadUInt32();
-                    if (limit >= br.BaseStream.Length) return false;
-
-                    var off = limit;
-                    while (br.BaseStream.Position < limit)
-                    {
-                        var off2 = br.ReadUInt32();
-                        if (off2 <= off) return false;
-
-                        off = off2;
-                    }
-
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -89,6 +64,11 @@ namespace archive_gk2.arc2
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

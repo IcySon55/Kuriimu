@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_cdar
 {
@@ -9,6 +9,7 @@ namespace archive_cdar
     {
         public List<CDARFileInfo> Files = new List<CDARFileInfo>();
         private Stream _stream = null;
+        private Import imports = new Import();
 
         public Header header;
 
@@ -36,7 +37,8 @@ namespace archive_cdar
                         FileName = $"{count:00000000}.bin",
                         FileData = new SubStream(br.BaseStream, entry.offset, entry.compSize),
                         hash = hashes[count++],
-                        entry = entry
+                        entry = entry,
+                        imports = imports
                     });
                 }
             }

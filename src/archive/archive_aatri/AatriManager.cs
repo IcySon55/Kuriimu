@@ -1,22 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_aatri.aatri
 {
+    [FilePluginMetadata(Name = "AATri", Description = "Ace Attorney Trilogy pack", Extension = "*.inc", Author = "onepiecefreak",
+        About = "This is the AATri archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class AatriManager : IArchiveManager
     {
         private AATRI _aatri = null;
 
         #region Properties
-
-        // Information
-        public string Name => "AATRI";
-        public string Description => "Ace Attorney Trilogy pack";
-        public string Extension => "*.inc";
-        public string About => "This is the AATRI archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -25,32 +23,35 @@ namespace archive_aatri.aatri
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var incFilename = filename;
             var datFilename = filename.Remove(filename.Length - 3) + "dat";
 
-            if (!File.Exists(incFilename) || !File.Exists(datFilename)) return false;
+            if (!File.Exists(incFilename) || !File.Exists(datFilename)) return Identification.False;
 
-            using (var br = new BinaryReaderX(File.OpenRead(incFilename)))
+            using (var br = new BinaryReaderX(stream, true))
             using (var brd = new BinaryReaderX(File.OpenRead(datFilename)))
             {
-                if (br.BaseStream.Length < 0x18) return false;
+                if (br.BaseStream.Length < 0x18) return Identification.False;
 
                 var offset = br.ReadInt32();
                 brd.BaseStream.Position = offset;
-                if (brd.ReadByte() != 0x11) return false;
+                if (brd.ReadByte() != 0x11) return Identification.False;
 
                 br.BaseStream.Position = 0x14;
                 offset = br.ReadInt32();
                 brd.BaseStream.Position = offset;
-                return brd.ReadByte() == 0x11;
+                if (brd.ReadByte() == 0x11) return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -93,6 +94,11 @@ namespace archive_aatri.aatri
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

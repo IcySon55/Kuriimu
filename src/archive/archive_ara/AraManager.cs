@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_ara
 {
+    [FilePluginMetadata(Name = "ARA", Description = "Angelique Retour Archive", Extension = "*.bin", Author = "IcySon55", About = "This is the ARA archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class AraManager : IArchiveManager
     {
         private ARA _ara = null;
 
         #region Properties
-
-        // Information
-        public string Name => "ARA";
-        public string Description => "Angelique Retour Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the ARA archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,17 +21,20 @@ namespace archive_ara
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var arcFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arc");
-            if (!File.Exists(filename) || !File.Exists(arcFilename)) return false;
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                return br.ReadString(3) == "PAA";
+            if (!File.Exists(filename) || !File.Exists(arcFilename)) return Identification.False;
+            using (var br = new BinaryReaderX(stream,true))
+                if (br.ReadString(3) == "PAA") return Identification.True;
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -74,6 +73,11 @@ namespace archive_ara
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()
