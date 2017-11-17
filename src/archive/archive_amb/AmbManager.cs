@@ -19,7 +19,7 @@ namespace archive_amb
         public string About => "This is the AMB archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;

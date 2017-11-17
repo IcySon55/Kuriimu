@@ -45,7 +45,7 @@ namespace image_mt
             if (FileInfo.Exists)
             {
                 _tex = new MTTEX(FileInfo.OpenRead());
-                _bitmaps = _tex.Bitmaps.Select(b => new MTTexBitmapInfo { Bitmap = b, Format = _tex.HeaderInfo.Format }).ToList<BitmapInfo>();
+                _bitmaps = _tex.Bitmaps.Select(b => new MTTexBitmapInfo { Bitmap = b, Format = _tex.Settings.Format.FormatName }).ToList<BitmapInfo>();
             }
         }
 
@@ -54,8 +54,8 @@ namespace image_mt
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            if (_bitmaps.Count >= 1)
-                _tex.HeaderInfo.Format = ((MTTexBitmapInfo)_bitmaps[0]).Format;
+            //if (_bitmaps.Count >= 1)
+            //    _tex.HeaderInfo.Format = ((MTTexBitmapInfo)_bitmaps[0]).Format;
             _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
         }

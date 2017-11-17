@@ -1,13 +1,36 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
-using Cetera.Image;
+using System.Collections.Generic;
+using Kontract.Image;
 using Kontract;
 using Kontract.Interface;
+using Kontract.Image.Format;
 using Kontract.IO;
 
 namespace image_nintendo.BCH
 {
+    public class Support
+    {
+        public static Dictionary<byte, IImageFormat> CTRFormat = new Dictionary<byte, IImageFormat>
+        {
+            [0] = new RGBA(8, 8, 8, 8),
+            [1] = new RGBA(8, 8, 8),
+            [2] = new RGBA(5, 5, 5, 1),
+            [3] = new RGBA(5, 6, 5),
+            [4] = new RGBA(4, 4, 4, 4),
+            [5] = new LA(8, 8),
+            [6] = new HL(8, 8),
+            [7] = new LA(8, 0),
+            [8] = new LA(0, 8),
+            [9] = new LA(4, 4),
+            [10] = new LA(4, 0),
+            [11] = new LA(0, 4),
+            [12] = new ETC1(),
+            [13] = new ETC1(true)
+        };
+    }
+
     public class Header
     {
         public Header(Stream input)
@@ -122,7 +145,7 @@ namespace image_nintendo.BCH
 
     public class TexEntry
     {
-        public TexEntry(int width, int height, Format format)
+        public TexEntry(int width, int height, byte format)
         {
             this.width = width;
             this.height = height;
@@ -131,13 +154,13 @@ namespace image_nintendo.BCH
 
         public int width;
         public int height;
-        public Format format;
+        public byte format;
     }
 
     public sealed class BchBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
         [ReadOnly(true)]
-        public Format Format { get; set; }
+        public string Format { get; set; }
     }
 }

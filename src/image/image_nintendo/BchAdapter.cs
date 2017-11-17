@@ -44,7 +44,8 @@ namespace image_nintendo.BCH
             if (FileInfo.Exists)
             {
                 _bch = new BCH(FileInfo.FullName);
-                _bitmaps = _bch.bmps.Select(o => new BchBitmapInfo { Bitmap = o, Format = _bch.format }).ToList<BitmapInfo>();
+
+                _bitmaps = _bch.bmps.Select((o, i) => new BchBitmapInfo { Bitmap = o, Format = _bch._settings[i].Format.FormatName }).ToList<BitmapInfo>();
             }
         }
 

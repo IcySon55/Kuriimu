@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
+using System.ComponentModel;
 using Kontract.IO;
 
 namespace image_stex
@@ -44,7 +45,7 @@ namespace image_stex
             {
                 _stex = new STEX(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _stex.bmp } };
+                _bitmaps = new List<BitmapInfo> { new StexBitmapInfo { Bitmap = _stex.bmp, Format = _stex.settings.Format.FormatName } };
             }
         }
 
@@ -61,5 +62,12 @@ namespace image_stex
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class StexBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

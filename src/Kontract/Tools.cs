@@ -25,12 +25,13 @@ namespace Kontract
         {
             tsb.DropDownItems.Clear();
 
-            List<IGameHandler> gameHandlers = new List<IGameHandler> { new DefaultGameHandler(noGameIcon) };
-            gameHandlers.AddRange(PluginLoader<IGameHandler>.LoadPlugins(pluginPath, "game*.dll"));
-            foreach (IGameHandler gameHandler in gameHandlers)
+            var gameHandlers = new List<IGameHandler> { new DefaultGameHandler(noGameIcon) };
+            var gameHandlerPlugins = PluginLoader<IGameHandler>.LoadPlugins(pluginPath, "game*.dll").ToList();
+            gameHandlerPlugins.Sort((lhs, rhs) => string.Compare(lhs.Name, rhs.Name, StringComparison.Ordinal));
+            gameHandlers.AddRange(gameHandlerPlugins);
+            foreach (var gameHandler in gameHandlers)
             {
-                ToolStripMenuItem tsiGameHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, selectedIndexChanged);
-                tsiGameHandler.Tag = gameHandler;
+                var tsiGameHandler = new ToolStripMenuItem(gameHandler.Name, gameHandler.Icon, selectedIndexChanged) {Tag = gameHandler};
                 tsb.DropDownItems.Add(tsiGameHandler);
             }
 

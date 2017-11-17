@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,10 @@ namespace image_spr3
             {
                 using (var br = new BinaryReaderX(FileInfo.OpenRead()))
                     _spr3 = new SPR3(FileInfo.FullName);
-                _bitmaps = _spr3.ctpk.bmps.Select(o => new BitmapInfo { Bitmap = o.bmp }).ToList();
+
+                var _bmpList = _spr3.ctpk.bmps.Select((o, i) => new Spr3BitmapInfo { Bitmap = o, Format = _spr3.ctpk._settings[i].Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -54,7 +58,7 @@ namespace image_spr3
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _spr3.ctpk.bmps = _bitmaps.Select(o => new image_nintendo.CTPK.BitmapClass { bmp = o.Bitmap }).ToList();
+            _spr3.ctpk.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
 
             _spr3.Save(FileInfo.FullName);
         }
@@ -63,5 +67,12 @@ namespace image_spr3
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class Spr3BitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Cetera.Font;
@@ -46,7 +47,10 @@ namespace image_nintendo.BCFNX
             if (FileInfo.Exists)
             {
                 _bcfnx = new BCFNT(FileInfo.OpenRead());
-                _bitmaps = _bcfnx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+
+                var _bmpList = _bcfnx.bmps.Select((o, i) => new BCFNTBitmapInfo { Bitmap = o, Format = _bcfnx._settings[i].Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -66,5 +70,12 @@ namespace image_nintendo.BCFNX
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class BCFNTBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }

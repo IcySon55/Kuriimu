@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 
 namespace Kontract.Interface
@@ -8,16 +7,12 @@ namespace Kontract.Interface
     public interface IArchiveManager : IFilePlugin
     {
         // Feature Support
-        bool ArchiveHasExtendedProperties { get; } // Format provides an extended properties dialog?
         bool CanAddFiles { get; } // Is the plugin able to add files?
         bool CanRenameFiles { get; } // Is the plugin able to rename files?
         bool CanReplaceFiles { get; } // Is the plugin able to replace files?
         bool CanDeleteFiles { get; } // Is the plugin able to delete files?
-        bool CanSave { get; } // Is saving supported?
 
         // I/O
-        FileInfo FileInfo { get; set; }
-        bool Identify(string filename); // Determines if the given file is opened by the plugin.
         void Load(string filename);
         void Save(string filename = ""); // A non-blank filename is provided when using Save As...
         void Unload(); // Instructs the archive manager to close open file handles.
@@ -26,9 +21,6 @@ namespace Kontract.Interface
         IEnumerable<ArchiveFileInfo> Files { get; } // File list.
         bool AddFile(ArchiveFileInfo afi);
         bool DeleteFile(ArchiveFileInfo afi);
-
-        // Features
-        bool ShowProperties(Icon icon);
     }
 
     public class ArchiveFileInfo

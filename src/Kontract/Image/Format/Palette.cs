@@ -13,7 +13,7 @@ namespace Kontract.Image.Format
     public class Palette : IImageFormat
     {
         IImageFormat paletteFormat;
-        List<Color> colors;
+        public List<Color> colors;
         public byte[] paletteBytes;
 
         ByteOrder byteOrder;
@@ -22,7 +22,7 @@ namespace Kontract.Image.Format
 
         public string FormatName { get; }
 
-        public Palette(byte[] paletteData, IImageFormat paletteFormat, int indexDepth, ByteOrder byteOrder = ByteOrder.LittleEndian)
+        public Palette(byte[] paletteData, IImageFormat paletteFormat, int indexDepth = 8, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
             if (indexDepth % 4 != 0) throw new Exception("IndexDepth has to be dividable by 4.");
 
@@ -34,6 +34,20 @@ namespace Kontract.Image.Format
             this.paletteFormat = paletteFormat;
             paletteBytes = paletteData;
             colors = paletteFormat.Load(paletteData).ToList();
+        }
+
+        public Palette(List<Color> palette, int indexDepth = 8, ByteOrder byteOrder = ByteOrder.LittleEndian)
+        {
+            if (indexDepth % 4 != 0) throw new Exception("IndexDepth has to be dividable by 4.");
+
+            this.byteOrder = byteOrder;
+
+            BitDepth = indexDepth;
+            FormatName = "Custom Palette";
+
+            paletteFormat = null;
+            paletteBytes = null;
+            colors = palette;
         }
 
         public IEnumerable<Color> Load(byte[] data)
@@ -62,7 +76,7 @@ namespace Kontract.Image.Format
         public byte[] Save(IEnumerable<Color> colors)
         {
             var redColors = CreatePalette(colors.ToList());
-            var paletteBytes = paletteFormat.Save(redColors);
+            paletteBytes = (paletteFormat == null) ? null : paletteFormat.Save(redColors);
 
             var ms = new MemoryStream();
             using (var bw = new BinaryWriterX(ms, true, byteOrder))

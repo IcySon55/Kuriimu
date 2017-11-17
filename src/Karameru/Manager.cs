@@ -621,8 +621,8 @@ namespace Karameru
             closeToolStripMenuItem.Enabled = _fileOpen;
             //findToolStripMenuItem.Enabled = _fileOpen;
             //tsbFind.Enabled = _fileOpen;
-            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
-            tsbProperties.Enabled = _fileOpen && _archiveManager.ArchiveHasExtendedProperties;
+            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
+            tsbProperties.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
 
             // Toolbar
             tsbFileAdd.Enabled = _canAddFiles;

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Image;
+using Kontract.Image;
+using Kontract.Interface;
+using Kontract.Image.Format;
+using Kontract.Image.Swizzle;
 using Kontract.IO;
 using Cetera.PICA;
 
@@ -14,12 +17,11 @@ namespace image_nintendo.BCH
     public sealed class BCH
     {
         public List<Bitmap> bmps = new List<Bitmap>();
+        public List<ImageSettings> _settings = new List<ImageSettings>();
 
         private Header header;
         private List<PICACommandReader> picaEntries = new List<PICACommandReader>();
         private List<TexEntry> origValues = new List<TexEntry>();
-
-        public Format format;
 
         byte[] _file = null;
 
@@ -69,8 +71,8 @@ namespace image_nintendo.BCH
                         var size = picaEntries[i].getTexUnit0Size();
                         if (size.Height != 0 && size.Width != 0)
                         {
-                            format = (Format)picaEntries[i].getTexUnit0Format();
-                            int bitDepth = Common.GetBitDepth(format);
+                            var format = (byte)picaEntries[i].getTexUnit0Format();
+                            int bitDepth = Support.CTRFormat[format].BitDepth;
 
                             for (int j = 0; j <= picaEntries[i].getTexUnit0LoD(); j++)
                             {
@@ -80,10 +82,11 @@ namespace image_nintendo.BCH
                                 {
                                     Width = size.Width >> j,
                                     Height = size.Height >> j,
-                                    Format = format,
-                                    PadToPowerOf2 = false
+                                    Format = Support.CTRFormat[format],
+                                    Swizzle = new CTRSwizzle(size.Width >> j, size.Height >> j)
                                 };
 
+                                _settings.Add(settings);
                                 bmps.Add(Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
                             }
 
@@ -113,8 +116,8 @@ namespace image_nintendo.BCH
                     {
                         Width = bmps[i].Width,
                         Height = bmps[i].Height,
-                        Format = origValues[i].format,
-                        PadToPowerOf2 = false
+                        Format = Support.CTRFormat[origValues[i].format],
+                        Swizzle = new CTRSwizzle(bmps[i].Width, bmps[i].Height)
                     };
                     bw.Write(Common.Save(bmps[i], settings));
 

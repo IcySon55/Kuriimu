@@ -51,9 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Archive\SARC.cs" />
-    <Compile Include="Archive\SimpleSARC.cs" />
     <Compile Include="Common.cs" />
+    <Compile Include="Font\BFFNT.cs" />
     <Compile Include="Font\GZF.cs" />
     <Compile Include="Font\QBF.cs" />
     <Compile Include="Hash\Crc32.cs" />
@@ -80,7 +79,6 @@
     <Compile Include="IO\Extensions.cs" />
     <Compile Include="Font\BCFNT.cs" />
     <Compile Include="Layout\BCLYT.cs" />
-    <Compile Include="Archive\DARC.cs" />
     <Compile Include="Image\Common.cs" />
     <Compile Include="Image\XI.cs" />
     <Compile Include="Hardware\OnionFS.cs" />
@@ -111,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Image\BCn\BCnLicense.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Archive\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

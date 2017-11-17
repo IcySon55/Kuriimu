@@ -32,7 +32,9 @@ namespace Kontract.Image.Swizzle
 
             switch (_orientation)
             {
+                //Transpose
                 case 8: return new Point(newPoint.Y, newPoint.X);
+                //Rotate90
                 case 4: return new Point(newPoint.Y, Height - 1 - newPoint.X);
                 default: return newPoint;
             }

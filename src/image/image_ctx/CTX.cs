@@ -27,10 +27,10 @@ namespace image_ctx
                 {
                     Width = (int)header.width,
                     Height = (int)header.height,
-                    Format = Support.Format[header.format],
+                    Format = Support.Format[(uint)((header.type << 16) | header.format)],
                     Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
-                bmps.Add(Kontract.Image.Image.Load(br.ReadBytes((int)header.dataSize), settings));
+                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)header.dataSize), settings));
             }
         }
 
@@ -54,7 +54,7 @@ namespace image_ctx
                     Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
                 bw.BaseStream.Position = (bw.BaseStream.Position + 0x3f) & ~0x3f;
-                bw.Write(Kontract.Image.Image.Save(bmps[0], settings));
+                bw.Write(Kontract.Image.Common.Save(bmps[0], settings));
             }
         }
     }

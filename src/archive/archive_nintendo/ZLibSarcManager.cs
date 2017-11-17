@@ -4,15 +4,16 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Cetera.Hash;
 using Kontract.Compression;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_nintendo.ZlibSARC
+namespace archive_nintendo.SARC
 {
     public class ZLibSarcManager : IArchiveManager
     {
-        private Cetera.Archive.SARC _sarc = null;
+        private SARC _sarc = null;
 
         #region Properties
 
@@ -23,7 +24,7 @@ namespace archive_nintendo.ZlibSARC
         public string About => "This is the ZLib-Compressed SARC archive manager for Karameru.";
 
         // Feature Support
-        public bool ArchiveHasExtendedProperties => false;
+        public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => true;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
@@ -64,7 +65,7 @@ namespace archive_nintendo.ZlibSARC
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
                 br.ReadBytes(4);
-                _sarc = new Cetera.Archive.SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
+                _sarc = new SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
             }
         }
 
@@ -118,7 +119,13 @@ namespace archive_nintendo.ZlibSARC
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            _sarc.Files.Add(afi);
+            _sarc.Files.Add(new SarcArchiveFileInfo
+            {
+                FileData = afi.FileData,
+                FileName = afi.FileName,
+                State = afi.State,
+                hash = SimpleHash.Create(afi.FileName, _sarc.hashMultiplier)
+            });
             return true;
         }
 

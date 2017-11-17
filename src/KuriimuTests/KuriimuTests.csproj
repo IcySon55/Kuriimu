@@ -106,6 +106,10 @@
       <Project>{48651c2c-d0a4-4e38-8512-977181b5cac9}</Project>
       <Name>image_comp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\image\image_ctgd\image_ctgd.csproj">
+      <Project>{9ce7d988-fe3d-447e-9b0e-18587fc384d7}</Project>
+      <Name>image_ctgd</Name>
+    </ProjectReference>
     <ProjectReference Include="..\image\image_ctxb\image_ctxb.csproj">
       <Project>{c741ab50-669d-406f-9d27-b5ef5bdd1294}</Project>
       <Name>image_ctxb</Name>
@@ -133,6 +137,58 @@
     <ProjectReference Include="..\image\image_level5\image_level5.csproj">
       <Project>{1c9d7f75-2e04-441e-83d4-00a406809e09}</Project>
       <Name>image_level5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_lmt\image_lmt.csproj">
+      <Project>{f77874c9-8051-41e5-922e-27f00c9cd462}</Project>
+      <Name>image_lmt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_mods\image_mods.csproj">
+      <Project>{eef5acb8-aa2f-4c4f-afbd-24916b85665e}</Project>
+      <Name>image_mods</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_moflex\image_moflex.csproj">
+      <Project>{bead1066-94fc-42fe-b9b3-f1dd707a4a78}</Project>
+      <Name>image_moflex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_mt\image_mt.csproj">
+      <Project>{9e078594-73ae-4ec1-aba2-bf8f338fccd4}</Project>
+      <Name>image_mt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_nintendo\image_nintendo.csproj">
+      <Project>{77a182c0-4e86-469d-986e-9fafaabcd26e}</Project>
+      <Name>image_nintendo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_picarg4\image_picarg4.csproj">
+      <Project>{6d63194b-4262-4339-a6ce-c26da9e79ef7}</Project>
+      <Name>image_picarg4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_spr3\image_spr3.csproj">
+      <Project>{e789f312-b629-40dc-9058-26fae5f277e1}</Project>
+      <Name>image_spr3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_stex\image_stex.csproj">
+      <Project>{6dd11d33-6cd9-4445-8c36-68b8d63ba6da}</Project>
+      <Name>image_stex</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_texi\image_texi.csproj">
+      <Project>{080f25a5-fca8-4047-b4dd-70d0f9432d30}</Project>
+      <Name>image_texi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tim2\image_tim2.csproj">
+      <Project>{22b0f441-5cf7-44cb-ba4f-0f1a25592614}</Project>
+      <Name>image_tim2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tm2\image_tm2.csproj">
+      <Project>{482a2b54-f27d-4095-8d91-16b9c03c3403}</Project>
+      <Name>image_tm2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_tmx\image_tmx.csproj">
+      <Project>{7f679e7f-ea49-4eb9-8d6c-16dd131cb3aa}</Project>
+      <Name>image_tmx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\image\image_vxds\image_vxds.csproj">
+      <Project>{41dbaf83-dc24-4c5e-b43b-c38895d49aa9}</Project>
+      <Name>image_vxds</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>

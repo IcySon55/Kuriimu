@@ -5,7 +5,7 @@ using System.Linq;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace image_nintendo
+namespace image_nintendo.CHNK
 {
     public class ChnkTexAdapter : IImageAdapter
     {

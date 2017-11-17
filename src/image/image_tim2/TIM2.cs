@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
+using Kontract.Image;
 using Kontract.IO;
 
 namespace image_tim2
@@ -127,7 +127,7 @@ namespace image_tim2
             }
         }
 
-        //Save will be added after Kukkii multi image support
+        //Save will be added after Load is finished
         public void Save(Stream input)
         {
 

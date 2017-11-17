@@ -38,12 +38,12 @@ namespace image_ctxb
                         {
                             Width = chunks[i].textures[j].width,
                             Height = chunks[i].textures[j].height,
-                            Format = Support.Format[chunks[i].textures[j].imageFormat],
+                            Format = Support.Format[(uint)((chunks[i].textures[j].dataType << 16) | chunks[i].textures[j].imageFormat)],
                             Swizzle = new CTRSwizzle(chunks[i].textures[j].width, chunks[i].textures[j].height)
                         };
 
                         settingsList.Add(settings);
-                        bmps.Add(Kontract.Image.Image.Load(br.ReadBytes(chunks[i].textures[j].dataLength), settings));
+                        bmps.Add(Kontract.Image.Common.Load(br.ReadBytes(chunks[i].textures[j].dataLength), settings));
                     }
                 }
             }
@@ -67,7 +67,7 @@ namespace image_ctxb
                             Swizzle = new CTRSwizzle(bmps[count].Width, bmps[count].Height)
                         };
 
-                        var resBmp = Kontract.Image.Image.Save(bmps[count], settingsList[count]);
+                        var resBmp = Kontract.Image.Common.Save(bmps[count], settingsList[count]);
                         bw.Write(resBmp);
 
                         chunks[i].textures[j].dataLength = resBmp.Length;

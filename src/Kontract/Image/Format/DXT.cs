@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kontract.Interface;
 using System.Drawing;
-using Kontract.IO;
 using System.IO;
+using Kontract.Interface;
+using Kontract.IO;
 
 namespace Kontract.Image.Format
 {
@@ -21,11 +18,9 @@ namespace Kontract.Image.Format
 
         public int BitDepth { get; set; }
         public int BlockBitDepth { get; set; }
-
         public string FormatName { get; set; }
 
         Version version;
-
         ByteOrder byteOrder;
 
         public DXT(Version version, bool standard = false, ByteOrder byteOrder = ByteOrder.LittleEndian)
@@ -34,10 +29,9 @@ namespace Kontract.Image.Format
             BlockBitDepth = (version == Version.DXT1) ? 64 : 128;
 
             this.version = version;
-
-            FormatName = ((standard) ? "s" : "") + version.ToString();
-
             this.byteOrder = byteOrder;
+
+            FormatName = (standard ? "s" : "") + version;
         }
 
         public IEnumerable<Color> Load(byte[] tex)

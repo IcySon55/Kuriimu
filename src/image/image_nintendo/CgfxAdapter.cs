@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
@@ -8,7 +9,7 @@ using Kontract.IO;
 
 namespace image_nintendo.CGFX
 {
-    public class BcfnxAdapter : IImageAdapter
+    public class CgfxAdapter : IImageAdapter
     {
         private CGFX _cgfx;
         private List<BitmapInfo> _bitmaps;
@@ -53,7 +54,10 @@ namespace image_nintendo.CGFX
             if (FileInfo.Exists)
             {
                 _cgfx = new CGFX(FileInfo.OpenRead());
-                _bitmaps = _cgfx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+
+                var _bmpList = _cgfx.bmps.Select((o, i) => new CGFXBitmapInfo { Bitmap = o, Format = _cgfx._settings[i].Format.FormatName }).ToList();
+                _bitmaps = new List<BitmapInfo>();
+                _bitmaps.AddRange(_bmpList);
             }
         }
 
@@ -70,5 +74,12 @@ namespace image_nintendo.CGFX
         public IList<BitmapInfo> Bitmaps => _bitmaps;
 
         public bool ShowProperties(Icon icon) => false;
+
+        public sealed class CGFXBitmapInfo : BitmapInfo
+        {
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public string Format { get; set; }
+        }
     }
 }
