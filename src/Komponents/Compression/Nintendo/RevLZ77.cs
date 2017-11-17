@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Composition;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 using System.IO;
 

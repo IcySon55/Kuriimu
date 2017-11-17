@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract;
 
 /*Dual Destinies Android:

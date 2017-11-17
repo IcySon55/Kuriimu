@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace Compression

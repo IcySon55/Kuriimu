@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -12,7 +12,6 @@ namespace Compression
     [ExportMetadata("TabPathCompress", "Custom/Level 5/Compressionless,0;Custom/Level 5/LZ10,1;" +
             "Custom/Level 5/Huffman/4 Bit,2;Custom/Level 5/Huffman/8 Bit,3;Custom/Level 5/RLE,4")]
     [ExportMetadata("TabPathDecompress", "Custom/Level 5")]
-    [Export("Nintendo", typeof(ICompressionCollection))]
     [Export("Level5", typeof(ICompressionCollection))]
     [Export(typeof(ICompressionCollection))]
     public class Level5 : ICompressionCollection
