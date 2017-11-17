@@ -21,13 +21,12 @@ namespace Karameru
 {
     public partial class Manager : Form
     {
-        private IArchiveManager _archiveManager;
+        private Lazy<IArchiveManager, IFilePluginMetadata> _archiveManager;
         private bool _fileOpen;
         private bool _hasChanges;
 
         private List<ITextAdapter> _textAdapters;
         private List<IImageAdapter> _imageAdapters;
-        private List<IArchiveManager> _archiveManagers;
         private HashSet<string> _textExtensions;
         private HashSet<string> _imageExtensions;
         private HashSet<string> _archiveExtensions;
@@ -44,6 +43,7 @@ namespace Karameru
         private bool _canReplaceFiles;
         private bool _canDeleteFiles;
 
+        //Komponent Imports
         [ImportMany(typeof(ICompression))]
         public List<Lazy<ICompression, ICompressionMetaData>> compressions;
         [ImportMany(typeof(ICompressionCollection))]
@@ -53,9 +53,23 @@ namespace Karameru
         [ImportMany(typeof(IHash))]
         public List<Lazy<IHash, IHashMetadata>> hashes;
 
+        //Format Plugin Imports
+        [ImportMany(typeof(IArchiveManager))]
+        public List<Lazy<IArchiveManager, IFilePluginMetadata>> _archiveManagers;
+
+        public void LoadImports()
+        {
+            var catalog = new AggregateCatalog(new[] { new DirectoryCatalog("Komponents"), new DirectoryCatalog("plugins") });
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+
         public Manager(string[] args)
         {
             InitializeComponent();
+
+            //Load Imports
+            LoadImports();
 
             // Overwrite window themes
             Win32.SetWindowTheme(treDirectories.Handle, "explorer", null);
@@ -79,11 +93,10 @@ namespace Karameru
             // Load Plugins
             _textAdapters = PluginLoader<ITextAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "text*.dll").ToList();
             _imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
-            _archiveManagers = PluginLoader<IArchiveManager>.LoadPlugins(Settings.Default.PluginDirectory, "archive*.dll").ToList();
 
             _textExtensions = new HashSet<string>(_textAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
             _imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
-            _archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
+            _archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Metadata.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
 
             // Load passed in file
             if (args.Length > 0 && File.Exists(args[0]))
@@ -102,11 +115,6 @@ namespace Karameru
             detailsToolStripMenuItem.Checked = true; // Default for now TODO: Make this saved in user settings
 
             treDirectories.NodeMouseClick += (sender2, e2) => treDirectories.SelectedNode = e2.Node;
-
-            //Load dependencies
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
 
             // Tools
             CompressionTools.LoadCompressionTools(compressionToolStripMenuItem, compressions, compressionColls);
@@ -374,7 +382,7 @@ namespace Karameru
             var ofd = new OpenFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
-                Filter = Tools.LoadFilters(_archiveManagers)
+                Filter = Tools.LoadFilters(_archiveManagers.Select(a => a.Metadata))
             };
 
             var dr = DialogResult.OK;
@@ -387,15 +395,17 @@ namespace Karameru
             if (filename == string.Empty)
                 filename = ofd.FileName;
 
-            var tempManager = SelectArchiveManager(filename);
+            var stream = File.OpenRead(filename);
+            var tempManager = SelectArchiveManager(stream, filename);
+            stream.Dispose();
 
             try
             {
                 if (tempManager != null)
                 {
-                    tempManager.Load(filename);
+                    tempManager.Value.Load(filename);
 
-                    _archiveManager?.Unload();
+                    _archiveManager?.Value?.Unload();
                     _archiveManager = tempManager;
                     _fileOpen = true;
                     _hasChanges = false;
@@ -409,7 +419,7 @@ namespace Karameru
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.ToString(), tempManager != null ? $"{tempManager.Name} - {tempManager.Description} Manager" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.ToString(), tempManager != null ? $"{tempManager.Metadata.Name} - {tempManager.Metadata.Description} Manager" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -418,19 +428,19 @@ namespace Karameru
             var sfd = new SaveFileDialog();
             var dr = DialogResult.OK;
 
-            sfd.Title = $"Save as {_archiveManager.Description}";
-            sfd.FileName = _archiveManager.FileInfo.Name;
-            sfd.Filter = _archiveManager.Description + " (" + _archiveManager.Extension + ")|" + _archiveManager.Extension;
+            sfd.Title = $"Save as {_archiveManager.Metadata.Description}";
+            sfd.FileName = _archiveManager.Value.FileInfo.Name;
+            sfd.Filter = _archiveManager.Metadata.Description + " (" + _archiveManager.Metadata.Extension + ")|" + _archiveManager.Metadata.Extension;
 
-            if (_archiveManager.FileInfo == null || saveAs)
+            if (_archiveManager.Value.FileInfo == null || saveAs)
             {
                 sfd.InitialDirectory = Settings.Default.LastDirectory;
                 dr = sfd.ShowDialog();
             }
 
-            if ((_archiveManager.FileInfo == null || saveAs) && dr == DialogResult.OK)
+            if ((_archiveManager.Value.FileInfo == null || saveAs) && dr == DialogResult.OK)
             {
-                _archiveManager.FileInfo = new FileInfo(sfd.FileName);
+                _archiveManager.Value.FileInfo = new FileInfo(sfd.FileName);
                 Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
                 Settings.Default.Save();
             }
@@ -439,14 +449,14 @@ namespace Karameru
 
             try
             {
-                _archiveManager.Save(saveAs ? _archiveManager.FileInfo?.FullName : string.Empty);
+                _archiveManager.Value.Save(saveAs ? _archiveManager.Value.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
                 LoadDirectories();
                 UpdateForm();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.ToString(), _archiveManager != null ? $"{_archiveManager.Name} - {_archiveManager.Description} Manager" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.ToString(), _archiveManager != null ? $"{_archiveManager.Metadata.Name} - {_archiveManager.Metadata.Description} Manager" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return dr;
@@ -454,7 +464,7 @@ namespace Karameru
 
         private void CloseFile()
         {
-            _archiveManager?.Unload();
+            _archiveManager?.Value?.Unload();
             _archiveManager = null;
             _fileOpen = false;
             _hasChanges = false;
@@ -463,29 +473,67 @@ namespace Karameru
             UpdateForm();
         }
 
-        private IArchiveManager SelectArchiveManager(string filename, bool batchMode = false)
+        private Lazy<IArchiveManager, IFilePluginMetadata> SelectArchiveManager(FileStream stream, string filename, bool batchMode = false)
         {
-            IArchiveManager result = null;
-
             // first look for managers whose extension matches that of our file name
-            List<IArchiveManager> matchingManagers = _archiveManagers.Where(adapter => adapter.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
+            List<Lazy<IArchiveManager, IFilePluginMetadata>> matchingManagers = _archiveManagers.Where(adapter => adapter.Metadata.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
 
-            result = matchingManagers.FirstOrDefault(manager => manager.Identify(filename));
+            //Get definite and raw formats
+            Lazy<IArchiveManager, IFilePluginMetadata> result = null;
+            List<Lazy<IArchiveManager, IFilePluginMetadata>> raws = new List<Lazy<IArchiveManager, IFilePluginMetadata>>();
+            foreach (var match in matchingManagers)
+            {
+                var retVal = match.Value.Identify(stream, filename);
+                if (!stream.CanRead) stream = File.OpenRead(filename);
+                stream.Position = 0;
+                if (retVal == Identification.True)
+                {
+                    result = match;
+                    break;
+                }
+                else if (retVal == Identification.Raw)
+                    raws.Add(match);
+            }
+
+            //Create decision dialogue, if no definite formats exist
+            if (result == null && raws.Count() != 0)
+                result = RawSelector.Show(raws);
 
             // if none of them match, then try all other managers
+            raws.Clear();
             if (result == null)
-                result = _archiveManagers.Except(matchingManagers).FirstOrDefault(manager => manager.Identify(filename));
+            {
+                var unmatchedManagers = _archiveManagers.Except(matchingManagers);
+                foreach (var unmatch in unmatchedManagers)
+                {
+                    var retVal = unmatch.Value.Identify(stream, filename);
+                    if (!stream.CanRead) stream = File.OpenRead(filename);
+                    stream.Position = 0;
+                    if (retVal == Identification.True)
+                    {
+                        result = unmatch;
+                        break;
+                    }
+                    else if (retVal == Identification.Raw)
+                        raws.Add(unmatch);
+                }
+            }
+
+            //Create decision dialogue, if no format exists here either
+            if (result == null && raws.Count() != 0)
+                result = RawSelector.Show(raws);
+            raws.Clear();
 
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            return result == null ? null : (IArchiveManager)Activator.CreateInstance(result.GetType());
+            return result == null ? null : result;//(Lazy<IArchiveManager, IFilePluginMetadata>)Activator.CreateInstance(result.GetType());
         }
 
         // Loading
         private void UpdateFiles()
         {
-            _files = _archiveManager?.Files.ToList();
+            _files = _archiveManager?.Value?.Files.ToList();
         }
 
         private void LoadDirectories()
@@ -606,7 +654,7 @@ namespace Karameru
         // Utilities
         private void UpdateForm()
         {
-            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Description + " Manager (" + _archiveManager.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Metadata.Description + " Manager (" + _archiveManager.Metadata.Name + ")" : string.Empty);
 
             openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
             tsbOpen.Enabled = _archiveManagers.Count > 0;
@@ -621,24 +669,24 @@ namespace Karameru
 
             bool itemSelected = _fileOpen && lstFiles.SelectedItems.Count > 0;
 
-            _canAddFiles = _fileOpen && (bool)_archiveManager?.CanAddFiles;
+            _canAddFiles = _fileOpen && (bool)_archiveManager?.Value?.CanAddFiles;
             _canExtractFiles = itemSelected && (bool)afi?.FileSize.HasValue;
-            _canReplaceFiles = itemSelected && (bool)_archiveManager?.CanReplaceFiles;
-            _canRenameFiles = itemSelected && (bool)_archiveManager?.CanRenameFiles;
-            _canDeleteFiles = itemSelected && (bool)_archiveManager?.CanDeleteFiles;
+            _canReplaceFiles = itemSelected && (bool)_archiveManager?.Value?.CanReplaceFiles;
+            _canRenameFiles = itemSelected && (bool)_archiveManager?.Value?.CanRenameFiles;
+            _canDeleteFiles = itemSelected && (bool)_archiveManager?.Value?.CanDeleteFiles;
 
             splMain.Enabled = _fileOpen;
 
             // Menu
-            saveToolStripMenuItem.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
-            tsbSave.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
-            saveAsToolStripMenuItem.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
-            tsbSaveAs.Enabled = _fileOpen && (bool)_archiveManager?.CanSave;
+            saveToolStripMenuItem.Enabled = _fileOpen && (bool)_archiveManager?.Value?.CanSave;
+            tsbSave.Enabled = _fileOpen && (bool)_archiveManager?.Value?.CanSave;
+            saveAsToolStripMenuItem.Enabled = _fileOpen && (bool)_archiveManager?.Value?.CanSave;
+            tsbSaveAs.Enabled = _fileOpen && (bool)_archiveManager?.Value?.CanSave;
             closeToolStripMenuItem.Enabled = _fileOpen;
             //findToolStripMenuItem.Enabled = _fileOpen;
             //tsbFind.Enabled = _fileOpen;
-            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
-            tsbProperties.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
+            propertiesToolStripMenuItem.Enabled = _fileOpen && _archiveManager.Value.FileHasExtendedProperties;
+            tsbProperties.Enabled = _fileOpen && _archiveManager.Value.FileHasExtendedProperties;
 
             // Toolbar
             tsbFileAdd.Enabled = _canAddFiles;
@@ -661,7 +709,7 @@ namespace Karameru
 
         private string FileName()
         {
-            return _archiveManager?.FileInfo?.Name ?? string.Empty;
+            return _archiveManager?.Value?.FileInfo?.Name ?? string.Empty;
         }
 
         // Directory Tree
@@ -897,7 +945,7 @@ namespace Karameru
 
             if (Directory.Exists(path))
             {
-                var types = _archiveManagers.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
+                var types = _archiveManagers.Select(x => x.Metadata.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                 var files = new List<string>();
                 foreach (var type in types)
@@ -908,13 +956,13 @@ namespace Karameru
                         try
                         {
                             var fi = new FileInfo(file);
-                            var currentManager = SelectArchiveManager(file, true);
+                            var currentManager = SelectArchiveManager(File.OpenRead(file), file, true);
 
                             if (currentManager != null)
                             {
-                                currentManager.Load(file);
+                                currentManager.Value.Load(file);
 
-                                foreach (var afi in currentManager.Files)
+                                foreach (var afi in currentManager.Value.Files)
                                     try
                                     {
                                         var stream = afi.FileData;
@@ -943,7 +991,7 @@ namespace Karameru
                                     }
 
                                 count++;
-                                currentManager.Unload();
+                                currentManager.Value.Unload();
                             }
                         }
                         catch (Exception)
@@ -979,7 +1027,7 @@ namespace Karameru
 
             if (Directory.Exists(path))
             {
-                var types = _archiveManagers.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
+                var types = _archiveManagers.Select(x => x.Metadata.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                 var files = new List<string>();
                 foreach (var type in types)
@@ -990,14 +1038,14 @@ namespace Karameru
                         try
                         {
                             var fi = new FileInfo(file);
-                            var currentManager = SelectArchiveManager(file, true);
+                            var currentManager = SelectArchiveManager(File.OpenRead(file), file, true);
 
                             if (currentManager != null)
                             {
                                 var madeChanges = false;
-                                currentManager.Load(file);
+                                currentManager.Value.Load(file);
 
-                                foreach (var afi in currentManager.Files)
+                                foreach (var afi in currentManager.Value.Files)
                                 {
                                     var exPath = Path.Combine(fi.DirectoryName, Path.GetFileName(file).Replace('.', '_'), Path.GetDirectoryName(afi.FileName.TrimStart('/', '\\').TrimEnd('\\')));
 
@@ -1020,10 +1068,10 @@ namespace Karameru
                                 if (madeChanges)
                                 {
                                     count++;
-                                    currentManager.Save();
+                                    currentManager.Value.Save();
                                 }
 
-                                currentManager.Unload();
+                                currentManager.Value.Unload();
                             }
                         }
                         catch (Exception)

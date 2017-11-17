@@ -84,9 +84,8 @@ namespace Kontract.UI
 
             try
             {
-                using (openFile)
-                using (var outFs = new BinaryWriterX(saveFile))
-                    outFs.Write(tag.Value.Decrypt(openFile));
+                var decrypt = tag.Value.Decrypt(openFile);
+                saveFile.Write(decrypt, 0, decrypt.Length);
 
                 MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -106,9 +105,8 @@ namespace Kontract.UI
 
             try
             {
-                using (openFile)
-                using (var outFs = new BinaryWriterX(saveFile))
-                    outFs.Write(tag.Value.Encrypt(openFile));
+                var encrypt = tag.Value.Encrypt(openFile);
+                saveFile.Write(encrypt, 0, encrypt.Length);
 
                 MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

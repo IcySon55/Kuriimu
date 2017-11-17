@@ -73,9 +73,11 @@ namespace Kontract.UI
 
             try
             {
-                using (var inFs = new BinaryReaderX(openFile))
-                using (var outFs = new BinaryWriterX(saveFile))
-                    outFs.Write(tag.Value.Create(inFs.ReadAllBytes(), 0));
+                var bytes = new byte[(int)openFile.Length];
+                openFile.Read(bytes, 0, (int)openFile.Length);
+
+                var hash = tag.Value.Create(bytes, 0);
+                saveFile.Write(hash, 0, hash.Length);
             }
             catch (Exception ex)
             {

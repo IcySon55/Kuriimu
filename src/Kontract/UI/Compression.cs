@@ -4,7 +4,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Kontract.IO;
 using Kontract.Interface;
 using System.Linq;
 
@@ -179,12 +178,17 @@ namespace Kontract.UI
 
             try
             {
-                using (openFile)
-                using (var outFs = new BinaryWriterX(saveFile))
-                    if (meta.TabPathCompress.Contains(','))
-                        outFs.Write(compColl.Decompress(openFile, 0));
-                    else
-                        outFs.Write(comp.Decompress(openFile, 0));
+                byte[] decomp;
+                if (meta.TabPathCompress.Contains(','))
+                {
+                    decomp = compColl.Decompress(openFile, 0);
+                    saveFile.Write(decomp, 0, decomp.Length);
+                }
+                else
+                {
+                    decomp = comp.Decompress(openFile, 0);
+                    saveFile.Write(decomp, 0, decomp.Length);
+                }
             }
             catch (Exception ex)
             {
@@ -223,18 +227,19 @@ namespace Kontract.UI
 
             try
             {
-                using (openFile)
-                using (var outFs = new BinaryWriterX(saveFile))
-                    if (meta.TabPathCompress.Contains(','))
-                    {
-                        Byte.TryParse(tsi.Name, out var method);
-                        compColl.SetMethod(method);
-                        outFs.Write(compColl.Compress(openFile));
-                    }
-                    else
-                    {
-                        outFs.Write(comp.Compress(openFile));
-                    }
+                byte[] compData;
+                if (meta.TabPathCompress.Contains(','))
+                {
+                    Byte.TryParse(tsi.Name, out var method);
+                    compColl.SetMethod(method);
+                    compData = compColl.Compress(openFile);
+                    saveFile.Write(compData, 0, compData.Length);
+                }
+                else
+                {
+                    compData = comp.Compress(openFile);
+                    saveFile.Write(compData, 0, compData.Length);
+                }
             }
             catch (Exception ex)
             {
