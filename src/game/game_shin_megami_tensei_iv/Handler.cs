@@ -34,16 +34,11 @@ namespace game_shin_megami_tensei_iv
             ["<E903>"] = "<unk4>",
 
             ["<F801>"] = "\n",
-            ["<F802>"] = "\n",
             ["<F87A>"] = "<unk3>",
             ["<F812>"] = "<name>",
             ["<F813>"] = "<text>",
             ["<E5E3>"] = "<playername>",
-            ["A"] = "<A>",
-            ["B"] = "<B>",
-            ["C"] = "<C>",
-            ["D"] = "<D>",
-            ["E"] = "<E>",
+
             //Spanish localization
             ["\u30F3"] = "ñ", //ン
             ["\u30D9"] = "ä", //ベ
