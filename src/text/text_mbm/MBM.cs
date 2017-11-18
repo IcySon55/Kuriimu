@@ -90,18 +90,6 @@ namespace text_mbm
                 int startOffset = entries[0].stringOffset;
                 bw.BaseStream.Position = startOffset;
 
-                /*for (var i = 0; i < header.entryCount; i++)
-                {
-                    var bytes = ConvertStringToBytes(Labels[i].Text);
-                    if (entries[i].stringOffset != 0)
-                    {
-                        entries[i].stringSize = bytes.Length + 2;
-                        entries[i].stringOffset = (int)bw.BaseStream.Position;
-                    }
-                    bw.Write(bytes);
-                    bw.Write((byte)0xFF);
-                    bw.Write((byte)0xFF);
-                }*/
                 var entryIndex = 0;
                 foreach (var lbl in Labels)
                 {
@@ -115,7 +103,7 @@ namespace text_mbm
                     bw.Write((byte)0xFF);
                     bw.Write((byte)0xFF);
                     entryIndex++;
-                }
+                } 
 
                 //Update info
                 header.fileSize = (int)bw.BaseStream.Length - (startOffset - 0x20 - header.entryCount * 0x10);
