@@ -6,10 +6,6 @@ namespace Kontract.Interface
 {
     public interface IImageAdapter : IFilePlugin
     {
-        // I/O
-        void Load(string filename);
-        void Save(string filename = ""); // A non-blank filename is provided when using Save As...
-
         // Images
         IList<BitmapInfo> Bitmaps { get; }
     }

@@ -20,11 +20,10 @@ namespace Kukkii
 {
     public partial class Converter : Form
     {
-        private IImageAdapter _imageAdapter;
+        private Lazy<IImageAdapter, IFilePluginMetadata> _imageAdapter;
         private bool _fileOpen;
         private bool _hasChanges;
 
-        private List<IImageAdapter> _imageAdapters;
         private int _selectedImageIndex;
         private Bitmap _thumbnailBackground;
 
@@ -44,20 +43,7 @@ namespace Kukkii
             ["FixedSingleGlowShadow"] = "menu_border_glow_shadow"
         };
 
-        public Converter(string[] args)
-        {
-            InitializeComponent();
-
-            // Load Plugins
-            var loader = new PluginLoaderMEF();
-            loader.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll");
-            _imageAdapters = loader._images;
-
-            // Load passed in file
-            if (args.Length > 0 && File.Exists(args[0]))
-                OpenFile(args[0]);
-        }
-
+        //Komponent Imports
         [ImportMany(typeof(ICompression))]
         public List<Lazy<ICompression, ICompressionMetaData>> compressions;
         [ImportMany(typeof(ICompressionCollection))]
@@ -67,14 +53,32 @@ namespace Kukkii
         [ImportMany(typeof(IHash))]
         public List<Lazy<IHash, IHashMetadata>> hashes;
 
+        //Format Plugin Imports
+        [ImportMany(typeof(IImageAdapter))]
+        private List<Lazy<IImageAdapter, IFilePluginMetadata>> _imageAdapters;
+
+        public void LoadImports()
+        {
+            var catalog = new AggregateCatalog(new[] { new DirectoryCatalog("Komponents"), new DirectoryCatalog("plugins") });
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+
+        public Converter(string[] args)
+        {
+            InitializeComponent();
+
+            // Load Plugins
+            LoadImports();
+
+            // Load passed in file
+            if (args.Length > 0 && File.Exists(args[0]))
+                OpenFile(args[0]);
+        }
+
         private void frmConverter_Load(object sender, EventArgs e)
         {
             Icon = Resources.kukkii;
-
-            //Load dependencies
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
 
             // Tools
             CompressionTools.LoadCompressionTools(compressionToolStripMenuItem, compressions, compressionColls);
@@ -141,7 +145,7 @@ namespace Kukkii
             ImportPNG();
         }
 
-        private void openRawToolStripMenuItem_Click(object sender, EventArgs e)
+        /*private void openRawToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var ofd = new OpenFileDialog();
             ofd.InitialDirectory = Settings.Default.LastDirectory;
@@ -151,7 +155,7 @@ namespace Kukkii
                 var openRaw = new OpenRaw(ofd.FileName);
                 openRaw.ShowDialog();
             }
-        }
+        }*/
 
         // File Handling
         private void frmConverter_DragEnter(object sender, DragEventArgs e)
@@ -198,7 +202,7 @@ namespace Kukkii
             var ofd = new OpenFileDialog
             {
                 InitialDirectory = Settings.Default.LastDirectory,
-                Filter = Tools.LoadFilters(_imageAdapters)
+                Filter = Tools.LoadFilters(_imageAdapters.Select(i => i.Metadata))
             };
 
             var dr = DialogResult.OK;
@@ -211,13 +215,14 @@ namespace Kukkii
             if (filename == string.Empty)
                 filename = ofd.FileName;
 
-            var tempAdapter = SelectImageAdapter(filename);
+            var stream = File.OpenRead(filename);
+            var tempAdapter = SelectImageAdapter(stream, filename);
 
             try
             {
                 if (tempAdapter != null)
                 {
-                    tempAdapter.Load(filename);
+                    tempAdapter.Value.Load(filename);
 
                     _imageAdapter = tempAdapter;
                     _fileOpen = true;
@@ -227,9 +232,9 @@ namespace Kukkii
 
                     UpdatePreview();
                     UpdateImageList();
-                    if (_imageAdapter.Bitmaps?.Count <= 0)
+                    if (_imageAdapter.Value.Bitmaps?.Count <= 0)
                     {
-                        MessageBox.Show(this, $"{FileName()} was loaded by the \"{tempAdapter.Description}\" adapter but it provided no images.", "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(this, $"{FileName()} was loaded by the \"{tempAdapter.Metadata.Description}\" adapter but it provided no images.", "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         _imageAdapter = null;
                         _fileOpen = false;
                     }
@@ -241,7 +246,7 @@ namespace Kukkii
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Name} - {tempAdapter.Description} Adapter" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Metadata.Name} - {tempAdapter.Metadata.Description} Adapter" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -250,19 +255,19 @@ namespace Kukkii
             var sfd = new SaveFileDialog();
             var dr = DialogResult.OK;
 
-            sfd.Title = $"Save as {_imageAdapter.Description}";
-            sfd.FileName = _imageAdapter.FileInfo.Name;
-            sfd.Filter = _imageAdapter.Description + " (" + _imageAdapter.Extension + ")|" + _imageAdapter.Extension;
+            sfd.Title = $"Save as {_imageAdapter.Metadata.Description}";
+            sfd.FileName = _imageAdapter.Value.FileInfo.Name;
+            sfd.Filter = _imageAdapter.Metadata.Description + " (" + _imageAdapter.Metadata.Extension + ")|" + _imageAdapter.Metadata.Extension;
 
-            if (_imageAdapter.FileInfo == null || saveAs)
+            if (_imageAdapter.Value.FileInfo == null || saveAs)
             {
                 sfd.InitialDirectory = Settings.Default.LastDirectory;
                 dr = sfd.ShowDialog();
             }
 
-            if ((_imageAdapter.FileInfo == null || saveAs) && dr == DialogResult.OK)
+            if ((_imageAdapter.Value.FileInfo == null || saveAs) && dr == DialogResult.OK)
             {
-                _imageAdapter.FileInfo = new FileInfo(sfd.FileName);
+                _imageAdapter.Value.FileInfo = new FileInfo(sfd.FileName);
                 Settings.Default.LastDirectory = new FileInfo(sfd.FileName).DirectoryName;
                 Settings.Default.Save();
             }
@@ -271,36 +276,74 @@ namespace Kukkii
 
             try
             {
-                _imageAdapter.Save(saveAs ? _imageAdapter.FileInfo?.FullName : string.Empty);
+                _imageAdapter.Value.Save(saveAs ? _imageAdapter.Value?.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
                 UpdatePreview();
                 UpdateForm();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.ToString(), _imageAdapter != null ? $"{_imageAdapter.Name} - {_imageAdapter.Description} Adapter" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, ex.ToString(), _imageAdapter != null ? $"{_imageAdapter.Metadata.Name} - {_imageAdapter.Metadata.Description} Adapter" : "Supported Format Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return dr;
         }
 
-        private IImageAdapter SelectImageAdapter(string filename, bool batchMode = false)
+        private Lazy<IImageAdapter, IFilePluginMetadata> SelectImageAdapter(Stream stream, string filename, bool batchMode = false)
         {
-            IImageAdapter result = null;
+            // first look for managers whose extension matches that of our file name
+            List<Lazy<IImageAdapter, IFilePluginMetadata>> matchingManagers = _imageAdapters.Where(adapter => adapter.Metadata.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
 
-            // first look for adapters whose extension matches that of our filename
-            List<IImageAdapter> matchingAdapters = _imageAdapters.Where(adapter => adapter.Extension.TrimEnd(';').Split(';').Any(s => filename.ToLower().EndsWith(s.TrimStart('*')))).ToList();
+            //Get definite and raw formats
+            Lazy<IImageAdapter, IFilePluginMetadata> result = null;
+            List<Lazy<IImageAdapter, IFilePluginMetadata>> raws = new List<Lazy<IImageAdapter, IFilePluginMetadata>>();
+            foreach (var match in matchingManagers)
+            {
+                var retVal = match.Value.Identify(stream, filename);
+                if (!stream.CanRead) stream = File.OpenRead(filename);
+                stream.Position = 0;
+                if (retVal == Identification.True)
+                {
+                    result = match;
+                    break;
+                }
+                else if (retVal == Identification.Raw)
+                    raws.Add(match);
+            }
 
-            result = matchingAdapters.FirstOrDefault(adapter => adapter.Identify(filename));
+            //Create decision dialogue, if no definite formats exist
+            if (result == null && raws.Count() != 0)
+                result = RawSelector.Show(raws);
 
-            // if none of them match, then try all other adapters
+            // if none of them match, then try all other managers
+            raws.Clear();
             if (result == null)
-                result = _imageAdapters.Except(matchingAdapters).FirstOrDefault(adapter => adapter.Identify(filename));
+            {
+                var unmatchedManagers = _imageAdapters.Except(matchingManagers);
+                foreach (var unmatch in unmatchedManagers)
+                {
+                    var retVal = unmatch.Value.Identify(stream, filename);
+                    if (!stream.CanRead) stream = File.OpenRead(filename);
+                    stream.Position = 0;
+                    if (retVal == Identification.True)
+                    {
+                        result = unmatch;
+                        break;
+                    }
+                    else if (retVal == Identification.Raw)
+                        raws.Add(unmatch);
+                }
+            }
+
+            //Create decision dialogue, if no format exists here either
+            if (result == null && raws.Count() != 0)
+                result = RawSelector.Show(raws);
+            raws.Clear();
 
             if (result == null && !batchMode)
                 MessageBox.Show("None of the installed plugins are able to open the file.", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            return result == null ? null : (IImageAdapter)Activator.CreateInstance(result.GetType());
+            return result == null ? null : result;
         }
 
         private void ExportPNG()
@@ -309,13 +352,13 @@ namespace Kukkii
             {
                 Title = "Export PNG...",
                 InitialDirectory = Settings.Default.LastDirectory,
-                FileName = _imageAdapter.FileInfo.Name + (_imageAdapter.Bitmaps.Count > 1 ? "." + _selectedImageIndex.ToString("00") : string.Empty) + ".png",
+                FileName = _imageAdapter.Value.FileInfo.Name + (_imageAdapter.Value.Bitmaps.Count > 1 ? "." + _selectedImageIndex.ToString("00") : string.Empty) + ".png",
                 Filter = "Portable Network Graphics (*.png)|*.png",
                 AddExtension = true
             };
 
             if (sfd.ShowDialog() == DialogResult.OK)
-                _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap.Save(sfd.FileName, ImageFormat.Png);
+                _imageAdapter.Value.Bitmaps[_selectedImageIndex].Bitmap.Save(sfd.FileName, ImageFormat.Png);
         }
 
         private void ImportPNG()
@@ -335,7 +378,7 @@ namespace Kukkii
         {
             try
             {
-                _imageAdapter.Bitmaps[_selectedImageIndex].Bitmap = new Bitmap(filename);
+                _imageAdapter.Value.Bitmaps[_selectedImageIndex].Bitmap = new Bitmap(filename);
                 UpdatePreview();
                 UpdateImageList();
                 treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
@@ -349,10 +392,10 @@ namespace Kukkii
 
         private void UpdatePreview()
         {
-            if (_imageAdapter?.Bitmaps.Count > 0)
+            if (_imageAdapter?.Value?.Bitmaps.Count > 0)
             {
-                imbPreview.Image = _imageAdapter?.Bitmaps[_selectedImageIndex].Bitmap;
-                pptImageProperties.SelectedObject = _imageAdapter?.Bitmaps[_selectedImageIndex];
+                imbPreview.Image = _imageAdapter?.Value?.Bitmaps[_selectedImageIndex].Bitmap;
+                pptImageProperties.SelectedObject = _imageAdapter?.Value?.Bitmaps[_selectedImageIndex];
             }
 
             // Grid Color 1
@@ -384,7 +427,7 @@ namespace Kukkii
 
         private void UpdateImageList()
         {
-            if (_imageAdapter == null || _imageAdapter.Bitmaps?.Count <= 0) return;
+            if (_imageAdapter == null || _imageAdapter.Value.Bitmaps?.Count <= 0) return;
 
             treBitmaps.BeginUpdate();
             treBitmaps.Nodes.Clear();
@@ -393,9 +436,9 @@ namespace Kukkii
             imlBitmaps.ImageSize = new Size(Settings.Default.ThumbnailWidth, Settings.Default.ThumbnailHeight);
             treBitmaps.ItemHeight = Settings.Default.ThumbnailHeight + 6;
 
-            for (var i = 0; i < _imageAdapter.Bitmaps.Count; i++)
+            for (var i = 0; i < _imageAdapter.Value.Bitmaps.Count; i++)
             {
-                var bitmapInfo = _imageAdapter.Bitmaps[i];
+                var bitmapInfo = _imageAdapter.Value.Bitmaps[i];
                 if (bitmapInfo.Bitmap == null) continue;
                 imlBitmaps.Images.Add(i.ToString(), GenerateThumbnail(bitmapInfo.Bitmap));
                 treBitmaps.Nodes.Add(new TreeNode
@@ -465,15 +508,15 @@ namespace Kukkii
 
         private void UpdateForm()
         {
-            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Description + " Adapter (" + _imageAdapter.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Metadata.Description + " Adapter (" + _imageAdapter.Metadata.Name + ")" : string.Empty);
 
             if (_imageAdapter != null)
             {
                 // Menu
-                saveToolStripMenuItem.Enabled = _fileOpen && _imageAdapter.CanSave;
-                tsbSave.Enabled = _fileOpen && _imageAdapter.CanSave;
-                saveAsToolStripMenuItem.Enabled = _fileOpen && _imageAdapter.CanSave;
-                tsbSaveAs.Enabled = _fileOpen && _imageAdapter.CanSave;
+                saveToolStripMenuItem.Enabled = _fileOpen && _imageAdapter.Value.CanSave;
+                tsbSave.Enabled = _fileOpen && _imageAdapter.Value.CanSave;
+                saveAsToolStripMenuItem.Enabled = _fileOpen && _imageAdapter.Value.CanSave;
+                tsbSaveAs.Enabled = _fileOpen && _imageAdapter.Value.CanSave;
 
                 // Toolbar
                 exportPNGToolStripMenuItem.Enabled = _fileOpen;
@@ -482,7 +525,7 @@ namespace Kukkii
                 tsbImportPNG.Enabled = _fileOpen;
 
                 // Properties
-                tsbExtendedProperties.Enabled = _fileOpen && _imageAdapter.FileHasExtendedProperties;
+                tsbExtendedProperties.Enabled = _fileOpen && _imageAdapter.Value.FileHasExtendedProperties;
             }
 
             // Batch Import/Export
@@ -497,7 +540,7 @@ namespace Kukkii
 
         private string FileName()
         {
-            return _imageAdapter == null || _imageAdapter.FileInfo == null ? string.Empty : _imageAdapter.FileInfo.Name;
+            return _imageAdapter == null || _imageAdapter.Value.FileInfo == null ? string.Empty : _imageAdapter.Value.FileInfo.Name;
         }
 
         // Toolbar Features
@@ -521,7 +564,7 @@ namespace Kukkii
 
                 if (Directory.Exists(path))
                 {
-                    var types = _imageAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
+                    var types = _imageAdapters.Select(x => x.Metadata.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                     var files = new List<string>();
                     foreach (var type in types)
@@ -532,13 +575,14 @@ namespace Kukkii
                             try
                             {
                                 var fi = new FileInfo(file);
-                                var currentAdapter = SelectImageAdapter(file, true);
+                                var stream = File.OpenRead(file);
+                                var currentAdapter = SelectImageAdapter(stream, file, true);
 
                                 if (currentAdapter != null)
                                 {
-                                    currentAdapter.Load(file);
-                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                        currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
+                                    currentAdapter.Value.Load(file);
+                                    for (var i = 0; i < currentAdapter.Value.Bitmaps.Count; i++)
+                                        currentAdapter.Value.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
                                     count++;
                                 }
                             }
@@ -576,7 +620,7 @@ namespace Kukkii
 
                 if (Directory.Exists(path))
                 {
-                    var types = _imageAdapters.Select(x => x.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
+                    var types = _imageAdapters.Select(x => x.Metadata.Extension.ToLower()).Select(y => y.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)).SelectMany(z => z).Distinct().ToList();
 
                     var files = new List<string>();
                     foreach (var type in types)
@@ -587,18 +631,19 @@ namespace Kukkii
                             try
                             {
                                 var fi = new FileInfo(file);
-                                var currentAdapter = SelectImageAdapter(file, true);
+                                var stream = File.OpenRead(file);
+                                var currentAdapter = SelectImageAdapter(stream, file, true);
 
-                                if (currentAdapter != null && currentAdapter.CanSave)
+                                if (currentAdapter != null && currentAdapter.Value.CanSave)
                                 {
-                                    currentAdapter.Load(file);
-                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                                    currentAdapter.Value.Load(file);
+                                    for (var i = 0; i < currentAdapter.Value.Bitmaps.Count; i++)
                                     {
                                         var targetName = fi.FullName + "." + i.ToString("00") + ".png";
                                         if (!File.Exists(targetName)) continue;
-                                        currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
+                                        currentAdapter.Value.Bitmaps[i].Bitmap = new Bitmap(targetName);
                                     }
-                                    currentAdapter.Save();
+                                    currentAdapter.Value.Save(file);
                                     importCount++;
                                 }
 
@@ -754,7 +799,7 @@ namespace Kukkii
         // Properties
         private void tsbExtendedProperties_Click(object sender, EventArgs e)
         {
-            if (_imageAdapter.ShowProperties(Resources.kukkii))
+            if (_imageAdapter.Value.ShowProperties(Resources.kukkii))
             {
                 _hasChanges = true;
                 UpdateForm();

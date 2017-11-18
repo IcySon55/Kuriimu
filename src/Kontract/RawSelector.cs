@@ -26,5 +26,12 @@ namespace Kontract
             box.ShowDialog();
             return raws[box.rawList.SelectedIndex];
         }
+
+        public static Lazy<IImageAdapter, IFilePluginMetadata> Show(List<Lazy<IImageAdapter, IFilePluginMetadata>> raws)
+        {
+            var box = new RawSelector(raws.Select(r => (r.Metadata.Name + "; " + r.Metadata.Description)).ToArray());
+            box.ShowDialog();
+            return raws[box.rawList.SelectedIndex];
+        }
     }
 }

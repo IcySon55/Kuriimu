@@ -64,12 +64,6 @@
     <Compile Include="Converter.Designer.cs">
       <DependentUpon>Converter.cs</DependentUpon>
     </Compile>
-    <Compile Include="OpenRaw.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OpenRaw.Designer.cs">
-      <DependentUpon>OpenRaw.cs</DependentUpon>
-    </Compile>
     <Compile Include="Import.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,9 +74,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Converter.resx">
       <DependentUpon>Converter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OpenRaw.resx">
-      <DependentUpon>OpenRaw.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Import.resx">
       <DependentUpon>Import.cs</DependentUpon>
@@ -125,10 +116,6 @@
     <None Include="images\menu-save-as.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cetera\Cetera.csproj">
-      <Project>{948C73AD-D8E8-4A5E-86C9-2D239B74CCE7}</Project>
-      <Name>Cetera</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>
       <Name>Kontract</Name>
