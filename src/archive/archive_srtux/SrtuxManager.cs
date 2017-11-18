@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_srtux
 {
+    [FilePluginMetadata(Name = "SRTUX", Description = "SRTUX Archive", Extension = "*.bin", Author = "", About = "This is the SRTUX archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class SrtuxManager : IArchiveManager
     {
         private SRTUX _srtux = null;
 
         #region Properties
-
-        // Information
-        public string Name => "SRTUX";
-        public string Description => "SRTUX Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the SRTUX archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,40 +21,21 @@ namespace archive_srtux
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                try
-                {
-                    uint limit = br.ReadUInt32();
-                    br.BaseStream.Position = 0;
-                    uint precheck = 0;
-                    uint length = 0;
-                    while (br.BaseStream.Position < limit)
-                    {
-                        var check = br.ReadUInt32();
-                        if (check == 0)
-                        {
-                            length = precheck;
-                            break;
-                        }
-                        precheck = check;
-                    }
-
-                    br.BaseStream.Position = br.BaseStream.Length - 4;
-                    return (length == br.BaseStream.Length) ? true : (br.ReadString(3) == "end");
-                }
-                catch
-                {
-                    return false;
-                }
+                br.BaseStream.Position = br.BaseStream.Length - 4;
+                if (br.ReadString(3) == "end") return Identification.True;
             }
+
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -93,6 +70,11 @@ namespace archive_srtux
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

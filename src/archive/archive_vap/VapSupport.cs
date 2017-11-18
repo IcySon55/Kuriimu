@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kontract.Interface;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_vap
 {

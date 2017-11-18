@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_irarc
 {
+    [FilePluginMetadata(Name = "IRARC", Description = "IR ARChive", Extension = "*.irlst", Author = "onepiecefreak", About = "This is the IRARC archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class IrarcManager : IArchiveManager
     {
         private IRARC _irarc = null;
 
         #region Properties
-
-        // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "IR ARChive";
-        public string Extension => "*.irlst";
-        public string About => "This is the IRARC archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,23 +21,20 @@ namespace archive_irarc
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
         public bool CanReplaceFiles => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var irlstFilename = filename;
             var irarcFilename = filename.Remove(filename.Length - 5) + "irarc";
 
-            if (!File.Exists(irlstFilename) || !File.Exists(irarcFilename)) return false;
+            if (!File.Exists(irlstFilename) || !File.Exists(irarcFilename)) return Identification.False;
 
-            using (var br = new BinaryReaderX(File.OpenRead(irlstFilename)))
-            {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadUInt32() * 0x10 + 4 == br.BaseStream.Length;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -83,6 +76,11 @@ namespace archive_irarc
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

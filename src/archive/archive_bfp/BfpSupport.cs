@@ -62,6 +62,7 @@ namespace archive_bfp
                 {
                     if (compressed)
                     {
+                        imports.zlib.SetMethod(0);
                         var comp = imports.zlib.Compress(FileData);
                         bw.Write(comp.Length);
                         bw.Write((comp.Length + 0xf) & ~0xf);
@@ -101,7 +102,7 @@ namespace archive_bfp
     public class Import
     {
         [Import("ZLib")]
-        public ICompression zlib;
+        public ICompressionCollection zlib;
 
         public Import()
         {

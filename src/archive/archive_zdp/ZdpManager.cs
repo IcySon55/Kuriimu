@@ -1,24 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
-using System.Text;
+using Komponent.IO;
 
 namespace archive_zdp
 {
+    [FilePluginMetadata(Name = "ZDP", Description = "Whatever ZDP should mean", Extension = "*.zdp", Author = "", About = "This is the ZDP archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class ZdpManager : IArchiveManager
     {
         private ZDP _zdp = null;
 
         #region Properties
-
-        // Information
-        public string Name => "ZDP";
-        public string Description => "Whatever ZDP should mean";
-        public string Extension => "*.zdp";
-        public string About => "This is the ZDP archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -26,17 +21,20 @@ namespace archive_zdp
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return br.ReadString(8) == "datapack";
+                if (br.ReadString(8) == "datapack") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -71,6 +69,11 @@ namespace archive_zdp
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

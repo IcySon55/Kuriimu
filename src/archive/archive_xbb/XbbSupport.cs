@@ -1,12 +1,27 @@
 ﻿using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
-using Kontract;
+using Komponent.IO;
 
 namespace archive_xbb
 {
     public class XBBFileInfo : ArchiveFileInfo
     {
-        
+
+    }
+
+    public class Import
+    {
+        [Import("XBBHash")]
+        public IHash xbb;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

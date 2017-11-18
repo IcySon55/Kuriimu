@@ -1,23 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
 
 namespace archive_pak
 {
+    [FilePluginMetadata(Name = "PAK", Description = "PAcKage", Extension = "*.pak", Author = "onepiecefreak", About = "This is the PAK archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class archive_pakManager : IArchiveManager
     {
         private PAK _pak = null;
 
         #region Properties
-
-        // Information
-        public string Name => "PAK";
-        public string Description => "PAcKage";
-        public string Extension => "*.pak";
-        public string About => "This is the PAK archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,26 +20,15 @@ namespace archive_pak
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            try
-            {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                {
-                    var fileCount = br.ReadUInt16();
-                    br.BaseStream.Position = br.ReadUInt16() + (fileCount - 1) * 8;
-                    return (br.ReadInt32() + br.ReadInt32() == br.BaseStream.Length);
-                }
-            }
-            catch
-            {
-                return false;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -79,6 +63,11 @@ namespace archive_pak
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

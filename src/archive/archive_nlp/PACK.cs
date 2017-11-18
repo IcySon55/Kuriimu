@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
-using System.Text;
+using Komponent.IO;
 
 namespace archive_nlp.PACK
 {
@@ -10,6 +9,7 @@ namespace archive_nlp.PACK
     {
         public List<PACKFileInfo> Files = new List<PACKFileInfo>();
         private Stream _stream = null;
+        private Import imports = new Import();
 
         public PACKHeader header;
         public byte[] names;
@@ -62,6 +62,7 @@ namespace archive_nlp.PACK
                             Entry = fileEntries[i],
                             names = (fileEntries[i].entry.magic == "TEXI") ? names : null,
                             pointers = (fileEntries[i].entry.magic == "TEXI") ? pointers : null,
+                            imports = imports
                         });
                     }
                 }

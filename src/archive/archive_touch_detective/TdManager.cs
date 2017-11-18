@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
 
 namespace archive_td
 {
+    [FilePluginMetadata(Name = "TD", Description = "Touch Detective Archive", Extension = "*.bin", Author = "onepiecefreak",
+        About = "This is the Touch Detective archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class TdManager : IArchiveManager
     {
         private TD _td = null;
 
         #region Properties
-
-        // Information
-        public string Name => "TD";
-        public string Description => "Touch Detective Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the Touch Detective archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,32 +21,15 @@ namespace archive_td
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                var count = br.ReadUInt32();
-                uint offset = 0;
-                for (int i = 0; i < count; i++)
-                {
-                    var offset2 = br.ReadUInt32();
-                    if (offset2 < offset)
-                        return false;
-
-                    br.ReadUInt32();
-
-                    offset = offset2;
-                }
-
-                br.BaseStream.Position -= 4;
-                var lastSize = br.ReadUInt32();
-                return br.BaseStream.Length == offset * 4 + lastSize;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -85,6 +64,11 @@ namespace archive_td
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

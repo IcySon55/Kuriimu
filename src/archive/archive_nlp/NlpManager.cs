@@ -1,22 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
 
 namespace archive_nlp.NLP
 {
+    [FilePluginMetadata(Name = "NLP", Description = "New Love Plus Archive", Extension = "*.bin", Author = "onepiecefreak", About = "This is the NLP archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class NlpManager : IArchiveManager
     {
         private NLP _nlp = null;
 
         #region Properties
-
-        // Information
-        public string Name => "NLP";
-        public string Description => "New Love Plus Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the NLP archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -24,14 +20,15 @@ namespace archive_nlp.NLP
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            return filename.Contains("img.bin");
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -66,6 +63,11 @@ namespace archive_nlp.NLP
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

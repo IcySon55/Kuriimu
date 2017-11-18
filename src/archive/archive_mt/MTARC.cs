@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace archive_mt
@@ -12,6 +12,7 @@ namespace archive_mt
     {
         public List<MTArcFileInfo> Files = new List<MTArcFileInfo>();
         private Stream _stream;
+        private Import Imports = new Import();
 
         // HFS
         private HFSHeader HFSHeader;
@@ -70,7 +71,8 @@ namespace archive_mt
                         System = System,
                         FileData = new SubStream(br.BaseStream, metadata.Offset + HFSHeaderLength, metadata.CompressedSize),
                         FileName = metadata.FileName + (ArcShared.ExtensionMap.ContainsKey(metadata.ExtensionHash) ? ArcShared.ExtensionMap[metadata.ExtensionHash] : "." + metadata.ExtensionHash.ToString("X8")),
-                        State = ArchiveFileState.Archived
+                        State = ArchiveFileState.Archived,
+                        Imports = Imports
                     };
                 }));
 

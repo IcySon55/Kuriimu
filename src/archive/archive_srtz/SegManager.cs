@@ -1,24 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_srtz.SEG
 {
+    [FilePluginMetadata(Name = "SEG", Description = "Seg Archive", Extension = "*.seg", Author = "", About = "This is the SEG archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class SegManager : IArchiveManager
     {
         private SEG _seg = null;
         private bool _hasSize = false;
 
         #region Properties
-
-        // Information
-        public string Name => "SEG";
-        public string Description => "Seg Archive";
-        public string Extension => "*.seg";
-        public string About => "This is the SEG archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -26,18 +22,21 @@ namespace archive_srtz.SEG
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var binFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".bin");
 
-            if (!File.Exists(filename) || !File.Exists(binFilename)) return false;
+            if (!File.Exists(filename) || !File.Exists(binFilename)) return Identification.False;
 
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            return Identification.Raw;
+
+            /*using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 8) return false;
                 br.BaseStream.Seek(-4, SeekOrigin.End);
@@ -49,7 +48,7 @@ namespace archive_srtz.SEG
                     tmp = br.ReadUInt32();
                 }
                 return tmp == new FileInfo(binFilename).Length;
-            }
+            }*/
         }
 
         public void Load(string filename)
@@ -108,6 +107,11 @@ namespace archive_srtz.SEG
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

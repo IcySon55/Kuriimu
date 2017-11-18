@@ -1,8 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kontract.Interface;
 using System.IO;
-using Kontract.IO;
-using Kontract.Compression;
+using Komponent.IO;
 
 namespace archive_irarc
 {

@@ -1,22 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
 
 namespace archive_srtz.MTV
 {
+    [FilePluginMetadata(Name = "MTV", Description = "Mtv Archives", Extension = "*.bin", Author = "IcySon55,onepiecefreak", About = "This is the MtV archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class MtvManager : IArchiveManager
     {
         private MTV _mtv = null;
 
         #region Properties
-
-        // Information
-        public string Name => "MTV";
-        public string Description => "MtV Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the MtV archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -24,11 +20,12 @@ namespace archive_srtz.MTV
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
-        
+
         private static List<string> _supportedFiles = new List<string>
         {
             "AIDData.bin",
@@ -47,10 +44,12 @@ namespace archive_srtz.MTV
             "KvMData.bin"
         };
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            if (!File.Exists(filename)) return false;
-            return _supportedFiles.Contains(new FileInfo(filename).Name);
+            if (!File.Exists(filename)) return Identification.False;
+            if (_supportedFiles.Contains(new FileInfo(filename).Name)) return Identification.True;
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -85,6 +84,11 @@ namespace archive_srtz.MTV
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

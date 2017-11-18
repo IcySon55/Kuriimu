@@ -1,23 +1,20 @@
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_level5.XPCK
 {
+    [FilePluginMetadata(Name = "XPCK", Description = "Level 5 eXtractable PaCKage", Extension = "*.xa;*.xb;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv", Author = "onepiecefreak",
+        About = "This is the XPCK archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class XpckManager : IArchiveManager
     {
         private XPCK _xpck = null;
 
         #region Properties
-
-        // Information
-        public string Name => "XPCK";
-        public string Description => "Level 5 eXtractable PaCKage";
-        public string Extension => "*.xa;*.xb;*.xc;*.xf;*.xk;*.xl;*.xr;*.xv";
-        public string About => "This is the XPCK archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,18 +22,21 @@ namespace archive_level5.XPCK
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "XPCK";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "XPCK") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -71,6 +71,11 @@ namespace archive_level5.XPCK
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

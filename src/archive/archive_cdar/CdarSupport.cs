@@ -50,6 +50,7 @@ namespace archive_cdar
                     {
                         entry.offset = offset;
                         entry.decompSize = (uint)base.FileData.Length;
+                        imports.zlib.SetMethod(0);
                         var comp = imports.zlib.Compress(base.FileData);
                         entry.compSize = (uint)comp.Length;
                         bw.Write(comp);
@@ -64,7 +65,7 @@ namespace archive_cdar
     public class Import
     {
         [Import("ZLib")]
-        public ICompression zlib;
+        public ICompressionCollection zlib;
 
         public Import()
         {

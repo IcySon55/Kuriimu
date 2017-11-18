@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace archive_mt
 {
+    [FilePluginMetadata(Name = "MTARC", Description = "MT Framework Archive", Extension = "*.arc", Author = "IcySon55,onepiecefreak", About = "This is the MT Framework archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class MTArcManager : IArchiveManager
     {
         private MTARC _format;
 
         #region Properties
-
-        // Information
-        public string Name => "MTARC";
-        public string Description => "MT Framework Archive";
-        public string Extension => "*.arc";
-        public string About => "This is the MT Framework archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,19 +21,22 @@ namespace archive_mt
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
+                if (br.BaseStream.Length < 4) return Identification.False;
                 var magic = br.ReadString(4);
-                return magic == "ARCC" || magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH";
+                if (magic == "ARCC" || magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -72,6 +71,11 @@ namespace archive_mt
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

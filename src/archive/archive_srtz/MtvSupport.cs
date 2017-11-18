@@ -1,7 +1,9 @@
 ﻿using System.Runtime.InteropServices;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition;
 using Kontract.Interface;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_srtz.MTV
 {
@@ -10,12 +12,25 @@ namespace archive_srtz.MTV
         public int id { get; set; }
     }
 
+    public class Import
+    {
+        [Import("LZSSVLE")]
+        public ICompression lzssvle;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class VarHeader
     {
         public VarHeader(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 fileEntries = br.ReadInt32();
                 headerSize = br.ReadInt32();
@@ -23,9 +38,10 @@ namespace archive_srtz.MTV
                 entries = new Entry[fileEntries];
                 var tmp = br.ReadUInt64();
                 br.BaseStream.Position -= 8;
-                if (tmp==0)
+                if (tmp == 0)
                 {
-                    for (int i = 0; i < fileEntries; i++) {
+                    for (int i = 0; i < fileEntries; i++)
+                    {
                         var offset = br.ReadInt32() + headerSize;
                         br.BaseStream.Position += 4;
                         var size = br.ReadInt32();

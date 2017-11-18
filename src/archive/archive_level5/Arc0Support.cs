@@ -1,12 +1,29 @@
 ﻿using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
-using Kontract;
+using Komponent.IO;
 
 namespace archive_level5.ARC0
 {
     public class ARC0FileInfo : ArchiveFileInfo
     {
         public FileEntry entry;
+    }
+
+    public class Import
+    {
+        [Import("Level5")]
+        public ICompressionCollection level5;
+        [Import("CRC32")]
+        public IHash crc32;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

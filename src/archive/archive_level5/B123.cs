@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Cetera.Hash;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_level5.B123
 {
@@ -13,6 +12,7 @@ namespace archive_level5.B123
     {
         public List<B123FileInfo> Files = new List<B123FileInfo>();
         Stream _stream = null;
+        private Import imports = new Import();
 
         public Header header;
         public byte[] table1;
@@ -51,10 +51,11 @@ namespace archive_level5.B123
                 fileNames = GetFileNames(nameC);
 
                 //Add Files
+                uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
                 List<uint> offsets = new List<uint>();
                 foreach (var name in fileNames)
                 {
-                    var crc32 = Crc32.Create(name.Split('/').Last().ToLower(), Encoding.GetEncoding("SJIS"));
+                    var crc32 = GetInt(imports.crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last().ToLower()), 0));
                     var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
                     offsets.Add(entry.fileOffset);
                     Files.Add(new B123FileInfo

@@ -1,26 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using Cetera.Hash;
-using Kontract.Compression;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_level5.XFSA
 {
+    [FilePluginMetadata(Name = "XFSA", Description = "Level 5 XFS Archive", Extension = "*.fa", Author = "onepiecefreak",
+        About = "This is the XFSA archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class XfsakManager : IArchiveManager
     {
         private XFSA _xfsa = null;
 
         #region Properties
-
-        // Information
-        public string Name => "XFSA";
-        public string Description => "Level 5 XFS Archive";
-        public string Extension => "*.fa";
-        public string About => "This is the XFSA archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -28,18 +22,21 @@ namespace archive_level5.XFSA
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "XFSA";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "XFSA") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -74,6 +71,11 @@ namespace archive_level5.XFSA
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

@@ -1,9 +1,9 @@
 using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
-using System;
 using System.IO;
-using Kontract.IO;
-using Kontract;
+using Komponent.IO;
 
 namespace archive_level5.XPCK
 {
@@ -28,6 +28,19 @@ namespace archive_level5.XPCK
 
                 return (bw.BaseStream.Position % 4 > 0) ? (int)(absDataOffset + FileSize + 0x3) & ~0x3 : (int)(absDataOffset + FileSize + 4);
             }
+        }
+    }
+
+    public class Import
+    {
+        [Import("Level5")]
+        public ICompressionCollection level5;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
         }
     }
 

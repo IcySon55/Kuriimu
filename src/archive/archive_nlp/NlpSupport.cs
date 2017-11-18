@@ -1,8 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nlp.NLP
 {

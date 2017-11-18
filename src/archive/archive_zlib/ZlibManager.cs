@@ -1,25 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
-using System.Text;
-using Kontract.Compression;
 
 namespace archive_zlib
 {
+    [FilePluginMetadata(Name = "ZLIB", Description = "ZLib compressed with 4 byte decompressed size", Extension = "*.zlib", Author = "onepiecefreak",
+        About = "This is the ZLIB archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class ZlibManager : IArchiveManager
     {
         private ZLIB _zlib = null;
 
         #region Properties
-
-        // Information
-        public string Name => "ZLIB";
-        public string Description => "ZLib compressed with 4 byte decompressed size";
-        public string Extension => "*.zlib";
-        public string About => "This is the ZLIB archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -27,26 +21,15 @@ namespace archive_zlib
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename), ByteOrder.BigEndian))
-            {
-                try
-                {
-                    var decompSize = br.ReadUInt32();
-                    var decomp = ZLib.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length - 4)));
-                    return decompSize == decomp.Length;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -81,6 +64,11 @@ namespace archive_zlib
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

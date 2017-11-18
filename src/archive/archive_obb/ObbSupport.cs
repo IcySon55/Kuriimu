@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_obb
 {

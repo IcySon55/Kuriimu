@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
-using Kontract;
 using System.IO;
-using Kontract.IO;
-using Kontract.Compression;
+using Komponent.IO;
 using System;
 using System.Linq;
 
@@ -12,6 +12,7 @@ namespace archive_srtux
     public class SrtuxFileInfo : ArchiveFileInfo
     {
         public Entry entry;
+        public Import imports;
 
         public override Stream FileData
         {
@@ -25,7 +26,7 @@ namespace archive_srtux
                     if (header.magic != "ECD\u0001") return br.BaseStream;
 
                     br.BaseStream.Position -= 0x10;
-                    return new MemoryStream(LZECD.Decompress(new MemoryStream(br.ReadBytes(header.compSize + 0x10))));
+                    return new MemoryStream(imports.lzecd.Decompress(new MemoryStream(br.ReadBytes(header.compSize + 0x10)), 0));
                 }
             }
         }
@@ -45,6 +46,19 @@ namespace archive_srtux
 
                 bw.BaseStream.Position = startOffset;
             }
+        }
+    }
+
+    public class Import
+    {
+        [Import("LZECD")]
+        public ICompression lzecd;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
         }
     }
 

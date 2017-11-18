@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_level5.ARC0
 {
+    [FilePluginMetadata(Name = "ARC0", Description = "Level 5 ARChive 0", Extension = "*.fa", Author = "onepiecefreak", About = "This is the ARC0 archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class Arc0Manager : IArchiveManager
     {
         private ARC0 _arc0 = null;
 
         #region Properties
-
-        // Information
-        public string Name => "ARC0";
-        public string Description => "Level 5 ARChive 0";
-        public string Extension => "*.fa";
-        public string About => "This is the ARC0 archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,19 +21,22 @@ namespace archive_level5.ARC0
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
+                if (br.BaseStream.Length < 4) return Identification.False;
                 var magic = br.ReadString(4);
-                return magic == "ARC0";
+                if (magic == "ARC0") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -72,6 +71,11 @@ namespace archive_level5.ARC0
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

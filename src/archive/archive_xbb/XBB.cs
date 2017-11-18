@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Linq;
-using Cetera.Hash;
+using System.Text;
 
 namespace archive_xbb
 {
@@ -11,6 +11,7 @@ namespace archive_xbb
     {
         public List<XBBFileInfo> Files = new List<XBBFileInfo>();
         private Stream _stream = null;
+        private Import imports = new Import();
 
         public XBB(Stream input)
         {
@@ -26,7 +27,8 @@ namespace archive_xbb
                 List<XBBHashEntry> hashes = new List<XBBHashEntry>();
                 hashes.AddRange(br.ReadMultiple<XBBHashEntry>(header.entryCount));
 
-                for (int i = 0; i < header.entryCount; i++) {
+                for (int i = 0; i < header.entryCount; i++)
+                {
                     br.BaseStream.Position = entries[i].nameOffset;
                     Files.Add(new XBBFileInfo
                     {
@@ -53,11 +55,12 @@ namespace archive_xbb
                 var nameOffset = 0x20 + Files.Count() * 0x18;
 
                 //FileEntries
-                foreach (var file in Files) {
+                foreach (var file in Files)
+                {
                     bw.Write(offset);
                     bw.Write((uint)file.FileSize);
                     bw.Write(nameOffset);
-                    bw.Write(XbbHash.Create(file.FileName));
+                    bw.Write(imports.xbb.Create(Encoding.ASCII.GetBytes(file.FileName), 0));
 
                     offset += (int)file.FileSize;
                     offset = offset + 0x7f & ~0x7f;
@@ -66,11 +69,12 @@ namespace archive_xbb
                 }
 
                 //Hash table
-                var files = Files.OrderBy(e => XbbHash.Create(e.FileName)).ToList();
-                for (int i=0;i<files.Count();i++) {
-                    var hash = XbbHash.Create(files[i].FileName);
+                var files = Files.OrderBy(e => imports.xbb.Create(Encoding.ASCII.GetBytes(e.FileName), 0)).ToList();
+                for (int i = 0; i < files.Count(); i++)
+                {
+                    var hash = imports.xbb.Create(Encoding.ASCII.GetBytes(files[i].FileName), 0);
                     bw.Write(hash);
-                    bw.Write(Files.FindIndex(e=> XbbHash.Create(e.FileName)==hash));
+                    bw.Write(Files.FindIndex(e => imports.xbb.Create(Encoding.ASCII.GetBytes(e.FileName), 0) == hash));
                 }
 
                 //nameList

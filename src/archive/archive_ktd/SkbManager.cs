@@ -1,23 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_skb
 {
+    [FilePluginMetadata(Name = "SKB", Description = "Senran Kagura Burst Archive", Extension = "*.bin", Author = "onepiecefreak",
+        About = "This is the SKB archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class SKBManager : IArchiveManager
     {
         private SKB _skb = null;
 
         #region Properties
-
-        // Information
-        public string Name => "SKB";
-        public string Description => "Senran Kagura Burst Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the SKB archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,18 +22,21 @@ namespace archive_skb
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 var t = br.ReadBytes(0x18);
-                return t[0] == 0xe && t[8] == 4 && t[12] == 4 && t[16] == 4 && t[20] == 0x80;
+                if (t[0] == 0xe && t[8] == 4 && t[12] == 4 && t[16] == 4 && t[20] == 0x80) return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -71,6 +71,11 @@ namespace archive_skb
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

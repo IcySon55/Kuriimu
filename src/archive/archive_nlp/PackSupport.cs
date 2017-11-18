@@ -1,10 +1,10 @@
 ﻿using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
-using Kontract;
 using System.IO;
-using Kontract.Compression;
 using System;
-using Kontract.IO;
+using Komponent.IO;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
@@ -15,6 +15,7 @@ namespace archive_nlp.PACK
         public FileEntry Entry;
         public byte[] names;
         public byte[] pointers;
+        public Import imports;
 
         public override Stream FileData
         {
@@ -25,7 +26,7 @@ namespace archive_nlp.PACK
                         return new SERI(base.FileData, names, pointers).data;
                     else
                         return base.FileData;
-                return new MemoryStream(ZLib.Decompress(base.FileData));
+                return new MemoryStream(imports.zlib.Decompress(base.FileData, 0));
             }
         }
 
@@ -52,7 +53,10 @@ namespace archive_nlp.PACK
                     {
                         byte[] comp;
                         if (Entry.entry.compSize != 0 && Entry.entry.compSize != Entry.entry.decompSize)
-                            comp = ZLib.Compress(base.FileData);
+                        {
+                            imports.zlib.SetMethod(0);
+                            comp = imports.zlib.Compress(base.FileData);
+                        }
                         else
                             comp = new BinaryReaderX(base.FileData, true).ReadAllBytes();
                         bw.Write(comp);
@@ -69,6 +73,19 @@ namespace archive_nlp.PACK
                         Entry.entry.compOffset + Entry.entry.compSize,
                     decompOffset + Entry.entry.decompSize);
             }
+        }
+    }
+
+    public class Import
+    {
+        [Import("ZLib")]
+        public ICompressionCollection zlib;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
         }
     }
 

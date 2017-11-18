@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
@@ -6,18 +7,13 @@ using Kontract.IO;
 
 namespace archive_vap
 {
+    [FilePluginMetadata(Name = "VAP", Description = "V Archive Package", Extension = "*.vap", Author = "", About = "This is the VAP archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class VapManager : IArchiveManager
     {
         private VAP _vap = null;
 
         #region Properties
-
-        // Information
-        public string Name => "VAP";
-        public string Description => "V Archive Package";
-        public string Extension => "*.vap";
-        public string About => "This is the VAP archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,24 +21,15 @@ namespace archive_vap
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                var fileCount = br.ReadInt32();
-                if (fileCount < 0 || (0xc + (fileCount - 1) * 0x8) < 0) return false;
-                br.BaseStream.Position = 0xc + (fileCount - 1) * 0x8;
-
-                var offset = br.ReadInt32();
-                var size = br.ReadInt32();
-
-                return br.BaseStream.Length == offset + size;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -77,6 +64,11 @@ namespace archive_vap
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()
