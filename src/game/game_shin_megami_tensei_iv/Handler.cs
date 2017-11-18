@@ -34,8 +34,16 @@ namespace game_shin_megami_tensei_iv
             ["<E903>"] = "<unk4>",
 
             ["<F801>"] = "\n",
+            ["<F802>"] = "\n",
             ["<F87A>"] = "<unk3>",
+            ["<F812>"] = "<name>",
+            ["<F813>"] = "<text>",
             ["<E5E3>"] = "<playername>",
+            ["A"] = "<A>",
+            ["B"] = "<B>",
+            ["C"] = "<C>",
+            ["D"] = "<D>",
+            ["E"] = "<E>",
             //Spanish localization
             ["\u30F3"] = "ñ", //ン
             ["\u30D9"] = "ä", //ベ
@@ -62,7 +70,7 @@ namespace game_shin_megami_tensei_iv
             ["\u30D7"] = "¿", //プ
             //End of spanish localization
 
-            ["\u0000"] = "",
+            ["\u0000"] = "<!>",
             ["<7000>"] = "<7000>",
             ["<1400>"] = "<1400>"
         };
@@ -135,11 +143,12 @@ namespace game_shin_megami_tensei_iv
                             y -= 15;
                             x = rectText.X + 25;
                         }
-                        if (tag == "</name>") // End Name
+                        if (tag == "<text>") // End Name
                         {
                             font.SetColor(Color.FromArgb(255, 80, 0, 0)); // Dark Red
                             y += 15;
                             x = 20;
+                            
                         }
                     }
                     else if (kuriimuString[i] == '\n')

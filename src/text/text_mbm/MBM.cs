@@ -88,9 +88,9 @@ namespace text_mbm
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
                 int startOffset = entries[0].stringOffset;
-                bw.BaseStream.Position = startOffset;                    
+                bw.BaseStream.Position = startOffset;
 
-                for (var i = 0; i < header.entryCount; i++)
+                /*for (var i = 0; i < header.entryCount; i++)
                 {
                     var bytes = ConvertStringToBytes(Labels[i].Text);
                     if (entries[i].stringOffset != 0)
@@ -101,6 +101,20 @@ namespace text_mbm
                     bw.Write(bytes);
                     bw.Write((byte)0xFF);
                     bw.Write((byte)0xFF);
+                }*/
+                var entryIndex = 0;
+                foreach (var lbl in Labels)
+                {
+                    while (entries[entryIndex].stringOffset == 0 && entryIndex < entries.Count)
+                        entryIndex++;
+
+                    var bytes = ConvertStringToBytes(lbl.Text);
+                    entries[entryIndex].stringSize = bytes.Length + 2;
+                    entries[entryIndex].stringOffset = (int)bw.BaseStream.Position;
+                    bw.Write(bytes);
+                    bw.Write((byte)0xFF);
+                    bw.Write((byte)0xFF);
+                    entryIndex++;
                 }
 
                 //Update info
