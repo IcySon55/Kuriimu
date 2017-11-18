@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
 
 namespace archive_nintendo.VIW
 {
+    [FilePluginMetadata(Name = "VIW", Description = "VIW Archive", Extension = "*.viw", Author = "IcySon55", About = "This is the VIW archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class ViwManager : IArchiveManager
     {
         private VIW _viw;
 
         #region Properties
-
-        // Information
-        public string Name => "VIW";
-        public string Description => "VIW Archive";
-        public string Extension => "*.viw";
-        public string About => "This is the VIW archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,29 +21,15 @@ namespace archive_nintendo.VIW
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            try
-            {
-                FileInfo = new FileInfo(filename);
-                var file2 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".inf");
-                var file3 = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename));
-
-                if (FileInfo.Exists && File.Exists(file2) && File.Exists(file3))
-                    _viw = new VIW(FileInfo.OpenRead(), File.OpenRead(file2), File.OpenRead(file3));
-                _viw.Close();
-                return true;
-            }
-            catch (Exception)
-            {
-                if (_viw != null) _viw.Close();
-                return false;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -90,6 +72,11 @@ namespace archive_nintendo.VIW
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

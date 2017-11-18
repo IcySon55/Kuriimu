@@ -2,8 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Kontract.Interface;
-using Kontract;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.NUS3
 {

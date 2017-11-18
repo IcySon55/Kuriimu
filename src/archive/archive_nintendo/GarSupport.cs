@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.GAR
 {

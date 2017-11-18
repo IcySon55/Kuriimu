@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cetera.Hash;
 using Kontract.Interface;
-using Kontract;
-using Kontract.IO;
+using Komponent.IO;
+using System.Text;
 
 namespace archive_nintendo.SARC
 {
@@ -13,6 +12,7 @@ namespace archive_nintendo.SARC
     {
         public List<SarcArchiveFileInfo> Files;
         Stream _stream = null;
+        public Import imports = new Import();
 
         ByteOrder byteOrder;
         public uint hashMultiplier;
@@ -84,6 +84,7 @@ namespace archive_nintendo.SARC
                 });
 
                 //SFAT List + nameList
+                uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
                 int nameOffset = 0;
                 int dataOffset = 0;
                 foreach (var afi in Files)
@@ -93,7 +94,7 @@ namespace archive_nintendo.SARC
 
                     var sfatEntry = new SFATEntry
                     {
-                        nameHash = usesSFNT ? SimpleHash.Create(afi.FileName, hashMultiplier) : Convert.ToUInt32(afi.FileName.Substring(2, 8), 16),
+                        nameHash = usesSFNT ? GetInt(imports.simplehash.Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % hashMultiplier : Convert.ToUInt32(afi.FileName.Substring(2, 8), 16),
                         SFNTOffsetFlag = (uint)(((usesSFNT ? 0x100 : 0) << 16) | (usesSFNT ? nameOffset / 4 : 0)),
                         dataStart = dataOffset,
                         dataEnd = dataOffset + fileLen

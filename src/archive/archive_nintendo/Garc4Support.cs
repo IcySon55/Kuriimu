@@ -5,9 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Kontract.Interface;
-using Kontract;
-using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.GARC4
 {

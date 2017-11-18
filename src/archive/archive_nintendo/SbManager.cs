@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.SB
 {
+    [FilePluginMetadata(Name = "SB", Description = "SB", Extension = "*.bin;*.sb", Author = "onepiecefreak", About = "This is the SB archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class SbManager : IArchiveManager
     {
         private SB _sb = null;
 
         #region Properties
-
-        // Information
-        public string Name => "SB";
-        public string Description => "SB";
-        public string Extension => "*.bin;*.sb";
-        public string About => "This is the SB archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,18 +21,21 @@ namespace archive_nintendo.SB
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 2) return false;
-                return br.ReadString(2) == "SB";
+                if (br.BaseStream.Length < 2) return Identification.False;
+                if (br.ReadString(2) == "SB") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -71,6 +70,11 @@ namespace archive_nintendo.SB
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

@@ -1,28 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using Cetera.Hash;
-using Kontract.Compression;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
+using System.Text;
 
 namespace archive_nintendo.SARC
 {
+    [FilePluginMetadata(Name = "ZLib-SARC", Description = "ZLib-Compressed NW4C Sorted ARChive", Extension = "*.zlib", Author = "", About = "This is the ZLib-Compressed SARC archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class ZLibSarcManager : IArchiveManager
     {
         private SARC _sarc = null;
+        private Import imports = new Import();
 
         #region Properties
-
-        // Information
-        public string Name => "ZLib-SARC";
-        public string Description => "ZLib-Compressed NW4C Sorted ARChive";
-        public string Extension => "*.zlib";
-        public string About => "This is the ZLib-Compressed SARC archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => true;
@@ -30,32 +26,15 @@ namespace archive_nintendo.SARC
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                if (br.BaseStream.Length < 10) return false;
-                br.ReadBytes(4);
-                if (br.ReadByte() != 0x78) return false;
-                var b = br.ReadByte();
-                if (b != 0x01 && b != 0x9C && b != 0xDA) return false;
-                try
-                {
-                    using (var br2 = new BinaryReaderX(new DeflateStream(br.BaseStream, CompressionMode.Decompress)))
-                    {
-                        return br2.ReadString(4) == "SARC";
-                    }
-                }
-                catch
-                {
-                    return false;
-                }
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -65,7 +44,7 @@ namespace archive_nintendo.SARC
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
                 br.ReadBytes(4);
-                _sarc = new SARC(new MemoryStream(ZLib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)))));
+                _sarc = new SARC(new MemoryStream(imports.zlib.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length - 4)),0)));
             }
         }
 
@@ -84,7 +63,8 @@ namespace archive_nintendo.SARC
                 {
                     bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
                     ms.Position = 0;
-                    bw.Write(ZLib.Compress(ms));
+                    imports.zlib.SetMethod(0);
+                    bw.Write(imports.zlib.Compress(ms));
                 }
             }
             else
@@ -97,7 +77,8 @@ namespace archive_nintendo.SARC
                 {
                     bw.Write(BitConverter.GetBytes((int)ms.Length).Reverse().ToArray());
                     ms.Position = 0;
-                    bw.Write(ZLib.Compress(ms));
+                    imports.zlib.SetMethod(0);
+                    bw.Write(imports.zlib.Compress(ms));
                 }
                 // Delete the original
                 FileInfo.Delete();
@@ -107,6 +88,11 @@ namespace archive_nintendo.SARC
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()
@@ -119,12 +105,13 @@ namespace archive_nintendo.SARC
 
         public bool AddFile(ArchiveFileInfo afi)
         {
+            uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
             _sarc.Files.Add(new SarcArchiveFileInfo
             {
                 FileData = afi.FileData,
                 FileName = afi.FileName,
                 State = afi.State,
-                hash = SimpleHash.Create(afi.FileName, _sarc.hashMultiplier)
+                hash = GetInt(imports.simplehash.Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % _sarc.hashMultiplier
             });
             return true;
         }
@@ -133,5 +120,20 @@ namespace archive_nintendo.SARC
 
         // Features
         public bool ShowProperties(Icon icon) => false;
+
+        public class Import
+        {
+            [Import("ZLib")]
+            public ICompressionCollection zlib;
+            [Import("SimpleHash_3DS")]
+            public IHash simplehash;
+
+            public Import()
+            {
+                var catalog = new DirectoryCatalog("Komponents");
+                var container = new CompositionContainer(catalog);
+                container.ComposeParts(this);
+            }
+        }
     }
 }

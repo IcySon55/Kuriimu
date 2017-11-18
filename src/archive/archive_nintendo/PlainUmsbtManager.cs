@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.PlainUMSBT
 {
+    [FilePluginMetadata(Name = "PUMSBT", Description = "PlainUMSBT Archive", Extension = "*.umsbt", Author = "IcySon55", About = "This is the PlainUMSBT archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class PlainUmsbtManager : IArchiveManager
     {
         private PlainUMSBT _plainUmsbt = null;
 
         #region Properties
-
-        // Information
-        public string Name => "PUMSBT";
-        public string Description => "PlainUMSBT Archive";
-        public string Extension => "*.umsbt";
-        public string About => "This is the PlainUMSBT archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -26,35 +22,15 @@ namespace archive_nintendo.PlainUMSBT
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br=new BinaryReaderX(File.OpenRead(filename)))
-            {
-                try
-                {
-                    br.BaseStream.Position = 0x38;
-                    var dataOffset = br.ReadUInt32();
-                    var size = br.ReadUInt32();
-                    var totalSize = dataOffset;
-                    while (size != 0 && br.BaseStream.Position < dataOffset)
-                    {
-                        totalSize += size;
-                        while (totalSize % 0x80 != 0) totalSize++;
-                        br.BaseStream.Position += 0x3c;
-                        size = br.ReadUInt32();
-                    }
-                    return br.BaseStream.Length == totalSize;
-                }
-                catch(Exception)
-                {
-                    return false;
-                }
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -89,6 +65,11 @@ namespace archive_nintendo.PlainUMSBT
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

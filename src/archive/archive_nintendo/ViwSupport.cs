@@ -1,14 +1,17 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using Kontract.Compression;
-using Kontract.IO;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace archive_nintendo.VIW
 {
     public class ViwFileInfo : ArchiveFileInfo
     {
-        public override Stream FileData => State != ArchiveFileState.Archived ? base.FileData : new MemoryStream(Nintendo.Decompress(base.FileData));
+        public Import imports;
+
+        public override Stream FileData => State != ArchiveFileState.Archived ? base.FileData : new MemoryStream(imports.nintendo.Decompress(base.FileData, 0));
         public override long? FileSize => base.FileData.Length;
 
         public int Write(Stream output)
@@ -21,13 +24,27 @@ namespace archive_nintendo.VIW
                     base.FileData.CopyTo(bw.BaseStream);
                 else
                 {
-                    var bytes = Nintendo.Compress(base.FileData, Nintendo.Method.LZ10);
+                    imports.nintendo.SetMethod(0x10);
+                    var bytes = imports.nintendo.Compress(base.FileData);
                     compressedSize = bytes.Length;
                     bw.Write(bytes);
                 }
             }
 
             return compressedSize;
+        }
+    }
+
+    public class Import
+    {
+        [Import("Nintendo")]
+        public ICompressionCollection nintendo;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
         }
     }
 

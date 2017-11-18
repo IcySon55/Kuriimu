@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
-using Kontract;
 
 namespace archive_nintendo.CWAR
 {

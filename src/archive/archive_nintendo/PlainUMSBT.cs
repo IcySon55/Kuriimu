@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.PlainUMSBT
 {

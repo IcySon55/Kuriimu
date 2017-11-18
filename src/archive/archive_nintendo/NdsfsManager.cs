@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.NDSFS
 {
+    [FilePluginMetadata(Name = "NDSFS", Description = "Nintendo DS File System", Extension = "*.nds", Author = "onepiecefreak", About = "This is the NDS FS archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class NdsfsManager : IArchiveManager
     {
         private NDS _ndsfs = null;
 
         #region Properties
-
-        // Information
-        public string Name => "NDSFS";
-        public string Description => "Nintendo DS File System";
-        public string Extension => "*.nds";
-        public string About => "This is the NDS FS archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -26,19 +22,22 @@ namespace archive_nintendo.NDSFS
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 0x14) return false;
+                if (br.BaseStream.Length < 0x14) return Identification.False;
                 br.BaseStream.Position = 0x14;
-                return Math.Pow(2,17+br.ReadByte()) == br.BaseStream.Length;
+                if (Math.Pow(2, 17 + br.ReadByte()) == br.BaseStream.Length) return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -73,6 +72,11 @@ namespace archive_nintendo.NDSFS
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

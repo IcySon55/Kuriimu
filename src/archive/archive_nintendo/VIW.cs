@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace archive_nintendo.VIW
@@ -11,6 +11,7 @@ namespace archive_nintendo.VIW
         private Stream _viwStream;
         private Stream _infStream;
         private Stream _stream;
+        private Import imports = new Import();
 
         private InfHeader Header;
         private List<InfEntry> Offsets;
@@ -45,7 +46,8 @@ namespace archive_nintendo.VIW
                 {
                     FileName = (Offsets.IndexOf(off) + Names[0].ID).ToString("X4") + ".bin",
                     FileData = new SubStream(input, off.Offset, off.CompressedSize),
-                    State = ArchiveFileState.Archived
+                    State = ArchiveFileState.Archived,
+                    imports = imports
                 };
 
                 Files.Add(afi);

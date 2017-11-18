@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
-using Kontract;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace archive_nintendo.SARC
 {
@@ -68,6 +66,19 @@ namespace archive_nintendo.SARC
     {
         CTR,
         WiiU
+    }
+
+    public class Import
+    {
+        [Import("SimpleHash_3DS")]
+        public IHash simplehash;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

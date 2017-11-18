@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.NARC
 {
+    [FilePluginMetadata(Name = "NARC", Description = "Nintendo ARChive", Extension = "*.narc", Author = "onepiecefreak", About = "This is the NARC archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class NarcManager : IArchiveManager
     {
         private NARC _narc = null;
 
         #region Properties
-
-        // Information
-        public string Name => "NARC";
-        public string Description => "Nintendo ARChive";
-        public string Extension => "*.narc";
-        public string About => "This is the NARC manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,18 +21,21 @@ namespace archive_nintendo.NARC
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "NARC";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "NARC") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -71,6 +70,11 @@ namespace archive_nintendo.NARC
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

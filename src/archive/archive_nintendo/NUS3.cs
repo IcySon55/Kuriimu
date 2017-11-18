@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Kontract.Compression;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.NUS3
 {
@@ -21,22 +20,9 @@ namespace archive_nintendo.NUS3
         public TONE tone;
         public byte[] junk;
 
-        public NUS3(string filename, bool isZlibCompressed = false)
+        public NUS3(Stream input)
         {
-            if (isZlibCompressed)
-            {
-                using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
-                {
-                    byte[] decomp = ZLib.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
-                    File.OpenWrite(filename + ".decomp").Write(decomp, 0, decomp.Length);
-                }
-
-                _stream = File.OpenRead(filename + ".decomp");
-            }
-            else
-            {
-                _stream = File.OpenRead(filename);
-            }
+            _stream = input;
 
             using (var br = new BinaryReaderX(_stream, true))
             {
@@ -235,18 +221,6 @@ namespace archive_nintendo.NUS3
                 //update fileSize in NUS3 Header
                 bw.BaseStream.Position = 4;
                 bw.Write((int)bw.BaseStream.Length);
-            }
-
-            if (isZLibCompressed)
-            {
-                FileStream origFile = File.OpenRead(filename);
-                byte[] decomp = new byte[(int)origFile.Length];
-                origFile.Read(decomp, 0, (int)origFile.Length);
-                byte[] comp = ZLib.Compress(new MemoryStream(decomp));
-
-                origFile.Close();
-                File.Delete(filename);
-                File.OpenWrite(filename).Write(comp, 0, comp.Length);
             }
         }
 

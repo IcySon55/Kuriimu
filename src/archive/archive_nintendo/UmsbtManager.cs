@@ -1,22 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
 
 namespace archive_nintendo.UMSBT
 {
+    [FilePluginMetadata(Name = "UMSBT", Description = "UMSBT Archive", Extension = "*.umsbt", Author = "IcySon55", About = "This is the UMSBT archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class UmsbtManager : IArchiveManager
     {
         private UMSBT _umsbt = null;
 
         #region Properties
-
-        // Information
-        public string Name => "UMSBT";
-        public string Description => "UMSBT Archive";
-        public string Extension => "*.umsbt";
-        public string About => "This is the UMSBT archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -24,15 +20,15 @@ namespace archive_nintendo.UMSBT
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            // TODO: Make this way more robust
-            return filename.EndsWith(".umsbt");
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -67,6 +63,11 @@ namespace archive_nintendo.UMSBT
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.DDSFS
 {
+    [FilePluginMetadata(Name = "3DSFS", Description = "3DS File System", Extension = "*.3ds", Author = "", About = "This is the 3DSFS archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class DdsfsManager : IArchiveManager
     {
         private DDSFS _ddsfs = null;
 
         #region Properties
-
-        // Information
-        public string Name => "3DSFS";
-        public string Description => "3DS File System";
-        public string Extension => "*.3ds";
-        public string About => "This is the 3DSFS archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -25,19 +21,22 @@ namespace archive_nintendo.DDSFS
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 0x104) return false;
+                if (br.BaseStream.Length < 0x104) return Identification.False;
                 br.BaseStream.Position = 0x100;
-                return (br.ReadString(4) == "NCSD");
+                if (br.ReadString(4) == "NCSD") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -72,6 +71,11 @@ namespace archive_nintendo.DDSFS
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

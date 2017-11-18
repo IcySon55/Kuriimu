@@ -1,26 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
-using Kontract.Compression;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.NUS3
 {
+    [FilePluginMetadata(Name = "NUS3", Description = "NUS3BANK Sound Archive", Extension = "*.nus3bank", Author = "", About = "This is the NUS3BANK archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public sealed class Nus3Manager : IArchiveManager
     {
         private NUS3 _nus3 = null;
-        private bool _isZlibCompressed = false;
 
         #region Properties
-
-        // Information
-        public string Name => "NUS3";
-        public string Description => "NUS3BANK Sound Archive";
-        public string Extension => "*.nus3bank";
-        public string About => "This is the NUS3BANK archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
@@ -28,39 +22,21 @@ namespace archive_nintendo.NUS3
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream))
             {
-                if (br.BaseStream.Length < 4) return false;
-                if (br.ReadString(4) == "NUS3") return true;
-
-                try
-                {
-                    br.BaseStream.Position = 0;
-                    byte[] decomp = ZLib.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
-                    using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
-                    {
-                        if (br.BaseStream.Length < 4) return false;
-                        if (br.ReadString(4) == "NUS3")
-                        {
-                            _isZlibCompressed = true;
-                            return true;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-
-                return false;
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "NUS3") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -68,7 +44,7 @@ namespace archive_nintendo.NUS3
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _nus3 = new NUS3(FileInfo.FullName, _isZlibCompressed);
+                _nus3 = new NUS3(File.OpenRead(FileInfo.FullName));
         }
 
         public void Save(string filename = "")
@@ -79,13 +55,13 @@ namespace archive_nintendo.NUS3
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _nus3.Save(FileInfo.FullName, _isZlibCompressed);
+                _nus3.Save(FileInfo.FullName);
                 _nus3.Close();
             }
             else
             {
                 // Create the temp file
-                _nus3.Save(FileInfo.FullName + ".tmp", _isZlibCompressed);
+                _nus3.Save(FileInfo.FullName + ".tmp");
                 _nus3.Close();
                 // Delete the original
                 FileInfo.Delete();
@@ -95,6 +71,11 @@ namespace archive_nintendo.NUS3
 
             // Reload the new file to make sure everything is in order
             Load(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         public void Unload()

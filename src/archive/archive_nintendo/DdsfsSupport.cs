@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
-using Kontract;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace archive_nintendo.DDSFS
 {
     public class DDSFSFileInfo : ArchiveFileInfo
     {
-        
+
     }
 
     public class NCSDHeader
     {
         public NCSDHeader(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 rsa = br.ReadBytes(0x100);
                 magic = br.ReadStruct<Magic>();
-                ncsdSize = br.ReadUInt32()*0x200;
+                ncsdSize = br.ReadUInt32() * 0x200;
                 mediaID = br.ReadUInt64();
                 partFSType = br.ReadUInt64();
                 partCryptType = br.ReadUInt64();
@@ -48,9 +47,9 @@ namespace archive_nintendo.DDSFS
                 cardRev = br.ReadUInt16();
                 res2 = br.ReadBytes(0xcee);
                 cardSeedKeyY = br.ReadBytes(0x10);
-                encCardSeed= br.ReadBytes(0x10);
-                cardSeedAESMAC= br.ReadBytes(0x10);
-                cardSeedNonce= br.ReadBytes(0xc);
+                encCardSeed = br.ReadBytes(0x10);
+                cardSeedAESMAC = br.ReadBytes(0x10);
+                cardSeedNonce = br.ReadBytes(0xc);
                 res3 = br.ReadBytes(0xc4);
                 copyFirstNCCHHeader = br.ReadBytes(0x100);
             }
@@ -86,11 +85,12 @@ namespace archive_nintendo.DDSFS
         public byte[] res3;
         public byte[] copyFirstNCCHHeader; //without rsa sigature
 
-        public class PartEntry {
+        public class PartEntry
+        {
             public PartEntry(uint offset, uint size)
             {
-                this.offset = offset*0x200;
-                this.size = size*0x200;
+                this.offset = offset * 0x200;
+                this.size = size * 0x200;
             }
 
             public uint offset;
@@ -185,7 +185,7 @@ namespace archive_nintendo.DDSFS
     {
         public ExeFsFileEntry(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 filename = br.ReadString(8);
                 offset = br.ReadUInt32();
@@ -202,7 +202,7 @@ namespace archive_nintendo.DDSFS
     {
         public IVFCHeader(Stream input)
         {
-            using (var br=new BinaryReaderX(input,true))
+            using (var br = new BinaryReaderX(input, true))
             {
                 magic = br.ReadStruct<Magic>();
                 magicNr = br.ReadUInt32();

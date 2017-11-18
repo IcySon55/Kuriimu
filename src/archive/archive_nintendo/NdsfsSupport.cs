@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Text;
 
 //source code adjusted from pleonex' github:

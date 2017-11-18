@@ -2,9 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
-using Kontract;
 using System.Text;
 
 namespace archive_nintendo.DARC

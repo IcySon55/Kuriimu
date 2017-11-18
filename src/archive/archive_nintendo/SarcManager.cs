@@ -1,24 +1,21 @@
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
-using Cetera.Hash;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
+using System.Text;
+using System.Linq;
 
 namespace archive_nintendo.SARC
 {
+    [FilePluginMetadata(Name = "SARC", Description = "NW4C Sorted ARChive", Extension = "*.sarc;*.arc", Author = "onepiecefreak,Neobeo,IcySon55", About = "This is the SARC archive manager for Karameru.")]
+    [Export(typeof(IArchiveManager))]
     public class SarcManager : IArchiveManager
     {
         private SARC _sarc = null;
 
         #region Properties
-
-        // Information
-        public string Name => "SARC";
-        public string Description => "NW4C Sorted ARChive";
-        public string Extension => "*.sarc;*.arc";
-        public string About => "This is the SARC archive manager for Karameru.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => true;
@@ -26,20 +23,23 @@ namespace archive_nintendo.SARC
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4 || br.ReadString(4) != "SARC") return false;
+                if (br.BaseStream.Length < 4 || br.ReadString(4) != "SARC") return Identification.False;
                 br.ReadInt16();
                 var ind = br.ReadUInt16();
-                return ind == 0xfeff || ind == 0xfffe;
+                if (ind == 0xfeff || ind == 0xfffe) return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -76,6 +76,11 @@ namespace archive_nintendo.SARC
             Load(FileInfo.FullName);
         }
 
+        public void New()
+        {
+
+        }
+
         public void Unload()
         {
             _sarc?.Close();
@@ -86,12 +91,13 @@ namespace archive_nintendo.SARC
 
         public bool AddFile(ArchiveFileInfo afi)
         {
+            uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
             _sarc.Files.Add(new SarcArchiveFileInfo
             {
                 FileData = afi.FileData,
                 FileName = afi.FileName,
                 State = afi.State,
-                hash = SimpleHash.Create(afi.FileName, _sarc.hashMultiplier)
+                hash = GetInt(_sarc.imports.simplehash.Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % _sarc.hashMultiplier
             });
             return true;
         }
