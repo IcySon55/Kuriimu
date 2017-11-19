@@ -1,19 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Kontract;
-using Cetera.Image;
+using Komponent.IO;
 using System.Drawing;
 
 namespace image_spr3
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class BitmapClass
-    {
-        public Bitmap bmp;
-        public Format format;
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {

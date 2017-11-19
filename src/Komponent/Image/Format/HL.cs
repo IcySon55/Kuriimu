@@ -21,7 +21,7 @@ namespace Komponent.Image.Format
 
         ByteOrder byteOrder;
 
-        public HL(int r, int g, ByteOrder byteOrder = ByteOrder.BigEndian)
+        public HL(int r, int g, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
             BitDepth = r + g;
             if (BitDepth % 4 != 0) throw new Exception($"Overall bitDepth has to be dividable by 4. Given bitDepth: {BitDepth}");

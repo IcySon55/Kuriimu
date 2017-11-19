@@ -1,39 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_level5.imga
 {
+    [FilePluginMetadata(Name = "IMGA", Description = "Level 5 Compressed Image", Extension = "*.xi",
+        Author = "onepiecefreak", About = "This is the IMGA image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class ImgaAdapter : IImageAdapter
     {
-        private Bitmap _imga = null;
+        private IMGA _imga = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "IMGA";
-        public string Description => "Level 5 Compressed Image";
-        public string Extension => "*.xi";
-        public string About => "This is the IMGA image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "IMGA";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "IMGA") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -42,9 +43,9 @@ namespace image_level5.imga
 
             if (FileInfo.Exists)
             {
-                _imga = IMGA.Load(FileInfo.OpenRead());
+                _imga = new IMGA(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imga } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imga.bmp } };
             }
         }
 
@@ -53,8 +54,13 @@ namespace image_level5.imga
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _imga = _bitmaps[0].Bitmap;
-            IMGA.Save(FileInfo.FullName, _imga);
+            _imga.bmp = _bitmaps[0].Bitmap;
+            _imga.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

@@ -1,44 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_texi
 {
+    [FilePluginMetadata(Name = "TEXI", Description = "NLP Texture", Extension = "*.tex",
+        Author = "onepiecefreak", About = "This is the TEXI image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class TexiAdapter : IImageAdapter
     {
         private TEXI _texi = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "TEXI";
-        public string Description => "NLP Texture";
-        public string Extension => "*.tex";
-        public string About => "This is the TEXI image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var texiName = filename + "i";
-            if (!File.Exists(texiName)) return false;
+            if (!File.Exists(texiName)) return Identification.False;
 
-            using (var br = new BinaryReaderX(File.OpenRead(texiName)))
+            using (var br = new BinaryReaderX(stream, true))
             {
                 br.BaseStream.Position = 0x18;
-                return br.ReadString(4) == "SERI";
+                if (br.ReadString(4) == "SERI") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -65,6 +66,11 @@ namespace image_texi
 
             _texi.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _texi.Save(File.Create(FileInfo.FullName), File.Create(texiName));
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

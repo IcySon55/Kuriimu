@@ -1,41 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Linq;
 
 namespace image_ctxb
 {
+    [FilePluginMetadata(Name = "CTXB", Description = "CTR TeXture Box", Extension = "*.ctxb",
+        Author = "onepiecefreak", About = "This is the CTXB image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class CtxbAdapter : IImageAdapter
     {
         private CTXB _ctxb = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "CTXB";
-        public string Description => "CTR TeXture Box";
-        public string Extension => "*.ctxb";
-        public string About => "This is the CTXB image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ctxb";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "ctxb") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -59,6 +60,11 @@ namespace image_ctxb
 
             _ctxb.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _ctxb.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

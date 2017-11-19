@@ -1,10 +1,25 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
-using Kontract;
+using Komponent.IO;
 
 namespace image_nintendo.CHNK
 {
+    public class Import
+    {
+        [Import("Nintendo")]
+        public ICompressionCollection nintendo;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+    }
+
     public enum TXPLFormat : byte
     {
         BGR555

@@ -21,8 +21,12 @@ namespace Kontract.Interface
     public interface IImagePalette : IImageFormat
     {
         void SetPaletteFormat(IImageFormat format);
+
         void SetPaletteColors(byte[] bytes);
+        void SetPaletteColors(IEnumerable<Color> colors);
+
         byte[] GetPaletteBytes();
+        IEnumerable<Color> GetPaletteColors();
     }
 
     //Swizzle

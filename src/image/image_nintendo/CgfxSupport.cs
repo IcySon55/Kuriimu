@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kontract;
 using Kontract.Interface;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.CGFX
 {

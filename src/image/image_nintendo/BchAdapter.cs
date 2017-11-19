@@ -1,40 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.BCH
 {
+    [FilePluginMetadata(Name = "BCH", Description = "BCH", Extension = "*.bch",
+        Author = "onepiecefreak", About = "This is the BCH image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class BchAdapter : IImageAdapter
     {
         private BCH _bch;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "BCH";
-        public string Description => "BCH";
-        public string Extension => "*.bch";
-        public string About => "This is the BCH image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 3) return false;
-                return br.ReadString(3) == "BCH";
+                if (br.BaseStream.Length < 3) return Identification.False;
+                if (br.ReadString(3) == "BCH") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -56,6 +57,11 @@ namespace image_nintendo.BCH
 
             _bch.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _bch.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

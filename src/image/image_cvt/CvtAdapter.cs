@@ -1,39 +1,40 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_cvt
 {
+    [FilePluginMetadata(Name = "CVT", Description = "Chase inVestigation Texture", Extension = "*.cvt",
+        Author = "onepiecefreak", About = "This is the CVT image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class CvtAdpter : IImageAdapter
     {
         private CVT _cvt;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "CVT";
-        public string Description => "Chase inVestigation Texture";
-        public string Extension => "*.cvt";
-        public string About => "This is the CVT image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 2) return false;
-                return br.ReadString(2) == "n";
+                if (br.BaseStream.Length < 2) return Identification.False;
+                if (br.ReadString(2) == "n") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -54,6 +55,11 @@ namespace image_cvt
 
             _cvt.bmps = _bitmaps.Select(b => b.Bitmap).ToList();
             _cvt.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

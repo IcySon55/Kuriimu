@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-//using Cetera.Image;
-using Kontract.Compression;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_level5.imgc
 {
@@ -15,13 +13,14 @@ namespace image_level5.imgc
     {
         public Bitmap Image;
         public ImageSettings settings;
+        private Import imports = new Import();
 
         public static Header header;
         public static byte[] entryStart = null;
 
         static bool editMode = false;
-        static Level5.Method tableComp;
-        static Level5.Method picComp;
+        static byte tableComp;
+        static byte picComp;
 
         public IMGC(Stream input)
         {
@@ -38,14 +37,14 @@ namespace image_level5.imgc
                 //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
                 var tableC = br.ReadBytes(header.tableSize1);
-                tableComp = (Level5.Method)(tableC[0] & 0x7);
-                byte[] table = Level5.Decompress(new MemoryStream(tableC));
+                tableComp = (byte)(tableC[0] & 0x7);
+                byte[] table = imports.level5.Decompress(new MemoryStream(tableC), 0);
 
                 //get image data
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
                 var texC = br.ReadBytes(header.imgDataSize);
-                picComp = (Level5.Method)(texC[0] & 0x7);
-                byte[] tex = Level5.Decompress(new MemoryStream(texC));
+                picComp = (byte)(texC[0] & 0x7);
+                byte[] tex = imports.level5.Decompress(new MemoryStream(texC), 0);
 
                 //order pic blocks by table
                 byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
@@ -58,7 +57,7 @@ namespace image_level5.imgc
                     Format = Support.Format[header.imageFormat],
                     Swizzle = new ImgcSwizzle(header.width, header.height)
                 };
-                Image = Kontract.Image.Common.Load(pic, settings);
+                Image = Common.Load(pic, settings);
             }
         }
 
@@ -118,7 +117,7 @@ namespace image_level5.imgc
                 Format = Support.Format[header.imageFormat],
                 Swizzle = new ImgcSwizzle(width, height)
             };
-            byte[] pic = Kontract.Image.Common.Save(Image, settings);
+            byte[] pic = Common.Save(Image, settings);
 
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
@@ -132,7 +131,8 @@ namespace image_level5.imgc
 
                 //Table
                 bw.BaseStream.Position = 0x48;
-                var comp = Level5.Compress(table, tableComp);
+                imports.level5.SetMethod(tableComp);
+                var comp = imports.level5.Compress(table);
                 bw.Write(comp);
                 header.tableSize1 = comp.Length;
                 header.tableSize2 = (header.tableSize1 + 3) & ~3;
@@ -140,7 +140,8 @@ namespace image_level5.imgc
                 //Image
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
                 header.imageFormat = (editMode) ? (byte)28 : header.imageFormat;
-                comp = Level5.Compress(new MemoryStream(importPic), picComp);
+                imports.level5.SetMethod(picComp);
+                comp = imports.level5.Compress(new MemoryStream(importPic));
                 bw.Write(comp);
                 bw.WriteAlignment(4);
                 header.imgDataSize = comp.Length;

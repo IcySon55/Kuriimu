@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 using System.Text;
 using System.Linq;
 
@@ -60,7 +61,8 @@ namespace image_iobj
                     var dataSize = br.ReadInt32();
                     var width = br.ReadInt32();
                     var height = br.ReadInt32();
-                    var format = (Format)br.ReadInt32();
+                    var format = br.ReadInt32();
+                    format = (format > 0x12) ? 0x12 : format;
                     br.BaseStream.Position -= 4;
 
                     imgMetaInf.Add(br.ReadBytes(0x74));
@@ -70,8 +72,8 @@ namespace image_iobj
                     {
                         Width = width,
                         Height = height,
-                        //Orientation = Orientation.XFlip,
-                        Format = ImageSettings.ConvertFormat(((int)format > 0x12) ? Format.ETC1A4 : format)
+                        Format = Support.Format[format],
+                        Swizzle = new CTRSwizzle(width, height)
                     };
 
                     bmps.Add(Common.Load(br.ReadBytes(dataSize), settings));
@@ -123,17 +125,18 @@ namespace image_iobj
                 {
                     imgOffsets.Add((int)bw.BaseStream.Position);
 
-                    Format format;
+                    int format;
                     using (var br = new BinaryReaderX(new MemoryStream(imgMetaInf[count])))
-                        format = (Format)br.ReadInt32();
+                        format = br.ReadInt32();
+                    format = (format > 0x12) ? 0x12 : format;
 
                     throw new System.NotImplementedException();
                     var settings = new ImageSettings
                     {
                         Width = bmp.Width,
                         Height = bmp.Height,
-                        //Orientation = Orientation.XFlip,
-                        Format = ImageSettings.ConvertFormat(((int)format > 0x12) ? Format.ETC1A4 : format)
+                        Format = Support.Format[format],
+                        Swizzle = new CTRSwizzle(bmp.Width, bmp.Height)
                     };
 
                     var pic = Common.Save(bmp, settings);

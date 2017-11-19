@@ -23,7 +23,7 @@ namespace Komponent.Image.Format
 
         ByteOrder byteOrder;
 
-        public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.BigEndian)
+        public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
             BitDepth = r + g + b + a;
             if (BitDepth < 8) throw new Exception($"Overall bitDepth can't be smaller than 8. Given bitDepth: {BitDepth}");

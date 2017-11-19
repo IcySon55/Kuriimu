@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
-using Kontract;
+using Komponent.IO;
 
 namespace image_mt.Mobile
 {

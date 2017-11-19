@@ -1,47 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Windows.Forms;
 
 namespace image_rawJtex
 {
+    [FilePluginMetadata(Name = "RawJTEX", Description = "J Texture without header", Extension = "*.jtex",
+        Author = "onepiecefreak", About = "This is the RawJTEX image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class RawJtexAdapter : IImageAdapter
     {
         private RawJTEX _rawjtex;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "RawJTEX";
-        public string Description => "J Texture without header";
-        public string Extension => "*.jtex";
-        public string About => "This is the RawJTEX image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                if (Path.GetExtension(filename) == ".jtex" && br.PeekString(4) != "jIMG" && br.ReadByte() == 0x11)
-                {
-                    MessageBox.Show("This headerless jTEX seems compressed!", "Compressed", MessageBoxButtons.OK);
-                    return false;
-                }
-
-                return (Path.GetExtension(filename) == ".jtex" && br.PeekString(4) != "jIMG" && br.ReadByte() != 0x11);
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -65,6 +54,11 @@ namespace image_rawJtex
 
             _rawjtex.Image = _bitmaps[0].Bitmap;
             _rawjtex.Save(FileInfo.Create());
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

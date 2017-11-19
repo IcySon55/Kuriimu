@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.IO;
-using Kontract;
-using Kontract.IO;
-using Kontract.Image.Format;
+using Komponent.IO;
+using Komponent.Image.Format;
 using Kontract.Interface;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace image_stex
 {

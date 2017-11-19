@@ -1,9 +1,8 @@
 using System.Drawing;
 using System.IO;
-//using Cetera.Image;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_f3xt
 {
@@ -30,7 +29,7 @@ namespace image_f3xt
 
                 br.BaseStream.Position = header.dataStart;
 
-                Image = Kontract.Image.Common.Load(br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)), settings);
+                Image = Common.Load(br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)), settings);
             }
         }
 
@@ -45,7 +44,7 @@ namespace image_f3xt
                     Format = Support.Format[header.format],
                     Swizzle = new CTRSwizzle(Image.Width, Image.Height)
                 };
-                byte[] data = Kontract.Image.Common.Save(Image, settings);
+                byte[] data = Common.Save(Image, settings);
 
                 header.width = (ushort)Image.Width;
                 header.height = (ushort)Image.Height;

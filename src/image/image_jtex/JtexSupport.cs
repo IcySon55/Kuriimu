@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using Kontract;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 using Kontract.Interface;
+using Komponent.IO;
 
 namespace image_jtex
 {

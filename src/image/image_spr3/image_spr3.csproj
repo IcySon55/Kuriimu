@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
@@ -41,23 +42,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CTPK.cs" />
+    <Compile Include="CtpkSupport.cs" />
     <Compile Include="SPR3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spr3Adapter.cs" />
     <Compile Include="Spr3Support.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Cetera\Cetera.csproj">
-      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
-      <Name>Cetera</Name>
+    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+      <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
+      <Name>Komponent</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kontract\Kontract.csproj">
       <Project>{51e474f7-1497-4c30-bc18-c357c884b8b2}</Project>
       <Name>Kontract</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\image_nintendo\image_nintendo.csproj">
-      <Project>{77a182c0-4e86-469d-986e-9fafaabcd26e}</Project>
-      <Name>image_nintendo</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_cvt
 {
@@ -29,7 +29,7 @@ namespace image_cvt
                     Swizzle = new CTRSwizzle(Header.Width, Header.Height)
                 };
 
-                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)br.BaseStream.Length - HeaderLength), settings));
+                bmps.Add(Common.Load(br.ReadBytes((int)br.BaseStream.Length - HeaderLength), settings));
             }
         }
 
@@ -46,7 +46,7 @@ namespace image_cvt
                     Format = Support.Format[Header.Format],
                     Swizzle = new CTRSwizzle(bmps[0].Width, bmps[0].Height)
                 };
-                bw.Write(Kontract.Image.Common.Save(bmps[0], settings));
+                bw.Write(Common.Save(bmps[0], settings));
             }
         }
     }

@@ -1,14 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using Kontract;
-using Kontract.IO;
+﻿using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using Komponent.IO;
+using Kontract.Interface;
 
 namespace image_xi.ANMC
 {
+    public class Import
+    {
+        [Import("CRC32")]
+        public IHash crc32;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Header
     {

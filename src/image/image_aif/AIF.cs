@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.IO;
 
 namespace image_aif
 {
@@ -55,7 +55,7 @@ namespace image_aif
                     Format = Support.Format[texInfo.format],
                     Swizzle = new AIFSwizzle(texInfo.width, texInfo.height)
                 };
-                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)dataSize), settings));
+                bmps.Add(Common.Load(br.ReadBytes((int)dataSize), settings));
             }
         }
 
@@ -78,7 +78,7 @@ namespace image_aif
                     Format = Support.Format[texInfo.format],
                     Swizzle = new AIFSwizzle(texInfo.width, texInfo.height)
                 };
-                bw.Write(Kontract.Image.Common.Save(bmps[0], settings));
+                bw.Write(Common.Save(bmps[0], settings));
             }
         }
     }

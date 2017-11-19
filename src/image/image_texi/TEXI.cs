@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 using System.Xml.Serialization;
 using System.Xml;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
 using System;
 
 namespace image_texi

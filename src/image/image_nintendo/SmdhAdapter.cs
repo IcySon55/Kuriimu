@@ -1,41 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.Image.Format;
-using Kontract.IO;
+using Komponent.Image.Format;
+using Komponent.IO;
 
 namespace image_nintendo.SMDH
 {
+    [FilePluginMetadata(Name = "SMDH", Description = "SMDH Icon", Extension = "*.icn;*.bin",
+        Author = "onepiecefreak,uwabami", About = "This is the SMDH image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class IcnAdapter : IImageAdapter
     {
         private SMDH _smdh;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "SMDH";
-        public string Description => "SMDH Icon";
-        public string Extension => "*.icn;*.bin";
-        public string About => "This is the SMDH image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => true;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "SMDH";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "SMDH") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -66,6 +67,11 @@ namespace image_nintendo.SMDH
                 FileInfo.Delete();
                 throw;
             }
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

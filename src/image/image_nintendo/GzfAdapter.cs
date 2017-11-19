@@ -1,40 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.GZF
 {
+    [FilePluginMetadata(Name = "GZF", Description = "GZ Font", Extension = "*.gzf",
+        Author = "onepiecefreak", About = "This is the GZF image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class GzfAdapter : IImageAdapter
     {
         private GZF _gzf;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "GZF";
-        public string Description => "GZ Font";
-        public string Extension => "*.gzf";
-        public string About => "This is the GZF image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "GZFX";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "GZFX") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -43,18 +44,23 @@ namespace image_nintendo.GZF
 
             if (FileInfo.Exists)
             {
-                _gzf = new GZF(FileInfo.FullName);
+                _gzf = new GZF(FileInfo.OpenRead());
                 _bitmaps = _gzf.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
         public void Save(string filename = "")
         {
-            if (filename.Trim() != string.Empty)
+            /*if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
             _gzf.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-            _gzf.Save(FileInfo.FullName);
+            _gzf.Save(FileInfo.FullName);*/
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

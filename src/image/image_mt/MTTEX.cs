@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_mt
 {

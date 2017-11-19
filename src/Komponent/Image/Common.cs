@@ -52,7 +52,7 @@ namespace Komponent.Image
         /// <param name="bytes">Bytearray containing the binary image data</param>
         /// <param name="settings">The settings determining the final image output</param>
         /// <returns>Bitmap</returns>
-        public Bitmap Load(byte[] bytes, ImageSettings settings)
+        public static Bitmap Load(byte[] bytes, ImageSettings settings)
         {
             int width = settings.Width, height = settings.Height;
 
@@ -85,7 +85,7 @@ namespace Komponent.Image
         /// <param name="bmp">The bitmap, which will be converted</param>
         /// <param name="settings">Settings like Format, Dimensions and Swizzles</param>
         /// <returns>byte[]</returns>
-        public byte[] Save(Bitmap bmp, ImageSettings settings)
+        public static byte[] Save(Bitmap bmp, ImageSettings settings)
         {
             var points = GetPointSequence(settings);
             var colors = new List<Color>();

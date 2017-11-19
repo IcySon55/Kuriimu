@@ -1,50 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.CGFX
 {
+    [FilePluginMetadata(Name = "CGFX", Description = "CTR GFX", Extension = "*.bcres;*.bcmdl;*.bctex",
+        Author = "onepiecefreak", About = "This is the CGFX image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class CgfxAdapter : IImageAdapter
     {
         private CGFX _cgfx;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "CGFX";
-        public string Description => "CTR GFX";
-        public string Extension => "*.bcres;*.bcmdl;*.bctex";
-        public string About => "This is the CGFX image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             try
             {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
+                using (var br = new BinaryReaderX(stream, true))
                 {
-                    if (br.ReadString(4) != "CGFX") return false;
+                    if (br.ReadString(4) != "CGFX") return Identification.False;
                     br.BaseStream.Position = 0x24;
-                    return br.ReadUInt32() > 0;
+                    if (br.ReadUInt32() > 0) return Identification.True;
                 }
             }
             catch
             {
-                return false;
+                return Identification.False;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -68,6 +68,11 @@ namespace image_nintendo.CGFX
 
             _cgfx.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _cgfx.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

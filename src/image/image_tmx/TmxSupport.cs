@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using Kontract;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_tmx
 {

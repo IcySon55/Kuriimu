@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Kontract;
+using Komponent.IO;
 
 namespace image_tim2
 {

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Kontract.Interface;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 
 namespace image_comp
 {

@@ -1,42 +1,42 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 /*Code by Gericom, ported to a plugin by onepiecefreak*/
 
 namespace image_mods
 {
+    [FilePluginMetadata(Name = "MODS", Description = "MODS Video format", Extension = "*.mods",
+        Author = "onepiecefreak", About = "This is the MODS image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class MoflexAdapter : IImageAdapter
     {
         private MODS _mods = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "MODS";
-        public string Description => "MODS Video format";
-        public string Extension => "*.mods";
-        public string About => "This is the MODS image sequence adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "MODS";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "MODS") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -58,6 +58,11 @@ namespace image_mods
 
             _mods.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _mods.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 /*Original image and data types by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.BCLYT
 {

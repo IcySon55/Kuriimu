@@ -1,16 +1,13 @@
 ﻿using System;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Kontract;
-using Kontract.IO;
-using Kontract.Compression;
+using Komponent.IO;
 using Kontract.Interface;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 using System.Drawing;
-using Kontract.Image.Swizzle;
+using Komponent.Image.Swizzle;
 
 namespace image_level5.imgc
 {
@@ -61,6 +58,19 @@ namespace image_level5.imgc
             [28] = new ETC1(),
             [29] = new ETC1(true)
         };
+    }
+
+    public class Import
+    {
+        [Import("Level5")]
+        public ICompressionCollection level5;
+
+        public Import()
+        {
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+        }
     }
 
     public class ImgcSwizzle : IImageSwizzle

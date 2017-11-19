@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using Kontract;
-using Kontract.IO;
-using Kontract.Compression;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using Komponent.IO;
+using Kontract.Interface;
+using Komponent.Image.Format;
 
 namespace image_level5.imga
 {
-    public enum Format : byte
+    public class Support
     {
-        LA44 = 14,
-        KTX = 43
+        public static Dictionary<byte, IImageFormat> Format = new Dictionary<byte, IImageFormat>
+        {
+            [14] = new LA(4, 4),
+            [43] = null
+        };
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -22,7 +24,7 @@ namespace image_level5.imga
         public Magic magic; // IMGA
         public int const1; // 30 30 00 00
         public short const2; // 30 00
-        public Format imageFormat;
+        public byte imageFormat;
         public byte const3; // 01
         public byte combineFormat;
         public byte bitDepth;
@@ -45,16 +47,20 @@ namespace image_level5.imga
 
         public void checkFormat()
         {
-            if (imageFormat == Format.KTX) throw new Exception("KTX isn't supported yet!");
+            if (imageFormat == 43) throw new Exception("KTX isn't supported yet!");
         }
     }
 
-    public class ImgaSupport
+    public class Import
     {
-        public static byte[] Decomp(BinaryReaderX br)
+        [Import("Level5")]
+        public ICompressionCollection level5;
+
+        public Import()
         {
-            // above to be restored eventually with some changes to Cetera
-            return Level5.Decompress(br.BaseStream);
+            var catalog = new DirectoryCatalog("Komponents");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
         }
     }
 }

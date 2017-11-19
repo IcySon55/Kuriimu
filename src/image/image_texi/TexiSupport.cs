@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using System.Collections.Generic;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 using Kontract.Interface;
 
 namespace image_texi

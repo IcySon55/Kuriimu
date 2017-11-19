@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Kontract;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 
 namespace image_ctxb
 {

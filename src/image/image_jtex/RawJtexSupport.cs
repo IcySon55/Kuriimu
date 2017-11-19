@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Cetera.Image;
 using Kontract.Interface;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 
 namespace image_rawJtex
 {

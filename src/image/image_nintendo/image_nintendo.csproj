@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BCFNT.cs" />
     <Compile Include="BcfnxAdapter.cs" />
     <Compile Include="BCH.cs" />
     <Compile Include="BchAdapter.cs" />
@@ -53,13 +54,18 @@
     <Compile Include="BCLYT.cs" />
     <Compile Include="BclytAdapter.cs" />
     <Compile Include="BclytSupport.cs" />
+    <Compile Include="BFFNT.cs" />
     <Compile Include="BffntAdapter.cs" />
     <Compile Include="BXLIM.cs" />
     <Compile Include="BxlimAdapter.cs" />
     <Compile Include="CGFX.cs" />
     <Compile Include="CgfxAdapter.cs" />
     <Compile Include="CgfxSupport.cs" />
+    <Compile Include="GZF.cs" />
     <Compile Include="NCGR.cs" />
+    <Compile Include="PICA\PicaCommand.cs" />
+    <Compile Include="PICA\PicaCommandReader.cs" />
+    <Compile Include="QBF.cs" />
     <Compile Include="VcgAdapter.cs" />
     <Compile Include="NcgrAdapter.cs" />
     <Compile Include="NcgrSupport.cs" />
@@ -73,8 +79,6 @@
     <Compile Include="CTPK.cs" />
     <Compile Include="CtpkAdapter.cs" />
     <Compile Include="CtpkSupport.cs" />
-    <Compile Include="QBF.cs" />
-    <Compile Include="GZF.cs" />
     <Compile Include="GzfAdapter.cs" />
     <Compile Include="QbfAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,14 +90,9 @@
     <Compile Include="VCG.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CeteraDS\CeteraDS.csproj">
-      <Project>{ad9c4794-3129-436a-9828-6d83b062b484}</Project>
-      <Name>CeteraDS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Cetera\Cetera.csproj">
-      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
-      <Name>Cetera</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+      <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
+      <Name>Komponent</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>

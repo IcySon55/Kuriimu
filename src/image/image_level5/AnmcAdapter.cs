@@ -1,42 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 using System.IO;
 
 namespace image_xi.ANMC
 {
+    [FilePluginMetadata(Name = "ANMC", Description = "Level 5 Animation File", Extension = "*.bin",
+        Author = "onepiecefreak", About = "This is the ANMC image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class ImgaAdapter : IImageAdapter
     {
-        private Bitmap _anmc = null;
+        private ANMC _anmc = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "ANMC";
-        public string Description => "Level 5 Animation File";
-        public string Extension => "*.bin";
-        public string About => "This is the ANMC image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "ANMC";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "ANMC") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -45,19 +46,24 @@ namespace image_xi.ANMC
 
             if (FileInfo.Exists)
             {
-                _anmc = ANMC.Load(FileInfo.OpenRead());
+                _anmc = new ANMC(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _anmc } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _anmc.Bitmap } };
             }
         }
 
         public void Save(string filename = "")
         {
-            if (filename.Trim() != string.Empty)
+            /*if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
             _anmc = _bitmaps[0].Bitmap;
-            ANMC.Save(File.Create(FileInfo.FullName));
+            ANMC.Save(File.Create(FileInfo.FullName));*/
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

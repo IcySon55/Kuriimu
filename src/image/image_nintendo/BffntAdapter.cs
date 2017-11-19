@@ -6,38 +6,37 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.BFFNT
 {
+    [FilePluginMetadata(Name = "BFFNT", Description = "Binary FoNT", Extension = "*.bffnt",
+        Author = "", About = "This is the BFFNT image adapter for Kukkii.")]
     [Export(typeof(IImageAdapter))]
     public sealed class BffntAdapter : IImageAdapter
     {
-        private Cetera.Font.BFFNT _bffnt;
+        private BFFNT _bffnt;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "BFFNT";
-        public string Description => "Binary FoNT";
-        public string Extension => "*.bffnt";
-        public string About => "This is the BFFNT image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "FFNT";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "FFNT") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -46,7 +45,7 @@ namespace image_nintendo.BFFNT
 
             if (FileInfo.Exists)
             {
-                _bffnt = new Cetera.Font.BFFNT(File.OpenRead(FileInfo.FullName));
+                _bffnt = new BFFNT(File.OpenRead(FileInfo.FullName));
                 _bitmaps = _bffnt.bmps.Select((o, i) => new BFFNTBitmapInfo { Bitmap = o, Format = _bffnt._settings[i].Format.FormatName }).ToList<BitmapInfo>();
             }
         }
@@ -58,6 +57,11 @@ namespace image_nintendo.BFFNT
 
             _bffnt.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _bffnt.Save(FileInfo.FullName);*/
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

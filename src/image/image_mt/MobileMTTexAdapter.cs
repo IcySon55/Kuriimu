@@ -1,40 +1,40 @@
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_mt.Mobile
 {
+    [FilePluginMetadata(Name = "Mobile MTTEX", Description = "Mobile MT Framework Texture", Extension = "*.tex",
+        Author = "IcySon55,onepiecefreak", About = "This is the Mobile MT Framework image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class MobileMTTexAdapter : IImageAdapter
     {
         private MobileMTTEX _tex = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "Mobile MTTEX";
-        public string Description => "Mobile MT Framework Texture";
-        public string Extension => "*.tex";
-        public string About => "This is the Mobile MT Framework image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "TEX ";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "TEX ") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -57,6 +57,11 @@ namespace image_mt.Mobile
                 _tex.headerInfo.format = ((MobileMTTexBitmapInfo)_bitmaps[0]).format;
             _tex.bmps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

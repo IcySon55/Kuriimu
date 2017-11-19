@@ -1,40 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_picarg4
 {
+    [FilePluginMetadata(Name = "PicaRg4", Description = "Pica image 4", Extension = "*.lzb",
+        Author = "onepiecefreak", About = "This is the PicaRg4 image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class PicaRgAdapter : IImageAdapter
     {
         private PICARG _picaRg = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "PicaRg4";
-        public string Description => "Pica image 4";
-        public string Extension => "*.lzb";
-        public string About => "This is the PicaRg4 image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return br.ReadString(7) == "picaRg4";
+                if (br.ReadString(7) == "picaRg4") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -58,6 +59,11 @@ namespace image_picarg4
 
             _picaRg.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _picaRg.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

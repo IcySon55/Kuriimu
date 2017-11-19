@@ -1,39 +1,40 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_nintendo.CTPK
 {
+    [FilePluginMetadata(Name = "CTPK", Description = "CTR Texture PacKage", Extension = "*.ctpk;*.amt",
+        Author = "onepiecefreak", About = "This is the CTPK image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class CtpkAdapter : IImageAdapter
     {
         private CTPK _ctpk;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "CTPK";
-        public string Description => "CTR Texture PacKage";
-        public string Extension => "*.ctpk;*.amt";
-        public string About => "This is the CTPK image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "CTPK";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "CTPK") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -54,6 +55,11 @@ namespace image_nintendo.CTPK
 
             _ctpk.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _ctpk.Save(FileInfo.Create(), false);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

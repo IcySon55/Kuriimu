@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.IO;
 
 namespace image_tim2
 {

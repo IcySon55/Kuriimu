@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_tm2
 {

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.Image;
-using Kontract.Interface;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
-using Cetera.PICA;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
+using image_nintendo.PICA;
 
 //Code ported from Ohana3DS
 

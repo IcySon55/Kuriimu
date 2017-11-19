@@ -1,43 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Linq;
 
 /*Mystery Tales - Time Travel NDS*/
 namespace image_ctgd
 {
+    [FilePluginMetadata(Name = "CTGD", Description = "Whatever CTGD means", Extension = "*.ctgd",
+        Author = "onepiecefreak", About = "This is the CTGD image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class CtgdAdapter : IImageAdapter
     {
         private CTGD _ctgd = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "CTGD";
-        public string Description => "Whatever CTGD means";
-        public string Extension => "*.ctgd";
-        public string About => "This is the CTGD image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 8) return false;
+                if (br.BaseStream.Length < 8) return Identification.True;
                 br.BaseStream.Position = 4;
-                return br.ReadString(4) == "nns_";
+                if (br.ReadString(4) == "nns_") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -61,6 +62,11 @@ namespace image_ctgd
 
             _ctgd.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _ctgd.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

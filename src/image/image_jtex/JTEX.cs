@@ -1,9 +1,9 @@
 using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_jtex
 {
@@ -29,7 +29,7 @@ namespace image_jtex
                     Format = Support.Format[JTEXHeader.format],
                     Swizzle = new CTRSwizzle(JTEXHeader.width, JTEXHeader.height)
                 };
-                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes(JTEXHeader.unk3[2]), settings));
+                bmps.Add(Common.Load(br.ReadBytes(JTEXHeader.unk3[2]), settings));
             }
         }
 
@@ -45,7 +45,7 @@ namespace image_jtex
                     Format = Support.Format[JTEXHeader.format],
                     Swizzle = new CTRSwizzle(bmps[0].Width, bmps[0].Height)
                 };
-                byte[] texture = Kontract.Image.Common.Save(bmps[0], settings);
+                byte[] texture = Common.Save(bmps[0], settings);
 
                 //edit header
                 JTEXHeader.width = (short)bmps[0].Width;

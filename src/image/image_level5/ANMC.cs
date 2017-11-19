@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
 using System.IO;
-using Kontract.IO;
-using Cetera.Hash;
+using Komponent.IO;
 
 namespace image_xi.ANMC
 {
-    class ANMC
+    public class ANMC
     {
         public static Dictionary<string, uint> hashName = new Dictionary<string, uint>();
+        private Import imports = new Import();
 
-        public static Bitmap Load(Stream input)
+        public Bitmap Bitmap;
+
+        public ANMC(Stream input)
         {
+            uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
+
             using (var br = new BinaryReaderX(input))
             {
                 //Header
@@ -26,7 +29,7 @@ namespace image_xi.ANMC
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
                     var name = br.ReadCStringA();
-                    try { hashName.Add(name, Crc32.Create(name)); } catch { }
+                    try { hashName.Add(name, GetInt(imports.crc32.Create(Encoding.ASCII.GetBytes(name), 0))); } catch { }
                 }
                 br.BaseStream.Position = 0x14;
 
@@ -121,8 +124,6 @@ namespace image_xi.ANMC
                 foreach (var meta in infoMeta1)
                     foreach (var file in relList)
                         file.subParts.Find(y => y.subPart.subPart.nameHash == meta.infoMeta.subPartHash2).metaInfs1.Add(meta);
-
-                return null;
             }
         }
 

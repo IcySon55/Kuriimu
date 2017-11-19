@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.Image.Format;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Format;
+using Komponent.IO;
 
 namespace image_ctgd
 {
@@ -36,7 +35,9 @@ namespace image_ctgd
                     });
                 }
 
-                format = new Palette(entries.Find(e => e.magic == "nns_pcol").data, new RGBA(5, 5, 5), 8);
+                format = new Palette(8);
+                format.SetPaletteFormat(new RGBA(5, 5, 5));
+                format.SetPaletteColors(entries.Find(e => e.magic == "nns_pcol").data);
                 settings = new ImageSettings
                 {
                     Width = width,
@@ -44,7 +45,7 @@ namespace image_ctgd
                     Format = format
                 };
 
-                bmps.Add(Kontract.Image.Common.Load(entries.Find(e => e.magic == "nns_txel").data, settings));
+                bmps.Add(Common.Load(entries.Find(e => e.magic == "nns_txel").data, settings));
             }
         }
 
@@ -55,8 +56,8 @@ namespace image_ctgd
                 settings.Width = bmps[0].Width;
                 settings.Height = bmps[0].Height;
 
-                var texData = Kontract.Image.Common.Save(bmps[0], settings);
-                var palData = format.paletteBytes;
+                var texData = Common.Save(bmps[0], settings);
+                var palData = format.GetPaletteBytes();
 
                 if (palData.Length > 0x200) throw new System.Exception("Your image contains more than 256 colors. The format doesn't allow more than 256 colors.");
 

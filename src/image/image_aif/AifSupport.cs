@@ -5,9 +5,9 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Kontract.Interface;
-using Kontract.Image.Swizzle;
+using Komponent.Image.Swizzle;
 using System.Drawing;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 
 namespace image_aif
 {

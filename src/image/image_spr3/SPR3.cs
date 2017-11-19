@@ -1,20 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Image;
-using Kontract.IO;
-using System;
-using image_nintendo.CTPK;
+using Komponent.IO;
 
-namespace image_spr3
+namespace image_spr3.SPR3
 {
     public sealed class SPR3
     {
         public Header header;
         public List<SPR3Entry> sSpr3 = new List<SPR3Entry>();
 
-        public CTPK ctpk;
+        public CTPK.CTPK ctpk;
 
         public SPR3(string filename)
         {
@@ -40,7 +36,7 @@ namespace image_spr3
 
                 //Load CTPK
                 br.BaseStream.Position = dataOffset;
-                ctpk = new CTPK(new MemoryStream(br.ReadBytes((int)(br.BaseStream.Length - dataOffset))));
+                ctpk = new CTPK.CTPK(new MemoryStream(br.ReadBytes((int)(br.BaseStream.Length - dataOffset))));
             }
         }
 

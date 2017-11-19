@@ -1,42 +1,42 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_nintendo.BXLIM
 {
+    [FilePluginMetadata(Name = "BXLIM", Description = "Binary Layout Image", Extension = "*.bclim;*.bflim",
+        Author = "IcySon55,Neobeo,onepiecefreak", About = "This is the BXLIM image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class BxlimAdapter : IImageAdapter
     {
         private BXLIM _bxlim = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "BXLIM";
-        public string Description => "Binary Layout Image";
-        public string Extension => "*.bclim;*.bflim";
-        public string About => "This is the BCLIM and BFLIM image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 40) return false;
+                if (br.BaseStream.Length < 40) return Identification.False;
                 br.BaseStream.Seek((int)br.BaseStream.Length - 40, SeekOrigin.Begin);
                 var magic = br.ReadString(4);
-                return magic == "CLIM" || magic == "FLIM";
+                if (magic == "CLIM" || magic == "FLIM") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -58,6 +58,11 @@ namespace image_nintendo.BXLIM
             var info = _bitmaps[0] as BxlimBitmapInfo;
             _bxlim.Image = info.Bitmap;
             _bxlim.Save(FileInfo.Create());
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

@@ -1,43 +1,42 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using Cetera.Font;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_nintendo.BCFNX
 {
+    [FilePluginMetadata(Name = "BCFNX", Description = "Binary CTR Font", Extension = "*.bcfnt;*.bcfna",
+        Author = "", About = "This is the BCFNX image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class BcfnxAdapter : IImageAdapter
     {
         private BCFNT _bcfnx;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "BCFNX";
-        public string Description => "Binary CTR Font";
-        public string Extension => "*.bcfnt;*.bcfna";
-        public string About => "This is the BCFNT and BCFNA image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
+                if (br.BaseStream.Length < 4) return Identification.False;
                 string magic = br.ReadString(4);
-                return magic == "CFNT" || magic == "CFNA";
+                if (magic == "CFNT" || magic == "CFNA") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -64,6 +63,11 @@ namespace image_nintendo.BCFNX
                 _bcfnx.Save(FileInfo.Create());
             }
             catch (Exception) { }*/
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

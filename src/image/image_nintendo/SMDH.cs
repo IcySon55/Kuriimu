@@ -3,11 +3,10 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Kontract.Image;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
-using Kontract;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Format;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_nintendo.SMDH
 {

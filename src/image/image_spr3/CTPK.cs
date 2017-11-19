@@ -7,7 +7,7 @@ using Komponent.Image.Swizzle;
 using Komponent.IO;
 using System;
 
-namespace image_nintendo.CTPK
+namespace image_spr3.CTPK
 {
     public sealed class CTPK
     {

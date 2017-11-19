@@ -5,11 +5,13 @@ using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.Linq;
 
 namespace image_aif
 {
+    [FilePluginMetadata(Name = "AIF", Description = "Whatever AIF means", Extension = "*.aif", Author = "onepiecefreak",
+        About = "This is the AIF image adapter for Kukkii.")]
     [Export(typeof(IImageAdapter))]
     public sealed class AifAdapter : IImageAdapter
     {
@@ -17,26 +19,23 @@ namespace image_aif
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "AIF";
-        public string Description => "Whatever AIF means";
-        public string Extension => "*.aif";
-        public string About => "This is the AIF image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return br.ReadString(4) == " FIA";
+                if (br.ReadString(4) == " FIA") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -60,6 +59,11 @@ namespace image_aif
 
             _aif.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _aif.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

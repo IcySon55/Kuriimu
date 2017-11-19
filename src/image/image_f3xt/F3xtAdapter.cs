@@ -1,43 +1,42 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
-using Kontract.Compression;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 using System.ComponentModel;
 using System.Linq;
 
 namespace image_f3xt
 {
+    [FilePluginMetadata(Name = "F3XT", Description = "F3XT Texture", Extension = "*.tex",
+        Author = "onepiecefreak", About = "This is the F3XT image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public class F3xtAdapter : IImageAdapter
     {
         private F3XT _f3xt = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        // Information
-        public string Name => "F3XT";
-        public string Description => "F3XT Texture";
-        public string Extension => "*.tex";
-        public string About => "This is the F3XT image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "F3XT";
+                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.ReadString(4) == "F3XT") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -62,6 +61,11 @@ namespace image_f3xt
 
             _f3xt.Image = _bitmaps[0].Bitmap;
             _f3xt.Save(FileInfo.Create());
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

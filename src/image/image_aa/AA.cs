@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
-using Kontract.Image;
-using Kontract.Image.Format;
-using Kontract.IO;
+using Komponent.IO;
+using Komponent.Image;
+using Komponent.Image.Format;
 
 namespace image_aa
 {
@@ -18,7 +17,9 @@ namespace image_aa
         {
             using (var br = new BinaryReaderX(input))
             {
-                format = new Palette(br.ReadBytes(0x20), new RGBA(5, 5, 5), 4);
+                format = new Palette(4);
+                format.SetPaletteFormat(new RGBA(5, 5, 5));
+                format.SetPaletteColors(br.ReadBytes(0x20));
                 settings = new ImageSettings
                 {
                     Width = 256,
@@ -26,7 +27,7 @@ namespace image_aa
                     Format = format
                 };
 
-                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
+                bmps.Add(Common.Load(br.ReadBytes((int)br.BaseStream.Length - 0x20), settings));
             }
         }
 
@@ -34,8 +35,8 @@ namespace image_aa
         {
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
-                var tileData = Kontract.Image.Common.Save(bmps[0], settings);
-                var paletteData = format.paletteBytes;
+                var tileData = Common.Save(bmps[0], settings);
+                var paletteData = format.GetPaletteBytes();
 
                 bw.Write(paletteData);
                 bw.Write(tileData);

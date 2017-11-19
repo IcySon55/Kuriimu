@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
-using Cetera.Image;
 using Kontract.Interface;
 
 namespace image_nintendo.SMDH

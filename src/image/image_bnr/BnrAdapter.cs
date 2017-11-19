@@ -2,55 +2,49 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using CeteraDS.Hash;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_bnr
 {
+    [FilePluginMetadata(Name = "BNR", Description = "BaNneR", Extension = "*.bnr", Author = "onepiecefreak",
+        About = "This is the BNR image adapter for Kukkii.")]
     [Export(typeof(IImageAdapter))]
     public sealed class BnrAdapter : IImageAdapter
     {
         private BNR _bnr = null;
         private List<BitmapInfo> _bitmaps;
+        private Import imports = new Import();
 
         #region Properties
-
-        public string Name => "BNR";
-        public string Description => "BaNneR";
-        public string Extension => "*.bnr";
-        public string About => "This is the BNR image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
+
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return false;
+                if (br.BaseStream.Length < 0x840) return Identification.False;
                 br.BaseStream.Position = 2;
                 var crc16 = br.ReadUInt16();
-                if (br.BaseStream.Length < 0x20) return false;
-                if (br.BaseStream.Length < 0x820) return false;
+
                 br.BaseStream.Position = 0x20;
-
-                try
-                {
-                    return Crc16.Create(br.ReadBytes(0x820)) == crc16;
-                }
-                catch (Exception) { }
-
-                return false;
+                if (GetInt(imports.crc16.Create(br.ReadBytes(0x820), 0)) == crc16) return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -73,7 +67,12 @@ namespace image_bnr
                 FileInfo = new FileInfo(filename);
 
             _bnr.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-            _bnr.Save(FileInfo.FullName);
+            _bnr.Save(FileInfo.FullName, imports);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

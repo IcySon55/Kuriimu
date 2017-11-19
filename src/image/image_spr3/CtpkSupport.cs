@@ -5,7 +5,7 @@ using Kontract.Interface;
 using Komponent.IO;
 using Komponent.Image.Format;
 
-namespace image_nintendo.CTPK
+namespace image_spr3.CTPK
 {
     public class Support
     {

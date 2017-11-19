@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Kontract.Interface;
-using Kontract.Image.Format;
-using Kontract;
+using Komponent.Image.Format;
+using Komponent.IO;
 
 namespace image_f3xt
 {

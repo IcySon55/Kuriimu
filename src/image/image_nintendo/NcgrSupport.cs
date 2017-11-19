@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kontract;
+using Komponent.IO;
 
 namespace image_nintendo.NCGLR
 {

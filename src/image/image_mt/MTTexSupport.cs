@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using Kontract;
-using Kontract.Image;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
+using Komponent.IO;
+using Komponent.Image;
+using Komponent.Image.Format;
+using Komponent.Image.Swizzle;
 using Kontract.Interface;
 
 namespace image_mt

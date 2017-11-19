@@ -1,44 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_nintendo.NCGLR
 {
+    [FilePluginMetadata(Name = "NCGR/NCLR", Description = "Nintendo Character Graphic Resource", Extension = "*.ncgr",
+        Author = "onepiecefreak", About = "This is the NCGR/NCLR image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class BnrAdapter : IImageAdapter
     {
         private NCGLR _ncgr = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "NCGR/NCLR";
-        public string Description => "Nintendo Character Graphic Resource";
-        public string Extension => "*.ncgr";
-        public string About => "This is the NCGR/NCLR image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
             var ncgrFilename = filename;
             var nclrFilename = filename.Remove(filename.Length - 2) + "lr";
 
-            if (!File.Exists(ncgrFilename) || !File.Exists(nclrFilename)) return false;
+            if (!File.Exists(ncgrFilename) || !File.Exists(nclrFilename)) return Identification.False;
 
-            using (var br = new BinaryReaderX(File.OpenRead(ncgrFilename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return br.BaseStream.Length >= 4 && br.ReadString(4) == "RGCN";
+                if (br.BaseStream.Length >= 4 && br.ReadString(4) == "RGCN") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -71,6 +72,11 @@ namespace image_nintendo.NCGLR
 
             _ncgr.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _ncgr.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

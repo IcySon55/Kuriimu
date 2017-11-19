@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Image;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_mt.Mobile
 {

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Format;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 using System.Text;
 
 namespace image_picarg4

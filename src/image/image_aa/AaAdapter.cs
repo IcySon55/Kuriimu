@@ -10,6 +10,8 @@ using System.Linq;
 
 namespace image_aa
 {
+    [FilePluginMetadata(Name = "Ace Attorney DS", Description = "Ace Attorney Images from the DS", Extension = "*.bin", Author = "onepiecefreak",
+        About = "This is the AA image adapter for Kukkii.")]
     [Export(typeof(IImageAdapter))]
     public sealed class CtxbAdapter : IImageAdapter
     {
@@ -17,29 +19,18 @@ namespace image_aa
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "AA";
-        public string Description => "Ace Attorney Image";
-        public string Extension => "*.bin";
-        public string About => "This is the AA image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            /*using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                if (br.BaseStream.Length < 2) return false;
-                var pre = br.ReadUInt16();
-                return pre == 0 || pre == 0x83e0;
-            }*/
-            return false;
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -63,6 +54,11 @@ namespace image_aa
 
             _aa.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _aa.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

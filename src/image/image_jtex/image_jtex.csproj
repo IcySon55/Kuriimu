@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -51,10 +52,9 @@
     <Compile Include="RawJtexSupport.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Cetera\Cetera.csproj">
-      <Project>{948c73ad-d8e8-4a5e-86c9-2d239b74cce7}</Project>
-      <Name>Cetera</Name>
-      <Private>False</Private>
+    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+      <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
+      <Name>Komponent</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Kontract\Kontract.csproj">
       <Project>{51E474F7-1497-4C30-BC18-C357C884B8B2}</Project>

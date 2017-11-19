@@ -1,13 +1,19 @@
 ﻿using System.Runtime.InteropServices;
-using Kontract;
+using System.Collections.Generic;
+using Kontract.Interface;
+using Komponent.Image.Format;
+using Komponent.IO;
 
 namespace image_iobj
 {
-    public enum Format : int
+    public class Support
     {
-        RGBA8888 = 4,
-        RGBA4444 = 5,
-        ETC1A4 = 0x12
+        public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>()
+        {
+            [4] = new RGBA(8, 8, 8, 8),
+            [5] = new RGBA(4, 4, 4, 4),
+            [18] = new ETC1(true)
+        };
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

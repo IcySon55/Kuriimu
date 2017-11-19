@@ -47,7 +47,14 @@ namespace Komponent.Image.Format
             PaletteColors = PaletteFormat.Load(bytes).ToList();
         }
 
+        public void SetPaletteColors(IEnumerable<Color> colors)
+        {
+            PaletteColors = colors.ToList();
+        }
+
         public byte[] GetPaletteBytes() => PaletteBytes;
+
+        public IEnumerable<Color> GetPaletteColors() => PaletteColors;
 
         public IEnumerable<Color> Load(byte[] data)
         {

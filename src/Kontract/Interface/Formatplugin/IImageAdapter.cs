@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace Kontract.Interface
 {
-    public interface IImageAdapter : IFilePlugin
+    public interface IImageAdapter : IFilePlugin2
     {
         // Images
         IList<BitmapInfo> Bitmaps { get; }

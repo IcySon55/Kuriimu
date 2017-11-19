@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using System.Linq;
+using Komponent.Image;
+using Komponent.Image.Format;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_nintendo.VCG
 {
@@ -25,14 +26,19 @@ namespace image_nintendo.VCG
                 var count = brVCL.ReadInt16();
                 transparentIndex = brVCL.ReadInt16();
 
-                pal = new Palette(brVCL.ReadBytes((int)(brVCL.BaseStream.Length - brVCL.BaseStream.Position)), new RGBA(5, 5, 5)).colors;
+                var tmp = new Palette(4);
+                tmp.SetPaletteFormat(new RGBA(5, 5, 5));
+                tmp.SetPaletteColors(brVCL.ReadBytes((int)(brVCL.BaseStream.Length - brVCL.BaseStream.Position)));
+                pal = tmp.GetPaletteColors().ToList();
             }
 
+            var format = new Palette(4);
+            format.SetPaletteColors(pal);
             var settings = new ImageSettings
             {
                 Width = 112,
                 Height = 112,
-                Format = new Palette(pal, 4),
+                Format = format,
                 Swizzle = new NitroSwizzle(112, 112)
                 //TransparentColor = pal.ToList()[transparentIndex - 1]
             };

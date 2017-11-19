@@ -2,13 +2,13 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 using System.Collections.Generic;
-using Kontract.Image.Format;
+using Komponent.Image.Format;
 using Kontract.Interface;
-using Kontract.Image.Swizzle;
-using Cetera.IO;
-using Kontract.IO;
-using Cetera;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
+using Komponent.Image;
 using System.Linq;
 
 namespace image_nintendo.BXLIM
@@ -35,6 +35,61 @@ namespace image_nintendo.BXLIM
             public byte format;
             public byte swizzleTileMode;
             public int datasize;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public class NW4CHeader
+        {
+            public Magic magic;
+            public ByteOrder byte_order;
+            public short header_size;
+            public int version;
+            public int file_size;
+            public short section_count;
+            public short padding;
+        };
+
+        [DebuggerDisplay("{Magic,nq}: {Data.Length} bytes")]
+        public class NW4CSection
+        {
+            public Magic Magic { get; }
+            public byte[] Data { get; set; }
+            public object Object { get; set; }
+
+            public NW4CSection(string magic, byte[] data)
+            {
+                Magic = magic;
+                Data = data;
+            }
+        }
+
+        public class NW4CSectionList : List<NW4CSection>
+        {
+            public NW4CHeader Header { get; set; }
+        }
+
+        NW4CSectionList ReadSections(BinaryReaderX br)
+        {
+            br.BaseStream.Position += 4;
+            br.ByteOrder = (ByteOrder)br.ReadUInt16();
+            br.BaseStream.Position -= 6;
+            var lst = new NW4CSectionList { Header = br.ReadStruct<NW4CHeader>() };
+            lst.AddRange(from _ in Enumerable.Range(0, lst.Header.section_count)
+                         let magic1 = br.ReadStruct<Magic>()
+                         let data = br.ReadBytes(br.ReadInt32())
+                         select new NW4CSection(magic1, data));
+            return lst;
+        }
+
+        public static void WriteSections(BinaryWriterX bw, NW4CSectionList sections)
+        {
+            bw.WriteStruct(sections.Header);
+            foreach (var sec in sections)
+            {
+                bw.WriteStruct(sec.Magic);
+                bw.Write(sec.Data.Length + 4);
+                bw.Write(sec.Data);
+            }
         }
 
         public Dictionary<byte, IImageFormat> DSFormat = new Dictionary<byte, IImageFormat>
@@ -67,20 +122,20 @@ namespace image_nintendo.BXLIM
             [7] = new RGBA(5, 5, 5, 1, ByteOrder.BigEndian),
             [8] = new RGBA(4, 4, 4, 4, ByteOrder.BigEndian),
             [9] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
-            [10] = new ETC1(false, ByteOrder.BigEndian),
-            [11] = new ETC1(true, ByteOrder.BigEndian),
-            [12] = new DXT(DXT.Version.DXT1, false),
-            [13] = new DXT(DXT.Version.DXT3, false),
-            [14] = new DXT(DXT.Version.DXT5, false),
+            [10] = new ETC1(false),
+            [11] = new ETC1(true),
+            [12] = new DXT(DXT.Version.DXT1),
+            [13] = new DXT(DXT.Version.DXT3),
+            [14] = new DXT(DXT.Version.DXT5),
             [15] = new ATI(ATI.Format.ATI1L),
             [16] = new ATI(ATI.Format.ATI1A),
             [17] = new ATI(ATI.Format.ATI2),
             [18] = new LA(4, 0, ByteOrder.BigEndian),
             [19] = new LA(0, 4, ByteOrder.BigEndian),
-            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian, true),
-            [21] = new DXT(DXT.Version.DXT1, true),
-            [22] = new DXT(DXT.Version.DXT3, true),
-            [23] = new DXT(DXT.Version.DXT5, true),
+            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
+            [21] = new DXT(DXT.Version.DXT1),
+            [22] = new DXT(DXT.Version.DXT3),
+            [23] = new DXT(DXT.Version.DXT5),
             [24] = new RGBA(10, 10, 10, 2, ByteOrder.BigEndian)
         };
 
@@ -93,14 +148,14 @@ namespace image_nintendo.BXLIM
 
         public Bitmap Image { get; set; }
 
-        public Kontract.Image.ImageSettings Settings { get; set; }
+        public ImageSettings Settings { get; set; }
 
         public BXLIM(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
                 var tex = br.ReadBytes((int)br.BaseStream.Length - 40);
-                sections = br.ReadSections();
+                sections = ReadSections(br);
                 byteOrder = br.ByteOrder;
 
                 switch (sections.Header.magic)
@@ -108,28 +163,28 @@ namespace image_nintendo.BXLIM
                     case "CLIM":
                         BCLIMHeader = sections[0].Data.BytesToStruct<BCLIMImageHeader>(byteOrder);
 
-                        Settings = new Kontract.Image.ImageSettings
+                        Settings = new ImageSettings
                         {
                             Width = BCLIMHeader.width,
                             Height = BCLIMHeader.height,
                             Format = DSFormat[BCLIMHeader.format],
                             Swizzle = new CTRSwizzle(BCLIMHeader.width, BCLIMHeader.height, BCLIMHeader.swizzleTileMode)
                         };
-                        Image = Kontract.Image.Common.Load(tex, Settings);
+                        Image = Common.Load(tex, Settings);
                         break;
                     case "FLIM":
                         if (byteOrder == ByteOrder.LittleEndian)
                         {
                             BFLIMHeader = sections[0].Data.BytesToStruct<BFLIMImageHeader>(byteOrder);
 
-                            Settings = new Kontract.Image.ImageSettings
+                            Settings = new ImageSettings
                             {
                                 Width = BFLIMHeader.width,
                                 Height = BFLIMHeader.height,
                                 Format = DSFormat[BFLIMHeader.format],
                                 Swizzle = new CTRSwizzle(BFLIMHeader.width, BFLIMHeader.height, BFLIMHeader.swizzleTileMode)
                             };
-                            Image = Kontract.Image.Common.Load(tex, Settings);
+                            Image = Common.Load(tex, Settings);
                         }
                         else
                         {
@@ -138,18 +193,15 @@ namespace image_nintendo.BXLIM
                             var format = WiiUFormat[BFLIMHeader.format];
                             var isBlockBased = new[] { 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23 }.Contains(BFLIMHeader.format); // hax
 
-                            Settings = new Kontract.Image.ImageSettings
+                            Settings = new ImageSettings
                             {
                                 Width = BFLIMHeader.width,
                                 Height = BFLIMHeader.height,
                                 Format = format,
-                                Swizzle = new WiiUSwizzle(BFLIMHeader.swizzleTileMode, isBlockBased, format.BitDepth, BFLIMHeader.width, BFLIMHeader.height)
+                                Swizzle = new WiiUSwizzle(BFLIMHeader.width, BFLIMHeader.height, BFLIMHeader.swizzleTileMode, isBlockBased, format.BitDepth)
                             };
 
-                            // Uncomment the following line to use the padded width/height instead 
-                            //(Settings.Width, Settings.Height) = (Settings.Swizzle.Width, Settings.Swizzle.Height);
-
-                            Image = Kontract.Image.Common.Load(tex, Settings);
+                            Image = Common.Load(tex, Settings);
                         }
                         break;
                     default:
@@ -171,7 +223,7 @@ namespace image_nintendo.BXLIM
                         Settings.Height = Image.Height;
                         Settings.Swizzle = new CTRSwizzle(Image.Width, Image.Height, BCLIMHeader.swizzleTileMode);
 
-                        texture = Kontract.Image.Common.Save(Image, Settings);
+                        texture = Common.Save(Image, Settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!
@@ -182,7 +234,7 @@ namespace image_nintendo.BXLIM
                         sections[0].Data = BCLIMHeader.StructToBytes(byteOrder);
                         sections.Header.file_size = texture.Length + 40;
 
-                        bw.WriteSections(sections);
+                        WriteSections(bw, sections);
                         break;
                     case "FLIM":
                         Settings.Width = Image.Width;
@@ -194,10 +246,10 @@ namespace image_nintendo.BXLIM
                         else
                         {
                             var isBlockBased = new[] { 10, 11, 12, 13, 14, 15, 16, 17, 21, 22, 23 }.Contains(BFLIMHeader.format); // hax
-                            Settings.Swizzle = new WiiUSwizzle(BFLIMHeader.swizzleTileMode, isBlockBased, Settings.Format.BitDepth, Image.Width, Image.Height);
+                            Settings.Swizzle = new WiiUSwizzle(Image.Width, Image.Height, BFLIMHeader.swizzleTileMode, isBlockBased, Settings.Format.BitDepth);
                         }
 
-                        texture = Kontract.Image.Common.Save(Image, Settings);
+                        texture = Common.Save(Image, Settings);
                         bw.Write(texture);
 
                         // We can now change the image width/height/filesize!
@@ -208,7 +260,7 @@ namespace image_nintendo.BXLIM
                         sections[0].Data = BFLIMHeader.StructToBytes(byteOrder);
                         sections.Header.file_size = texture.Length + 40;
 
-                        bw.WriteSections(sections);
+                        WriteSections(bw, sections);
                         break;
                     default:
                         throw new NotSupportedException($"Unknown image format {sections.Header.magic}");

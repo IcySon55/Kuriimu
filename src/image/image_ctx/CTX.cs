@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_ctx
 {
@@ -30,7 +30,7 @@ namespace image_ctx
                     Format = Support.Format[(uint)((header.type << 16) | header.format)],
                     Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
-                bmps.Add(Kontract.Image.Common.Load(br.ReadBytes((int)header.dataSize), settings));
+                bmps.Add(Common.Load(br.ReadBytes((int)header.dataSize), settings));
             }
         }
 
@@ -54,7 +54,7 @@ namespace image_ctx
                     Swizzle = new CTRSwizzle((int)header.width, (int)header.height)
                 };
                 bw.BaseStream.Position = (bw.BaseStream.Position + 0x3f) & ~0x3f;
-                bw.Write(Kontract.Image.Common.Save(bmps[0], settings));
+                bw.Write(Common.Save(bmps[0], settings));
             }
         }
     }

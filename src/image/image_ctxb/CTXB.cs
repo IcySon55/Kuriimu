@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 /*Original image and data types by xdaniel and his tool Tharsis
  * https://github.com/xdanieldzd/Tharsis */
@@ -43,7 +43,7 @@ namespace image_ctxb
                         };
 
                         settingsList.Add(settings);
-                        bmps.Add(Kontract.Image.Common.Load(br.ReadBytes(chunks[i].textures[j].dataLength), settings));
+                        bmps.Add(Common.Load(br.ReadBytes(chunks[i].textures[j].dataLength), settings));
                     }
                 }
             }
@@ -67,7 +67,7 @@ namespace image_ctxb
                             Swizzle = new CTRSwizzle(bmps[count].Width, bmps[count].Height)
                         };
 
-                        var resBmp = Kontract.Image.Common.Save(bmps[count], settingsList[count]);
+                        var resBmp = Common.Save(bmps[count], settingsList[count]);
                         bw.Write(resBmp);
 
                         chunks[i].textures[j].dataLength = resBmp.Length;

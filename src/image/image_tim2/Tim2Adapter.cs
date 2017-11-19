@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_tim2
 {
+    [FilePluginMetadata(Name = "TIM2", Description = "Default PS2 Image Format v2", Extension = "*.tm2",
+        Author = "onepiecefreak,IcySon55", About = "This is the TIM2 image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class Tim2Adapter : IImageAdapter
     {
         private TIM2 _tim2 = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "TIM2";
-        public string Description => "Default PS2 Image Format v2";
-        public string Extension => "*.tm2";
-        public string About => "This is the TIM2 image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => false;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
@@ -30,12 +29,14 @@ namespace image_tim2
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                return (br.ReadString(4) == "TIM2");
+                if (br.ReadString(4) == "TIM2") return Identification.True;
             }
+
+            return Identification.False;
         }
 
         public void Load(string filename)
@@ -57,6 +58,11 @@ namespace image_tim2
 
             _tim2.bmp = _bitmaps[0].Bitmap;
             //_tim2.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Image;
-using Kontract.Compression;
 using Kontract.Interface;
-using Kontract.IO;
+using Komponent.Image.Swizzle;
+using Komponent.Image;
+using Komponent.IO;
 
 namespace image_level5.imga
 {
     public class IMGA
     {
-        public static Header header;
+        public Bitmap bmp;
 
-        public static Bitmap Load(Stream input)
+        public static Header header;
+        private Import imports = new Import();
+
+        public IMGA(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
@@ -24,11 +27,11 @@ namespace image_level5.imga
 
                 //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
-                byte[] table = Level5.Decompress(new MemoryStream(br.ReadBytes(header.tableSize1)));
+                byte[] table = imports.level5.Decompress(new MemoryStream(br.ReadBytes(header.tableSize1)), 0);
 
                 //get image data
                 br.BaseStream.Position = header.tableDataOffset + header.tableSize2;
-                byte[] tex = Level5.Decompress(new MemoryStream(br.ReadBytes(header.imgDataSize)));
+                byte[] tex = imports.level5.Decompress(new MemoryStream(br.ReadBytes(header.imgDataSize)), 0);
 
                 //order pic blocks by table
                 byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
@@ -38,11 +41,10 @@ namespace image_level5.imga
                 {
                     Width = header.width,
                     Height = header.height,
-                    Format = ImageSettings.ConvertFormat(header.imageFormat),
-                    PadToPowerOf2 = false,
-                    ZOrder = false
+                    Format = Support.Format[header.imageFormat],
+                    Swizzle = new CTRSwizzle(header.width, header.height)
                 };
-                return Common.Load(pic, settings);
+                bmp = Common.Load(pic, settings);
             }
         }
 
@@ -77,20 +79,19 @@ namespace image_level5.imga
             }
         }
 
-        public static void Save(string filename, Bitmap bitmap)
+        public void Save(string filename)
         {
-            int width = (bitmap.Width + 0x7) & ~0x7;
-            int height = (bitmap.Height + 0x7) & ~0x7;
+            int width = (bmp.Width + 0x7) & ~0x7;
+            int height = (bmp.Height + 0x7) & ~0x7;
 
             var settings = new ImageSettings
             {
                 Width = width,
                 Height = height,
-                Format = ImageSettings.ConvertFormat(header.imageFormat),
-                PadToPowerOf2 = false,
-                ZOrder = false
+                Format = Support.Format[header.imageFormat],
+                Swizzle = new CTRSwizzle(width, height)
             };
-            byte[] pic = Common.Save(bitmap, settings);
+            byte[] pic = Common.Save(bmp, settings);
 
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
@@ -103,8 +104,8 @@ namespace image_level5.imga
                 List<short> table;
                 byte[] importPic = Deflate(pic, out table);
 
-                header.width = (short)bitmap.Width;
-                header.height = (short)bitmap.Height;
+                header.width = (short)bmp.Width;
+                header.height = (short)bmp.Height;
                 header.tableSize1 = table.Count * 2 + 4;
                 header.tableSize2 = (header.tableSize1 + 3) & ~3;
                 header.imgDataSize = importPic.Length + 4;

@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Cetera.Image;
-using Kontract.Interface;
-using Kontract.IO;
+using Komponent.IO;
 
 namespace image_lmt
 {

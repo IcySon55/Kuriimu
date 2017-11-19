@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-//using CeteraDS.Image;
-using Kontract.Compression;
-using Kontract.IO;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
-using Kontract.Image;
+using Komponent.IO;
+using Komponent.Image.Format;
+using Komponent.Image.Swizzle;
+using Komponent.Image;
 
 /**CHNK - Chunk, contains every partition and provides compression information
  * TXIF - Gives general information about the textures
@@ -23,6 +21,8 @@ namespace image_nintendo.CHNK
 {
     class CHNKTEX
     {
+        private Import imports = new Import();
+
         private List<Section> Sections;
 
         public List<Bitmap> Bitmaps = new List<Bitmap>();
@@ -50,7 +50,10 @@ namespace image_nintendo.CHNK
             var bitDepth = 8 * txim.Data.Length / height / paddedWidth / (!IsMultiTXIM ? imgCount : 1);
             BitDepth = (TXIMBitDepth)bitDepth;
             var bmp = new Bitmap(paddedWidth, height);
-            var pal = new Palette(txpl.Data, new RGBA(5, 5, 5)).colors;
+            var format = new Palette(4);
+            format.SetPaletteFormat(new RGBA(5, 5, 5));
+            format.SetPaletteColors(txpl.Data);
+            var pal = format.GetPaletteColors();
 
             // TODO: This check needs to be replaced with something more concrete later
             var isL8 = bitDepth == 8 && txim.Data.Any(b => b > pal.Count());
@@ -84,11 +87,13 @@ namespace image_nintendo.CHNK
                         pal = list;
                     }
 
+                    format = new Palette(bitDepth);
+                    format.SetPaletteColors(pal);
                     var settings = new ImageSettings
                     {
                         Width = width,
                         Height = height,
-                        Format = new Palette(pal, bitDepth),
+                        Format = format,
                         Swizzle = new Linear(paddedWidth)
                     };
                     Bitmaps.Add(Common.Load(txims[i].Data, settings));
@@ -111,7 +116,7 @@ namespace image_nintendo.CHNK
                     section.Data = br.ReadBytes(section.Size);
 
                     if (chunk.DecompressedSize != 0)
-                        section.Data = Nintendo.Decompress(new MemoryStream(section.Data));
+                        section.Data = imports.nintendo.Decompress(new MemoryStream(section.Data), 0);
 
                     yield return section;
                 }

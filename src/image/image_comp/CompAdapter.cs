@@ -1,40 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Kontract.IO;
+using Komponent.IO;
 using Kontract.Interface;
 
 namespace image_comp
 {
+    [FilePluginMetadata(Name = "COMP", Description = "Generic image format", Extension = "*.comp",
+        Author = "onepiecefreak", About = "This is the COMP image adapter for Kukkii.")]
+    [Export(typeof(IImageAdapter))]
     public sealed class CompAdapter : IImageAdapter
     {
         private COMP _comp = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
-
-        public string Name => "COMP";
-        public string Description => "Generic image format";
-        public string Extension => "*.comp";
-        public string About => "This is the COMP image adapter for Kukkii.";
-
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
+        public bool CanCreateNew => false;
 
         public FileInfo FileInfo { get; set; }
 
         #endregion
 
-        public bool Identify(string filename)
+        public Identification Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                return br.ReadUInt32() + 0x10 == br.BaseStream.Length;
-            }
+            return Identification.Raw;
         }
 
         public void Load(string filename)
@@ -58,6 +53,11 @@ namespace image_comp
 
             _comp.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
             _comp.Save(FileInfo.FullName);
+        }
+
+        public void New()
+        {
+
         }
 
         // Bitmaps

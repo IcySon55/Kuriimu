@@ -2,11 +2,9 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using Kontract.Image;
-using Kontract;
 using Kontract.Interface;
-using Kontract.Image.Format;
-using Kontract.IO;
+using Komponent.Image.Format;
+using Komponent.IO;
 
 namespace image_nintendo.BCH
 {

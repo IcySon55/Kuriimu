@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Image;
-using Kontract.Image.Format;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Format;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 using Microsoft.VisualBasic;
 using System;
 
@@ -44,7 +44,10 @@ namespace image_nintendo.NCGLR
                 var ttlpHeader = nclrR.ReadStruct<TTLPHeader>();
 
                 //get palette
-                var pal = new Palette(nclrR.ReadBytes((int)ttlpHeader.dataSize), new RGBA(5, 5, 5)).colors;
+                var format = new Palette(4);
+                format.SetPaletteFormat(new RGBA(5, 5, 5));
+                format.SetPaletteColors(nclrR.ReadBytes((int)ttlpHeader.dataSize));
+                var pal = format.GetPaletteColors();
 
                 //PMCP Header
                 var pmcpHeader = nclrR.ReadStruct<PMCPHeader>();
@@ -110,11 +113,13 @@ namespace image_nintendo.NCGLR
                 else
                 {
                     //Image
+                    format = new Palette((charHeader.bitDepth == 4) ? 8 : 4);
+                    format.SetPaletteColors(pal);
                     var settings = new ImageSettings
                     {
                         Width = width,
                         Height = height,
-                        Format = new Palette(pal, (charHeader.bitDepth == 4) ? 8 : 4),
+                        Format = format,
                         Swizzle = new NitroSwizzle(width, height)
                     };
                     bmps.Add(Common.Load(clr, settings));
@@ -147,11 +152,14 @@ namespace image_nintendo.NCGLR
         {
             var palette = new List<Color>();
             palette.AddRange(pal);
+
+            var format = new Palette((tileBitDepth == 3) ? 4 : 8);
+            format.SetPaletteColors(palette);
             var settings = new ImageSettings
             {
                 Width = tileWidth,
                 Height = tileHeight,
-                Format = new Palette(palette, (tileBitDepth == 3) ? 4 : 8),
+                Format = format,
                 Swizzle = new NitroSwizzle(tileWidth, tileHeight)
             };
             var bmp = Common.Load(tile, settings);

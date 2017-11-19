@@ -1,9 +1,9 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using Kontract.Image;
-using Kontract.Image.Swizzle;
-using Kontract.IO;
+using Komponent.Image;
+using Komponent.Image.Swizzle;
+using Komponent.IO;
 
 namespace image_rawJtex
 {
@@ -29,7 +29,7 @@ namespace image_rawJtex
                     Format = Support.Format[JTEXRawHeader.format],
                     Swizzle = new CTRSwizzle(JTEXRawHeader.width, JTEXRawHeader.height)
                 };
-                Image = Kontract.Image.Common.Load(br.ReadBytes((int)(br.BaseStream.Length - JTEXRawHeader.dataStart)), settings);
+                Image = Common.Load(br.ReadBytes((int)(br.BaseStream.Length - JTEXRawHeader.dataStart)), settings);
             }
         }
 
@@ -49,7 +49,7 @@ namespace image_rawJtex
                     Format = Support.Format[JTEXRawHeader.format],
                     Swizzle = new CTRSwizzle(Image.Width, Image.Height)
                 };
-                byte[] resBmp = Kontract.Image.Common.Save(Image, settings);
+                byte[] resBmp = Common.Save(Image, settings);
 
                 //Header
                 JTEXRawHeader.width = Image.Width;
