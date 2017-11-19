@@ -248,6 +248,9 @@ namespace Kukkii
             {
                 MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Metadata.Name} - {tempAdapter.Metadata.Description} Adapter" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            stream.Dispose();
+            stream = null;
         }
 
         private DialogResult SaveFile(bool saveAs = false)
@@ -577,6 +580,8 @@ namespace Kukkii
                                 var fi = new FileInfo(file);
                                 var stream = File.OpenRead(file);
                                 var currentAdapter = SelectImageAdapter(stream, file, true);
+                                stream.Dispose();
+                                stream = null;
 
                                 if (currentAdapter != null)
                                 {
@@ -633,6 +638,8 @@ namespace Kukkii
                                 var fi = new FileInfo(file);
                                 var stream = File.OpenRead(file);
                                 var currentAdapter = SelectImageAdapter(stream, file, true);
+                                stream.Dispose();
+                                stream = null;
 
                                 if (currentAdapter != null && currentAdapter.Value.CanSave)
                                 {
