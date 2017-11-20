@@ -34,6 +34,7 @@ namespace game_shin_megami_tensei_iv
             ["<E903>"] = "<unk4>",
 
             ["<F801>"] = "\n",
+            ["<F802>"] = "<next>",
             ["<F87A>"] = "<unk3>",
             ["<F812>"] = "<name>",
             ["<F813>"] = "<text>",
@@ -65,9 +66,7 @@ namespace game_shin_megami_tensei_iv
             ["\u30D7"] = "¿", //プ
             //End of spanish localization
 
-            ["\u0000"] = "<!>",
-            ["<7000>"] = "<7000>",
-            ["<1400>"] = "<1400>"
+            ["<0000>"] = "<!>"
         };
 
         static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(Resources.MainFont)));

@@ -137,7 +137,15 @@ namespace text_mbm
                     }
                     else
                     {
-                        result += convString;
+                        if (convString.Length > 1)
+                        {
+                            result += $"<{initialString}>";
+                        }
+                        else
+                        {
+                            result += convString;
+                        }
+                        
                     }
                     bytes = br.ReadBytes(2);
                 }
