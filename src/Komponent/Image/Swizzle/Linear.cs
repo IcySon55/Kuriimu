@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kontract.Interface;
+using Komponent.Interface;
 using System.Drawing;
 
 namespace Komponent.Image.Swizzle

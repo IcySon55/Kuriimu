@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using Kontract.Interface;
+using Komponent.Interface;
 
 namespace Komponent.Image
 {

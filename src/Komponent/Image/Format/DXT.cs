@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using Kontract.Interface;
+using Komponent.Interface;
 using Komponent.IO;
 
 namespace Komponent.Image.Format

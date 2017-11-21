@@ -58,13 +58,9 @@
   <ItemGroup>
     <Compile Include="Common.cs" />
     <Compile Include="Interface\Formatplugin\IArchiveManager.cs" />
-    <Compile Include="Interface\Komponent\ICompression.cs" />
-    <Compile Include="Interface\Komponent\IEncryption.cs" />
-    <Compile Include="Interface\Komponent\IHash.cs" />
     <Compile Include="Interface\Formatplugin\IImageAdapter.cs" />
     <Compile Include="Interface\IGameHandler.cs" />
     <Compile Include="Interface\IExtension.cs" />
-    <Compile Include="Interface\IImage.cs" />
     <Compile Include="Interface\Formatplugin\IFilePlugin.cs" />
     <Compile Include="Interface\Formatplugin\ITextAdapter.cs" />
     <Compile Include="IO\KmpSearcher.cs" />
@@ -81,24 +77,10 @@
     <Compile Include="RawSelector.Designer.cs">
       <DependentUpon>RawSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="Shared.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="UI\Compression.cs" />
-    <Compile Include="UI\Encryption.cs" />
-    <Compile Include="UI\Hash.cs" />
-    <Compile Include="InputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InputBox.Designer.cs">
-      <DependentUpon>InputBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\Win32.cs" />
-    <Compile Include="ValueTuple.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="InputBox.resx">
-      <DependentUpon>InputBox.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="RawSelector.resx">
       <DependentUpon>RawSelector.cs</DependentUpon>
     </EmbeddedResource>
