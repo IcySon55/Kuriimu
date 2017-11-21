@@ -9,7 +9,7 @@ using Komponent.IO;
 using Komponent.Interface;
 using System.Collections;
 
-namespace Compression
+namespace Komponent.CTR.Compression
 {
     [ExportMetadata("Name", "LZECD")]
     [ExportMetadata("TabPathCompress", "")]

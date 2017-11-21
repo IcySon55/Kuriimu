@@ -5,7 +5,7 @@ using System.ComponentModel.Composition;
 using System.Text;
 using Komponent.Interface;
 
-namespace Compression
+namespace Komponent.CTR.Compression
 {
     [ExportMetadata("Name", "LZSSVLE")]
     [ExportMetadata("TabPathCompress", "")]
