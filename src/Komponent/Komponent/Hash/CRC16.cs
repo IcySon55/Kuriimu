@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Komponent.Interface;
 
-namespace Hash
+namespace Komponent.Hash
 {
     [ExportMetadata("Name", "CRC16")]
     [ExportMetadata("TabPathCreate", "CRC/CRC16")]
