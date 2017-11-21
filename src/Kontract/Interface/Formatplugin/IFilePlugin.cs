@@ -24,7 +24,7 @@ namespace Kontract.Interface
         //void New();
         //void Load(string filename);
         //void Save(string filename = ""); // A non-blank filename is provided when using Save As...
-        Identification Identify(Stream file, string filename);
+        bool Identify(Stream file, string filename);
         void Load(string filename);
         void Save(string filename = "");
         void New();
@@ -37,6 +37,7 @@ namespace Kontract.Interface
     {
         // Feature Support
         bool FileHasExtendedProperties { get; } // Format provides an extended properties dialog?
+        bool CanIdentify { get; } // Can the format be identified explicitly?
         bool CanCreateNew { get; } // Is creating new files supported?
         bool CanSave { get; } // Is saving supported?
 
@@ -46,7 +47,7 @@ namespace Kontract.Interface
         //void New();
         //void Load(string filename);
         //void Save(string filename = ""); // A non-blank filename is provided when using Save As...
-        Identification Identify(Stream file, string filename);
+        bool Identify(Stream file, string filename);
         void Load(string filename);
         void Save(string filename = "");
         void New();
@@ -72,12 +73,5 @@ namespace Kontract.Interface
         string Extension { get; }
         string Author { get; }
         string About { get; }
-    }
-
-    public enum Identification
-    {
-        True,
-        False,
-        Raw
     }
 }
