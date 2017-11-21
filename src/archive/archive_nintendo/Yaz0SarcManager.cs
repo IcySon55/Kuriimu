@@ -9,6 +9,8 @@ using System.Linq;
 using Kontract.Interface;
 using Komponent.IO;
 using System.Text;
+using Komponent.Compression;
+using Komponent.CTR.Hash;
 
 namespace archive_nintendo.SARC
 {
@@ -17,7 +19,6 @@ namespace archive_nintendo.SARC
     public class Yaz0SarcManager : IArchiveManager
     {
         private SARC _sarc = null;
-        private Import imports = new Import();
 
         #region Properties
         // Feature Support
@@ -26,6 +27,7 @@ namespace archive_nintendo.SARC
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -33,17 +35,15 @@ namespace archive_nintendo.SARC
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 0x15) return Identification.False;
-                if (br.ReadString(4) != "Yaz0") return Identification.False;
+                if (br.BaseStream.Length < 0x15) return false;
+                if (br.ReadString(4) != "Yaz0") return false;
                 br.BaseStream.Position = 0x11;
-                if (br.ReadString(4) == "SARC") return Identification.True;
+                return (br.ReadString(4) == "SARC");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)
@@ -52,7 +52,7 @@ namespace archive_nintendo.SARC
 
             using (var br = new BinaryReaderX(FileInfo.OpenRead()))
             {
-                _sarc = new SARC(new MemoryStream(imports.yaz0be.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length)), 0)));
+                _sarc = new SARC(new MemoryStream(Yaz0.Decompress(new MemoryStream(br.ReadBytes((int)FileInfo.Length)), ByteOrder.BigEndian)));
             }
         }
 
@@ -69,7 +69,7 @@ namespace archive_nintendo.SARC
                 _sarc.Close();
                 using (var bw = new BinaryWriterX(FileInfo.Create()))
                 {
-                    bw.Write(imports.yaz0be.Compress(ms));
+                    bw.Write(Yaz0.Compress(ms,ByteOrder.BigEndian));
                 }
             }
             else
@@ -80,7 +80,7 @@ namespace archive_nintendo.SARC
                 _sarc.Close();
                 using (var bw = new BinaryWriterX(File.Create(FileInfo.FullName + ".tmp")))
                 {
-                    bw.Write(imports.yaz0be.Compress(ms));
+                    bw.Write(Yaz0.Compress(ms,ByteOrder.BigEndian));
                 }
                 // Delete the original
                 FileInfo.Delete();
@@ -113,7 +113,7 @@ namespace archive_nintendo.SARC
                 FileData = afi.FileData,
                 FileName = afi.FileName,
                 State = afi.State,
-                hash = GetInt(imports.simplehash.Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % _sarc.hashMultiplier
+                hash = GetInt(new SimpleHash3DS().Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % _sarc.hashMultiplier
             });
             return true;
         }
@@ -122,20 +122,5 @@ namespace archive_nintendo.SARC
 
         // Features
         public bool ShowProperties(Icon icon) => false;
-
-        public class Import
-        {
-            [Import("Yaz0BE")]
-            public ICompression yaz0be;
-            [Import("SimpleHash_3DS")]
-            public IHash simplehash;
-
-            public Import()
-            {
-                var catalog = new DirectoryCatalog("Komponents");
-                var container = new CompositionContainer(catalog);
-                container.ComposeParts(this);
-            }
-        }
     }
 }

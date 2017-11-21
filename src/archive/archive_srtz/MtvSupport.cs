@@ -12,19 +12,6 @@ namespace archive_srtz.MTV
         public int id { get; set; }
     }
 
-    public class Import
-    {
-        [Import("LZSSVLE")]
-        public ICompression lzssvle;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class VarHeader
     {

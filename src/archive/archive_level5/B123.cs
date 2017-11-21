@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.Hash;
 
 namespace archive_level5.B123
 {
@@ -12,7 +13,6 @@ namespace archive_level5.B123
     {
         public List<B123FileInfo> Files = new List<B123FileInfo>();
         Stream _stream = null;
-        private Import imports = new Import();
 
         public Header header;
         public byte[] table1;
@@ -55,7 +55,7 @@ namespace archive_level5.B123
                 List<uint> offsets = new List<uint>();
                 foreach (var name in fileNames)
                 {
-                    var crc32 = GetInt(imports.crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last().ToLower()), 0));
+                    var crc32 = GetInt(new CRC32().Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last().ToLower()), 0));
                     var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
                     offsets.Add(entry.fileOffset);
                     Files.Add(new B123FileInfo

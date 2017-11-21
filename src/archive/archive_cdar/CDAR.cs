@@ -9,7 +9,6 @@ namespace archive_cdar
     {
         public List<CDARFileInfo> Files = new List<CDARFileInfo>();
         private Stream _stream = null;
-        private Import imports = new Import();
 
         public Header header;
 
@@ -37,8 +36,7 @@ namespace archive_cdar
                         FileName = $"{count:00000000}.bin",
                         FileData = new SubStream(br.BaseStream, entry.offset, entry.compSize),
                         hash = hashes[count++],
-                        entry = entry,
-                        imports = imports
+                        entry = entry
                     });
                 }
             }

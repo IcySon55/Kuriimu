@@ -11,19 +11,6 @@ namespace archive_level5.B123
         public FileEntry entry;
     }
 
-    public class Import
-    {
-        [Import("CRC32")]
-        public IHash crc32;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {

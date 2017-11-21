@@ -48,7 +48,7 @@
     <Compile Include="ZLIB.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+    <ProjectReference Include="..\..\Komponent\Komponent\Komponent.csproj">
       <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
       <Name>Komponent</Name>
     </ProjectReference>

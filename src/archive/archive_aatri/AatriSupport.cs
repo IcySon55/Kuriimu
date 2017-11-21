@@ -4,13 +4,13 @@ using System.ComponentModel.Composition.Hosting;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.Compression;
 
 namespace archive_aatri.aatri
 {
     public class AatriFileInfo : ArchiveFileInfo
     {
         public Entry Entry;
-        public Import imports;
 
         public override Stream FileData
         {
@@ -20,12 +20,13 @@ namespace archive_aatri.aatri
 
                 if (State != ArchiveFileState.Archived)
                 {
-                    imports.nintendo.SetMethod(0x11);
-                    return new MemoryStream(imports.nintendo.Compress(baseStream));
+                    var comp = new Nintendo();
+                    comp.SetMethod(0x11);
+                    return new MemoryStream(comp.Compress(baseStream));
                 }
 
                 if (Entry.uncompSize == 0) return baseStream;
-                return new MemoryStream(imports.nintendo.Decompress(baseStream, 0));
+                return new MemoryStream(new Nintendo().Decompress(baseStream, 0));
             }
         }
 
@@ -39,7 +40,7 @@ namespace archive_aatri.aatri
                     base.FileData.CopyTo(bw.BaseStream);
                 else
                 {
-                    var compData = new MemoryStream(imports.lz11.Compress(base.FileData));
+                    var compData = new MemoryStream(new LZ11().Compress(base.FileData));
                     Entry.uncompSize = (uint)base.FileData.Length;
                     Entry.compSize = (uint)compData.Length;
                     compData.CopyTo(bw.BaseStream);
@@ -56,20 +57,5 @@ namespace archive_aatri.aatri
         public uint uncompSize;
         public uint compSize;
         public uint hash;
-    }
-
-    public class Import
-    {
-        [Import("Nintendo")]
-        public ICompressionCollection nintendo;
-        [Import("LZ11")]
-        public ICompression lz11;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
     }
 }

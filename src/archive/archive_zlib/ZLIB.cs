@@ -9,7 +9,6 @@ namespace archive_zlib
     {
         public List<ZLIBFileInfo> Files = new List<ZLIBFileInfo>();
         private Stream _stream = null;
-        private Import imports = new Import();
 
         public ZLIB(Stream input)
         {
@@ -22,8 +21,7 @@ namespace archive_zlib
                     State = ArchiveFileState.Archived,
                     FileName = "00.bin",
                     FileData = new SubStream(br.BaseStream, 4, br.BaseStream.Length - 4),
-                    decompSize = decompSize,
-                    imports = imports
+                    decompSize = decompSize
                 });
             }
         }

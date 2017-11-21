@@ -20,6 +20,7 @@ namespace archive_nintendo.DDSFS
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -27,16 +28,14 @@ namespace archive_nintendo.DDSFS
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 0x104) return Identification.False;
+                if (br.BaseStream.Length < 0x104) return false;
                 br.BaseStream.Position = 0x100;
-                if (br.ReadString(4) == "NCSD") return Identification.True;
+                return (br.ReadString(4) == "NCSD");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

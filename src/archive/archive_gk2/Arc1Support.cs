@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
+using Komponent.Compression;
 using Komponent.IO;
 
 namespace archive_gk2.arc1
@@ -10,14 +11,13 @@ namespace archive_gk2.arc1
     public class Arc1FileInfo : ArchiveFileInfo
     {
         public Entry entry;
-        public Import imports;
 
         public override Stream FileData
         {
             get
             {
                 if ((entry.size & 0x80000000) == 0 || State != ArchiveFileState.Archived) return base.FileData;
-                return new MemoryStream(imports.nintendo.Decompress(base.FileData, 0));
+                return new MemoryStream(new Nintendo().Decompress(base.FileData, 0));
             }
         }
 
@@ -46,7 +46,7 @@ namespace archive_gk2.arc1
                     else
                     {
                         entry.offset = offset;
-                        var comp = imports.lz11.Compress(base.FileData);
+                        var comp = new LZ11().Compress(base.FileData);
                         bw.Write(comp);
                         entry.size = (uint)(comp.Length | 0x80000000);
                     }
@@ -55,21 +55,6 @@ namespace archive_gk2.arc1
                 bw.WriteAlignment(0x4);
                 bw.BaseStream.Position = startOffset;
             }
-        }
-    }
-
-    public class Import
-    {
-        [Import("Nintendo")]
-        public ICompressionCollection nintendo;
-        [Import("LZ11")]
-        public ICompression lz11;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
         }
     }
 

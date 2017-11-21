@@ -2,6 +2,7 @@
 using System.IO;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.Compression;
 
 namespace archive_aatri.aabin
 {
@@ -12,7 +13,6 @@ namespace archive_aatri.aabin
         List<Entry> entries = new List<Entry>();
 
         private Stream _stream = null;
-        private Import imports = new Import();
 
         public AABIN(Stream input)
         {
@@ -33,7 +33,7 @@ namespace archive_aatri.aabin
                         {
                             State = ArchiveFileState.Archived,
                             FileName = $"{fileCount++:00000000}.bin",
-                            FileData = new MemoryStream(imports.nintendo.Decompress(br.BaseStream, 0))
+                            FileData = new MemoryStream(new Nintendo().Decompress(br.BaseStream, 0))
                         });
                     }
                     else
@@ -53,8 +53,7 @@ namespace archive_aatri.aabin
                                     FileName = $"{folderCount:00000000}/{count++:00000000}.bin",
                                     State = ArchiveFileState.Archived,
                                     Entry = entries[i],
-                                    FileData = new SubStream(br.BaseStream, absOffset, entries[i].compSize),
-                                    imports = imports
+                                    FileData = new SubStream(br.BaseStream, absOffset, entries[i].compSize)
                                 });
                             }
                             catch (System.Exception)

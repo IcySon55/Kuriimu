@@ -11,21 +11,6 @@ namespace archive_level5.XFSA
         public FileEntry entry;
     }
 
-    public class Import
-    {
-        [Import("Level5")]
-        public ICompressionCollection level5;
-        [Import("CRC32")]
-        public IHash crc32;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Header
     {

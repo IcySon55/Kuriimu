@@ -107,7 +107,11 @@
     <Compile Include="ZLibSarcManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Komponent\Komponent.csproj">
+    <ProjectReference Include="..\..\Komponent\Komponent.CTR\Komponent.CTR.csproj">
+      <Project>{50ff204c-1d83-486e-ac98-772225501adb}</Project>
+      <Name>Komponent.CTR</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Komponent\Komponent\Komponent.csproj">
       <Project>{9f5d3302-92ad-4e59-a300-e533276d3c90}</Project>
       <Name>Komponent</Name>
     </ProjectReference>

@@ -20,6 +20,7 @@ namespace archive_ara
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -27,14 +28,12 @@ namespace archive_ara
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             var arcFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".arc");
-            if (!File.Exists(filename) || !File.Exists(arcFilename)) return Identification.False;
-            using (var br = new BinaryReaderX(stream,true))
-                if (br.ReadString(3) == "PAA") return Identification.True;
-
-            return Identification.False;
+            if (!File.Exists(filename) || !File.Exists(arcFilename)) return false;
+            using (var br = new BinaryReaderX(stream, true))
+                return (br.ReadString(3) == "PAA") ;
         }
 
         public void Load(string filename)

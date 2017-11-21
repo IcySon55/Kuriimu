@@ -4,6 +4,7 @@ using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
 using System.IO;
 using Komponent.IO;
+using Komponent.Compression;
 using System;
 
 namespace archive_cdar
@@ -12,14 +13,13 @@ namespace archive_cdar
     {
         public uint hash;
         public Entry entry;
-        public Import imports;
 
         public override Stream FileData
         {
             get
             {
                 if (State != ArchiveFileState.Archived || entry.decompSize == 0) return base.FileData;
-                return new MemoryStream(imports.zlib.Decompress(base.FileData, 0));
+                return new MemoryStream(new ZLib().Decompress(base.FileData, 0));
             }
         }
 
@@ -50,8 +50,9 @@ namespace archive_cdar
                     {
                         entry.offset = offset;
                         entry.decompSize = (uint)base.FileData.Length;
-                        imports.zlib.SetMethod(0);
-                        var comp = imports.zlib.Compress(base.FileData);
+                        var compM = new ZLib();
+                        compM.SetMethod(0);
+                        var comp = compM.Compress(base.FileData);
                         entry.compSize = (uint)comp.Length;
                         bw.Write(comp);
 
@@ -59,19 +60,6 @@ namespace archive_cdar
                     }
                 }
             }
-        }
-    }
-
-    public class Import
-    {
-        [Import("ZLib")]
-        public ICompressionCollection zlib;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
         }
     }
 

@@ -19,6 +19,7 @@ namespace archive_srtz.MTV
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -44,12 +45,10 @@ namespace archive_srtz.MTV
             "KvMData.bin"
         };
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
-            if (!File.Exists(filename)) return Identification.False;
-            if (_supportedFiles.Contains(new FileInfo(filename).Name)) return Identification.True;
-
-            return Identification.False;
+            if (!File.Exists(filename)) return false;
+            return (_supportedFiles.Contains(new FileInfo(filename).Name));
         }
 
         public void Load(string filename)

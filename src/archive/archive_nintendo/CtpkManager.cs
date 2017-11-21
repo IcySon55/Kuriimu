@@ -20,6 +20,7 @@ namespace archive_nintendo.CTPK
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -27,15 +28,13 @@ namespace archive_nintendo.CTPK
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return Identification.False;
-                if (br.ReadString(4) == "CTPK") return Identification.True;
+                if (br.BaseStream.Length < 4) return false;
+                return (br.ReadString(4) == "CTPK") ;
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

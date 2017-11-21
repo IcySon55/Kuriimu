@@ -19,6 +19,7 @@ namespace archive_irarc
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => false;
         public bool CanSave => false;
         public bool CanReplaceFiles => true;
         public bool CanCreateNew => false;
@@ -27,14 +28,9 @@ namespace archive_irarc
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
-            var irlstFilename = filename;
-            var irarcFilename = filename.Remove(filename.Length - 5) + "irarc";
-
-            if (!File.Exists(irlstFilename) || !File.Exists(irarcFilename)) return Identification.False;
-
-            return Identification.Raw;
+            return false;
         }
 
         public void Load(string filename)

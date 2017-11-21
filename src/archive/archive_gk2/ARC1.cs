@@ -10,7 +10,6 @@ namespace archive_gk2.arc1
     {
         public List<Arc1FileInfo> Files = new List<Arc1FileInfo>();
         private Stream _stream = null;
-        private Import imports = new Import();
 
         Dictionary<string, string> extensions = new Dictionary<string, string>
         {
@@ -42,8 +41,7 @@ namespace archive_gk2.arc1
                             FileData = ((entries[i].size & 0x80000000) == 0)
                             ? new SubStream(br.BaseStream, entries[i].offset, entries[i].size & 0x7fffffff)
                             : new SubStream(br.BaseStream, entries[i].offset, (entries[i + 1].offset & 0x7fffffff) - (entries[i].offset & 0x7fffffff)),
-                            entry = entries[i],
-                            imports = imports
+                            entry = entries[i]
                         });
                     }
             }

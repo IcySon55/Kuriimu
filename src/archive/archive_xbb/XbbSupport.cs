@@ -11,19 +11,6 @@ namespace archive_xbb
 
     }
 
-    public class Import
-    {
-        [Import("XBBHash")]
-        public IHash xbb;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct XBBHeader
     {

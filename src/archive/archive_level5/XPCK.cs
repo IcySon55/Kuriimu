@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.Compression;
 
 namespace archive_level5.XPCK
 {
@@ -10,7 +11,6 @@ namespace archive_level5.XPCK
     {
         public List<XPCKFileInfo> Files = new List<XPCKFileInfo>();
         Stream _stream = null;
-        private Import imports = new Import();
 
         Header header;
         List<FileInfoEntry> entries = new List<FileInfoEntry>();
@@ -31,7 +31,7 @@ namespace archive_level5.XPCK
                 //Filenames
                 br.BaseStream.Position = header.filenameTableOffset;
                 compNameTable = br.ReadBytes(header.filenameTableSize);
-                var decNames = new MemoryStream(imports.level5.Decompress(new MemoryStream(compNameTable),0));
+                var decNames = new MemoryStream(new Level5().Decompress(new MemoryStream(compNameTable),0));
 
                 //Files
                 using (var nameList = new BinaryReaderX(decNames))

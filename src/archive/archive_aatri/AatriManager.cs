@@ -22,6 +22,7 @@ namespace archive_aatri.aatri
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -29,29 +30,27 @@ namespace archive_aatri.aatri
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             var incFilename = filename;
             var datFilename = filename.Remove(filename.Length - 3) + "dat";
 
-            if (!File.Exists(incFilename) || !File.Exists(datFilename)) return Identification.False;
+            if (!File.Exists(incFilename) || !File.Exists(datFilename)) return false;
 
             using (var br = new BinaryReaderX(stream, true))
             using (var brd = new BinaryReaderX(File.OpenRead(datFilename)))
             {
-                if (br.BaseStream.Length < 0x18) return Identification.False;
+                if (br.BaseStream.Length < 0x18) return false;
 
                 var offset = br.ReadInt32();
                 brd.BaseStream.Position = offset;
-                if (brd.ReadByte() != 0x11) return Identification.False;
+                if (brd.ReadByte() != 0x11) return false;
 
                 br.BaseStream.Position = 0x14;
                 offset = br.ReadInt32();
                 brd.BaseStream.Position = offset;
-                if (brd.ReadByte() == 0x11) return Identification.True;
+                return (brd.ReadByte() == 0x11);
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

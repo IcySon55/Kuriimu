@@ -20,6 +20,7 @@ namespace archive_dpk.DPK4
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -27,16 +28,14 @@ namespace archive_dpk.DPK4
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.BaseStream.Length < 4) return false;
                 var magic = br.ReadString(4);
-                if (magic == "DPK4") return Identification.True;
+                return (magic == "DPK4");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

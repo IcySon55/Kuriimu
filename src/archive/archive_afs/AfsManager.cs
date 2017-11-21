@@ -20,6 +20,7 @@ namespace archive_afs
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -27,15 +28,13 @@ namespace archive_afs
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 3) return Identification.False;
-                if (br.ReadString(3) == "AFS") return Identification.True;
+                if (br.BaseStream.Length < 3) return false;
+                return (br.ReadString(3) == "AFS");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

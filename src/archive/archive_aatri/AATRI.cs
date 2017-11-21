@@ -9,7 +9,6 @@ namespace archive_aatri.aatri
     {
         public List<AatriFileInfo> Files = new List<AatriFileInfo>();
         private Stream _stream = null;
-        private Import imports = new Import();
 
         private static Dictionary<string, string> _knownFiles = new Dictionary<string, string>
         {
@@ -43,8 +42,7 @@ namespace archive_aatri.aatri
                         State = ArchiveFileState.Archived,
                         FileName = $"{i:00000000}" + extension,
                         FileData = new SubStream(br.BaseStream, entries[i].offset, entries[i].compSize),
-                        Entry = entries[i],
-                        imports=imports
+                        Entry = entries[i]
                     });
                 }
             }

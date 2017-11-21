@@ -26,6 +26,7 @@ namespace archive_rgssad
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -33,13 +34,11 @@ namespace archive_rgssad
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
-            if (!File.Exists(filename)) return Identification.False;
+            if (!File.Exists(filename)) return false;
             using (var br = new BinaryReaderX(stream, true))
-                if (br.ReadCStringA() == "RGSSAD") return Identification.True;
-
-            return Identification.False;
+                return (br.ReadCStringA() == "RGSSAD");
         }
 
         public void Load(string filename)

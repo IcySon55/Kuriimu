@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Komponent.IO;
 using Kontract.Interface;
+using Komponent.Compression;
 
 namespace archive_mt
 {
@@ -16,14 +17,13 @@ namespace archive_mt
         public FileMetadata Metadata { get; set; }
         public CompressionLevel CompressionLevel { get; set; }
         public Platform System { get; set; }
-        public Import Imports { get; set; }
 
         public override Stream FileData
         {
             get
             {
                 if (State != ArchiveFileState.Archived || CompressionLevel == CompressionLevel.NoCompression) return base.FileData;
-                return new MemoryStream(Imports.zlib.Decompress(base.FileData, 0));
+                return new MemoryStream(new ZLib().Decompress(base.FileData, 0));
             }
         }
 
@@ -41,8 +41,9 @@ namespace archive_mt
                 {
                     if (CompressionLevel != CompressionLevel.NoCompression)
                     {
-                        Imports.zlib.SetMethod((byte)CompressionLevel);
-                        var bytes = Imports.zlib.Compress(FileData);
+                        var comp = new ZLib();
+                        comp.SetMethod((byte)CompressionLevel);
+                        var bytes = comp.Compress(FileData);
                         bw.Write(bytes);
                         Metadata.CompressedSize = bytes.Length;
                     }
@@ -62,19 +63,6 @@ namespace archive_mt
     {
         CTR,
         PS3
-    }
-
-    public class Import
-    {
-        [Import("ZLib")]
-        public ICompressionCollection zlib;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

@@ -9,7 +9,6 @@ namespace archive_bfp
     {
         public List<BFPFileInfo> Files = new List<BFPFileInfo>();
         private Stream _stream = null;
-        Import imports = new Import();
 
         public Header header;
         public List<Entry> entries = new List<Entry>();
@@ -50,8 +49,7 @@ namespace archive_bfp
                         FileData = new SubStream(br.BaseStream, entry.offset, compSizePad + 0x20),
                         entry = entry,
                         entry2 = null,
-                        compressed = (entry.uncompSize == compSize) ? false : true,
-                        imports = imports
+                        compressed = (entry.uncompSize == compSize) ? false : true
                     });
                 }
                 foreach (var entry in entries2)

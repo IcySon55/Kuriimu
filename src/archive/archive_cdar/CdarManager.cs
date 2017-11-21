@@ -20,6 +20,7 @@ namespace archive_cdar
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -27,14 +28,12 @@ namespace archive_cdar
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.PeekString(4) == "CDAR") return Identification.True;
+                return (br.PeekString(4) == "CDAR");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

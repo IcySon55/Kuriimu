@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.CTR.Hash;
 
 namespace archive_hpi_hpb
 {
@@ -16,7 +17,6 @@ namespace archive_hpi_hpb
         const uint PathHashMagic = 0x25;
 
         private Stream _stream = null;
-        private Import imports = new Import();
 
         public HPIHPB(Stream hpiInput, Stream hpbInput)
         {
@@ -35,8 +35,7 @@ namespace archive_hpi_hpb
                     Entry = entry,
                     FileName = br.ReadCStringSJIS(), // String Table
                     FileData = new SubStream(hpbInput, Math.Max(0, entry.fileOffset), entry.fileSize),
-                    State = ArchiveFileState.Archived,
-                    imports = imports
+                    State = ArchiveFileState.Archived
                 }).ToList();
             }
         }
@@ -61,7 +60,7 @@ namespace archive_hpi_hpb
                 }
 
                 // Hash List
-                var lookup = Files.ToLookup(e => GetInt(imports.simplehash.Create(sjis.GetBytes(e.FileName), PathHashMagic)) % HashSlotCount);
+                var lookup = Files.ToLookup(e => GetInt(new SimpleHash3DS().Create(sjis.GetBytes(e.FileName), PathHashMagic)) % HashSlotCount);
                 for (int i = 0, offset = 0; i < HashSlotCount; i++)
                 {
                     var count = lookup[(uint)i].Count();

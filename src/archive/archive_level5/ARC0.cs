@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text;
 using Kontract.Interface;
 using Komponent.IO;
-using System.Linq;
+using Komponent.Compression;
+using Komponent.Hash;
 
 namespace archive_level5.ARC0
 {
@@ -13,7 +14,6 @@ namespace archive_level5.ARC0
     {
         public List<ARC0FileInfo> Files = new List<ARC0FileInfo>();
         Stream _stream = null;
-        private Import imports = new Import();
 
         public Header header;
         public byte[] table1;
@@ -40,20 +40,20 @@ namespace archive_level5.ARC0
 
                 //File Entry Table
                 br.BaseStream.Position = header.fileEntriesOffset;
-                entries = new BinaryReaderX(new MemoryStream(imports.level5.Decompress(new MemoryStream(br.ReadBytes((int)(header.nameOffset - header.fileEntriesOffset))), 0)))
+                entries = new BinaryReaderX(new MemoryStream(new Level5().Decompress(new MemoryStream(br.ReadBytes((int)(header.nameOffset - header.fileEntriesOffset))), 0)))
                   .ReadMultiple<FileEntry>(header.fileEntriesCount);
 
                 //NameTable
                 br.BaseStream.Position = header.nameOffset;
                 nameC = br.ReadBytes((int)(header.dataOffset - header.nameOffset));
-                fileNames = GetFileNames(imports.level5.Decompress(new MemoryStream(nameC), 0));
+                fileNames = GetFileNames(new Level5().Decompress(new MemoryStream(nameC), 0));
 
                 //Add Files
                 List<uint> offsets = new List<uint>();
                 uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
                 foreach (var name in fileNames)
                 {
-                    var crc32 = imports.crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last()), 0);
+                    var crc32 = new CRC32().Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last()), 0);
                     var entry = entries.Find(c => c.crc32 == GetInt(crc32) && !offsets.Contains(c.fileOffset));
                     offsets.Add(entry.fileOffset);
                     Files.Add(new ARC0FileInfo

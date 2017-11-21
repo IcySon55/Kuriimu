@@ -5,6 +5,7 @@ using System.Linq;
 using Kontract.Interface;
 using Komponent.IO;
 using System.Text;
+using Komponent.CTR.Hash;
 
 namespace archive_nintendo.SARC
 {
@@ -12,7 +13,6 @@ namespace archive_nintendo.SARC
     {
         public List<SarcArchiveFileInfo> Files;
         Stream _stream = null;
-        public Import imports = new Import();
 
         ByteOrder byteOrder;
         public uint hashMultiplier;
@@ -94,7 +94,7 @@ namespace archive_nintendo.SARC
 
                     var sfatEntry = new SFATEntry
                     {
-                        nameHash = usesSFNT ? GetInt(imports.simplehash.Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % hashMultiplier : Convert.ToUInt32(afi.FileName.Substring(2, 8), 16),
+                        nameHash = usesSFNT ? GetInt(new SimpleHash3DS().Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % hashMultiplier : Convert.ToUInt32(afi.FileName.Substring(2, 8), 16),
                         SFNTOffsetFlag = (uint)(((usesSFNT ? 0x100 : 0) << 16) | (usesSFNT ? nameOffset / 4 : 0)),
                         dataStart = dataOffset,
                         dataEnd = dataOffset + fileLen

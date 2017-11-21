@@ -21,6 +21,7 @@ namespace archive_srtz.SEG
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => false;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -28,13 +29,15 @@ namespace archive_srtz.SEG
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
-            var binFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".bin");
+            return false;
+
+            /*var binFilename = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + ".bin");
 
             if (!File.Exists(filename) || !File.Exists(binFilename)) return Identification.False;
 
-            return Identification.Raw;
+            return Identification.Raw;*/
 
             /*using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {

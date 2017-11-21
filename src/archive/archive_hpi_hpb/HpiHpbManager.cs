@@ -20,6 +20,7 @@ namespace archive_hpi_hpb
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanReplaceFiles => true;
         public bool CanCreateNew => false;
@@ -28,20 +29,17 @@ namespace archive_hpi_hpb
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             var hpiFilename = filename;
             var hpbFilename = filename.Remove(filename.Length - 1) + "B";
 
-            if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return Identification.False;
+            if (!File.Exists(hpiFilename) || !File.Exists(hpbFilename)) return false;
 
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length >= 4 && br.ReadString(4) == "HPIH")
-                    return Identification.True;
+                return (br.BaseStream.Length >= 4 && br.ReadString(4) == "HPIH");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

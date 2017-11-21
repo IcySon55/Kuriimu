@@ -20,6 +20,7 @@ namespace archive_nintendo.GARC4
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -27,19 +28,17 @@ namespace archive_nintendo.GARC4
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return Identification.False;
-                if (br.ReadString(4) != "CRAG") return Identification.False;
-                if (br.BaseStream.Length < 0xc) return Identification.False;
+                if (br.BaseStream.Length < 4) return false;
+                if (br.ReadString(4) != "CRAG") return false;
+                if (br.BaseStream.Length < 0xc) return false;
                 br.BaseStream.Position = 0xb;
                 var version = br.ReadByte();
-                if (version == 4) return Identification.True;
+                return (version == 4);
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

@@ -22,6 +22,7 @@ namespace archive_999
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -29,15 +30,13 @@ namespace archive_999
 
         #endregion
 
-        public Identification Identify(Stream input, string filename)
+        public bool Identify(Stream input, string filename)
         {
             using (var br = new BinaryReaderX(input, true))
             {
-                if (br.BaseStream.Length < 8) return Identification.False;
-                if (br.ReadUInt32() == 3621168824 && br.ReadUInt32() == 4257008638) return Identification.True;
+                if (br.BaseStream.Length < 8) return false;
+                return (br.ReadUInt32() == 3621168824 && br.ReadUInt32() == 4257008638);
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

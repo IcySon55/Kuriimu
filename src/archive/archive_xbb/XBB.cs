@@ -4,6 +4,7 @@ using Kontract.Interface;
 using Komponent.IO;
 using System.Linq;
 using System.Text;
+using Komponent.CTR.Hash;
 
 namespace archive_xbb
 {
@@ -11,7 +12,6 @@ namespace archive_xbb
     {
         public List<XBBFileInfo> Files = new List<XBBFileInfo>();
         private Stream _stream = null;
-        private Import imports = new Import();
 
         public XBB(Stream input)
         {
@@ -60,7 +60,7 @@ namespace archive_xbb
                     bw.Write(offset);
                     bw.Write((uint)file.FileSize);
                     bw.Write(nameOffset);
-                    bw.Write(imports.xbb.Create(Encoding.ASCII.GetBytes(file.FileName), 0));
+                    bw.Write(new XBBHash().Create(Encoding.ASCII.GetBytes(file.FileName), 0));
 
                     offset += (int)file.FileSize;
                     offset = offset + 0x7f & ~0x7f;
@@ -69,12 +69,12 @@ namespace archive_xbb
                 }
 
                 //Hash table
-                var files = Files.OrderBy(e => imports.xbb.Create(Encoding.ASCII.GetBytes(e.FileName), 0)).ToList();
+                var files = Files.OrderBy(e => new XBBHash().Create(Encoding.ASCII.GetBytes(e.FileName), 0)).ToList();
                 for (int i = 0; i < files.Count(); i++)
                 {
-                    var hash = imports.xbb.Create(Encoding.ASCII.GetBytes(files[i].FileName), 0);
+                    var hash = new XBBHash().Create(Encoding.ASCII.GetBytes(files[i].FileName), 0);
                     bw.Write(hash);
-                    bw.Write(Files.FindIndex(e => imports.xbb.Create(Encoding.ASCII.GetBytes(e.FileName), 0) == hash));
+                    bw.Write(Files.FindIndex(e => new XBBHash().Create(Encoding.ASCII.GetBytes(e.FileName), 0) == hash));
                 }
 
                 //nameList

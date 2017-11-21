@@ -24,6 +24,7 @@ namespace archive_dpk.DG2
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -31,12 +32,10 @@ namespace archive_dpk.DG2
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
-                if (br.ReadString(4) == "dpk") return Identification.True;
-
-            return Identification.False;
+                return (br.ReadString(4) == "dpk");
         }
 
         public void Load(string filename)

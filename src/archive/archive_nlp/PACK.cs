@@ -9,7 +9,6 @@ namespace archive_nlp.PACK
     {
         public List<PACKFileInfo> Files = new List<PACKFileInfo>();
         private Stream _stream = null;
-        private Import imports = new Import();
 
         public PACKHeader header;
         public byte[] names;
@@ -61,8 +60,7 @@ namespace archive_nlp.PACK
                                 (entries[i].compSize == 0) ? entries[i].decompSize : entries[i].compSize),
                             Entry = fileEntries[i],
                             names = (fileEntries[i].entry.magic == "TEXI") ? names : null,
-                            pointers = (fileEntries[i].entry.magic == "TEXI") ? pointers : null,
-                            imports = imports
+                            pointers = (fileEntries[i].entry.magic == "TEXI") ? pointers : null
                         });
                     }
                 }

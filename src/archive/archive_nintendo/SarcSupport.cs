@@ -68,19 +68,6 @@ namespace archive_nintendo.SARC
         WiiU
     }
 
-    public class Import
-    {
-        [Import("SimpleHash_3DS")]
-        public IHash simplehash;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class SARCHeader
     {

@@ -20,6 +20,7 @@ namespace archive_enc
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => false;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -27,9 +28,9 @@ namespace archive_enc
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
-            return Identification.Raw;
+            return false;
         }
 
         public void Load(string filename)

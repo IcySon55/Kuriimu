@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.Compression;
 using System.IO;
 
 namespace archive_bfp
@@ -12,8 +13,6 @@ namespace archive_bfp
         public Entry entry;
         public Entry2 entry2;
         public bool compressed;
-
-        public Import imports;
 
         public override Stream FileData
         {
@@ -34,7 +33,7 @@ namespace archive_bfp
                 {
                     var header = br.ReadStruct<CompHeader>();
                     br.BaseStream.Position = 0x20;
-                    return new MemoryStream(imports.zlib.Decompress(new MemoryStream(br.ReadBytes((int)header.size)), 0));
+                    return new MemoryStream(new ZLib().Decompress(new MemoryStream(br.ReadBytes((int)header.size)), 0));
                 }
             }
         }
@@ -62,8 +61,9 @@ namespace archive_bfp
                 {
                     if (compressed)
                     {
-                        imports.zlib.SetMethod(0);
-                        var comp = imports.zlib.Compress(FileData);
+                        var compM = new ZLib();
+                        compM.SetMethod(0);
+                        var comp = compM.Compress(FileData);
                         bw.Write(comp.Length);
                         bw.Write((comp.Length + 0xf) & ~0xf);
                         bw.WritePadding(0x18);
@@ -96,19 +96,6 @@ namespace archive_bfp
                 entry.offset = offset;
                 entry.uncompSize = (uint)FileData.Length;
             }
-        }
-    }
-
-    public class Import
-    {
-        [Import("ZLib")]
-        public ICompressionCollection zlib;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
         }
     }
 

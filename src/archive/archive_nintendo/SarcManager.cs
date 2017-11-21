@@ -6,6 +6,7 @@ using Kontract.Interface;
 using Komponent.IO;
 using System.Text;
 using System.Linq;
+using Komponent.CTR.Hash;
 
 namespace archive_nintendo.SARC
 {
@@ -22,6 +23,7 @@ namespace archive_nintendo.SARC
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -29,17 +31,15 @@ namespace archive_nintendo.SARC
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4 || br.ReadString(4) != "SARC") return Identification.False;
+                if (br.BaseStream.Length < 4 || br.ReadString(4) != "SARC") return false;
                 br.ReadInt16();
                 var ind = br.ReadUInt16();
-                if (ind == 0xfeff || ind == 0xfffe) return Identification.True;
+                return (ind == 0xfeff || ind == 0xfffe);
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)
@@ -97,7 +97,7 @@ namespace archive_nintendo.SARC
                 FileData = afi.FileData,
                 FileName = afi.FileName,
                 State = afi.State,
-                hash = GetInt(_sarc.imports.simplehash.Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % _sarc.hashMultiplier
+                hash = GetInt(new SimpleHash3DS().Create(Encoding.ASCII.GetBytes(afi.FileName), 0)) % _sarc.hashMultiplier
             });
             return true;
         }

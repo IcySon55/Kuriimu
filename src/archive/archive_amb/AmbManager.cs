@@ -20,6 +20,7 @@ namespace archive_amb
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -27,16 +28,14 @@ namespace archive_amb
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
-            using (var br = new BinaryReaderX(stream,true))
+            using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.BaseStream.Length < 4) return false;
                 var magic = br.ReadString(4);
-                if (magic == "#AMB") return Identification.True;
+                return (magic == "#AMB");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

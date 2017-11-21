@@ -20,6 +20,7 @@ namespace archive_mt
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -27,16 +28,14 @@ namespace archive_mt
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 4) return Identification.False;
+                if (br.BaseStream.Length < 4) return false;
                 var magic = br.ReadString(4);
-                if (magic == "ARCC" || magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH") return Identification.True;
+                return (magic == "ARCC" || magic == "ARC" || magic == "\0CRA" || magic == "HFS" || magic == "\0SFH");
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

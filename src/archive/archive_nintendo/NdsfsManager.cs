@@ -21,6 +21,7 @@ namespace archive_nintendo.NDSFS
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => false;
         public bool CanCreateNew => false;
 
@@ -28,16 +29,14 @@ namespace archive_nintendo.NDSFS
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(stream, true))
             {
-                if (br.BaseStream.Length < 0x14) return Identification.False;
+                if (br.BaseStream.Length < 0x14) return false;
                 br.BaseStream.Position = 0x14;
-                if (Math.Pow(2, 17 + br.ReadByte()) == br.BaseStream.Length) return Identification.True;
+                return (Math.Pow(2, 17 + br.ReadByte()) == br.BaseStream.Length);
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

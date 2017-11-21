@@ -5,6 +5,8 @@ using Kontract.Interface;
 using Komponent.IO;
 using System;
 using System.Text;
+using Komponent.Compression;
+using Komponent.Hash;
 
 namespace archive_level5.XFSA
 {
@@ -12,7 +14,6 @@ namespace archive_level5.XFSA
     {
         public List<XFSAFileInfo> Files = new List<XFSAFileInfo>();
         Stream _stream = null;
-        private Import imports = new Import();
 
         Header header;
         byte[] table1;
@@ -39,20 +40,20 @@ namespace archive_level5.XFSA
 
                 //File Entry Table
                 br.BaseStream.Position = header.fileEntryTableOffset;
-                entries = new BinaryReaderX(new MemoryStream(imports.level5.Decompress(new MemoryStream(br.ReadBytes((int)(header.nameTableOffset - header.fileEntryTableOffset))), 0)))
+                entries = new BinaryReaderX(new MemoryStream(new Level5().Decompress(new MemoryStream(br.ReadBytes((int)(header.nameTableOffset - header.fileEntryTableOffset))), 0)))
                     .ReadMultiple<FileEntry>((int)header.fileEntryCount);
 
                 //Name Table
                 br.BaseStream.Position = header.nameTableOffset;
                 nameC = br.ReadBytes((int)(header.dataOffset - header.nameTableOffset));
-                fileNames = GetFileNames(imports.level5.Decompress(new MemoryStream(nameC), 0));
+                fileNames = GetFileNames(new Level5().Decompress(new MemoryStream(nameC), 0));
 
                 //Add Files
                 uint GetInt(byte[] ba) => ba.Aggregate(0u, (i, b) => (i << 8) | b);
                 List<uint> combs = new List<uint>();
                 foreach (var name in fileNames)
                 {
-                    var crc32 = GetInt(imports.crc32.Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last()), 0));
+                    var crc32 = GetInt(new CRC32().Create(Encoding.GetEncoding("SJIS").GetBytes(name.Split('/').Last()), 0));
                     var entry = entries.Find(c => c.crc32 == crc32 && !combs.Contains(c.comb1));
                     combs.Add(entry.comb1);
                     Files.Add(new XFSAFileInfo

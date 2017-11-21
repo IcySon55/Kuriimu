@@ -21,6 +21,7 @@ namespace archive_skb
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
+        public bool CanIdentify => true;
         public bool CanSave => true;
         public bool CanCreateNew => false;
 
@@ -28,15 +29,13 @@ namespace archive_skb
 
         #endregion
 
-        public Identification Identify(Stream stream, string filename)
+        public bool Identify(Stream stream, string filename)
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 var t = br.ReadBytes(0x18);
-                if (t[0] == 0xe && t[8] == 4 && t[12] == 4 && t[16] == 4 && t[20] == 0x80) return Identification.True;
+                return (t[0] == 0xe && t[8] == 4 && t[12] == 4 && t[16] == 4 && t[20] == 0x80);
             }
-
-            return Identification.False;
         }
 
         public void Load(string filename)

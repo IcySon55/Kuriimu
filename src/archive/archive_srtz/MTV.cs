@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.CTR.Compression;
 
 namespace archive_srtz.MTV
 {
@@ -12,7 +13,6 @@ namespace archive_srtz.MTV
 
         private Stream _stream = null;
         bool compressed = false;
-        private Import imports = new Import();
 
         private static Dictionary<string, string> _knownFiles = new Dictionary<string, string>
         {
@@ -66,7 +66,7 @@ namespace archive_srtz.MTV
                         compressed = true;
                         br.BaseStream.Position -= 4;
 
-                        var data = imports.lzssvle.Decompress(br.BaseStream, 0);
+                        var data = new LZSSVLE().Decompress(br.BaseStream, 0);
 
                         using (var br2 = new BinaryReaderX(new MemoryStream(data)))
                         {

@@ -6,13 +6,13 @@ using System.IO;
 using Komponent.IO;
 using System;
 using System.Linq;
+using Komponent.CTR.Compression;
 
 namespace archive_srtux
 {
     public class SrtuxFileInfo : ArchiveFileInfo
     {
         public Entry entry;
-        public Import imports;
 
         public override Stream FileData
         {
@@ -26,7 +26,7 @@ namespace archive_srtux
                     if (header.magic != "ECD\u0001") return br.BaseStream;
 
                     br.BaseStream.Position -= 0x10;
-                    return new MemoryStream(imports.lzecd.Decompress(new MemoryStream(br.ReadBytes(header.compSize + 0x10)), 0));
+                    return new MemoryStream(new LZECD().Decompress(new MemoryStream(br.ReadBytes(header.compSize + 0x10)), 0));
                 }
             }
         }
@@ -46,19 +46,6 @@ namespace archive_srtux
 
                 bw.BaseStream.Position = startOffset;
             }
-        }
-    }
-
-    public class Import
-    {
-        [Import("LZECD")]
-        public ICompression lzecd;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
         }
     }
 

@@ -4,6 +4,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
 using Komponent.IO;
+using Komponent.Compression;
 
 namespace archive_hpi_hpb
 {
@@ -48,25 +49,9 @@ namespace archive_hpi_hpb
         public int padding2 = 0x01234567;
     }
 
-    public class Import
-    {
-        [Import("RevLZ77")]
-        public ICompression revlz77;
-        [Import("SimpleHash_3DS")]
-        public IHash simplehash;
-
-        public Import()
-        {
-            var catalog = new DirectoryCatalog("Komponents");
-            var container = new CompositionContainer(catalog);
-            container.ComposeParts(this);
-        }
-    }
-
     public class HpiHpbAfi : ArchiveFileInfo
     {
         public Entry Entry;
-        public Import imports;
 
         public override Stream FileData
         {
@@ -77,7 +62,7 @@ namespace archive_hpi_hpb
                 using (var br = new BinaryReaderX(baseStream, true))
                 {
                     var header = br.ReadStruct<AcmpHeader>();
-                    return new MemoryStream(imports.revlz77.Decompress(new MemoryStream(br.ReadBytes(header.compressedSize)), 0));
+                    return new MemoryStream(new RevLZ77().Decompress(new MemoryStream(br.ReadBytes(header.compressedSize)), 0));
                 }
             }
         }
@@ -92,7 +77,7 @@ namespace archive_hpi_hpb
                 // Only here if we need to compress from a FileStream in the base.FileData
                 var uncompData = new byte[_fileData.Length];
                 base.FileData.Read(uncompData, 0, uncompData.Length);
-                var compData = imports.revlz77.Compress(new MemoryStream(uncompData));
+                var compData = new RevLZ77().Compress(new MemoryStream(uncompData));
                 if (compData == null)
                 {
                     Entry.fileSize = uncompData.Length;
