@@ -18,23 +18,27 @@ namespace Komponent.UI
 
             string[] parts = hash.Metadata.TabPathCreate.Split('/');
 
+            ToolStripItem duplicate = null;
+            for (int i = 0; i < createTab.DropDownItems.Count; i++)
+            {
+                if (createTab.DropDownItems[i].Text == parts[count])
+                {
+                    duplicate = createTab.DropDownItems[i];
+                    break;
+                }
+            }
+
             if (count == parts.Length - 1)
             {
-                createTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Create));
-                createTab.DropDownItems[createTab.DropDownItems.Count - 1].Tag = hash;
-                if (hash.Metadata.TabPathCreate.Contains(',')) createTab.DropDownItems[createTab.DropDownItems.Count - 1].Name = hash.Metadata.TabPathCreate.Split(',')[1];
+                if (duplicate == null)
+                {
+                    createTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Create));
+                    createTab.DropDownItems[createTab.DropDownItems.Count - 1].Tag = hash;
+                    if (hash.Metadata.TabPathCreate.Contains(',')) createTab.DropDownItems[createTab.DropDownItems.Count - 1].Name = hash.Metadata.TabPathCreate.Split(',')[1];
+                }
             }
             else
             {
-                ToolStripItem duplicate = null;
-                for (int i = 0; i < createTab.DropDownItems.Count; i++)
-                {
-                    if (createTab.DropDownItems[i].Text == parts[count])
-                    {
-                        duplicate = createTab.DropDownItems[i];
-                        break;
-                    }
-                }
                 if (duplicate != null)
                 {
                     AddCreateTab((ToolStripMenuItem)duplicate, hash, count + 1);
@@ -73,11 +77,15 @@ namespace Komponent.UI
 
             try
             {
-                var bytes = new byte[(int)openFile.Length];
-                openFile.Read(bytes, 0, (int)openFile.Length);
+                using (openFile)
+                using (saveFile)
+                {
+                    var bytes = new byte[(int)openFile.Length];
+                    openFile.Read(bytes, 0, (int)openFile.Length);
 
-                var hash = tag.Value.Create(bytes, 0);
-                saveFile.Write(hash, 0, hash.Length);
+                    var hash = tag.Value.Create(bytes, 0);
+                    saveFile.Write(hash, 0, hash.Length);
+                }
             }
             catch (Exception ex)
             {

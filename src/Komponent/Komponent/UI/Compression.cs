@@ -24,24 +24,28 @@ namespace Komponent.UI
                     tabPath.Split('/') :
                 compression.Metadata.TabPathDecompress.Split('/');
 
+            ToolStripItem duplicate = null;
+            for (int i = 0; i < compressTab.DropDownItems.Count; i++)
+            {
+                if (compressTab.DropDownItems[i].Text == parts[count])
+                {
+                    duplicate = compressTab.DropDownItems[i];
+                    break;
+                }
+            }
+
             if (count == parts.Length - 1)
             {
-                if (compTab) compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
-                else compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decompress));
-                compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Tag = compression;
-                if (tabPath.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = tabPath.Split(',')[1];
+                if (duplicate == null)
+                {
+                    if (compTab) compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
+                    else compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decompress));
+                    compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Tag = compression;
+                    if (tabPath.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = tabPath.Split(',')[1];
+                }
             }
             else
             {
-                ToolStripItem duplicate = null;
-                for (int i = 0; i < compressTab.DropDownItems.Count; i++)
-                {
-                    if (compressTab.DropDownItems[i].Text == parts[count])
-                    {
-                        duplicate = compressTab.DropDownItems[i];
-                        break;
-                    }
-                }
                 if (duplicate != null)
                 {
                     AddCompressionTab((ToolStripMenuItem)duplicate, compression, modTabPath, compTab, count + 1);
@@ -73,24 +77,28 @@ namespace Komponent.UI
                     compression.Metadata.TabPathCompress.Split('/') :
                 compression.Metadata.TabPathDecompress.Split('/');
 
+            ToolStripItem duplicate = null;
+            for (int i = 0; i < compressTab.DropDownItems.Count; i++)
+            {
+                if (compressTab.DropDownItems[i].Text == parts[count])
+                {
+                    duplicate = compressTab.DropDownItems[i];
+                    break;
+                }
+            }
+
             if (count == parts.Length - 1)
             {
-                if (compTab) compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
-                else compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decompress));
-                compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Tag = compression;
-                if (compression.Metadata.TabPathCompress.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = compression.Metadata.TabPathCompress.Split(',')[1];
+                if (duplicate == null)
+                {
+                    if (compTab) compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Compress));
+                    else compressTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decompress));
+                    compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Tag = compression;
+                    if (compression.Metadata.TabPathCompress.Contains(',')) compressTab.DropDownItems[compressTab.DropDownItems.Count - 1].Name = compression.Metadata.TabPathCompress.Split(',')[1];
+                }
             }
             else
             {
-                ToolStripItem duplicate = null;
-                for (int i = 0; i < compressTab.DropDownItems.Count; i++)
-                {
-                    if (compressTab.DropDownItems[i].Text == parts[count])
-                    {
-                        duplicate = compressTab.DropDownItems[i];
-                        break;
-                    }
-                }
                 if (duplicate != null)
                 {
                     AddCompressionTab((ToolStripMenuItem)duplicate, compression, compTab, count + 1);
@@ -179,16 +187,20 @@ namespace Komponent.UI
 
             try
             {
-                byte[] decomp;
-                if (meta.TabPathCompress.Contains(','))
+                using (openFile)
+                using (saveFile)
                 {
-                    decomp = compColl.Decompress(openFile, 0);
-                    saveFile.Write(decomp, 0, decomp.Length);
-                }
-                else
-                {
-                    decomp = comp.Decompress(openFile, 0);
-                    saveFile.Write(decomp, 0, decomp.Length);
+                    byte[] decomp;
+                    if (meta.TabPathCompress.Contains(','))
+                    {
+                        decomp = compColl.Decompress(openFile, 0);
+                        saveFile.Write(decomp, 0, decomp.Length);
+                    }
+                    else
+                    {
+                        decomp = comp.Decompress(openFile, 0);
+                        saveFile.Write(decomp, 0, decomp.Length);
+                    }
                 }
             }
             catch (Exception ex)
@@ -228,18 +240,22 @@ namespace Komponent.UI
 
             try
             {
-                byte[] compData;
-                if (meta.TabPathCompress.Contains(','))
+                using (openFile)
+                using (saveFile)
                 {
-                    Byte.TryParse(tsi.Name, out var method);
-                    compColl.SetMethod(method);
-                    compData = compColl.Compress(openFile);
-                    saveFile.Write(compData, 0, compData.Length);
-                }
-                else
-                {
-                    compData = comp.Compress(openFile);
-                    saveFile.Write(compData, 0, compData.Length);
+                    byte[] compData;
+                    if (meta.TabPathCompress.Contains(','))
+                    {
+                        Byte.TryParse(tsi.Name, out var method);
+                        compColl.SetMethod(method);
+                        compData = compColl.Compress(openFile);
+                        saveFile.Write(compData, 0, compData.Length);
+                    }
+                    else
+                    {
+                        compData = comp.Compress(openFile);
+                        saveFile.Write(compData, 0, compData.Length);
+                    }
                 }
             }
             catch (Exception ex)

@@ -25,24 +25,28 @@ namespace Komponent.UI
 
             string[] parts = encTab ? encryption.Metadata.TabPathEncrypt.Split('/') : encryption.Metadata.TabPathDecrypt.Split('/');
 
+            ToolStripItem duplicate = null;
+            for (int i = 0; i < encryptTab.DropDownItems.Count; i++)
+            {
+                if (encryptTab.DropDownItems[i].Text == parts[count])
+                {
+                    duplicate = encryptTab.DropDownItems[i];
+                    break;
+                }
+            }
+
             if (count == parts.Length - 1)
             {
-                if (encTab) encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Encrypt));
-                else encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decrypt));
-                encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Tag = encryption;
-                if (encryption.Metadata.TabPathEncrypt.Contains(',')) encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Name = encryption.Metadata.TabPathEncrypt.Split(',')[1];
+                if (duplicate == null)
+                {
+                    if (encTab) encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Encrypt));
+                    else encryptTab.DropDownItems.Add(new ToolStripMenuItem(parts[count], null, Decrypt));
+                    encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Tag = encryption;
+                    if (encryption.Metadata.TabPathEncrypt.Contains(',')) encryptTab.DropDownItems[encryptTab.DropDownItems.Count - 1].Name = encryption.Metadata.TabPathEncrypt.Split(',')[1];
+                }
             }
             else
             {
-                ToolStripItem duplicate = null;
-                for (int i = 0; i < encryptTab.DropDownItems.Count; i++)
-                {
-                    if (encryptTab.DropDownItems[i].Text == parts[count])
-                    {
-                        duplicate = encryptTab.DropDownItems[i];
-                        break;
-                    }
-                }
                 if (duplicate != null)
                 {
                     AddEncryptionTab((ToolStripMenuItem)duplicate, encryption, encTab, count + 1);
@@ -84,10 +88,14 @@ namespace Komponent.UI
 
             try
             {
-                var decrypt = tag.Value.Decrypt(openFile);
-                saveFile.Write(decrypt, 0, decrypt.Length);
+                using (openFile)
+                using (saveFile)
+                {
+                    var decrypt = tag.Value.Decrypt(openFile);
+                    saveFile.Write(decrypt, 0, decrypt.Length);
 
-                MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
@@ -105,10 +113,14 @@ namespace Komponent.UI
 
             try
             {
-                var encrypt = tag.Value.Encrypt(openFile);
-                saveFile.Write(encrypt, 0, encrypt.Length);
+                using (openFile)
+                using (saveFile)
+                {
+                    var encrypt = tag.Value.Encrypt(openFile);
+                    saveFile.Write(encrypt, 0, encrypt.Length);
 
-                MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Successfully encrypted {Path.GetFileName(openFile.Name)}.", tsi.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {
