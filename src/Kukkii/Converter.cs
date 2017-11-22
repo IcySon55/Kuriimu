@@ -12,7 +12,8 @@ using Cyotek.Windows.Forms;
 using Kukkii.Properties;
 using Kontract.Interface;
 using Kontract;
-using Kontract.UI;
+using Komponent.UI;
+using Komponent.Interface;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 
@@ -59,7 +60,7 @@ namespace Kukkii
 
         public void LoadImports()
         {
-            var catalog = new AggregateCatalog(new[] { new DirectoryCatalog("Komponents"), new DirectoryCatalog("plugins") });
+            var catalog = new AggregateCatalog(new[] { new DirectoryCatalog("Komponent"), new DirectoryCatalog("plugins") });
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
         }
@@ -215,8 +216,9 @@ namespace Kukkii
             if (filename == string.Empty)
                 filename = ofd.FileName;
 
-            var stream = File.OpenRead(filename);
-            var tempAdapter = SelectImageAdapter(stream, filename);
+            Lazy<IImageAdapter, IFilePluginMetadata> tempAdapter;
+            using (var stream = File.OpenRead(filename))
+                tempAdapter = SelectImageAdapter(stream, filename);
 
             try
             {
@@ -248,9 +250,6 @@ namespace Kukkii
             {
                 MessageBox.Show(this, ex.ToString(), tempAdapter != null ? $"{tempAdapter.Metadata.Name} - {tempAdapter.Metadata.Description} Adapter" : "Supported Format Load Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            stream.Dispose();
-            stream = null;
         }
 
         private DialogResult SaveFile(bool saveAs = false)
@@ -302,15 +301,18 @@ namespace Kukkii
             List<Lazy<IImageAdapter, IFilePluginMetadata>> raws = new List<Lazy<IImageAdapter, IFilePluginMetadata>>();
             foreach (var match in matchingManagers)
             {
-                var retVal = match.Value.Identify(stream, filename);
-                if (!stream.CanRead) stream = File.OpenRead(filename);
-                stream.Position = 0;
-                if (retVal == Identification.True)
+                if (match.Value.CanIdentify)
                 {
-                    result = match;
-                    break;
+                    var retVal = match.Value.Identify(stream, filename);
+                    if (!stream.CanRead) stream = File.OpenRead(filename);
+                    stream.Position = 0;
+                    if (retVal)
+                    {
+                        result = match;
+                        break;
+                    }
                 }
-                else if (retVal == Identification.Raw)
+                else
                     raws.Add(match);
             }
 
@@ -325,15 +327,18 @@ namespace Kukkii
                 var unmatchedManagers = _imageAdapters.Except(matchingManagers);
                 foreach (var unmatch in unmatchedManagers)
                 {
-                    var retVal = unmatch.Value.Identify(stream, filename);
-                    if (!stream.CanRead) stream = File.OpenRead(filename);
-                    stream.Position = 0;
-                    if (retVal == Identification.True)
+                    if (unmatch.Value.CanIdentify)
                     {
-                        result = unmatch;
-                        break;
+                        var retVal = unmatch.Value.Identify(stream, filename);
+                        if (!stream.CanRead) stream = File.OpenRead(filename);
+                        stream.Position = 0;
+                        if (retVal)
+                        {
+                            result = unmatch;
+                            break;
+                        }
                     }
-                    else if (retVal == Identification.Raw)
+                    else
                         raws.Add(unmatch);
                 }
             }
