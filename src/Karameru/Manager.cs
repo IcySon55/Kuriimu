@@ -397,9 +397,11 @@ namespace Karameru
             if (filename == string.Empty)
                 filename = ofd.FileName;
 
-            var stream = File.OpenRead(filename);
-            var tempManager = SelectArchiveManager(stream, filename);
-            stream.Dispose();
+            Lazy<IArchiveManager, IFilePluginMetadata> tempManager;
+            using (var stream = File.OpenRead(filename))
+            {
+                tempManager = SelectArchiveManager(stream, filename);
+            }
 
             try
             {
