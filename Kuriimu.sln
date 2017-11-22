@@ -186,9 +186,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		get_git_info.ps1 = get_git_info.ps1
 		LICENSE.md = LICENSE.md
-		LZ4.dll = LZ4.dll
+		src\LZ4.dll = src\LZ4.dll
 		README.md = README.md
-		Security.Cryptography.dll = Security.Cryptography.dll
+		src\Security.Cryptography.dll = src\Security.Cryptography.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_mt", "src\archive\archive_mt\archive_mt.csproj", "{92407A45-8006-4AA7-95F2-6EED156918A7}"
