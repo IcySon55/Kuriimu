@@ -15,18 +15,19 @@ using System.Windows.Forms;
 using Karameru.Properties;
 using Kontract.Interface;
 using Kontract;
-using Kontract.UI;
+using Komponent.UI;
+using Komponent.Interface;
 
 namespace Karameru
 {
     public partial class Manager : Form
     {
         private Lazy<IArchiveManager, IFilePluginMetadata> _archiveManager;
+        private Lazy<IImageAdapter, IFilePluginMetadata> _imageAdapter;
         private bool _fileOpen;
         private bool _hasChanges;
 
         private List<ITextAdapter> _textAdapters;
-        private List<IImageAdapter> _imageAdapters;
         private HashSet<string> _textExtensions;
         private HashSet<string> _imageExtensions;
         private HashSet<string> _archiveExtensions;
@@ -56,10 +57,12 @@ namespace Karameru
         //Format Plugin Imports
         [ImportMany(typeof(IArchiveManager))]
         public List<Lazy<IArchiveManager, IFilePluginMetadata>> _archiveManagers;
+        [ImportMany(typeof(IImageAdapter))]
+        public List<Lazy<IImageAdapter, IFilePluginMetadata>> _imageAdapters;
 
         public void LoadImports()
         {
-            var catalog = new AggregateCatalog(new[] { new DirectoryCatalog("Komponents"), new DirectoryCatalog("plugins") });
+            var catalog = new AggregateCatalog(new[] { new DirectoryCatalog("Komponent"), new DirectoryCatalog("plugins") });
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);
         }
@@ -92,10 +95,9 @@ namespace Karameru
 
             // Load Plugins
             _textAdapters = PluginLoader<ITextAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "text*.dll").ToList();
-            _imageAdapters = PluginLoader<IImageAdapter>.LoadPlugins(Settings.Default.PluginDirectory, "image*.dll").ToList();
 
             _textExtensions = new HashSet<string>(_textAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
-            _imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
+            _imageExtensions = new HashSet<string>(_imageAdapters.SelectMany(s => s.Metadata.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
             _archiveExtensions = new HashSet<string>(_archiveManagers.SelectMany(s => s.Metadata.Extension.Split(';')).Select(o => o.TrimStart('*').ToLower()));
 
             // Load passed in file
@@ -483,15 +485,18 @@ namespace Karameru
             List<Lazy<IArchiveManager, IFilePluginMetadata>> raws = new List<Lazy<IArchiveManager, IFilePluginMetadata>>();
             foreach (var match in matchingManagers)
             {
-                var retVal = match.Value.Identify(stream, filename);
-                if (!stream.CanRead) stream = File.OpenRead(filename);
-                stream.Position = 0;
-                if (retVal == Identification.True)
+                if (match.Value.CanIdentify)
                 {
-                    result = match;
-                    break;
+                    var retVal = match.Value.Identify(stream, filename);
+                    if (!stream.CanRead) stream = File.OpenRead(filename);
+                    stream.Position = 0;
+                    if (retVal)
+                    {
+                        result = match;
+                        break;
+                    }
                 }
-                else if (retVal == Identification.Raw)
+                else
                     raws.Add(match);
             }
 
@@ -506,15 +511,18 @@ namespace Karameru
                 var unmatchedManagers = _archiveManagers.Except(matchingManagers);
                 foreach (var unmatch in unmatchedManagers)
                 {
-                    var retVal = unmatch.Value.Identify(stream, filename);
-                    if (!stream.CanRead) stream = File.OpenRead(filename);
-                    stream.Position = 0;
-                    if (retVal == Identification.True)
+                    if (unmatch.Value.CanIdentify)
                     {
-                        result = unmatch;
-                        break;
+                        var retVal = unmatch.Value.Identify(stream, filename);
+                        if (!stream.CanRead) stream = File.OpenRead(filename);
+                        stream.Position = 0;
+                        if (retVal)
+                        {
+                            result = unmatch;
+                            break;
+                        }
                     }
-                    else if (retVal == Identification.Raw)
+                    else
                         raws.Add(unmatch);
                 }
             }
