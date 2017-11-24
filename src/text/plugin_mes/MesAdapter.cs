@@ -14,8 +14,8 @@ namespace text_mes
     public sealed class MesAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
-        private MES _mdt = null;
-        private MES _mdtBackup = null;
+        private MES _mes = null;
+        private MES _mesBackup = null;
         private List<Entry> _entries = null;
 
         #region Properties
@@ -28,7 +28,7 @@ namespace text_mes
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
         public bool CanAddEntries => false;
         public bool CanRenameEntries => false;
         public bool CanDeleteEntries => false;
@@ -73,21 +73,21 @@ namespace text_mes
 
             if (_fileInfo.Exists)
             {
-                _mdt = new MES(_fileInfo.FullName);
+                _mes = new MES(_fileInfo.FullName);
 
                 string backupFilePath = _fileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
                 {
-                    _mdtBackup = new MES(backupFilePath);
+                    _mesBackup = new MES(backupFilePath);
                 }
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     File.Copy(_fileInfo.FullName, backupFilePath);
-                    _mdtBackup = new MES(backupFilePath);
+                    _mesBackup = new MES(backupFilePath);
                 }
                 else
                 {
-                    _mdtBackup = null;
+                    _mesBackup = null;
                 }
             }
             else
@@ -105,7 +105,7 @@ namespace text_mes
 
             try
             {
-                _mdt.Save(_fileInfo.FullName);
+                _mes.Save(_fileInfo.FullName);
             }
             catch (Exception)
             {
@@ -124,16 +124,16 @@ namespace text_mes
                 {
                     _entries = new List<Entry>();
 
-                    foreach (Label label in _mdt.Labels)
+                    foreach (Label label in _mes.Labels)
                     {
-                        if (_mdtBackup == null)
+                        if (_mesBackup == null)
                         {
                             Entry entry = new Entry(label);
                             _entries.Add(entry);
                         }
                         else
                         {
-                            Entry entry = new Entry(label, _mdtBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID));
+                            Entry entry = new Entry(label, _mesBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID));
                             _entries.Add(entry);
                         }
                     }
