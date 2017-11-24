@@ -1,8 +1,38 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Kontract.Interface;
+using Kontract;
 
 namespace text_mes
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct Header
+    {
+        public Magic magic;
+        public int headerLength;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct EntryHeader
+    {
+        public int entryOffset;
+        public int entryCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ScenarioHeader
+    {
+        public int scenarioOffset;
+        public int scenarioCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class ScenarioEntry
+    {
+        public int textEntryCount;
+        public int containerOffset;
+    }
+
     #region Entry_Definition
     public sealed class Entry : TextEntry
     {

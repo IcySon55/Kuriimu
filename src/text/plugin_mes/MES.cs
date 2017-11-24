@@ -14,27 +14,6 @@ namespace text_mes
         public List<Label> Labels = new List<Label>();
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Header
-        {
-            public Magic magic;
-            public int headerLength;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct EntryHeader
-        {
-            public int entryOffset;
-            public int entryCount;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct ScenarioHeader
-        {
-            public int scenarioOffset;
-            public int scenarioCount;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class Entry
         {
             public int nameOffset;
@@ -43,13 +22,6 @@ namespace text_mes
             public int stringLength;
             public long unk1;
             public long unk2;
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public class ScenarioEntry
-        {
-            public int textEntryCount;
-            public int containerOffset;
         }
 
         public Header header;
