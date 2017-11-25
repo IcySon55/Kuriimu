@@ -37,7 +37,7 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,11 +48,11 @@
             this.batchExportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchImportPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.batchScanSubdirectoriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gBATempToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gitHubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsMain = new System.Windows.Forms.ToolStrip();
             this.tsbOpen = new System.Windows.Forms.ToolStripButton();
             this.tsbSave = new System.Windows.Forms.ToolStripButton();
@@ -107,10 +107,10 @@
             // 
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.editToolStripMenuItem,
+            this.imageToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.batchToolStripMenuItem,
-            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Padding = new System.Windows.Forms.Padding(2, 2, 0, 2);
@@ -182,14 +182,14 @@
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // editToolStripMenuItem
+            // imageToolStripMenuItem
             // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.imageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportPNGToolStripMenuItem,
             this.importPNGToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.editToolStripMenuItem.Text = "&Image";
+            this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
+            this.imageToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.imageToolStripMenuItem.Text = "&Image";
             // 
             // exportPNGToolStripMenuItem
             // 
@@ -225,19 +225,19 @@
             // 
             this.compressionToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_compression;
             this.compressionToolStripMenuItem.Name = "compressionToolStripMenuItem";
-            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.compressionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.compressionToolStripMenuItem.Text = "&Compression";
             // 
             // encryptionToolStripMenuItem
             // 
             this.encryptionToolStripMenuItem.Name = "encryptionToolStripMenuItem";
-            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.encryptionToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.encryptionToolStripMenuItem.Text = "&Encryption";
             // 
             // hashToolStripMenuItem
             // 
             this.hashToolStripMenuItem.Name = "hashToolStripMenuItem";
-            this.hashToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.hashToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.hashToolStripMenuItem.Text = "Hash";
             // 
             // batchToolStripMenuItem
@@ -278,43 +278,43 @@
             this.batchScanSubdirectoriesToolStripMenuItem.Text = "Don\'t Scan Sub-directories";
             this.batchScanSubdirectoriesToolStripMenuItem.Click += new System.EventHandler(this.batchScanSubdirectoriesToolStripMenuItem_Click);
             // 
-            // aboutToolStripMenuItem
+            // helpToolStripMenuItem
             // 
-            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gBATempToolStripMenuItem,
             this.gitHubToolStripMenuItem,
             this.toolStripSeparator4,
-            this.aboutToolStripMenuItem1});
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.aboutToolStripMenuItem.Text = "&Help";
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
             // 
             // gBATempToolStripMenuItem
             // 
             this.gBATempToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_gbatemp;
             this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.gBATempToolStripMenuItem.Text = "GBATemp";
             // 
             // gitHubToolStripMenuItem
             // 
             this.gitHubToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_git;
             this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.gitHubToolStripMenuItem.Text = "GitHub";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(149, 6);
             // 
-            // aboutToolStripMenuItem1
+            // aboutToolStripMenuItem
             // 
-            this.aboutToolStripMenuItem1.Image = global::Kukkii.Properties.Resources.menu_about;
-            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
-            this.aboutToolStripMenuItem1.Text = "&About";
+            this.aboutToolStripMenuItem.Image = global::Kukkii.Properties.Resources.menu_about;
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "&About";
             // 
             // tlsMain
             // 
@@ -694,7 +694,7 @@
             this.Controls.Add(this.tlsMain);
             this.Controls.Add(this.mnuMain);
             this.Name = "Converter";
-            this.Text = "Kukki";
+            this.Text = "Kukkii";
             this.Load += new System.EventHandler(this.frmConverter_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmConverter_DragEnter);
@@ -730,16 +730,16 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gBATempToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gitHubToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStrip tlsMain;
         private System.Windows.Forms.ToolStripButton tsbOpen;
         private System.Windows.Forms.ToolStripButton tsbSave;
         private System.Windows.Forms.ToolStripButton tsbSaveAs;
         private System.Windows.Forms.Panel pnlMain;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splMain;
         private Cyotek.Windows.Forms.ImageBox imbPreview;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
