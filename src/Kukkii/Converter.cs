@@ -14,6 +14,7 @@ using Kontract.Interface;
 using Kontract;
 using Kontract.UI;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Kukkii
 {
@@ -500,7 +501,8 @@ namespace Kukkii
             {
                 var path = fbd.SelectedPath;
                 var count = 0;
-                var errors = false;
+                var exported = 0;
+                var errors = 0;
 
                 if (Directory.Exists(path))
                 {
@@ -510,9 +512,9 @@ namespace Kukkii
                     foreach (var type in types)
                         files.AddRange(Directory.GetFiles(path, type, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                    Parallel.ForEach(files, file => batchExportPNGTask(file, ref count, ref errors));
+                    Parallel.ForEach(files, file => batchExportPNGTask(file, ref count, ref exported, ref errors));
 
-                    MessageBox.Show($"Batch export completed {(errors ? "with errors" : "successfully")}. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Batch export completed {((errors > 0) ? "with " + errors + " errors" : "successfully")}. " + count + " texture(s) succesfully exported to " + exported + " images.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
 
@@ -520,7 +522,7 @@ namespace Kukkii
             Settings.Default.Save();
         }
 
-        private void batchExportPNGTask(string file, ref Int32 count, ref bool errors)
+        private void batchExportPNGTask(string file, ref Int32 count, ref Int32 exported, ref Int32 errors)
         {
             if (File.Exists(file))
                 try {
@@ -529,12 +531,14 @@ namespace Kukkii
 
                     if (currentAdapter != null) {
                         currentAdapter.Load(file);
-                        for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                        for (var i = 0; i < currentAdapter.Bitmaps.Count; i++) {
                             currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
-                        count++;
+                            Interlocked.Increment(ref exported);
+                        }
+                        Interlocked.Increment(ref count);
                     }
                 } catch (Exception) {
-                    errors = true;
+                    Interlocked.Increment(ref errors);
                 }
         }
 
