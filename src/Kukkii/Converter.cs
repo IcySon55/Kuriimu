@@ -13,6 +13,7 @@ using Kukkii.Properties;
 using Kontract.Interface;
 using Kontract;
 using Kontract.UI;
+using System.Threading.Tasks;
 
 namespace Kukkii
 {
@@ -509,25 +510,7 @@ namespace Kukkii
                     foreach (var type in types)
                         files.AddRange(Directory.GetFiles(path, type, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                    foreach (var file in files)
-                        if (File.Exists(file))
-                            try
-                            {
-                                var fi = new FileInfo(file);
-                                var currentAdapter = SelectImageAdapter(file, true);
-
-                                if (currentAdapter != null)
-                                {
-                                    currentAdapter.Load(file);
-                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                        currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
-                                    count++;
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                errors = true;
-                            }
+                    Parallel.ForEach(files, file => batchExportPNGTask(file, ref count, ref errors));
 
                     MessageBox.Show($"Batch export completed {(errors ? "with errors" : "successfully")}. " + count + " image(s) succesfully exported.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -535,6 +518,24 @@ namespace Kukkii
 
             Settings.Default.LastBatchDirectory = fbd.SelectedPath;
             Settings.Default.Save();
+        }
+
+        private void batchExportPNGTask(string file, ref Int32 count, ref bool errors)
+        {
+            if (File.Exists(file))
+                try {
+                    var fi = new FileInfo(file);
+                    var currentAdapter = SelectImageAdapter(file, true);
+
+                    if (currentAdapter != null) {
+                        currentAdapter.Load(file);
+                        for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
+                            currentAdapter.Bitmaps[i].Bitmap.Save(fi.FullName + "." + i.ToString("00") + ".png");
+                        count++;
+                    }
+                } catch (Exception) {
+                    errors = true;
+                }
         }
 
         private void batchImportPNGToolStripMenuItem_Click(object sender, EventArgs e)
