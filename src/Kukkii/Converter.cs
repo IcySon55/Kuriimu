@@ -513,6 +513,7 @@ namespace Kukkii
                         files.AddRange(Directory.GetFiles(path, type, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                     Parallel.ForEach(files, file => batchExportPNGTask(file, ref count, ref exported, ref errors));
+                    GC.Collect();
 
                     MessageBox.Show($"Batch export completed {((errors > 0) ? "with " + errors + " errors" : "successfully")}. " + count + " texture(s) succesfully exported to " + exported + " images.", "Batch Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -559,7 +560,7 @@ namespace Kukkii
                 var path = fbd.SelectedPath;
                 var fileCount = 0;
                 var importCount = 0;
-                var errors = false;
+                var errors = 0;
 
                 if (Directory.Exists(path))
                 {
@@ -569,39 +570,39 @@ namespace Kukkii
                     foreach (var type in types)
                         files.AddRange(Directory.GetFiles(path, type, Settings.Default.BatchScanSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
-                    foreach (var file in files)
-                        if (File.Exists(file))
-                            try
-                            {
-                                var fi = new FileInfo(file);
-                                var currentAdapter = SelectImageAdapter(file, true);
+                    Parallel.ForEach(files, file => batchImportPNGTask(file, ref fileCount, ref importCount, ref errors));
+                    GC.Collect();                        
 
-                                if (currentAdapter != null && currentAdapter.CanSave)
-                                {
-                                    currentAdapter.Load(file);
-                                    for (var i = 0; i < currentAdapter.Bitmaps.Count; i++)
-                                    {
-                                        var targetName = fi.FullName + "." + i.ToString("00") + ".png";
-                                        if (!File.Exists(targetName)) continue;
-                                        currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
-                                    }
-                                    currentAdapter.Save();
-                                    importCount++;
-                                }
-
-                                fileCount++;
-                            }
-                            catch (Exception)
-                            {
-                                errors = true;
-                            }
-
-                    MessageBox.Show($"Batch import completed {(errors ? "with errors" : "successfully")}. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Batch import completed {((errors > 0) ? "with " + errors + " errors" : "successfully")}. " + importCount + " of " + fileCount + " files succesfully imported.", "Batch Import", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
 
             Settings.Default.LastBatchDirectory = fbd.SelectedPath;
             Settings.Default.Save();
+        }
+
+        private void batchImportPNGTask(string file, ref Int32 count, ref Int32 imported, ref Int32 errors)
+        {
+            if (File.Exists(file))
+                try {
+                    var fi = new FileInfo(file);
+                    var currentAdapter = SelectImageAdapter(file, true);
+
+                    if (currentAdapter != null && currentAdapter.CanSave) {
+                        currentAdapter.Load(file);
+                        for (var i = 0; i < currentAdapter.Bitmaps.Count; i++) {
+                            var targetName = fi.FullName + "." + i.ToString("00") + ".png";
+                            if (!File.Exists(targetName)) continue;
+                            currentAdapter.Bitmaps[i].Bitmap = new Bitmap(targetName);
+                        }
+                        currentAdapter.Save();
+                        Interlocked.Increment(ref imported);
+                    }
+
+                    Interlocked.Increment(ref count);
+                } catch (Exception) {
+                    Interlocked.Increment(ref errors);
+                }
         }
 
         private void batchScanSubdirectoriesToolStripMenuItem_Click(object sender, EventArgs e)
