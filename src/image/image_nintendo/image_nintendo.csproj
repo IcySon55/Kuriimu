@@ -58,6 +58,9 @@
     <Compile Include="CGFX.cs" />
     <Compile Include="CgfxAdapter.cs" />
     <Compile Include="CgfxSupport.cs" />
+    <Compile Include="GCBnr.cs" />
+    <Compile Include="GCBnrAdapter.cs" />
+    <Compile Include="GCBnrSupport.cs" />
     <Compile Include="NCGR.cs" />
     <Compile Include="VcgAdapter.cs" />
     <Compile Include="NcgrAdapter.cs" />
