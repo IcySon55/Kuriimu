@@ -22,30 +22,46 @@ namespace Kontract.Image.Format
         int aDepth;
 
         ByteOrder byteOrder;
+        bool swapChannels;
 
-        public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.LittleEndian, bool standard = false)
+        public RGBA(int r, int g, int b, int a = 0, ByteOrder byteOrder = ByteOrder.LittleEndian, bool swapChannels = false, bool standard = false)
         {
             BitDepth = r + g + b + a;
             if (BitDepth < 8) throw new Exception($"Overall bitDepth can't be smaller than 8. Given bitDepth: {BitDepth}");
             if (BitDepth > 32) throw new Exception($"Overall bitDepth can't be bigger than 32. Given bitDepth: {BitDepth}");
 
             this.byteOrder = byteOrder;
+            this.swapChannels = swapChannels;
 
             rDepth = r;
             gDepth = g;
             bDepth = b;
             aDepth = a;
 
-            FormatName = ((standard) ? "s" : "") + "RGB" + ((a != 0) ? "A" : "") + r.ToString() + g.ToString() + b.ToString() + ((a != 0) ? a.ToString() : "");
+            FormatName = ((standard) ? "s" : "") + ((swapChannels) ?
+                ((a != 0) ? "A" : "") + "BGR" + ((a != 0) ? a.ToString() : "") + b.ToString() + g.ToString() + r.ToString() :   //ABGR
+                "RGB" + ((a != 0) ? "A" : "") + r.ToString() + g.ToString() + b.ToString() + ((a != 0) ? a.ToString() : ""));   //RGBA
         }
 
         public IEnumerable<Color> Load(byte[] tex)
         {
             using (var br = new BinaryReaderX(new MemoryStream(tex), byteOrder))
             {
-                var bShift = aDepth;
-                var gShift = bShift + bDepth;
-                var rShift = gShift + gDepth;
+                int bShift, gShift, rShift, aShift;
+                if (swapChannels)
+                {
+                    bShift = 0;
+                    gShift = bDepth;
+                    rShift = gShift + gDepth;
+                    aShift = rShift + rDepth;
+                }
+                else
+                {
+                    aShift = 0;
+                    bShift = aDepth;
+                    gShift = bShift + bDepth;
+                    rShift = gShift + gDepth;
+                }
 
                 var aBitMask = (1 << aDepth) - 1;
                 var bBitMask = (1 << bDepth) - 1;
@@ -71,7 +87,7 @@ namespace Kontract.Image.Format
                         throw new Exception($"BitDepth {BitDepth} not supported!");
 
                     yield return Color.FromArgb(
-                        (aDepth == 0) ? 255 : Support.Support.ChangeBitDepth((int)(value & aBitMask), aDepth, 8),
+                        (aDepth == 0) ? 255 : Support.Support.ChangeBitDepth((int)(value >> aShift & aBitMask), aDepth, 8),
                         Support.Support.ChangeBitDepth((int)(value >> rShift & rBitMask), rDepth, 8),
                         Support.Support.ChangeBitDepth((int)(value >> gShift & gBitMask), gDepth, 8),
                         Support.Support.ChangeBitDepth((int)(value >> bShift & bBitMask), bDepth, 8));
@@ -87,14 +103,27 @@ namespace Kontract.Image.Format
                 {
                     var a = (aDepth == 0) ? 0 : Support.Support.ChangeBitDepth(color.A, 8, aDepth);
                     var r = Support.Support.ChangeBitDepth(color.R, 8, rDepth);
-                    var g = Support.Support.ChangeBitDepth(color.G, 8, rDepth);
-                    var b = Support.Support.ChangeBitDepth(color.B, 8, rDepth);
+                    var g = Support.Support.ChangeBitDepth(color.G, 8, gDepth);
+                    var b = Support.Support.ChangeBitDepth(color.B, 8, bDepth);
 
-                    var bShift = aDepth;
-                    var gShift = bShift + bDepth;
-                    var rShift = gShift + gDepth;
+                    int rShift, bShift, gShift, aShift;
+                    if (swapChannels)
+                    {
+                        bShift = 0;
+                        gShift = bDepth;
+                        rShift = gShift + gDepth;
+                        aShift = rShift + rDepth;
+                    }
+                    else
+                    {
+                        aShift = 0;
+                        bShift = aDepth;
+                        gShift = bShift + bDepth;
+                        rShift = gShift + gDepth;
+                    }
 
-                    long value = a;
+                    long value = 0;
+                    value |= (uint)(a << aShift);
                     value |= (uint)(b << bShift);
                     value |= (uint)(g << gShift);
                     value |= (uint)(r << rShift);
