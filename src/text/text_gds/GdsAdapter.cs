@@ -25,7 +25,7 @@ namespace text_gds
 
         public string Description => "General D Script";
 
-        public string Extension => "*.dgs";
+        public string Extension => "*.gds";
 
         public string About => "This is the GDS text adapter for Kuriimu.";
 
