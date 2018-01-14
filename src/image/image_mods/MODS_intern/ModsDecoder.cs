@@ -3526,7 +3526,7 @@ namespace image_mods
             0x0D, 0x0E, 0x0B, 0x0F
         };
 
-        private byte[] byte_119004 =
+        private byte[] QuantizationTable1 =
         {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
             0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
@@ -3535,7 +3535,7 @@ namespace image_mods
             0x08, 0x08, 0x08, 0x08, 0x08, 0x08
         };
 
-        private byte[] byte_11903A =
+        private byte[] QuantizationTable2 =
         {
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
@@ -3549,8 +3549,8 @@ namespace image_mods
         private unsafe void SetupQuantizationTables(uint quantizer)
         {
             Quantizer = quantizer;
-            int r6 = byte_119004[quantizer] + 8;
-            int r5 = byte_11903A[quantizer];
+            int r6 = QuantizationTable1[quantizer] + 8;
+            int r5 = QuantizationTable2[quantizer];
             int r4 = r5 << 4;
             int zigzagoffset = 0;
             int internaldataoffset = 74;
