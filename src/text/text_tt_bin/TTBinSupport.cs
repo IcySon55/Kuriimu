@@ -75,8 +75,8 @@ namespace tt.text_ttbin
     {
         public string Name;
 
-        public uint TextID;
-        public uint TextOffset;
+        public int TextID;
+        public int TextOffset;
         public string Text;
 
         public Label()

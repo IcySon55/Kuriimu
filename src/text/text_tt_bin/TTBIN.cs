@@ -35,9 +35,9 @@ namespace tt.text_ttbin
                             Labels.Add(new Label
                             {
                                 Name = $"Text{textCount:0000}",
-                                TextID = (uint)textCount++,
-                                TextOffset = (uint)br.BaseStream.Position,
-                                Text = br.ReadCStringSJIS()
+                                TextID = textCount++,
+                                TextOffset = (int)br.BaseStream.Position,
+                                Text = ((int)meta.value < 0) ? "" : br.ReadCStringSJIS()
                             });
                         }
             }
@@ -54,8 +54,9 @@ namespace tt.text_ttbin
                 foreach (var meta in entry.metaInfo)
                     if (meta.type == 0)
                     {
-                        meta.value = textOffset;
-                        textOffset += sjis.GetByteCount(Labels[labelCount++].Text) + 1;
+                        meta.value = (Labels[labelCount].Text == String.Empty) ? -1 : textOffset;
+                        textOffset += (Labels[labelCount].Text == String.Empty) ? 0 : sjis.GetByteCount(Labels[labelCount].Text) + 1;
+                        labelCount++;
                     }
 
             using (var bw = new BinaryWriterX(File.Create(filename)))
@@ -63,7 +64,8 @@ namespace tt.text_ttbin
                 //Write Texts
                 bw.BaseStream.Position = cfgHeader.dataOffset;
                 foreach (var label in Labels)
-                    bw.Write(sjis.GetBytes(label.Text + "\0"));
+                    if (label.Text != String.Empty)
+                        bw.Write(sjis.GetBytes(label.Text + "\0"));
                 cfgHeader.dataLength = (uint)bw.BaseStream.Position - cfgHeader.dataOffset;
                 bw.WriteAlignment(16, 0xff);
 
@@ -71,6 +73,7 @@ namespace tt.text_ttbin
                 bw.BaseStream.Position = 0x10;
                 foreach (var entry in entries)
                     entry.Write(bw.BaseStream);
+                bw.WriteAlignment(16, 0xff);
 
                 //Write Header
                 bw.BaseStream.Position = 0;
