@@ -34,8 +34,9 @@ namespace image_cimg
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
+                var mag1 = br.ReadString(4);
                 br.BaseStream.Position = 5;
-                return br.ReadStruct<Magic>() == "LIMG";
+                return mag1 == "LIMG" || br.ReadString(4) == "LIMG";
             }
         }
 
