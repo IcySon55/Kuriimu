@@ -100,7 +100,7 @@ namespace Kontract.Image.Format
                     {
                         case 8:
                             byte b = (byte)(Support.Support.ChangeBitDepth(color.A, 8, alpha) << alphaShift);
-                            bw.Write(b | redColors.FindIndex(c => c == color));
+                            bw.Write((byte)(b | redColors.FindIndex(c => c == color)));
                             break;
                         default:
                             throw new Exception($"BitDepth {BitDepth} not supported!");
