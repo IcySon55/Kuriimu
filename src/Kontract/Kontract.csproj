@@ -83,6 +83,7 @@
     <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Hash\Crc32.cs" />
+    <Compile Include="Image\Format\AI.cs" />
     <Compile Include="Image\Format\ATI.cs" />
     <Compile Include="Image\Format\DXT.cs" />
     <Compile Include="Image\Format\ETC1.cs" />
