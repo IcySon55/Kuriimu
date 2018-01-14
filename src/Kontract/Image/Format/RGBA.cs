@@ -50,10 +50,10 @@ namespace Kontract.Image.Format
                 int bShift, gShift, rShift, aShift;
                 if (swapChannels)
                 {
-                    bShift = 0;
-                    gShift = bDepth;
-                    rShift = gShift + gDepth;
-                    aShift = rShift + rDepth;
+                    rShift = 0;
+                    gShift = rDepth;
+                    bShift = gShift + gDepth;
+                    aShift = bShift + bDepth;
                 }
                 else
                 {
@@ -109,10 +109,10 @@ namespace Kontract.Image.Format
                     int rShift, bShift, gShift, aShift;
                     if (swapChannels)
                     {
-                        bShift = 0;
-                        gShift = bDepth;
-                        rShift = gShift + gDepth;
-                        aShift = rShift + rDepth;
+                        rShift = 0;
+                        gShift = rDepth;
+                        bShift = gShift + gDepth;
+                        aShift = bShift + bDepth;
                     }
                     else
                     {
