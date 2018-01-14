@@ -28,7 +28,7 @@ namespace Kontract.Image.Format
 
         public AI(int alpha, int indexSize, byte[] paletteData, IImageFormat paletteFormat, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            if (alpha + indexSize % 8 != 0) throw new Exception("Alpha + IndexSize has to be dividable by 8.");
+            if ((alpha + indexSize) % 8 != 0) throw new Exception("Alpha + IndexSize has to be dividable by 8.");
 
             this.byteOrder = byteOrder;
 
@@ -45,7 +45,7 @@ namespace Kontract.Image.Format
 
         public AI(int alpha, int indexSize, List<Color> palette, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
-            if (alpha + indexSize % 8 != 0) throw new Exception("Alpha + IndexSize has to be dividable by 8.");
+            if ((alpha + indexSize) % 8 != 0) throw new Exception("Alpha + IndexSize has to be dividable by 8.");
 
             this.byteOrder = byteOrder;
 
