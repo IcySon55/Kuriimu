@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Cetera.Font;
 using game_etrian_odyssey_v.Properties;
+using Kontract.Compression;
 using Kontract.Interface;
 
 namespace game_etrian_odyssey_v
@@ -29,15 +31,8 @@ namespace game_etrian_odyssey_v
 
         };
 
-        BCFNT font;
-
-        public Handler()
-        {
-            var ms = new MemoryStream();
-            new MemoryStream(Resources.MainFont).CopyTo(ms);
-            ms.Position = 0;
-            font = new BCFNT(ms);
-        }
+        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
+        BCFNT font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)
         {

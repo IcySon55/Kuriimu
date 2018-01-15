@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using Cetera.Font;
 using game_maple_story_3ds.Properties;
+using Kontract.Compression;
 using Kontract.Interface;
 
 namespace game_maple_story_3ds
@@ -40,15 +41,8 @@ namespace game_maple_story_3ds
             ["[NAME:B]"] = "‹PlayerName›",
         };
 
-        BCFNT font;
-
-        public Handler()
-        {
-            var ms = new MemoryStream();
-            new GZipStream(new MemoryStream(Resources.MainFont_bcfnt), CompressionMode.Decompress).CopyTo(ms);
-            ms.Position = 0;
-            font = new BCFNT(ms);
-        }
+        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
+        BCFNT font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)
         {
