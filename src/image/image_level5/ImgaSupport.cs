@@ -48,13 +48,4 @@ namespace image_level5.imga
             if (imageFormat == Format.KTX) throw new Exception("KTX isn't supported yet!");
         }
     }
-
-    public class ImgaSupport
-    {
-        public static byte[] Decomp(BinaryReaderX br)
-        {
-            // above to be restored eventually with some changes to Cetera
-            return Level5.Decompress(br.BaseStream);
-        }
-    }
 }
