@@ -63,6 +63,12 @@
     <Compile Include="Converter.Designer.cs">
       <DependentUpon>Converter.cs</DependentUpon>
     </Compile>
+    <Compile Include="ErrorLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ErrorLog.Designer.cs">
+      <DependentUpon>ErrorLog.cs</DependentUpon>
+    </Compile>
     <Compile Include="OpenRaw.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,6 +85,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Converter.resx">
       <DependentUpon>Converter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ErrorLog.resx">
+      <DependentUpon>ErrorLog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenRaw.resx">
       <DependentUpon>OpenRaw.cs</DependentUpon>
