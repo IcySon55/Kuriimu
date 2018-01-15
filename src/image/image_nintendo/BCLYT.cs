@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.IO;
+using System.Collections.Generic;
 
 namespace image_nintendo.BCLYT
 {
@@ -10,9 +11,10 @@ namespace image_nintendo.BCLYT
     {
         public static string ToCString(byte[] bytes) => string.Concat(from b in bytes where b != 0 select (char)b);
 
+        public List<Bitmap> bmps = new List<Bitmap>();
         public static string filename;
 
-        public static Bitmap Load(Stream input, string name)
+        public BCLYT(Stream input, string name)
         {
             filename = name;
 
@@ -25,10 +27,10 @@ namespace image_nintendo.BCLYT
             //create bmp
             Bitmap layout = createBMP(sections);
 
-            return layout;
+            bmps.Add(layout);
         }
 
-        public static BclytSupport.NW4CSectionList mapSections(BclytSupport.NW4CSectionList sections)
+        public BclytSupport.NW4CSectionList mapSections(BclytSupport.NW4CSectionList sections)
         {
             foreach (var sec in sections)
             {
@@ -87,7 +89,7 @@ namespace image_nintendo.BCLYT
             return sections;
         }
 
-        public static Bitmap createBMP(BclytSupport.NW4CSectionList sections)
+        public Bitmap createBMP(BclytSupport.NW4CSectionList sections)
         {
             float height = 0;
             float width = 0;
