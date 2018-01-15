@@ -31,10 +31,8 @@ namespace game_etrian_odyssey_v
 
         };
 
-        static Lazy<BCFNT> FntLoader = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
-        BCFNT font => FntLoader.Value;
-
-        public Handler() { }
+        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
+        BCFNT font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)
         {

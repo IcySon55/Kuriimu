@@ -87,12 +87,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Resources\Bubble001.png" />
-    <None Include="Resources\font.bcfnt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Bubble002.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\font.bcfnt.gz" />
     <None Include="Resources\icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
