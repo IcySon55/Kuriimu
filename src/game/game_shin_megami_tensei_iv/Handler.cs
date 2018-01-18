@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
-using game_shin_megami_tensei_iv.Properties;
-using Kontract.Interface;
 using Cetera.Font;
-using System;
-using System.Diagnostics;
+using game_shin_megami_tensei_iv.Properties;
+using Kontract.Compression;
+using Kontract.Interface;
 
 namespace game_shin_megami_tensei_iv
 {
@@ -69,7 +69,7 @@ namespace game_shin_megami_tensei_iv
             ["<0000>"] = "<!>"
         };
 
-        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(Resources.MainFont)));
+        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
         BCFNT font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)
@@ -97,7 +97,7 @@ namespace game_shin_megami_tensei_iv
             Bitmap img = new Bitmap(background.Width, background.Height);
 
             Encoding sjis = Encoding.GetEncoding("SJIS");
-            
+
             using (Graphics gfx = Graphics.FromImage(img))
             {
                 gfx.DrawImage(background, 0, 0);
@@ -142,7 +142,7 @@ namespace game_shin_megami_tensei_iv
                             font.SetColor(Color.FromArgb(255, 80, 0, 0)); // Dark Red
                             y += 15;
                             x = 20;
-                            
+
                         }
                     }
                     else if (kuriimuString[i] == '\n')
