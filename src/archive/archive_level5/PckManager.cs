@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_level5.PCK
 {
@@ -32,7 +33,11 @@ namespace archive_level5.PCK
         public bool Identify(string filename)
         {
             // TODO: Make this way more robust
-            return filename.EndsWith(".pck");
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            {
+                var magic = br.ReadString(4);
+                return magic != "XPCK" && filename.EndsWith(".pck");
+            }
         }
 
         public void Load(string filename)
