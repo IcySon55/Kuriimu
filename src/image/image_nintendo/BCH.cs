@@ -65,12 +65,12 @@ namespace image_nintendo.BCH
                     }
 
                     //loop through commandReaders to get textures
-                    br.BaseStream.Position = header.dataOffset;
                     for (int i = 0; i < entryCount; i++)
                     {
                         var size = picaEntries[i].getTexUnit0Size();
                         if (size.Height != 0 && size.Width != 0)
                         {
+                            br.BaseStream.Position = header.dataOffset + picaEntries[i].getTexUnit0Address();
                             var format = (byte)picaEntries[i].getTexUnit0Format();
                             int bitDepth = Support.CTRFormat[format].BitDepth;
 
@@ -109,19 +109,28 @@ namespace image_nintendo.BCH
             {
                 bw.Write(_file);
 
-                bw.BaseStream.Position = header.dataOffset;
-                for (int i = 0; i < bmps.Count(); i++)
+                int bmpCount = 0;
+                foreach (var picaEntry in picaEntries)
                 {
-                    var settings = new ImageSettings
+                    var size = picaEntry.getTexUnit0Size();
+                    if (size.Height != 0 && size.Width != 0)
                     {
-                        Width = bmps[i].Width,
-                        Height = bmps[i].Height,
-                        Format = Support.CTRFormat[origValues[i].format],
-                        Swizzle = new CTRSwizzle(bmps[i].Width, bmps[i].Height)
-                    };
-                    bw.Write(Common.Save(bmps[i], settings));
+                        bw.BaseStream.Position = header.dataOffset + picaEntry.getTexUnit0Address();
+                        var format = (byte)picaEntry.getTexUnit0Format();
 
-                    bw.WriteAlignment(0x80);
+                        for (int j = 0; j <= picaEntry.getTexUnit0LoD(); j++)
+                        {
+                            var settings = new ImageSettings
+                            {
+                                Width = size.Width >> j,
+                                Height = size.Height >> j,
+                                Format = Support.CTRFormat[format],
+                                Swizzle = new CTRSwizzle(size.Width >> j, size.Height >> j)
+                            };
+
+                            bw.Write(Common.Save(bmps[bmpCount++], settings));
+                        }
+                    }
                 }
             }
         }
