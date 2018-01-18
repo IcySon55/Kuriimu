@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kuriimu", "src\Kuriimu\Kuriimu.csproj", "{7C89FFAF-B638-4577-A1FC-9A783D242428}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -377,6 +377,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_cnvrs", "src\text\text_cnvrs\text_cnvrs.csproj", "{4458DB60-9164-479B-9E23-5D2D012DE72E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "text_smas", "src\text\text_smas\text_smas.csproj", "{E603587D-1593-42BC-8CE4-2DADA4BE3C05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_kirby_triple_deluxe", "src\game\game_kirby_triple_deluxe\game_kirby_triple_deluxe.csproj", "{8814836C-D4CF-41B1-9E40-F950CFB14EE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -848,6 +850,10 @@ Global
 		{E603587D-1593-42BC-8CE4-2DADA4BE3C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E603587D-1593-42BC-8CE4-2DADA4BE3C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E603587D-1593-42BC-8CE4-2DADA4BE3C05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8814836C-D4CF-41B1-9E40-F950CFB14EE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8814836C-D4CF-41B1-9E40-F950CFB14EE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8814836C-D4CF-41B1-9E40-F950CFB14EE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8814836C-D4CF-41B1-9E40-F950CFB14EE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -961,6 +967,7 @@ Global
 		{CCC85A08-9128-4EF9-97AF-C8295E5B5801} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 		{4458DB60-9164-479B-9E23-5D2D012DE72E} = {B509D23F-0D4E-42F9-87F5-50CF5E982A75}
 		{E603587D-1593-42BC-8CE4-2DADA4BE3C05} = {B509D23F-0D4E-42F9-87F5-50CF5E982A75}
+		{8814836C-D4CF-41B1-9E40-F950CFB14EE2} = {E9A3E23A-FF49-4F03-B801-36CDA9CCCF9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED651E5D-29BA-4588-933B-F512BBB01EE3}
