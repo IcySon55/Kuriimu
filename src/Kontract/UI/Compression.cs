@@ -178,6 +178,13 @@ namespace Kontract.UI
             tsb3.DropDownItems[0].Tag = Compression.LZ10VLE;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.LZ10VLE;
+            //    PSVSpikeChun
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("PSVita SpikeChun", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[2];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.PSVSpikeChun;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.PSVSpikeChun;
         }
 
         public static void Decompress(object sender, EventArgs e)
@@ -239,6 +246,9 @@ namespace Kontract.UI
                             break;
                         case Compression.ZLib:
                             outFs.Write(ZLib.Decompress(openFile));
+                            break;
+                        case Compression.PSVSpikeChun:
+                            outFs.Write(PSVSpikeChun.Decompress(openFile));
                             break;
                     }
             }
@@ -329,6 +339,9 @@ namespace Kontract.UI
                         case Compression.ZLib:
                             outFs.Write(ZLib.Compress(openFile));
                             break;
+                        case Compression.PSVSpikeChun:
+                            outFs.Write(PSVSpikeChun.Compress(openFile));
+                            break;
                     }
             }
             catch (Exception ex)
@@ -373,7 +386,9 @@ namespace Kontract.UI
             Yaz0LE,
             Yaz0BE,
             Yay0LE,
-            Yay0BE
+            Yay0BE,
+
+            PSVSpikeChun
         }
     }
 }

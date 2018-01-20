@@ -75,6 +75,7 @@
     <Compile Include="Compression\LZSSVLE.cs" />
     <Compile Include="Compression\MIO0.cs" />
     <Compile Include="Compression\Nintendo.cs" />
+    <Compile Include="Compression\PSVSpikeChun.cs" />
     <Compile Include="Compression\RevLZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
     <Compile Include="Compression\Yay0.cs" />
