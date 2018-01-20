@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
@@ -19,7 +18,7 @@ namespace image_nintendo.CGFX
         // Information
         public string Name => "CGFX";
         public string Description => "CTR GFX";
-        public string Extension => "*.bcres;*.bcmdl;*.bctex";
+        public string Extension => "*.bcres;*.bcmdl;*.bctex;*.cgfx";
         public string About => "This is the CGFX image adapter for Kukkii.";
 
         // Feature Support
