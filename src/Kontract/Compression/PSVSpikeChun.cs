@@ -102,17 +102,120 @@ namespace Kontract.Compression
             }
         }
 
+        //Compress with LZ window lookback
+        const int window_size = 0x1FFF;
         public static byte[] Compress(Stream input)
+        {
+            var uncompBuffer = new List<byte>();
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms, true))
+            using (var br = new BinaryReaderX(input, true))
+            {
+                bw.BaseStream.Position = 0xc;
+                uncompBuffer.AddRange(br.ReadBytes(4));
+
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    (int windowOffset, int inputOffset, int count) = GetMaxOccurence(br.BaseStream);
+
+                    if (count >= 4)
+                    {
+                        try
+                        {
+                            uncompBuffer.AddRange(br.ReadBytes(inputOffset));
+                        }
+                        catch
+                        {
+                            ;
+                        }
+                        bw.Write(CompressRepetitiveBytes(new MemoryStream(uncompBuffer.ToArray())));
+                        uncompBuffer = new List<byte>();
+
+                        WriteLZData(bw.BaseStream, windowOffset, count);
+                        br.BaseStream.Position += count;
+                    }
+                    else
+                    {
+                        uncompBuffer.AddRange(br.ReadBytes(Math.Min(window_size, (int)input.Position)));
+                    }
+                }
+
+                //Writing Header
+                bw.BaseStream.Position = 0;
+                bw.Write(0xa755aafc);
+                bw.Write((int)br.BaseStream.Length);
+                bw.Write((int)bw.BaseStream.Length);
+
+                //Pad compressed Data to 0x10
+                bw.BaseStream.Position = bw.BaseStream.Length;
+                bw.WriteAlignment();
+            }
+
+            return ms.ToArray();
+        }
+
+        //(offset to get encoded, offset in uncompressed data, bytes to be copied)
+        static (int, int, int) GetMaxOccurence(Stream input)
+        {
+            int inputPos = (int)input.Position;
+            int startOffset = Math.Max(0, inputPos - window_size);
+            int windowSize = Math.Min(window_size, inputPos);
+            int uncompSize = Math.Min(windowSize, (int)input.Length - inputPos);
+
+            //Get Window Data
+            var window = new byte[windowSize];
+            input.Position = startOffset;
+            input.Read(window, 0, windowSize);
+            int windowOffset = 0;
+
+            //Get uncompressedData
+            var uncompBuf = new byte[uncompSize];
+            input.Position = inputPos;
+            input.Read(uncompBuf, 0, uncompSize);
+            var uncompOffset = 0;
+
+            int maxLength = 0;
+            int maxOffset = 0;
+            while (windowOffset < windowSize && uncompOffset < uncompSize)
+            {
+                int occ = 0;
+                while (window[windowOffset++] == uncompBuf[uncompOffset++])
+                {
+                    occ++;
+                    if (windowOffset >= window.Length || uncompOffset >= uncompBuf.Length)
+                        break;
+                }
+                if (occ > maxLength)
+                {
+                    maxLength = occ;
+                    if (windowOffset >= window.Length || uncompOffset >= uncompBuf.Length)
+                        maxOffset = windowOffset - occ;
+                    else
+                        maxOffset = windowOffset - occ - 1;
+                }
+            }
+
+            input.Position = inputPos;
+            return (inputPos - maxOffset, maxOffset, maxLength);
+        }
+
+        #region Compress only repetitive single bytes
+        public static byte[] CompressRepetitiveBytes(Stream input)
         {
             //First approach - Creating "compressed" data by only using the flag for uncompressed data and repetitive bytes
             var ms = new MemoryStream();
             using (var bw = new BinaryWriterX(ms, true))
             using (var br = new BinaryReaderX(input, true))
             {
-                bw.BaseStream.Position = 0xc;
                 var uncompBuffer = new List<byte>();
                 while (br.BaseStream.Position < br.BaseStream.Length)
                 {
+                    if (br.BaseStream.Length - br.BaseStream.Position < 2)
+                    {
+                        uncompBuffer.AddRange(br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)));
+                        break;
+                    }
+
                     var rep = 1;
                     var b = br.ReadByte();
                     var b2 = br.ReadByte();
@@ -153,16 +256,6 @@ namespace Kontract.Compression
                 {
                     WriteUncompData(bw.BaseStream, uncompBuffer);
                 }
-
-                //Writing Header
-                bw.BaseStream.Position = 0;
-                bw.Write(0xa755aafc);
-                bw.Write((int)br.BaseStream.Length);
-                bw.Write((int)bw.BaseStream.Length);
-
-                //Pad compressed Data to 0x10
-                bw.BaseStream.Position = bw.BaseStream.Length;
-                bw.WriteAlignment();
             }
 
             return ms.ToArray();
@@ -220,6 +313,31 @@ namespace Kontract.Compression
                         uncompBuffer = new List<byte>();
                     }
                 }
+        }
+        #endregion
+
+        static void WriteLZData(Stream input, int windowOffset, int count)
+        {
+            using (var bw = new BinaryWriterX(input, true))
+            {
+                bw.Write((byte)(0x80 | ((count - 4 < 3) ? (count - 4) << 5 : 0x60) | (windowOffset >> 8)));
+                bw.Write((byte)(windowOffset & 0xFF));
+                count -= 0x7;
+
+                while (count > 0)
+                {
+                    if (count > 0x1F)
+                    {
+                        bw.Write((byte)(0x7F));
+                        count -= 0x1F;
+                    }
+                    else
+                    {
+                        bw.Write((byte)(0x60 | count));
+                        count = 0;
+                    }
+                }
+            }
         }
     }
 }
