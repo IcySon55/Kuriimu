@@ -102,7 +102,6 @@ namespace Kontract.Compression
             }
         }
 
-        //Compress with LZ window lookback
         const int window_size = 0x1FFF;
         public static byte[] Compress(Stream input)
         {
@@ -120,16 +119,12 @@ namespace Kontract.Compression
 
                     if (count >= 4)
                     {
-                        try
+                        uncompBuffer.AddRange(br.ReadBytes(inputOffset));
+                        if (uncompBuffer.Count > 0)
                         {
-                            uncompBuffer.AddRange(br.ReadBytes(inputOffset));
+                            bw.Write(CompressRepetitiveBytes(new MemoryStream(uncompBuffer.ToArray())));
+                            uncompBuffer = new List<byte>();
                         }
-                        catch
-                        {
-                            ;
-                        }
-                        bw.Write(CompressRepetitiveBytes(new MemoryStream(uncompBuffer.ToArray())));
-                        uncompBuffer = new List<byte>();
 
                         WriteLZData(bw.BaseStream, windowOffset, count);
                         br.BaseStream.Position += count;
@@ -139,6 +134,9 @@ namespace Kontract.Compression
                         uncompBuffer.AddRange(br.ReadBytes(Math.Min(window_size, (int)input.Position)));
                     }
                 }
+
+                if (uncompBuffer.Count > 0)
+                    bw.Write(CompressRepetitiveBytes(new MemoryStream(uncompBuffer.ToArray())));
 
                 //Writing Header
                 bw.BaseStream.Position = 0;
@@ -176,6 +174,7 @@ namespace Kontract.Compression
 
             int maxLength = 0;
             int maxOffset = 0;
+            int maxUncompOff = 0;
             while (windowOffset < windowSize && uncompOffset < uncompSize)
             {
                 int occ = 0;
@@ -188,15 +187,21 @@ namespace Kontract.Compression
                 if (occ > maxLength)
                 {
                     maxLength = occ;
-                    if (windowOffset >= window.Length || uncompOffset >= uncompBuf.Length)
+                    if ((windowOffset >= window.Length || uncompOffset >= uncompBuf.Length) && window[windowOffset - 1] == uncompBuf[uncompOffset - 1])
+                    {
                         maxOffset = windowOffset - occ;
+                        maxUncompOff = uncompOffset - occ;
+                    }
                     else
+                    {
                         maxOffset = windowOffset - occ - 1;
+                        maxUncompOff = uncompOffset - occ - 1;
+                    }
                 }
             }
 
             input.Position = inputPos;
-            return (inputPos - maxOffset, maxOffset, maxLength);
+            return (windowSize - maxOffset + maxUncompOff, maxUncompOff, maxLength);
         }
 
         #region Compress only repetitive single bytes
