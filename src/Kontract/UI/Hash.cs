@@ -42,6 +42,7 @@ namespace Kontract.UI
                     if (ofd.ShowDialog() != DialogResult.OK) break;
                     openFile = File.OpenRead(ofd.FileName);
                     MessageBox.Show($"0x{Crc32.Create(new BinaryReaderX(openFile).ReadBytes((int)openFile.Length)):x8}", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    openFile.Close();
                     break;
             }
         }
