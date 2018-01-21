@@ -1,8 +1,12 @@
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using Kontract.Interface;
 using Kontract.IO;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Text;
 
 namespace archive_level5.PCK
 {
@@ -11,16 +15,27 @@ namespace archive_level5.PCK
         public List<PckFileInfo> Files;
         Stream _stream = null;
 
-        List<string> legitNames = new List<string>();
+        public T FromXmlString<T>(string xml)
+        {
+            using (var sr = new StringReader(xml))
+            {
+                return (T)new XmlSerializer(typeof(T)).Deserialize(sr);
+            }
+        }
 
         public PCK(Stream input, string filename)
         {
             _stream = input;
+
+            List<Dict> dicts = null;
+            if (File.Exists(".\\plugins\\pck_dicts.xml"))
+                dicts = FromXmlString<DictXmlClass>(File.ReadAllText(".\\plugins\\pck_dicts.xml")).dict;
+
             using (var br = new BinaryReaderX(input, true))
             {
                 var entries = br.ReadMultiple<Entry>(br.ReadInt32()).ToList();
 
-                var count = 0;
+                var dict = (dicts != null) ? dicts.Where(d => d.pckName == Path.GetFileNameWithoutExtension(filename)).ToList() : new List<Dict>();
                 Files = entries.Select(entry =>
                 {
                     br.BaseStream.Position = entry.fileOffset;
@@ -33,8 +48,11 @@ namespace archive_level5.PCK
                             input,
                             entry.fileOffset + blockOffset * 4,
                             entry.fileLength - blockOffset * 4),
-                        FileName = $"0x{entry.hash:X8}.bin",
-                        //FileName = $"0x{count++:X8}.bin",
+                        FileName = (dict.Count > 0) ?
+                                    (dict[0].keyValuePairs.Find(kvp => kvp.key == entry.hash) != null ?
+                                        dict[0].keyValuePairs.Find(kvp => kvp.key == entry.hash).value :
+                                        $"0x{entry.hash:X8}.bin") :
+                                    $"0x{entry.hash:X8}.bin",
                         State = ArchiveFileState.Archived,
                         Entry = entry,
                         Hashes = hashes
