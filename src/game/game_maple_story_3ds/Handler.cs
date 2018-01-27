@@ -64,11 +64,11 @@ namespace game_maple_story_3ds
             if (entry?.EditedText == null) return pages;
 
             // Paging evety 3rd new line
-            List<string> strings = new List<string>();
-            string[] lines = entry.EditedText.Split('\n');
-            string built = string.Empty;
-            int current = 0;
-            for (int i = 0; i < lines.Length; i++)
+            var strings = new List<string>();
+            var lines = entry.EditedText.Split('\n');
+            var built = string.Empty;
+            var current = 0;
+            for (var i = 0; i < lines.Length; i++)
             {
                 built += lines[i] + (i != lines.Length - 1 ? "\n" : string.Empty);
                 current++;
@@ -82,7 +82,7 @@ namespace game_maple_story_3ds
             if ((strings.Count == 0 && built != string.Empty) || (strings.Count > 0 && strings.Last().EndsWith("\n")))
                 strings.Add(built);
 
-            foreach (string page in strings)
+            foreach (var page in strings)
             {
                 const int txtOffsetX = 2;
                 const int txtOffsetY = 2;
@@ -98,9 +98,10 @@ namespace game_maple_story_3ds
 
                     gfx.DrawImage(textBox, txtOffsetX, txtOffsetY);
 
-                    float scale = 0.625f;
+                    var scale = 0.625f;
                     float x = 10, y = 22;
-                    string str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value)).Replace("‹PlayerName›", "‹" + Properties.Settings.Default.PlayerName + "›");
+                    var str = _previewPairs.Aggregate(page, (s, pair) => s.Replace(pair.Key, pair.Value)).Replace("‹PlayerName›", "‹" + Properties.Settings.Default.PlayerName + "›");
+                    str = str.Replace("\r", "");
                     font.SetColor(Color.White);
 
                     foreach (char c in str)
