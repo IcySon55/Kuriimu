@@ -10,7 +10,7 @@ namespace ext_director
 {
     public partial class Extension : Form
     {
-        public Extension()
+        public Extension(string[] args = null)
         {
             InitializeComponent();
         }
@@ -47,83 +47,80 @@ namespace ext_director
 
         private void btnLookup_Click(object sender, EventArgs e)
         {
+            if (!File.Exists(txtFile.Text.Trim())) return;
+
             Encoding enc = Encoding.Unicode;
             FileInfo file = new FileInfo(txtFile.Text.Trim());
 
-            if (file.Exists)
+            using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                using (FileStream fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                BinaryReaderX br = new BinaryReaderX(fs, ByteOrder.LittleEndian);
+
+                txtResults.Text = string.Empty;
+                var offset = Convert.ToUInt32(txtOffset.Text.Trim(), 16);
+                var shift = Convert.ToUInt32(txtShift.Text.Trim(), 16);
+                var leneance = Convert.ToUInt32(txtLeneance.Text.Trim());
+
+                uint value = 0;
+                var pointers = new List<uint>();
+
+                while (br.BaseStream.Position < br.BaseStream.Length - 4)
                 {
-                    BinaryReaderX br = new BinaryReaderX(fs, ByteOrder.LittleEndian);
+                    var found = false;
+                    var pointer = (uint)br.BaseStream.Position;
+                    value = br.ReadUInt32();
 
-                    txtResults.Text = string.Empty;
-                    uint offset = Convert.ToUInt32(txtOffset.Text.Trim(), 16);
-                    uint leneance = Convert.ToUInt32(txtLeneance.Text.Trim());
-
-                    uint value = 0;
-                    List<uint> pointers = new List<uint>();
-
-                    while (br.BaseStream.Position < br.BaseStream.Length - 4)
+                    if (value < br.BaseStream.Length - 4)
                     {
-                        bool found = false;
-                        uint pointer = (uint)br.BaseStream.Position;
-                        value = br.ReadUInt32();
+                        if (value == (offset + shift))
+                            found = true;
+                        else if (value >= (offset + shift - leneance) && value < offset + shift)
+                            found = true;
+                        else if (value <= (offset + shift + leneance) && value > offset + shift)
+                            found = true;
 
-                        if (value < br.BaseStream.Length - 4)
-                        {
-                            uint shift = 0;
-                            uint.TryParse(Settings.Default.DirectorShift, out shift);
-
-                            if (value == (offset + shift))
-                                found = true;
-                            else if (value >= (offset + shift - leneance) && value < offset + shift)
-                                found = true;
-                            else if (value <= (offset + shift + leneance) && value > offset + shift)
-                                found = true;
-
-                            if (found)
-                                pointers.Add(pointer);
-                        }
+                        if (found)
+                            pointers.Add(pointer);
                     }
-
-                    if (pointers.Count > 0)
-                    {
-                        List<byte> result = new List<byte>();
-                        br.BaseStream.Seek(offset, SeekOrigin.Begin);
-                        while (br.BaseStream.Position < br.BaseStream.Length)
-                        {
-                            byte[] unichar = br.ReadBytes(2);
-
-                            if (unichar[0] != 0x0 || unichar[1] != 0x0)
-                                result.AddRange(unichar);
-                            else
-                                break;
-                        }
-
-                        string strResult = enc.GetString(result.ToArray());
-
-                        txtResults.AppendText("<entry encoding=\"" + enc.EncodingName + "\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
-                        txtResults.AppendText("\r\n");
-
-                        foreach (uint p in pointers)
-                        {
-                            txtResults.AppendText("\t<pointer address=\"" + p.ToString("X2") + "\" />");
-                            txtResults.AppendText("\r\n");
-                        }
-
-                        txtResults.AppendText("\t<original>" + strResult + "</original>");
-                        txtResults.AppendText("\r\n");
-                        txtResults.AppendText("\t<edited>" + strResult + "</edited>");
-                        txtResults.AppendText("\r\n");
-                        txtResults.AppendText("</entry>");
-                    }
-                    else
-                    {
-                        txtResults.Text = "No pointers found...";
-                    }
-
-                    br.Close();
                 }
+
+                if (pointers.Count > 0)
+                {
+                    var result = new List<byte>();
+                    br.BaseStream.Seek(offset, SeekOrigin.Begin);
+                    while (br.BaseStream.Position < br.BaseStream.Length)
+                    {
+                        var unichar = br.ReadBytes(2);
+
+                        if (unichar[0] != 0x0 || unichar[1] != 0x0)
+                            result.AddRange(unichar);
+                        else
+                            break;
+                    }
+
+                    var strResult = enc.GetString(result.ToArray());
+
+                    txtResults.AppendText("<entry encoding=\"" + enc.EncodingName + "\" name=\"\" offset=\"" + offset.ToString("X2") + "\" relocatable=\"true\" max_length=\"0\">");
+                    txtResults.AppendText("\r\n");
+
+                    foreach (var p in pointers)
+                    {
+                        txtResults.AppendText("\t<pointer address=\"" + p.ToString("X2") + "\" />");
+                        txtResults.AppendText("\r\n");
+                    }
+
+                    txtResults.AppendText("\t<original>" + strResult + "</original>");
+                    txtResults.AppendText("\r\n");
+                    txtResults.AppendText("\t<edited>" + strResult + "</edited>");
+                    txtResults.AppendText("\r\n");
+                    txtResults.AppendText("</entry>");
+                }
+                else
+                {
+                    txtResults.Text = "No pointers found...";
+                }
+
+                br.Close();
             }
         }
 
