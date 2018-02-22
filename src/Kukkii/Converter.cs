@@ -324,7 +324,7 @@ namespace Kukkii
                 UpdatePreview();
                 UpdateImageList();
                 treBitmaps.SelectedNode = treBitmaps.Nodes[_selectedImageIndex];
-                MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //MessageBox.Show(filename + " imported successfully.", "Import Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
