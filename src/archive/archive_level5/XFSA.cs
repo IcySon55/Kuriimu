@@ -130,7 +130,7 @@ namespace archive_level5.XFSA
             var newEntryTable = Level5.Compress(ms, (Level5.Method)entriesComp);
 
             //Update header
-            header.nameTableOffset = (uint)(0x24 + newTable1.Length + newTable2.Length + newEntryTable.Length);
+            header.nameTableOffset = (uint)(0x24 + ((newTable1.Length + 3) & ~3) + ((newTable2.Length + 3) & ~3) + ((newEntryTable.Length + 3) & ~3));
             header.dataOffset = (uint)(((header.nameTableOffset + nameC.Length) + 0xf) & ~0xf);
 
             using (BinaryWriterX bw = new BinaryWriterX(xfsa))
@@ -140,15 +140,19 @@ namespace archive_level5.XFSA
 
                 //Table 1
                 bw.Write(newTable1);
+                bw.WriteAlignment(4);
 
                 //Table 2
                 bw.Write(newTable2);
+                bw.WriteAlignment(4);
 
                 //Entries
                 bw.Write(newEntryTable);
+                bw.WriteAlignment(4);
 
                 //Names
                 bw.Write(nameC);
+                bw.WriteAlignment();
 
                 //Files
                 Files = Files.OrderBy(f => f.entry.entry.comb1 & 0x01ffffff).ToList();
