@@ -16,6 +16,7 @@ namespace text_gmd
         private int EntryV2Length = 0x14;
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
         private string Name;
+        private int counter = 0;
 
         private byte[] UnknownV2;
         private List<EntryV1> EntriesV1 = new List<EntryV1>();
@@ -62,7 +63,14 @@ namespace text_gmd
 
                 // Labels
                 for (var i = 0; i < Header.LabelCount; i++)
-                    Names.Add(br.ReadCStringA());
+                {
+                    if (Header.LabelSize > 0)
+                        Names.Add(br.ReadCStringA());
+                    else
+                        Names.Add("no_name_" + i.ToString("0000") );
+
+                    counter = i;
+                }
 
                 // Text
                 var text = br.ReadBytes((int)Header.SectionSize);
@@ -75,7 +83,6 @@ namespace text_gmd
 
                 using (var brt = new BinaryReaderX(new MemoryStream(text), ByteOrder))
                 {
-                    var counter = 0;
                     for (var i = 0; i < Header.SectionCount; i++)
                     {
                         var bk = brt.BaseStream.Position;
@@ -87,7 +94,7 @@ namespace text_gmd
 
                         Labels.Add(new Label
                         {
-                            Name = i < Header.LabelCount ? Names[i] : "no_name_" + counter.ToString("000"),
+                            Name = i < Header.LabelCount ? Names[i] : "no_name_" + counter.ToString("0000"),
                             Text = brt.ReadString((int)textSize, Encoding.UTF8),
                             TextID = i
                         });
@@ -99,6 +106,11 @@ namespace text_gmd
             }
         }
 
+        public void RenameLabel(int labelId, string labelName)
+        {
+            Names[labelId] = labelName;
+        }
+        
         public void Save(Stream output)
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
