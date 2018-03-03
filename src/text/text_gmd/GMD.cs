@@ -106,6 +106,11 @@ namespace text_gmd
             }
         }
 
+        public void RenameLabel(int labelId, string labelName)
+        {
+            Names[labelId] = labelName;
+        }
+        
         public void Save(Stream output)
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
