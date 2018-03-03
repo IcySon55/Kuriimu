@@ -16,7 +16,6 @@ namespace text_gmd
         private int EntryV2Length = 0x14;
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
         private string Name;
-        private int counter = 0;
 
         private byte[] UnknownV2;
         private List<EntryV1> EntriesV1 = new List<EntryV1>();
@@ -62,12 +61,13 @@ namespace text_gmd
                 }
 
                 // Labels
+                var counter = 0;
                 for (var i = 0; i < Header.LabelCount; i++)
                 {
                     if (Header.LabelSize > 0)
                         Names.Add(br.ReadCStringA());
                     else
-                        Names.Add("no_name_" + i.ToString("0000") );
+                        Names.Add("no_name_" + i.ToString("0000"));
 
                     counter = i;
                 }
@@ -110,7 +110,7 @@ namespace text_gmd
         {
             Names[labelId] = labelName;
         }
-        
+
         public void Save(Stream output)
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
