@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Cetera.Image;
 using Kontract.IO;
+using Kontract.Image;
 
 namespace image_mt.Mobile
 {
     public class MobileMTTEX
     {
         public List<Bitmap> bmps = new List<Bitmap>();
+        public ImageSettings settings = new ImageSettings();
 
         private Header header;
         public HeaderInfo headerInfo { get; set; }
@@ -30,15 +31,15 @@ namespace image_mt.Mobile
 
                     //Block 2
                     r1 = (byte)(header.Block2 >> 4),
-                    r3 = (byte)(header.Block2 & 0xF),
+                    mipMapCount = (byte)(header.Block2 & 0xF),
 
                     //Block 3
-                    unk3 = (byte)(header.Block3 >> 30),
-                    format = (Format)(header.Block3 >> 24 & 0x3F),
+                    format = (int)(header.Block3 >> 26 & 0x3F),
                     width = (short)(header.Block3 >> 13 & 0x1FFF),
                     height = (short)(header.Block3 & 0x1FFF)
                 };
 
+                settings.Format = Support.Format[headerInfo.format];
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
                 //Settings.Format = ImageSettings.ConvertFormat(format);
                 //if (Settings.Format.ToString().Contains("DXT"))
@@ -48,21 +49,20 @@ namespace image_mt.Mobile
                 //    Settings.TileSize = 4;
                 //}
 
-                //var mipMapOffsets = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
+                var mipMapOffsets = br.ReadMultiple<int>(headerInfo.mipMapCount);
+                for (var i = 0; i < mipMapOffsets.Count; i++)
+                {
+                    var texDataSize = (i + 1 < mipMapOffsets.Count ? mipMapOffsets[i + 1] : (int)br.BaseStream.Length) - mipMapOffsets[i];
+                    settings.Width = Math.Max(headerInfo.width >> i, 2);
+                    settings.Height = Math.Max(headerInfo.height >> i, 2);
 
-                //for (var i = 0; i < mipMapOffsets.Count; i++)
-                //{
-                //  var texDataSize = (i + 1 < mipMapOffsets.Count ? mipMapOffsets[i + 1] : (int)br.BaseStream.Length) - mipMapOffsets[i];
-                //Settings.Width = Math.Max(HeaderInfo.Width >> i, 2);
-                //Settings.Height = Math.Max(HeaderInfo.Height >> i, 2);
+                    //if (HeaderInfo.Format == Format.DXT5_B)
+                    //    Settings.PixelShader = ToNoAlpha;
+                    //else if (HeaderInfo.Format == Format.DXT5_YCbCr)
+                    //    Settings.PixelShader = ToProperColors;
 
-                //if (HeaderInfo.Format == Format.DXT5_B)
-                //    Settings.PixelShader = ToNoAlpha;
-                //else if (HeaderInfo.Format == Format.DXT5_YCbCr)
-                //    Settings.PixelShader = ToProperColors;
-
-                //bmps.Add(Common.Load(br.ReadBytes(texDataSize), settings));
-                //}
+                    bmps.Add(Common.Load(br.ReadBytes(texDataSize), settings));
+                }
             }
         }
 
