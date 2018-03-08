@@ -382,6 +382,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game_kirby_triple_deluxe", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_oto3_dat", "src\archive\archive_oto3_dat\archive_oto3_dat.csproj", "{C83024E6-7779-423B-95D0-A84D21184C3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knit", "src\Knit\Knit.csproj", "{5766E367-3632-40A2-8E76-6A70FE6E7F61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -860,6 +862,10 @@ Global
 		{C83024E6-7779-423B-95D0-A84D21184C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C83024E6-7779-423B-95D0-A84D21184C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C83024E6-7779-423B-95D0-A84D21184C3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5766E367-3632-40A2-8E76-6A70FE6E7F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5766E367-3632-40A2-8E76-6A70FE6E7F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5766E367-3632-40A2-8E76-6A70FE6E7F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5766E367-3632-40A2-8E76-6A70FE6E7F61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
