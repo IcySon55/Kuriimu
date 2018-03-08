@@ -2,6 +2,8 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Kontract.Interface;
 using Kontract;
+using Kontract.Image.Format;
+using System.Collections.Generic;
 
 namespace image_mt.Mobile
 {
@@ -10,9 +12,14 @@ namespace image_mt.Mobile
         v9 = 9
     }
 
-    public enum Format : byte
+    public class Support
     {
-
+        public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>
+        {
+            [1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x31] = new DXT(DXT.Version.DXT5, false, Kontract.IO.ByteOrder.BigEndian),
+            [0x20]=new RGBA(8,8,8,8,Kontract.IO.ByteOrder.BigEndian)
+        };
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -27,7 +34,7 @@ namespace image_mt.Mobile
         public uint Block2;
         //24-bits - unused
         //4-bits - R1
-        //4-bits - R3
+        //4-bits - mipMapCount
 
         public uint Block3;
         //2-bits - unk4
@@ -45,11 +52,10 @@ namespace image_mt.Mobile
 
         //Block 2
         public byte r1;
-        public byte r3;
+        public byte mipMapCount;
 
         //Block3
-        public byte unk3;
-        public Format format;
+        public int format;
         public short width;
         public short height;
     }
@@ -57,6 +63,7 @@ namespace image_mt.Mobile
     public sealed class MobileMTTexBitmapInfo : BitmapInfo
     {
         [Category("Properties")]
-        public Format format { get; set; }
+        [ReadOnly(true)]
+        public string Format { get; set; }
     }
 }
