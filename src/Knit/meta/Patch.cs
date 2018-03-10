@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -15,22 +14,25 @@ namespace Knit
         #region Properties
 
         /// <summary>
-        /// The list of steps stored in this patch document.
+        /// The list of steps stored in this patch.xml document.
         /// </summary>
         [XmlArray("steps")]
-        [XmlArrayItem("step-test", typeof(StepTest))]
+        [XmlArrayItem("step-delay", typeof(StepDelay))]
         [XmlArrayItem("step-select-file", typeof(StepSelectFile))]
         public List<Step> Steps { get; set; }
 
         #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the Patch class that is empty.
+        /// </summary>
         public Patch()
         {
             Steps = new List<Step>();
         }
 
         /// <summary>
-        /// This allows you to load a patch.xml document from disk.
+        /// Loads a patch.xml document from disk.
         /// </summary>
         /// <param name="filename">The patch.xml to load.</param>
         /// <returns></returns>
@@ -47,6 +49,10 @@ namespace Knit
             }
         }
 
+        /// <summary>
+        /// Saves the patch.xml document to disk.
+        /// </summary>
+        /// <param name="filename">The filename to save to.</param>
         public void Save(string filename)
         {
             try

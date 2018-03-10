@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -36,13 +34,13 @@ namespace Knit
 
         #endregion
 
-        public Meta()
-        {
-            
-        }
+        /// <summary>
+        /// Initializes a new instance of the Meta class that is empty.
+        /// </summary>
+        public Meta() { }
 
         /// <summary>
-        /// This allows you to load a meta.xml document from disk.
+        /// Loads a meta.xml document from disk.
         /// </summary>
         /// <param name="filename">The meta.xml to load.</param>
         /// <returns></returns>
@@ -59,6 +57,10 @@ namespace Knit
             }
         }
 
+        /// <summary>
+        /// Saves the meta.xml document to disk.
+        /// </summary>
+        /// <param name="filename">The filename to save to.</param>
         public void Save(string filename)
         {
             try
