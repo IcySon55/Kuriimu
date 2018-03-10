@@ -24,11 +24,23 @@ namespace Knit
         [XmlAttribute("storeTo")]
         public string StoreTo { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Determines the weight of the step compared to the others.
+        /// </summary>
+        [XmlAttribute("weight")]
+        public int Weight { get; set; } = 0;
+
+        /// <summary>
+        /// Determines whether the step can be run asynchronously.
+        /// </summary>
+        [XmlIgnore]
+        public virtual bool IsAsync => false;
+
         // Methods
         /// <summary>
-        /// The abstract method that is called by the UI to perform the step actions.
+        /// The method that is called by the UI to perform the step actions.
         /// </summary>
-        public abstract bool Perform(Dictionary<string, object> valueCache);
+        public abstract Task Perform(Dictionary<string, object> valueCache);
 
         // Events
         public delegate void ReportProgressEventHandler(object sender, ReportProgressEventArgs e);
@@ -105,6 +117,9 @@ namespace Knit
         }
     }
 
+    /// <summary>
+    /// Determines UI behaviour after a step completes.
+    /// </summary>
     public enum StepCompletionStatus
     {
         Success,

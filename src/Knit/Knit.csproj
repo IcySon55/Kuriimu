@@ -55,6 +55,7 @@
     <Compile Include="meta\Patch.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="steps\StepTest.cs" />
     <Compile Include="steps\StepSelectFile.cs" />
     <Compile Include="steps\Step.cs" />
     <EmbeddedResource Include="Knit.resx">

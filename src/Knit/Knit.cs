@@ -53,6 +53,7 @@ namespace Knit
         private void btnPatch_Click(object sender, EventArgs e)
         {
             // Startup
+            var stop = false;
             _patching = true;
             UpdateForm();
 
@@ -65,27 +66,56 @@ namespace Knit
 
             // Steps
             var patch = Patch.Load(Path.Combine(metaDir, "patch.xml"));
-            pgbPatch.Maximum = patch.Steps.Count * 10;
+            var progress = 0;
+            pgbPatch.Maximum = patch.Steps.Sum(s => s.Weight);
 
             foreach (var step in patch.Steps)
             {
                 step.ReportProgress += (o, args) =>
                 {
-                    pgbPatch.Value += (int)(args.Completion / 10);
+                    pgbPatch.Value = progress + (int)(args.Completion / 100 * step.Weight);
                 };
 
                 step.StepComplete += (o, args) =>
                 {
                     lblStatus.Text = args.Message;
+                    switch (args.Status)
+                    {
+                        case StepCompletionStatus.Failure:
+                        case StepCompletionStatus.Cancel:
+                        case StepCompletionStatus.Error:
+                            stop = true;
+                            break;
+                    }
+                    progress += step.Weight;
                 };
 
-                if (!step.Perform(valueCache))
+                if (!step.IsAsync)
+                    RunStep(step, valueCache);
+                else
+                    RunStepAsync(step, valueCache);
+
+                if (stop)
+                {
+                    //lblStatus.Text = "Execution stopped!";
                     break;
+                }
             }
 
-            //lblStatus.Text = "Patch applied successfully";
+            if (!stop)
+                lblStatus.Text = "Patch applied successfully";
             _patching = false;
             UpdateForm();
+        }
+
+        private void RunStep(Step step, Dictionary<string, object> valueCache)
+        {
+            step.Perform(valueCache);
+        }
+
+        private async void RunStepAsync(Step step, Dictionary<string, object> valueCache)
+        {
+            await step.Perform(valueCache);
         }
 
         private void btnExit_Click(object sender, EventArgs e)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -18,41 +19,45 @@ namespace Knit.steps
         public string OpenFileFilter { get; set; } = "All files (*.*)|*.*";
 
         // Methods
-        public override bool Perform(Dictionary<string, object> valueCache)
+        public override Task Perform(Dictionary<string, object> valueCache)
         {
+            var stop = false;
+
             if (StoreTo == string.Empty)
             {
                 OnReportProgress(new ReportProgressEventArgs(0));
                 OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Error, "StepSelectFile requires a StoreTo variable but none was provided."));
-                return false;
+                stop = true;
             }
 
-            try
-            {
-                var ofd = new OpenFileDialog
+            if (!stop)
+                try
                 {
-                    Title = OpenFileTitle,
-                    Filter = OpenFileFilter
-                };
+                    var ofd = new OpenFileDialog
+                    {
+                        Title = OpenFileTitle,
+                        Filter = OpenFileFilter
+                    };
 
-                if (ofd.ShowDialog() == DialogResult.OK)
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        valueCache[StoreTo] = ofd.FileName;
+                        OnReportProgress(new ReportProgressEventArgs(100));
+                        OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Success, $"User selected {ofd.FileName}."));
+                    }
+                    else
+                    {
+                        OnReportProgress(new ReportProgressEventArgs(0));
+                        OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Cancel, "User cancelled selecting a file."));
+                    }
+                }
+                catch (Exception e)
                 {
-                    valueCache[StoreTo] = ofd.FileName;
-                    OnReportProgress(new ReportProgressEventArgs(100));
-                    OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Success, $"User selected {ofd.FileName}."));
-                    return true;
+                    OnReportProgress(new ReportProgressEventArgs(0));
+                    OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Error, e.ToString()));
                 }
 
-                OnReportProgress(new ReportProgressEventArgs(0));
-                OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Cancel, "User cancelled selecting a file."));
-                return false;
-            }
-            catch (Exception e)
-            {
-                OnReportProgress(new ReportProgressEventArgs(0));
-                OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Error, e.ToString()));
-                return false;
-            }
+            return new Task(() => { });
         }
     }
 }

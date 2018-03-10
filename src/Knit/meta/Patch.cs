@@ -18,6 +18,7 @@ namespace Knit
         /// The list of steps stored in this patch document.
         /// </summary>
         [XmlArray("steps")]
+        [XmlArrayItem("step-test", typeof(StepTest))]
         [XmlArrayItem("step-select-file", typeof(StepSelectFile))]
         public List<Step> Steps { get; set; }
 
