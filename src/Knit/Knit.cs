@@ -50,7 +50,7 @@ namespace Knit
             btnExit.Text = !_patching ? "Exit" : "Cancel";
         }
 
-        private void btnPatch_Click(object sender, EventArgs e)
+        private async void btnPatch_Click(object sender, EventArgs e)
         {
             // Startup
             var stop = false;
@@ -90,10 +90,7 @@ namespace Knit
                     progress += step.Weight;
                 };
 
-                if (!step.IsAsync)
-                    RunStep(step, valueCache);
-                else
-                    RunStepAsync(step, valueCache);
+                await step.Perform(valueCache);
 
                 if (stop)
                 {
@@ -106,16 +103,6 @@ namespace Knit
                 lblStatus.Text = "Patch applied successfully";
             _patching = false;
             UpdateForm();
-        }
-
-        private void RunStep(Step step, Dictionary<string, object> valueCache)
-        {
-            step.Perform(valueCache);
-        }
-
-        private async void RunStepAsync(Step step, Dictionary<string, object> valueCache)
-        {
-            await step.Perform(valueCache);
         }
 
         private void btnExit_Click(object sender, EventArgs e)

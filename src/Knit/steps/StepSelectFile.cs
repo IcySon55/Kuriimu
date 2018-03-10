@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -19,7 +16,7 @@ namespace Knit.steps
         public string OpenFileFilter { get; set; } = "All files (*.*)|*.*";
 
         // Methods
-        public override Task Perform(Dictionary<string, object> valueCache)
+        public override Task<StepCompleteEventArgs> Perform(Dictionary<string, object> valueCache)
         {
             var stop = false;
 
@@ -57,7 +54,7 @@ namespace Knit.steps
                     OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Error, e.ToString()));
                 }
 
-            return new Task(() => { });
+            return Task.FromResult(new StepCompleteEventArgs(StepCompletionStatus.Success, "Done!"));
         }
     }
 }

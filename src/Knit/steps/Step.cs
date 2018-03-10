@@ -30,17 +30,11 @@ namespace Knit
         [XmlAttribute("weight")]
         public int Weight { get; set; } = 0;
 
-        /// <summary>
-        /// Determines whether the step can be run asynchronously.
-        /// </summary>
-        [XmlIgnore]
-        public virtual bool IsAsync => false;
-
         // Methods
         /// <summary>
         /// The method that is called by the UI to perform the step actions.
         /// </summary>
-        public abstract Task Perform(Dictionary<string, object> valueCache);
+        public abstract Task<StepCompleteEventArgs> Perform(Dictionary<string, object> valueCache);
 
         // Events
         public delegate void ReportProgressEventHandler(object sender, ReportProgressEventArgs e);
