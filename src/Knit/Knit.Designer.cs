@@ -53,8 +53,8 @@
             // 
             this.pgbPatch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgbPatch.Location = new System.Drawing.Point(6, 257);
-            this.pgbPatch.Margin = new System.Windows.Forms.Padding(5);
+            this.pgbPatch.Location = new System.Drawing.Point(6, 254);
+            this.pgbPatch.Margin = new System.Windows.Forms.Padding(0);
             this.pgbPatch.Name = "pgbPatch";
             this.pgbPatch.Size = new System.Drawing.Size(572, 23);
             this.pgbPatch.TabIndex = 6;
@@ -65,7 +65,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblStatus.BackColor = System.Drawing.Color.Transparent;
             this.lblStatus.Location = new System.Drawing.Point(5, 284);
-            this.lblStatus.Margin = new System.Windows.Forms.Padding(5);
+            this.lblStatus.Margin = new System.Windows.Forms.Padding(0);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(417, 23);
             this.lblStatus.TabIndex = 7;
@@ -76,7 +76,7 @@
             // 
             this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExit.Location = new System.Drawing.Point(504, 284);
-            this.btnExit.Margin = new System.Windows.Forms.Padding(5);
+            this.btnExit.Margin = new System.Windows.Forms.Padding(0);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(75, 23);
             this.btnExit.TabIndex = 4;
@@ -88,7 +88,7 @@
             // 
             this.btnPatch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPatch.Location = new System.Drawing.Point(426, 284);
-            this.btnPatch.Margin = new System.Windows.Forms.Padding(5);
+            this.btnPatch.Margin = new System.Windows.Forms.Padding(0);
             this.btnPatch.Name = "btnPatch";
             this.btnPatch.Size = new System.Drawing.Size(75, 23);
             this.btnPatch.TabIndex = 5;

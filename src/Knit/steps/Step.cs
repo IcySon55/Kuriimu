@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Knit
 {
     /// <summary>
-    /// The generic Step base class used for all of the other steps.
+    /// The generic Step base class used by all of the other steps.
     /// </summary>
     public abstract class Step
     {
@@ -25,45 +24,41 @@ namespace Knit
         public string StoreTo { get; set; } = string.Empty;
 
         /// <summary>
-        /// Determines the weight of the step compared to the others.
+        /// Determines the weight of the step compared to the other steps.
         /// </summary>
         [XmlAttribute("weight")]
-        public int Weight { get; set; } = 0;
+        public int Weight { get; set; }
 
         // Methods
         /// <summary>
         /// The method that is called by the UI to perform the step actions.
         /// </summary>
-        public abstract Task<StepCompleteEventArgs> Perform(Dictionary<string, object> valueCache);
+        public abstract Task<StepResults> Perform(Dictionary<string, object> valueCache);
 
         // Events
+        /// <summary>
+        /// An event delegate for handling progress reported by steps.
+        /// </summary>
+        /// <param name="sender">The sender is always the Step being performed.</param>
+        /// <param name="e">The progress event args being reported.</param>
         public delegate void ReportProgressEventHandler(object sender, ReportProgressEventArgs e);
 
+        /// <summary>
+        /// An event for handling progress reported by steps.
+        /// </summary>
         public event ReportProgressEventHandler ReportProgress;
 
+        /// <summary>
+        /// Allows derived steps to report progress.
+        /// </summary>
+        /// <param name="e">The progress event args being reported.</param>
         protected virtual void OnReportProgress(ReportProgressEventArgs e)
         {
             ReportProgress?.Invoke(this, e);
         }
-
-        /// <summary>
-        /// Step completion event delegate.
-        /// </summary>
-        /// <param name="sender">Event sender.</param>
-        /// <param name="e">Event arguments.</param>
-        public delegate void StepCompleteEventHandler(object sender, StepCompleteEventArgs e);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public event StepCompleteEventHandler StepComplete;
-
-        protected virtual void OnStepComplete(StepCompleteEventArgs e)
-        {
-            StepComplete?.Invoke(this, e);
-        }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// The ReportProgressEventArgs class passes completion percentages to the UI.
     /// </summary>
@@ -74,6 +69,7 @@ namespace Knit
         /// </summary>
         public float Completion { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         /// Create a new instance of ReportProgressEventArgs.
         /// </summary>
@@ -85,14 +81,14 @@ namespace Knit
     }
 
     /// <summary>
-    /// The StepCompleteEventArgs class passes completion status to the UI.
+    /// The StepResults class passes completion status to the UI.
     /// </summary>
-    public class StepCompleteEventArgs : EventArgs
+    public class StepResults
     {
         /// <summary>
         /// Whether or not the step completed successfully.
         /// </summary>
-        public StepCompletionStatus Status { get; set; }
+        public StepStatus Status { get; set; }
 
         /// <summary>
         /// Step completion message to be logged.
@@ -100,11 +96,11 @@ namespace Knit
         public string Message { get; set; }
 
         /// <summary>
-        /// Create a new instance of StepCompleteEventArgs.
+        /// Create a new instance of StepResults.
         /// </summary>
         /// <param name="status">The completion status being reported to the UI.</param>
         /// <param name="message">The completion message being reported to the UI.</param>
-        public StepCompleteEventArgs(StepCompletionStatus status, string message)
+        public StepResults(StepStatus status, string message)
         {
             Status = status;
             Message = message;
@@ -114,7 +110,7 @@ namespace Knit
     /// <summary>
     /// Determines UI behaviour after a step completes.
     /// </summary>
-    public enum StepCompletionStatus
+    public enum StepStatus
     {
         Success,
         Failure,

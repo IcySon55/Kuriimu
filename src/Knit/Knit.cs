@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Knit
@@ -37,7 +32,7 @@ namespace Knit
             var icon = new Icon(Path.Combine(metaDir, meta.Icon));
 
             // Apply meta info
-            Text = $"{meta.Title} {(meta.Version != "" ? $"v{meta.Version}" : "")}";
+            Text = $"{meta.Title} {(meta.Version != "" ? $"{meta.Version}" : "")}";
             Icon = icon;
             BackgroundImage = background;
             ClientSize = background.Size;
@@ -53,11 +48,13 @@ namespace Knit
         private async void btnPatch_Click(object sender, EventArgs e)
         {
             // Startup
-            var stop = false;
             _patching = true;
+            pgbPatch.Value = 0;
             UpdateForm();
 
-            // Value Cache
+            // Variables
+            var stop = false;
+            var progress = 0;
             var valueCache = new Dictionary<string, object>();
 
             // Directories
@@ -66,7 +63,6 @@ namespace Knit
 
             // Steps
             var patch = Patch.Load(Path.Combine(metaDir, "patch.xml"));
-            var progress = 0;
             pgbPatch.Maximum = patch.Steps.Sum(s => s.Weight);
 
             foreach (var step in patch.Steps)
@@ -76,31 +72,28 @@ namespace Knit
                     pgbPatch.Value = progress + (int)(args.Completion / 100 * step.Weight);
                 };
 
-                step.StepComplete += (o, args) =>
-                {
-                    lblStatus.Text = args.Message;
-                    switch (args.Status)
-                    {
-                        case StepCompletionStatus.Failure:
-                        case StepCompletionStatus.Cancel:
-                        case StepCompletionStatus.Error:
-                            stop = true;
-                            break;
-                    }
-                    progress += step.Weight;
-                };
+                var results = await step.Perform(valueCache);
 
-                await step.Perform(valueCache);
+                lblStatus.Text = results.Message;
+                switch (results.Status)
+                {
+                    case StepStatus.Failure:
+                    case StepStatus.Cancel:
+                    case StepStatus.Error:
+                        stop = true;
+                        break;
+                    case StepStatus.Success:
+                    case StepStatus.Skip:
+                        progress += step.Weight;
+                        break;
+                }
 
                 if (stop)
-                {
-                    //lblStatus.Text = "Execution stopped!";
                     break;
-                }
             }
 
             if (!stop)
-                lblStatus.Text = "Patch applied successfully";
+                lblStatus.Text = "Patch applied successfully!";
             _patching = false;
             UpdateForm();
         }

@@ -8,17 +8,15 @@ namespace Knit.steps
         // Properties
 
         // Methods
-        public override Task<StepCompleteEventArgs> Perform(Dictionary<string, object> valueCache)
+        public override async Task<StepResults> Perform(Dictionary<string, object> valueCache)
         {
             for (var i = 1; i <= Weight; i++)
             {
-                OnReportProgress(new ReportProgressEventArgs(i / Weight * 100));
-                Task.Delay(100);
+                OnReportProgress(new ReportProgressEventArgs((int)((float)i / Weight * 100)));
+                await Task.Delay(50);
             }
 
-            OnStepComplete(new StepCompleteEventArgs(StepCompletionStatus.Success, $"Test step looped {Weight} time(s)."));
-
-            return Task.FromResult(new StepCompleteEventArgs(StepCompletionStatus.Success, "Done!"));
+            return new StepResults(StepStatus.Success, $"Test step looped {Weight} time(s).");
         }
     }
 }
