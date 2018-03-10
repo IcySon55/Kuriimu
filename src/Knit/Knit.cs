@@ -9,7 +9,9 @@ namespace Knit
 {
     public partial class frmMain : Form
     {
-        private bool _patching = false;
+        private bool Patching { get; set; }
+        private string PatchDir { get; set; }
+        private string MetaDir { get; set; }
 
         public frmMain()
         {
@@ -18,21 +20,27 @@ namespace Knit
 
         private void frmMain_Load(object sender, EventArgs e)
         {
+            // Initialize
+            PatchDir = "patch";
+            MetaDir = Path.Combine(PatchDir, "meta");
+
             // Confirm Status
             //var currentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
             //Directory.SetCurrentDirectory(currentDirectory);
 
-            // Directories
-            var patchDir = "patch";
-            var metaDir = Path.Combine(patchDir, "meta");
+            LoadMeta();
+            UpdateForm();
+        }
 
+        private void LoadMeta()
+        {
             // Meta
-            var meta = Meta.Load(Path.Combine(metaDir, "meta.xml"));
-            var background = new Bitmap(Path.Combine(metaDir, meta.Background));
-            var icon = new Icon(Path.Combine(metaDir, meta.Icon));
+            var meta = Meta.Load(Path.Combine(MetaDir, "meta.xml"));
+            var background = new Bitmap(Path.Combine(MetaDir, meta.Background));
+            var icon = new Icon(Path.Combine(MetaDir, meta.Icon));
 
             // Apply meta info
-            Text = $"{meta.Title} {(meta.Version != "" ? $"{meta.Version}" : "")}";
+            Text = $"{meta.Title}{(meta.Version != "" ? $" {meta.Version}" : "")}";
             Icon = icon;
             BackgroundImage = background;
             ClientSize = background.Size;
@@ -41,14 +49,14 @@ namespace Knit
 
         private void UpdateForm()
         {
-            btnPatch.Enabled = !_patching;
-            btnExit.Text = !_patching ? "Exit" : "Cancel";
+            btnPatch.Enabled = !Patching;
+            btnExit.Text = !Patching ? "Exit" : "Cancel";
         }
 
         private async void btnPatch_Click(object sender, EventArgs e)
         {
             // Startup
-            _patching = true;
+            Patching = true;
             pgbPatch.Value = 0;
             UpdateForm();
 
@@ -57,22 +65,20 @@ namespace Knit
             var progress = 0;
             var valueCache = new Dictionary<string, object>();
 
-            // Directories
-            var patchDir = "patch";
-            var metaDir = Path.Combine(patchDir, "meta");
-
             // Steps
-            var patch = Patch.Load(Path.Combine(metaDir, "patch.xml"));
+            var patch = Patch.Load(Path.Combine(MetaDir, "patch.xml"));
             pgbPatch.Maximum = patch.Steps.Sum(s => s.Weight);
 
             foreach (var step in patch.Steps)
             {
-                step.ReportProgress += (o, args) =>
+                var pgr = new Progress<ProgressReport>(p =>
                 {
-                    pgbPatch.Value = progress + (int)(args.Completion / 100 * step.Weight);
-                };
+                    pgbPatch.Value = progress + (int)(p.Percentage / 100 * step.Weight);
+                    if (p.HasMessage)
+                        lblStatus.Text = p.Message;
+                });
 
-                var results = await step.Perform(valueCache);
+                var results = await step.Perform(valueCache, pgr);
 
                 lblStatus.Text = results.Message;
                 switch (results.Status)
@@ -94,17 +100,17 @@ namespace Knit
 
             if (!stop)
                 lblStatus.Text = "Patch applied successfully!";
-            _patching = false;
+            Patching = false;
             UpdateForm();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            if (!_patching)
+            if (!Patching)
                 Close();
             else
             {
-                _patching = false;
+                Patching = false;
                 UpdateForm();
             }
         }

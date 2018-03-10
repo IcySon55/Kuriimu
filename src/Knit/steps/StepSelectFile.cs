@@ -16,19 +16,18 @@ namespace Knit.steps
         public string OpenFileFilter { get; set; } = "All files (*.*)|*.*";
 
         // Methods
-        public override async Task<StepResults> Perform(Dictionary<string, object> valueCache)
+        public override async Task<StepResults> Perform(Dictionary<string, object> valueCache, IProgress<ProgressReport> progress)
         {
-            var progress = 0;
-            var status = StepStatus.Success;
-            var message = "";
+            var progressReport = new ProgressReport();
+            var stepResults = new StepResults();
 
             if (StoreTo == string.Empty)
             {
-                status = StepStatus.Error;
-                message = "StepSelectFile requires a StoreTo variable but none was provided.";
+                stepResults.Status = StepStatus.Error;
+                stepResults.Message = "StepSelectFile requires a StoreTo variable but none was provided.";
             }
 
-            if (status == StepStatus.Success)
+            if (stepResults.Status == StepStatus.Success)
                 try
                 {
                     var ofd = new OpenFileDialog
@@ -40,23 +39,23 @@ namespace Knit.steps
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         valueCache[StoreTo] = ofd.FileName;
-                        progress = 100;
-                        message = $"User selected {ofd.FileName}.";
+                        progressReport.Percentage = 100;
+                        stepResults.Message = $"User selected {ofd.FileName}.";
                     }
                     else
                     {
-                        status = StepStatus.Cancel;
-                        message = "User cancelled selecting a file.";
+                        stepResults.Status = StepStatus.Cancel;
+                        stepResults.Message = "User cancelled selecting a file.";
                     }
                 }
                 catch (Exception ex)
                 {
-                    status = StepStatus.Error;
-                    message = ex.ToString();
+                    stepResults.Status = StepStatus.Error;
+                    stepResults.Message = ex.ToString();
                 }
 
-            OnReportProgress(new ReportProgressEventArgs(progress));
-            return new StepResults(status, message);
+            progress.Report(progressReport);
+            return stepResults;
         }
     }
 }

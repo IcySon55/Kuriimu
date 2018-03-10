@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Knit.steps
@@ -8,15 +9,23 @@ namespace Knit.steps
         // Properties
 
         // Methods
-        public override async Task<StepResults> Perform(Dictionary<string, object> valueCache)
+        public override async Task<StepResults> Perform(Dictionary<string, object> valueCache, IProgress<ProgressReport> progress)
         {
             for (var i = 1; i <= Weight; i++)
             {
-                OnReportProgress(new ReportProgressEventArgs((int)((float)i / Weight * 100)));
+                progress.Report(new ProgressReport
+                {
+                    Percentage = (float)i / Weight * 100,
+                    Message = $"Test step iteration {i:000}."
+                });
                 await Task.Delay(50);
             }
 
-            return new StepResults(StepStatus.Success, $"Test step looped {Weight} time(s).");
+            return new StepResults
+            {
+                Status = StepStatus.Success,
+                Message = $"Test step looped {Weight} time(s)."
+            };
         }
     }
 }

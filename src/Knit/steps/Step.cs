@@ -33,51 +33,28 @@ namespace Knit
         /// <summary>
         /// The method that is called by the UI to perform the step actions.
         /// </summary>
-        public abstract Task<StepResults> Perform(Dictionary<string, object> valueCache);
-
-        // Events
-        /// <summary>
-        /// An event delegate for handling progress reported by steps.
-        /// </summary>
-        /// <param name="sender">The sender is always the Step being performed.</param>
-        /// <param name="e">The progress event args being reported.</param>
-        public delegate void ReportProgressEventHandler(object sender, ReportProgressEventArgs e);
-
-        /// <summary>
-        /// An event for handling progress reported by steps.
-        /// </summary>
-        public event ReportProgressEventHandler ReportProgress;
-
-        /// <summary>
-        /// Allows derived steps to report progress.
-        /// </summary>
-        /// <param name="e">The progress event args being reported.</param>
-        protected virtual void OnReportProgress(ReportProgressEventArgs e)
-        {
-            ReportProgress?.Invoke(this, e);
-        }
+        public abstract Task<StepResults> Perform(Dictionary<string, object> valueCache, IProgress<ProgressReport> progress);
     }
 
-    /// <inheritdoc />
     /// <summary>
     /// The ReportProgressEventArgs class passes completion percentages to the UI.
     /// </summary>
-    public class ReportProgressEventArgs : EventArgs
+    public class ProgressReport
     {
         /// <summary>
         /// The current progress percentage being reported between 0 and 100.
         /// </summary>
-        public float Completion { get; set; }
+        public float Percentage { get; set; } = 0.0f;
 
-        /// <inheritdoc />
         /// <summary>
-        /// Create a new instance of ReportProgressEventArgs.
+        /// The current status message of the step for this progress report.
         /// </summary>
-        /// <param name="completion">The current progress percentage being reported between 0 and 100.</param>
-        public ReportProgressEventArgs(float completion)
-        {
-            Completion = completion;
-        }
+        public string Message { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Simple check for whether or not there is a message.
+        /// </summary>
+        public bool HasMessage => Message != string.Empty;
     }
 
     /// <summary>
@@ -88,23 +65,17 @@ namespace Knit
         /// <summary>
         /// Whether or not the step completed successfully.
         /// </summary>
-        public StepStatus Status { get; set; }
+        public StepStatus Status { get; set; } = StepStatus.Success;
 
         /// <summary>
         /// Step completion message to be logged.
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
 
         /// <summary>
-        /// Create a new instance of StepResults.
+        /// Simple check for whether or not there is a message.
         /// </summary>
-        /// <param name="status">The completion status being reported to the UI.</param>
-        /// <param name="message">The completion message being reported to the UI.</param>
-        public StepResults(StepStatus status, string message)
-        {
-            Status = status;
-            Message = message;
-        }
+        public bool HasMessage => Message != string.Empty;
     }
 
     /// <summary>
