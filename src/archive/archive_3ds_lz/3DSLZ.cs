@@ -61,7 +61,7 @@ namespace archive_3ds_lz
                     Files.Add(new archive_3dslzFileInfo
                     {
                         Entry = new archive_3dslzFileEntry { Size = fileSizes[i] },
-                        FileName = $@"File_{i:0000}.{fileExts[i]}",
+                        FileName = $@"File_{i:000000}.{fileExts[i]}",
                         State = ArchiveFileState.Archived,
                         FileData = new SubStream(input, fileOffsets[i], fileSizes[i])
                     });
