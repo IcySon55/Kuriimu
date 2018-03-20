@@ -112,7 +112,7 @@ namespace image_nintendo.SMDH
                     Width = 24,
                     Height = 24,
                     Format = new RGBA(5, 6, 5),
-                    Swizzle = new CTRSwizzle(24, 24)
+                    Swizzle = new CTRSwizzle(24, 24, 0, false)
                 };
                 bw.Write(Common.Save(bmps[0], settings));
 
@@ -121,7 +121,7 @@ namespace image_nintendo.SMDH
                     Width = 48,
                     Height = 48,
                     Format = new RGBA(5, 6, 5),
-                    Swizzle = new CTRSwizzle(48, 48)
+                    Swizzle = new CTRSwizzle(48, 48, 0, false)
                 };
                 bw.Write(Common.Save(bmps[1], settings));
             }
