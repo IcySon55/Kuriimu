@@ -55,7 +55,7 @@ namespace tt.text_ttbin
                     if (meta.type == 0)
                     {
                         meta.value = (Labels[labelCount].Text == String.Empty) ? -1 : textOffset;
-                        textOffset += (Labels[labelCount].Text == String.Empty) ? 0 : sjis.GetByteCount(Labels[labelCount].Text) + 1;
+                        textOffset += (Labels[labelCount].Text == String.Empty) ? 0 : sjis.GetByteCount(Labels[labelCount].Text.TrimEnd('\n')) + 1;
                         labelCount++;
                     }
 
