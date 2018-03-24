@@ -77,7 +77,7 @@ namespace image_nintendo.BXLIM
             [17] = new ATI(ATI.Format.ATI2),
             [18] = new LA(4, 0, ByteOrder.BigEndian),
             [19] = new LA(0, 4, ByteOrder.BigEndian),
-            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian, true),
+            [20] = new RGBA(8, 8, 8, 8, ByteOrder.BigEndian),
             [21] = new DXT(DXT.Version.DXT1, true),
             [22] = new DXT(DXT.Version.DXT3, true),
             [23] = new DXT(DXT.Version.DXT5, true),
