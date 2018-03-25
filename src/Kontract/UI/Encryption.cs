@@ -56,6 +56,14 @@ namespace Kontract.UI
             tsb3.DropDownItems[0].Tag = Types.MTMobile;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null, Decrypt));
             tsb3.DropDownItems[1].Tag = Types.MTMobile;
+
+            //Switch
+            tsb.DropDownItems.Add(new ToolStripMenuItem("Switch", null));
+            tsb2 = (ToolStripMenuItem)tsb.DropDownItems[3];
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("Decrypt", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem(".xci", null, Decrypt));
+            tsb3.DropDownItems[0].Tag = Types.NSW_XCI;
         }
 
         public static void Decrypt(object sender, EventArgs e)
@@ -107,9 +115,19 @@ namespace Kontract.UI
                             outFs.BaseStream.Position = 0;
                             engine.DecryptCIA(openBr.BaseStream, outFs.BaseStream);
                             break;
-                            /*case Types.BOSS:
-                                outFs.Write(engine.DecryptBOSS(openBr.ReadBytes((int)openBr.BaseStream.Length)));
-                                break;*/
+                        /*case Types.BOSS:
+                            outFs.Write(engine.DecryptBOSS(openBr.ReadBytes((int)openBr.BaseStream.Length)));
+                            break;*/
+
+                        case Types.NSW_XCI:
+                            openBr.BaseStream.CopyTo(outFs.BaseStream);
+                            openBr.BaseStream.Position = 0;
+                            outFs.BaseStream.Position = 0;
+
+                            var xci_header_key = Hexlify(InputBox.Show("Input XCI Header Key:", "Decrypt XCI"));
+                            var nca_header_key = Hexlify(InputBox.Show("Input NCA Header Key:", "Decrypt XCI"));
+                            Switch.DecryptXCI(openBr.BaseStream, outFs.BaseStream, xci_header_key, nca_header_key);
+                            break;
                     }
                 }
 
@@ -120,6 +138,15 @@ namespace Kontract.UI
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 File.Delete(saveFile.Name);
             }
+        }
+
+        public static byte[] Hexlify(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
 
         public static void Encrypt(object sender, EventArgs e)
@@ -168,12 +195,18 @@ namespace Kontract.UI
 
         public enum Types
         {
+            //3DS
             Normal,
             CIA,
             BOSS,
+
+            //Mobile
             BlowFishCBC,
             BlowFishECB,
-            MTMobile
+            MTMobile,
+
+            //Switch
+            NSW_XCI
         }
     }
 }
