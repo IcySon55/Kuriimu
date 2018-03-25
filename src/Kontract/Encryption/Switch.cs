@@ -7,6 +7,7 @@ using System.IO;
 using Kontract.IO;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using Kontract.Encryption.AES_XTS;
 
 namespace Kontract.Encryption
 {
@@ -31,6 +32,22 @@ namespace Kontract.Encryption
             var output = new byte[block.Length];
             cbc128.CreateDecryptor().TransformBlock(block, 0, block.Length, output, 0);
             return output;
+        }
+
+        private static byte[] XTS128_Decrypt(byte[] block, byte[] key, int block_size)
+        {
+            var result = new byte[block.Length];
+
+            var xts = XtsAes128.Create(key, true);
+            using (var transform = xts.CreateDecryptor())
+            {
+                for (int i = 0; i < block.Length / block_size; i++)
+                {
+                    transform.TransformBlock(block, i * block_size, block_size, result, i * block_size, Convert.ToUInt64(i));
+                }
+            }
+
+            return result;
         }
 
         private static byte[] xci_sha256 = new byte[] { 0x2e, 0x36, 0xcc, 0x55, 0x15, 0x7a, 0x35, 0x10, 0x90, 0xa7, 0x3e, 0x7a, 0xe7, 0x7c, 0xf5, 0x81, 0xf6, 0x9b, 0x0b, 0x6e, 0x48, 0xfb, 0x06, 0x6c, 0x98, 0x48, 0x79, 0xa6, 0xed, 0x7d, 0x2e, 0x96 };
@@ -69,7 +86,9 @@ namespace Kontract.Encryption
                 {
                     if (entry.name.Contains(".nca"))
                     {
-                        //Decrypt_XTS(input,output,nca_header_key);
+                        br.BaseStream.Position = entry.entry.offset;
+                        bw.BaseStream.Position = entry.entry.offset;
+                        bw.Write(XTS128_Decrypt(br.ReadBytes(0xc00), nca_header_key, 0x200));
                     }
                 }
             }

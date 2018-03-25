@@ -81,6 +81,14 @@
     <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
+    <Compile Include="Encryption\AES_XTS\RandomAccessSectorStream.cs" />
+    <Compile Include="Encryption\AES_XTS\SectorStream.cs" />
+    <Compile Include="Encryption\AES_XTS\Xts.cs" />
+    <Compile Include="Encryption\AES_XTS\XtsAes128.cs" />
+    <Compile Include="Encryption\AES_XTS\XtsAes256.cs" />
+    <Compile Include="Encryption\AES_XTS\XtsCryptoTransform.cs" />
+    <Compile Include="Encryption\AES_XTS\XtsSectorStream.cs" />
+    <Compile Include="Encryption\AES_XTS\XtsStream.cs" />
     <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Encryption\Switch.cs" />
