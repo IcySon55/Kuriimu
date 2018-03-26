@@ -86,6 +86,7 @@ namespace Kontract.Encryption
                 {
                     if (entry.name.Contains(".nca"))
                     {
+                        //Decrypt NCA Header
                         br.BaseStream.Position = entry.entry.offset;
                         bw.BaseStream.Position = entry.entry.offset;
                         bw.Write(XTS128_Decrypt(br.ReadBytes(0xc00), nca_header_key, 0x200));

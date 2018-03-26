@@ -102,6 +102,9 @@
     <Compile Include="UmsbtSupport.cs" />
     <Compile Include="VIW.cs" />
     <Compile Include="ViwSupport.cs" />
+    <Compile Include="XCI.cs" />
+    <Compile Include="XciManager.cs" />
+    <Compile Include="XciSupport.cs" />
     <Compile Include="Yaz0SarcManager.cs" />
     <Compile Include="ZAR.cs" />
     <Compile Include="ZarManager.cs" />
