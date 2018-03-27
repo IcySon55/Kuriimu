@@ -257,7 +257,7 @@ namespace Kontract.Encryption
                         break;
                     }
 
-                if (hasRightsID)
+                if (!hasRightsID)
                 {
                     //Decrypt keyarea
                     bw.BaseStream.Position = 0x300;
@@ -269,6 +269,7 @@ namespace Kontract.Encryption
                 else
                 {
                     //Decrypt title_key
+                    //var title_key=Input.Show("Input Titlekey: ","Decrypt XCI");
                     /*if (ctx->tool_ctx->settings.has_titlekey)
                     {
                         aes_ctx_t* aes_ctx = new_aes_ctx(ctx->tool_ctx->settings.keyset.titlekeks[ctx->crypto_type], 16, AES_MODE_ECB);
@@ -276,6 +277,21 @@ namespace Kontract.Encryption
                         free_aes_ctx(aes_ctx);
                     }*/
                 }
+
+                //Body section decryption
+                /*if (ctx->tool_ctx->settings.has_contentkey) {
+                ctx->section_contexts[i].aes = new_aes_ctx(ctx->tool_ctx->settings.contentkey, 16, AES_MODE_CTR);
+            } else {
+                if (ctx->has_rights_id) {
+                    ctx->section_contexts[i].aes = new_aes_ctx(ctx->tool_ctx->settings.dec_titlekey, 16, AES_MODE_CTR);
+                } else {
+                    if (ctx->section_contexts[i].header->crypt_type == CRYPT_CTR || ctx->section_contexts[i].header->crypt_type == CRYPT_BKTR) {
+                        ctx->section_contexts[i].aes = new_aes_ctx(ctx->decrypted_keys[2], 16, AES_MODE_CTR);
+                    } else if (ctx->section_contexts[i].header->crypt_type == CRYPT_XTS) {
+                        ctx->section_contexts[i].aes = new_aes_ctx(ctx->decrypted_keys[0], 32, AES_MODE_XTS);
+                    }
+                }
+            }*/
             }
         }
         #endregion
