@@ -128,8 +128,8 @@ namespace Kontract.UI
                             openBr.BaseStream.Position = 0;
                             outFs.BaseStream.Position = 0;
 
-                            var xci_header_key = Hexlify(InputBox.Show("Input XCI Header Key:", "Decrypt XCI"));
-                            var nca_header_key = Hexlify(InputBox.Show("Input NCA Header Key:", "Decrypt XCI"));
+                            var xci_header_key = InputBox.Show("Input XCI Header Key:", "Decrypt XCI").Hexlify();
+                            var nca_header_key = InputBox.Show("Input NCA Header Key:", "Decrypt XCI").Hexlify();
                             Switch.DecryptXCI(openBr.BaseStream, outFs.BaseStream, xci_header_key, nca_header_key);
 
                             MessageBox.Show("XCI Header and all NCA headers were decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
@@ -148,15 +148,6 @@ namespace Kontract.UI
                 MessageBox.Show(ex.ToString(), tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 File.Delete(saveFile.Name);
             }
-        }
-
-        public static byte[] Hexlify(String hex)
-        {
-            int NumberChars = hex.Length;
-            byte[] bytes = new byte[NumberChars / 2];
-            for (int i = 0; i < NumberChars; i += 2)
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            return bytes;
         }
 
         public static void Encrypt(object sender, EventArgs e)
