@@ -8,6 +8,7 @@ using Kontract.IO;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using Kontract.Encryption.AES_XTS;
+using System.Windows.Forms;
 
 namespace Kontract.Encryption
 {
@@ -24,9 +25,6 @@ namespace Kontract.Encryption
 
             return aes;
         }
-
-        private static byte[] Create_SHA256(byte[] to_hash) => SHA256.Create().ComputeHash(to_hash);
-
         private static byte[] CBC128_Decrypt(Aes cbc128, byte[] block)
         {
             var output = new byte[block.Length];
@@ -34,7 +32,7 @@ namespace Kontract.Encryption
             return output;
         }
 
-        private static byte[] XTS128_Decrypt(byte[] block, byte[] key, int block_size)
+        private static byte[] XTS128_Decrypt(byte[] block, byte[] key, int block_size, int section_id = 0)
         {
             var result = new byte[block.Length];
 
@@ -43,12 +41,19 @@ namespace Kontract.Encryption
             {
                 for (int i = 0; i < block.Length / block_size; i++)
                 {
-                    transform.TransformBlock(block, i * block_size, block_size, result, i * block_size, Convert.ToUInt64(i));
+                    transform.TransformBlock(block, i * block_size, block_size, result, i * block_size, Convert.ToUInt64(section_id++));
                 }
             }
 
             return result;
         }
+
+        private static byte[] ECB_Decrypt(byte[] block, byte[] key)
+        {
+            return null;
+        }
+
+        private static byte[] Create_SHA256(byte[] to_hash) => SHA256.Create().ComputeHash(to_hash);
 
         private static byte[] xci_sha256 = new byte[] { 0x2e, 0x36, 0xcc, 0x55, 0x15, 0x7a, 0x35, 0x10, 0x90, 0xa7, 0x3e, 0x7a, 0xe7, 0x7c, 0xf5, 0x81, 0xf6, 0x9b, 0x0b, 0x6e, 0x48, 0xfb, 0x06, 0x6c, 0x98, 0x48, 0x79, 0xa6, 0xed, 0x7d, 0x2e, 0x96 };
         private static byte[] nca_sha256 = new byte[] { 0x8e, 0x03, 0xde, 0x24, 0x81, 0x8d, 0x96, 0xce, 0x4f, 0x2a, 0x09, 0xb4, 0x3a, 0xf9, 0x79, 0xe6, 0x79, 0x97, 0x4f, 0x75, 0x70, 0x71, 0x3a, 0x61, 0xee, 0xd8, 0xb3, 0x14, 0x86, 0x4a, 0x11, 0xd5 };
@@ -86,15 +91,13 @@ namespace Kontract.Encryption
                 {
                     if (entry.name.Contains(".nca"))
                     {
-                        //Decrypt NCA Header
-                        br.BaseStream.Position = entry.entry.offset;
-                        bw.BaseStream.Position = entry.entry.offset;
-                        bw.Write(XTS128_Decrypt(br.ReadBytes(0xc00), nca_header_key, 0x200));
+                        DecryptNCA(input, output, entry.entry.offset, nca_header_key);
                     }
                 }
             }
         }
 
+        #region HFS0
         private static List<HFS0NamedEntry> ParseHFS0List(Stream input, long hfs0_offset)
         {
             var baseEntries = ParseHFS0Partition(input, hfs0_offset);
@@ -159,6 +162,67 @@ namespace Kontract.Encryption
         {
             public string name;
             public HFS0Entry entry;
+        }
+        #endregion
+
+        #region NCA Decryption
+        private static void DecryptNCA(Stream input, Stream output, long offset, byte[] nca_header_key)
+        {
+            using (var bw = new BinaryWriterX(output, true))
+            using (var br = new BinaryReaderX(input, true))
+            {
+                br.BaseStream.Position = offset;
+                bw.BaseStream.Position = offset;
+
+                //Decrypt NCA Header
+                var headerPart = XTS128_Decrypt(br.ReadBytes(0x400), nca_header_key, 0x200);
+                var magic = headerPart.GetElements(0x100, 4).Aggregate("", (o, b) => o + (char)b);
+                bw.Write(headerPart);
+                if (magic == "NCA3")
+                {
+                    bw.Write(XTS128_Decrypt(br.ReadBytes(0x800), nca_header_key, 0x200, 2));
+                }
+                else if (magic == "NCA2")
+                {
+                    for (int i = 0; i < 4; i++)
+                        bw.Write(XTS128_Decrypt(br.ReadBytes(0x200), nca_header_key, 0x200));
+                }
+
+                //Get crypto_type
+                var cryptoType = (headerPart[0x220] > headerPart[0x206]) ? headerPart[0x220] : headerPart[0x206];
+                if (cryptoType == 1) cryptoType--;
+
+                //RightsID
+                bool hasRightsID = false;
+                for (int i = 0; i < 0x10; i++)
+                    if (headerPart[0x230 + i] != 0)
+                    {
+                        hasRightsID = true;
+                        break;
+                    }
+
+                if (hasRightsID)
+                {
+                    //Decrypt keyarea
+                    var decKeyArea = ECB_Decrypt(headerPart.GetElements(0x300, 0x40), null);
+                }
+                else
+                {
+                    //Decrypt title_key
+                }
+            }
+            #endregion
+        }
+    }
+
+    static class Support
+    {
+        public static byte[] GetElements(this byte[] input, int index, int length)
+        {
+            var result = new byte[length];
+            for (int i = index; i < index + length; i++)
+                result[i - index] = input.ElementAt(i);
+            return result;
         }
     }
 }

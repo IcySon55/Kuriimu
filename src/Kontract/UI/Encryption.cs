@@ -64,6 +64,8 @@ namespace Kontract.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".xci", null, Decrypt));
             tsb3.DropDownItems[0].Tag = Types.NSW_XCI;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem(".nca", null, Decrypt));
+            tsb3.DropDownItems[0].Tag = Types.NSW_NCA;
         }
 
         public static void Decrypt(object sender, EventArgs e)
@@ -72,6 +74,8 @@ namespace Kontract.UI
             var name = (tsi.Tag.ToString() == "normal") ? "3DS" : tsi.Tag.ToString();
 
             if (!Shared.PrepareFiles("Open an encrypted " + name + " file...", "Save your decrypted file...", ".dec", out FileStream openFile, out FileStream saveFile)) return;
+
+            bool show = true;
 
             try
             {
@@ -127,11 +131,17 @@ namespace Kontract.UI
                             var xci_header_key = Hexlify(InputBox.Show("Input XCI Header Key:", "Decrypt XCI"));
                             var nca_header_key = Hexlify(InputBox.Show("Input NCA Header Key:", "Decrypt XCI"));
                             Switch.DecryptXCI(openBr.BaseStream, outFs.BaseStream, xci_header_key, nca_header_key);
+
+                            MessageBox.Show("XCI Header and all NCA headers were decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
+                            show = false;
+                            break;
+                        case Types.NSW_NCA:
                             break;
                     }
                 }
 
-                MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (show)
+                    MessageBox.Show($"Successfully decrypted {Path.GetFileName(openFile.Name)}.", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -206,7 +216,8 @@ namespace Kontract.UI
             MTMobile,
 
             //Switch
-            NSW_XCI
+            NSW_XCI,
+            NSW_NCA
         }
     }
 }
