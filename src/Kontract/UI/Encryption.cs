@@ -65,7 +65,7 @@ namespace Kontract.UI
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".xci", null, Decrypt));
             tsb3.DropDownItems[0].Tag = Types.NSW_XCI;
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".nca", null, Decrypt));
-            tsb3.DropDownItems[0].Tag = Types.NSW_NCA;
+            tsb3.DropDownItems[1].Tag = Types.NSW_NCA;
         }
 
         public static void Decrypt(object sender, EventArgs e)
@@ -129,8 +129,7 @@ namespace Kontract.UI
                             outFs.BaseStream.Position = 0;
 
                             var xci_header_key = InputBox.Show("Input XCI Header Key:", "Decrypt XCI").Hexlify();
-                            var nca_header_key = InputBox.Show("Input NCA Header Key:", "Decrypt XCI").Hexlify();
-                            Switch.DecryptXCI(openBr.BaseStream, outFs.BaseStream, xci_header_key, nca_header_key);
+                            Switch.DecryptXCI(openBr.BaseStream, outFs.BaseStream, xci_header_key);
 
                             MessageBox.Show("XCI Header and all NCA headers were decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
                             show = false;
