@@ -107,7 +107,7 @@ namespace archive_nintendo.SARC
                 FileData = afi.FileData,
                 FileName = afi.FileName,
                 State = afi.State,
-                hash = SimpleHash.Create(afi.FileName, _sarc.hashMultiplier)
+                Hash = SimpleHash.Create(afi.FileName, _sarc.hashMultiplier)
             });
             return true;
         }

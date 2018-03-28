@@ -13,7 +13,8 @@ namespace archive_nintendo.SARC
 {
     public class SarcArchiveFileInfo : ArchiveFileInfo
     {
-        public uint hash;
+        public SFATEntry Entry;
+        public uint Hash;
     }
 
     public class Support
@@ -41,8 +42,8 @@ namespace archive_nintendo.SARC
 
         static Dictionary<string, int> DicPaddingWiiU = new Dictionary<string, int>
         {
-            ["default"] = 0x80,
-            [".bflim"] = 0x80,
+            ["default"] = 0x4,
+            [".bflim"] = 0x100,
             [".ptcl"] = 0x80,
             [".shbin"] = 0x80,
             [".bsm"] = 0x80,
@@ -78,7 +79,7 @@ namespace archive_nintendo.SARC
         public ByteOrder byteOrder;
         public int fileSize;
         public int dataOffset;
-        int unk1 = 0x100;
+        int unk1;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -87,14 +88,14 @@ namespace archive_nintendo.SARC
         Magic magic = "SFAT";
         public short headerSize = 0xc;
         public short nodeCount;
-        public int hashMultiplier;  //default 0x65
+        public int hashMultiplier; //default 0x65
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct SFATEntry
     {
         public uint nameHash;
-        public uint SFNTOffsetFlag;// 0x100 means it uses the SFNT table
+        public uint SFNTOffsetFlag; // 0x100 means it uses the SFNT table
         public int dataStart;
         public int dataEnd;
     }
