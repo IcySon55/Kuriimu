@@ -62,11 +62,8 @@ namespace Kontract.Encryption
         {
             var aes = new AesCtr(ctr);
 
-            aes.BlockSize = 128;
-            aes.Key = key;
-
             var output = new byte[block.Length];
-            aes.CreateDecryptor().TransformBlock(block, 0, block.Length, output, 0);
+            aes.CreateDecryptor(key).TransformBlock(block, 0, block.Length, output, 0);
             return output;
         }
 
@@ -103,46 +100,46 @@ namespace Kontract.Encryption
                         {
                             var key_desc = line.Replace(" ", "");
                             var name = key_desc.Split(new[] { ':', '=' })[0];
-                            var key = key_desc.Split(new[] { ':', '=' })[1].Hexlify();
+                            var key = key_desc.Split(new[] { ':', '=' })[1];
 
                             if (name.Contains("master_key"))
-                                masterkeys[Convert.ToInt32(name.Split(new string[] { "master_key_" }, StringSplitOptions.None)[1])] = key;
+                                masterkeys[Convert.ToInt32(name.Split(new string[] { "master_key_" }, StringSplitOptions.None)[1])] = key.Hexlify(16);
                             if (name == "header_key")
-                                ncaHeaderKey = key;
+                                ncaHeaderKey = key.Hexlify(32);
                             if (name == "title_kek_source")
-                                titlekekSource = key;
+                                titlekekSource = key.Hexlify(16);
                             if (name == "aes_kek_generation_source")
-                                aesKekGenSource = key;
+                                aesKekGenSource = key.Hexlify(16);
                             if (name == "aes_key_generation_source")
-                                aesKeyGenSource = key;
+                                aesKeyGenSource = key.Hexlify(16);
                             if (name == "key_area_key_application_source")
-                                kakAppSource = key;
+                                kakAppSource = key.Hexlify(16);
                             if (name == "key_area_key_ocean_source")
-                                kakOceanSource = key;
+                                kakOceanSource = key.Hexlify(16);
                             if (name == "key_area_key_system_source")
-                                kakSystemSource = key;
+                                kakSystemSource = key.Hexlify(16);
                         }
                     }
                 }
                 else
                 {
                     //else ask for every key
-                    ncaHeaderKey = InputBox.Show($"Input NCA Header Key", "Decrypt XCI").Hexlify();
+                    ncaHeaderKey = InputBox.Show($"Input NCA Header Key", "Decrypt XCI").Hexlify(32);
                     if (!Create_SHA256(ncaHeaderKey).SequenceEqual(ncaHeader_sha256))
                         throw new InvalidDataException("The given NCA Header Key is wrong.");
 
-                    masterkeys[0] = InputBox.Show($"Input Master Key #00", "Decrypt XCI").Hexlify();
-                    masterkeys[1] = InputBox.Show($"Input Master Key #01", "Decrypt XCI").Hexlify();
-                    masterkeys[2] = InputBox.Show($"Input Master Key #02", "Decrypt XCI").Hexlify();
+                    masterkeys[0] = InputBox.Show($"Input Master Key #00", "Decrypt XCI").Hexlify(16);
+                    masterkeys[1] = InputBox.Show($"Input Master Key #01", "Decrypt XCI").Hexlify(16);
+                    masterkeys[2] = InputBox.Show($"Input Master Key #02", "Decrypt XCI").Hexlify(16);
 
-                    titlekekSource = InputBox.Show($"Input Title Kek Source", "Decrypt XCI").Hexlify();
+                    titlekekSource = InputBox.Show($"Input Title Kek Source", "Decrypt XCI").Hexlify(16);
 
-                    aesKekGenSource = InputBox.Show($"Input AES Kek Generation Source", "Decrypt XCI").Hexlify();
-                    aesKeyGenSource = InputBox.Show($"Input AES Key Generation Source", "Decrypt XCI").Hexlify();
+                    aesKekGenSource = InputBox.Show($"Input AES Kek Generation Source", "Decrypt XCI").Hexlify(16);
+                    aesKeyGenSource = InputBox.Show($"Input AES Key Generation Source", "Decrypt XCI").Hexlify(16);
 
-                    kakAppSource = InputBox.Show($"Input Key Area Key Application Source", "Decrypt XCI").Hexlify();
-                    kakOceanSource = InputBox.Show($"Input Key Area Key Ocean Source", "Decrypt XCI").Hexlify();
-                    kakSystemSource = InputBox.Show($"Input Key Area Key System Source", "Decrypt XCI").Hexlify();
+                    kakAppSource = InputBox.Show($"Input Key Area Key Application Source", "Decrypt XCI").Hexlify(16);
+                    kakOceanSource = InputBox.Show($"Input Key Area Key Ocean Source", "Decrypt XCI").Hexlify(16);
+                    kakSystemSource = InputBox.Show($"Input Key Area Key System Source", "Decrypt XCI").Hexlify(16);
                 }
 
                 for (int i = 0; i < masterkeys.Length; i++)
@@ -306,6 +303,9 @@ namespace Kontract.Encryption
                         Array.Copy(buffer, 0, headerPart2, i * 0x200, 0x200);
                         bw.Write(buffer);
                     }
+                } else
+                {
+                    throw new InvalidDataException("Invalid NCA Header! Are the keys correct?");
                 }
 
                 //Get crypto_type
@@ -342,7 +342,7 @@ namespace Kontract.Encryption
                 else
                 {
                     //Decrypt title_key
-                    var title_key = InputBox.Show("Input Titlekey:", "Decrypt NCA").Hexlify();
+                    var title_key = InputBox.Show("Input Titlekey:", "Decrypt NCA").Hexlify(16);
                     dec_title_key = ECB128_Decrypt(title_key, keyset.titleKeks[cryptoType]);
                 }
 

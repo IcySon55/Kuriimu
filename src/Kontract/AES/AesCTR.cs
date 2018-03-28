@@ -44,6 +44,9 @@ namespace Kontract.CTR
             // Nope
         }
 
+        public override int BlockSize { get => _aes.BlockSize; set => _aes.BlockSize = value; }
+
+        public override byte[] Key { get => _aes.Key; set => _aes.Key = value; }
     }
 
     public class CtrCryptoTransform : ICryptoTransform
