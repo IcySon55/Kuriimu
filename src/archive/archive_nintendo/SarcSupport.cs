@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Kontract;
-using Kontract.IO;
 using Kontract.Interface;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kontract.IO;
 
 namespace archive_nintendo.SARC
 {
@@ -86,7 +82,7 @@ namespace archive_nintendo.SARC
     public class SFATHeader
     {
         Magic magic = "SFAT";
-        public short headerSize = 0xc;
+        public short headerSize = 0xC;
         public short nodeCount;
         public int hashMultiplier; //default 0x65
     }
