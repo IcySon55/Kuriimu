@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kontract.CTR
+namespace Kontract.Encryption.AES.CTR
 {
     public static class BigEndian
     {

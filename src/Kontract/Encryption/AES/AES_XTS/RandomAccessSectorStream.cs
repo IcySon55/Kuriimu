@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 
-namespace Kontract.Encryption.AES_XTS
+namespace Kontract.Encryption.AES.XTS
 {
 	/// <summary>
 	/// A wraps a sector based stream and provides random access to it

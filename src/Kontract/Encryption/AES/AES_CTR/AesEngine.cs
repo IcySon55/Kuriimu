@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 using Security.Cryptography;
 
-namespace Kontract.CTR
+namespace Kontract.Encryption.AES.CTR
 {
     public enum AesMode
     {

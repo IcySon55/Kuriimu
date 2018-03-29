@@ -5,70 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Kontract.IO;
-using System.Security.Cryptography;
 using System.Runtime.InteropServices;
-using Kontract.Encryption.AES_XTS;
 using System.Windows.Forms;
-using Kontract.CTR;
+using Kontract.Encryption.AES;
+using Kontract.Hash;
 
 namespace Kontract.Encryption
 {
     public class Switch
     {
-        private static byte[] CBC128_Decrypt(byte[] block, byte[] key, byte[] iv)
-        {
-            var aes = Aes.Create();
-
-            aes.BlockSize = 128;
-            aes.IV = iv;
-            aes.Key = key;
-            aes.Mode = CipherMode.CBC;
-
-            var output = new byte[block.Length];
-            aes.CreateDecryptor().TransformBlock(block, 0, block.Length, output, 0);
-            return output;
-        }
-
-        private static byte[] XTS128_Decrypt(byte[] block, byte[] key, int block_size, int section_id = 0)
-        {
-            var result = new byte[block.Length];
-
-            var xts = XtsAes128.Create(key, true);
-            using (var transform = xts.CreateDecryptor())
-            {
-                for (int i = 0; i < block.Length / block_size; i++)
-                {
-                    transform.TransformBlock(block, i * block_size, block_size, result, i * block_size, Convert.ToUInt64(section_id++));
-                }
-            }
-
-            return result;
-        }
-
-        private static byte[] ECB128_Decrypt(byte[] block, byte[] key)
-        {
-            var aes = Aes.Create();
-
-            aes.BlockSize = 128;
-            aes.Key = key;
-            aes.Mode = CipherMode.ECB;
-
-            var output = new byte[block.Length];
-            aes.CreateDecryptor().TransformBlock(block, 0, block.Length, output, 0);
-            return output;
-        }
-
-        private static byte[] CTR128_Decrypt(byte[] block, byte[] key, byte[] ctr)
-        {
-            var aes = new AesCtr(ctr);
-
-            var output = new byte[block.Length];
-            aes.CreateDecryptor(key).TransformBlock(block, 0, block.Length, output, 0);
-            return output;
-        }
-
-        private static byte[] Create_SHA256(byte[] to_hash) => SHA256.Create().ComputeHash(to_hash);
-
         public class Keyset
         {
             private static byte[] ncaHeader_sha256 = new byte[] { 0x8e, 0x03, 0xde, 0x24, 0x81, 0x8d, 0x96, 0xce, 0x4f, 0x2a, 0x09, 0xb4, 0x3a, 0xf9, 0x79, 0xe6, 0x79, 0x97, 0x4f, 0x75, 0x70, 0x71, 0x3a, 0x61, 0xee, 0xd8, 0xb3, 0x14, 0x86, 0x4a, 0x11, 0xd5 };
@@ -125,7 +70,7 @@ namespace Kontract.Encryption
                 {
                     //else ask for every key
                     ncaHeaderKey = InputBox.Show($"Input NCA Header Key", "Decrypt XCI").Hexlify(32);
-                    if (!Create_SHA256(ncaHeaderKey).SequenceEqual(ncaHeader_sha256))
+                    if (!SHA256.Create(ncaHeaderKey).SequenceEqual(ncaHeader_sha256))
                         throw new InvalidDataException("The given NCA Header Key is wrong.");
 
                     masterkeys[0] = InputBox.Show($"Input Master Key #00", "Decrypt XCI").Hexlify(16);
@@ -149,18 +94,18 @@ namespace Kontract.Encryption
                     keyAreaKeys[i][1] = GenerateKek(kakOceanSource, masterkeys[i], aesKekGenSource, aesKeyGenSource);
                     keyAreaKeys[i][2] = GenerateKek(kakSystemSource, masterkeys[i], aesKekGenSource, aesKeyGenSource);
 
-                    titleKeks[i] = ECB128_Decrypt(titlekekSource, masterkeys[i]);
+                    titleKeks[i] = Decryption.ECB128(titlekekSource, masterkeys[i]);
                 }
             }
 
             private byte[] GenerateKek(byte[] generationSource, byte[] masterKey, byte[] aesKekGenSource, byte[] aesKeyGenSource)
             {
-                var kek = ECB128_Decrypt(aesKekGenSource, masterKey);
-                var src_kek = ECB128_Decrypt(generationSource, kek);
+                var kek = Decryption.ECB128(aesKekGenSource, masterKey);
+                var src_kek = Decryption.ECB128(generationSource, kek);
 
                 if (aesKeyGenSource != null)
                 {
-                    return ECB128_Decrypt(aesKeyGenSource, src_kek);
+                    return Decryption.ECB128(aesKeyGenSource, src_kek);
                 }
                 else
                 {
@@ -173,7 +118,7 @@ namespace Kontract.Encryption
 
         public static void DecryptXCI(Stream input, Stream output, byte[] xci_header_key)
         {
-            if (!Create_SHA256(xci_header_key).SequenceEqual(xci_sha256))
+            if (!SHA256.Create(xci_header_key).SequenceEqual(xci_sha256))
                 throw new InvalidDataException("The given XCI Header Key is wrong.");
 
             using (var bw = new BinaryWriterX(output, true))
@@ -187,7 +132,7 @@ namespace Kontract.Encryption
                 var encrypted_xci_header = br.ReadBytes(0x70);
 
                 bw.BaseStream.Position = 0x190;
-                bw.Write(CBC128_Decrypt(encrypted_xci_header, xci_header_key, iv));
+                bw.Write(Decryption.CBC128(encrypted_xci_header, xci_header_key, iv));
 
                 //Get HFS0 entries for NCA's
                 br.BaseStream.Position = 0x130;
@@ -286,24 +231,25 @@ namespace Kontract.Encryption
                 bw.BaseStream.Position = offset;
 
                 //Decrypt NCA Header
-                var headerPart = XTS128_Decrypt(br.ReadBytes(0x400), keyset.ncaHeaderKey, 0x200);
+                var headerPart = Decryption.XTS128(br.ReadBytes(0x400), keyset.ncaHeaderKey, 0x200, true);
                 var magic = headerPart.GetElements(0x200, 4).Aggregate("", (o, b) => o + (char)b);
                 bw.Write(headerPart);
                 var headerPart2 = new byte[0x800];
                 if (magic == "NCA3")
                 {
-                    headerPart2 = XTS128_Decrypt(br.ReadBytes(0x800), keyset.ncaHeaderKey, 0x200, 2);
+                    headerPart2 = Decryption.XTS128(br.ReadBytes(0x800), keyset.ncaHeaderKey, 0x200, true, 2);
                     bw.Write(headerPart2);
                 }
                 else if (magic == "NCA2")
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        var buffer = XTS128_Decrypt(br.ReadBytes(0x200), keyset.ncaHeaderKey, 0x200);
+                        var buffer = Decryption.XTS128(br.ReadBytes(0x200), keyset.ncaHeaderKey, 0x200, true);
                         Array.Copy(buffer, 0, headerPart2, i * 0x200, 0x200);
                         bw.Write(buffer);
                     }
-                } else
+                }
+                else
                 {
                     throw new InvalidDataException("Invalid NCA Header! Are the keys correct?");
                 }
@@ -336,14 +282,14 @@ namespace Kontract.Encryption
                     var keyIndex = headerPart[0x207];
                     if (keyIndex > 2)
                         throw new InvalidDataException($"NCA KeyIndex must be 0-2. Found KeyIndex: {keyIndex}");
-                    dec_key_area = ECB128_Decrypt(headerPart.GetElements(0x300, 0x40), keyset.keyAreaKeys[cryptoType][keyIndex]);
+                    dec_key_area = Decryption.ECB128(headerPart.GetElements(0x300, 0x40), keyset.keyAreaKeys[cryptoType][keyIndex]);
                     bw.Write(dec_key_area);
                 }
                 else
                 {
                     //Decrypt title_key
                     var title_key = InputBox.Show("Input Titlekey:", "Decrypt NCA").Hexlify(16);
-                    dec_title_key = ECB128_Decrypt(title_key, keyset.titleKeks[cryptoType]);
+                    dec_title_key = Decryption.ECB128(title_key, keyset.titleKeks[cryptoType]);
                 }
 
                 //Read out section crypto
@@ -358,7 +304,7 @@ namespace Kontract.Encryption
                         if (hasRightsID)
                         {
                             var enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
-                            var dec_buffer = CTR128_Decrypt(enc_buffer, dec_title_key, GenerateCTR(sectionList[i].mediaOffset * 0x200));
+                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(sectionList[i].mediaOffset * 0x200));
                             bw.Write(dec_buffer);
                         }
                         else
@@ -373,13 +319,13 @@ namespace Kontract.Encryption
                                 case 2:
                                     //XTS
                                     var enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
-                                    var dec_buffer = XTS128_Decrypt(enc_buffer, dec_key_area.GetElements(0, 0x20), 0x200);
+                                    var dec_buffer = Decryption.XTS128(enc_buffer, dec_key_area.GetElements(0, 0x20), 0x200);
                                     bw.Write(dec_buffer);
                                     break;
                                 case 3:
                                     //CTR
                                     enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
-                                    dec_buffer = CTR128_Decrypt(enc_buffer, dec_key_area.GetElements(0x20, 0x10), GenerateCTR(sectionList[i].mediaOffset * 0x200));
+                                    dec_buffer = Decryption.CTR128(enc_buffer, dec_key_area.GetElements(0x20, 0x10), GenerateCTR(sectionList[i].mediaOffset * 0x200));
                                     bw.Write(dec_buffer);
                                     break;
                                 case 4:

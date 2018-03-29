@@ -27,7 +27,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace Kontract.Encryption.AES_XTS
+namespace Kontract.Encryption.AES.XTS
 {
     /// <summary>
     /// XTS-AES-128 implementation

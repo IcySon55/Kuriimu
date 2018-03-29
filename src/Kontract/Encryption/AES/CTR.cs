@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Kontract.CTR
+namespace Kontract.Encryption.AES.CTR
 {
     public class AesCtr : SymmetricAlgorithm
     {

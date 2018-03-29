@@ -55,10 +55,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AES\AesCTR.cs" />
-    <Compile Include="AES\AesEngine.cs" />
-    <Compile Include="AES\BigEndian.cs" />
-    <Compile Include="AES\CTRKeyScrambler.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\AesCTR.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\AesEngine.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\BigEndian.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\CTRKeyScrambler.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Compression\Level5.cs" />
     <Compile Include="Compression\GZip.cs" />
@@ -81,18 +81,20 @@
     <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
-    <Compile Include="Encryption\AES_XTS\RandomAccessSectorStream.cs" />
-    <Compile Include="Encryption\AES_XTS\SectorStream.cs" />
-    <Compile Include="Encryption\AES_XTS\Xts.cs" />
-    <Compile Include="Encryption\AES_XTS\XtsAes128.cs" />
-    <Compile Include="Encryption\AES_XTS\XtsAes256.cs" />
-    <Compile Include="Encryption\AES_XTS\XtsCryptoTransform.cs" />
-    <Compile Include="Encryption\AES_XTS\XtsSectorStream.cs" />
-    <Compile Include="Encryption\AES_XTS\XtsStream.cs" />
+	<Compile Include="Encryption\AES\Transform.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\RandomAccessSectorStream.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\SectorStream.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\Xts.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsAes128.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsAes256.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsCryptoTransform.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsSectorStream.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsStream.cs" />
     <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Encryption\Switch.cs" />
     <Compile Include="Hash\Crc32.cs" />
+	<Compile Include="Hash\SHA256.cs" />
     <Compile Include="Image\Format\AI.cs" />
     <Compile Include="Image\Format\ATI.cs" />
     <Compile Include="Image\Format\DXT.cs" />

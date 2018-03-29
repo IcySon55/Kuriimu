@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace Kontract.CTR
+namespace Kontract.Encryption.AES.CTR
 {
     public class KeyScrambler
     {

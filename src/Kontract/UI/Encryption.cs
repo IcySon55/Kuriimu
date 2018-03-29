@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Kontract.CTR;
+using Kontract.Encryption.AES.CTR;
 using Kontract.Encryption;
 using Kontract.IO;
 using Kontract;

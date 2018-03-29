@@ -24,59 +24,47 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using System;
-using System.Security.Cryptography;
+using System.IO;
 
-namespace Kontract.Encryption.AES_XTS
+namespace Kontract.Encryption.AES.XTS
 {
 	/// <summary>
-	/// XTS-AES-256 implementation
+	/// A random access, xts encrypted stream
 	/// </summary>
-	public class XtsAes256 : Xts
+	public class XtsStream : RandomAccessSectorStream
 	{
-		private const int KEY_LENGTH = 256;
-		private const int KEY_BYTE_LENGTH = KEY_LENGTH/8;
-
 		/// <summary>
-		/// Creates a new instance
+		/// Creates a new stream
 		/// </summary>
-		protected XtsAes256(Func<SymmetricAlgorithm> create, byte[] key1, byte[] key2)
-			: base(create, VerifyKey(KEY_LENGTH, key1), VerifyKey(KEY_LENGTH, key2))
+		/// <param name="baseStream">The base stream</param>
+		/// <param name="xts">Xts implementation to use</param>
+		public XtsStream(Stream baseStream, Xts xts)
+			: this(baseStream, xts, XtsSectorStream.DEFAULT_SECTOR_SIZE)
 		{
 		}
 
 		/// <summary>
-		/// Creates a new implementation
+		/// Creates a new stream
 		/// </summary>
-		/// <param name="key1">First key</param>
-		/// <param name="key2">Second key</param>
-		/// <returns>Xts implementation</returns>
-		/// <remarks>Keys need to be 256 bits long (i.e. 32 bytes)</remarks>
-		public static Xts Create(byte[] key1, byte[] key2)
+		/// <param name="baseStream">The base stream</param>
+		/// <param name="xts">Xts implementation to use</param>
+		/// <param name="sectorSize">Sector size</param>
+		public XtsStream(Stream baseStream, Xts xts, int sectorSize)
+			: base(new XtsSectorStream(baseStream, xts, sectorSize), true)
 		{
-			VerifyKey(KEY_LENGTH, key1);
-			VerifyKey(KEY_LENGTH, key2);
-
-			return new XtsAes256(Aes.Create, key1, key2);
 		}
 
+
 		/// <summary>
-		/// Creates a new implementation
+		/// Creates a new stream
 		/// </summary>
-		/// <param name="key">Key to use</param>
-		/// <returns>Xts implementation</returns>
-		/// <remarks>Keys need to be 512 bits long (i.e. 64 bytes)</remarks>
-		public static Xts Create(byte[] key)
+		/// <param name="baseStream">The base stream</param>
+		/// <param name="xts">Xts implementation to use</param>
+		/// <param name="sectorSize">Sector size</param>
+		/// <param name="offset">Offset to start counting sectors</param>
+		public XtsStream(Stream baseStream, Xts xts, int sectorSize, long offset)
+			: base(new XtsSectorStream(baseStream, xts, sectorSize, offset), true)
 		{
-			VerifyKey(KEY_LENGTH*2, key);
-
-			var key1 = new byte[KEY_BYTE_LENGTH];
-			var key2 = new byte[KEY_BYTE_LENGTH];
-
-			Buffer.BlockCopy(key, 0, key1, 0, KEY_BYTE_LENGTH);
-			Buffer.BlockCopy(key, KEY_BYTE_LENGTH, key2, 0, KEY_BYTE_LENGTH);
-
-			return new XtsAes256(Aes.Create, key1, key2);
 		}
 	}
 }
