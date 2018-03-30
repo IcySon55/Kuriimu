@@ -131,10 +131,18 @@ namespace Kontract.UI
                             var xci_header_key = InputBox.Show("Input XCI Header Key:", "Decrypt XCI").Hexlify();
                             Switch.DecryptXCI(openBr.BaseStream, outFs.BaseStream, xci_header_key);
 
-                            MessageBox.Show("XCI Header and all NCA headers were decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
+                            MessageBox.Show("XCI Header and all NCA's were decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
                             show = false;
                             break;
                         case Types.NSW_NCA:
+                            openBr.BaseStream.CopyTo(outFs.BaseStream);
+                            openBr.BaseStream.Position = 0;
+                            outFs.BaseStream.Position = 0;
+
+                            Switch.DecryptNCA(openBr.BaseStream, outFs.BaseStream, 0);
+
+                            MessageBox.Show("NCA was decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
+                            show = false;
                             break;
                     }
                 }

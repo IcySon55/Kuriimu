@@ -220,7 +220,7 @@ namespace Kontract.Encryption
         #endregion
 
         #region NCA Decryption
-        private static void DecryptNCA(Stream input, Stream output, long offset)
+        public static void DecryptNCA(Stream input, Stream output, long offset)
         {
             var keyset = new Keyset();
 
@@ -231,30 +231,42 @@ namespace Kontract.Encryption
                 bw.BaseStream.Position = offset;
 
                 //Decrypt NCA Header
-                var headerPart = Decryption.XTS128(br.ReadBytes(0x400), keyset.ncaHeaderKey, 0x200, true);
-                var magic = headerPart.GetElements(0x200, 4).Aggregate("", (o, b) => o + (char)b);
-                bw.Write(headerPart);
+                var enc_header = br.ReadBytes(0x400);
+                var magic = enc_header.GetElements(0x200, 4).Aggregate("", (o, b) => o + (char)b);
+                var headerPart = new byte[0x400];
                 var headerPart2 = new byte[0x800];
-                if (magic == "NCA3")
+                if (magic != "NCA2" && magic != "NCA3")
                 {
-                    headerPart2 = Decryption.XTS128(br.ReadBytes(0x800), keyset.ncaHeaderKey, 0x200, true, 2);
-                    bw.Write(headerPart2);
-                }
-                else if (magic == "NCA2")
-                {
-                    for (int i = 0; i < 4; i++)
+                    headerPart = Decryption.XTS128(enc_header, keyset.ncaHeaderKey, 0x200, true);
+                    magic = headerPart.GetElements(0x200, 4).Aggregate("", (o, b) => o + (char)b);
+                    bw.Write(headerPart);
+                    if (magic == "NCA3")
                     {
-                        var buffer = Decryption.XTS128(br.ReadBytes(0x200), keyset.ncaHeaderKey, 0x200, true);
-                        Array.Copy(buffer, 0, headerPart2, i * 0x200, 0x200);
-                        bw.Write(buffer);
+                        headerPart2 = Decryption.XTS128(br.ReadBytes(0x800), keyset.ncaHeaderKey, 0x200, true, 2);
+                        bw.Write(headerPart2);
+                    }
+                    else if (magic == "NCA2")
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            var buffer = Decryption.XTS128(br.ReadBytes(0x200), keyset.ncaHeaderKey, 0x200, true);
+                            Array.Copy(buffer, 0, headerPart2, i * 0x200, 0x200);
+                            bw.Write(buffer);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidDataException("Invalid NCA Header! Are the keys correct?");
                     }
                 }
                 else
                 {
-                    throw new InvalidDataException("Invalid NCA Header! Are the keys correct?");
+                    headerPart = enc_header;
+                    headerPart2 = br.ReadBytes(0x800);
                 }
 
-                //Get crypto_type
+
+                //Get crypto_type for master_key
                 var cryptoType = (headerPart[0x220] > headerPart[0x206]) ? headerPart[0x220] : headerPart[0x206];
                 if (cryptoType == 1) cryptoType--;
 
@@ -278,12 +290,10 @@ namespace Kontract.Encryption
                 if (!hasRightsID)
                 {
                     //Decrypt keyarea
-                    bw.BaseStream.Position = offset + 0x300;
                     var keyIndex = headerPart[0x207];
                     if (keyIndex > 2)
                         throw new InvalidDataException($"NCA KeyIndex must be 0-2. Found KeyIndex: {keyIndex}");
                     dec_key_area = Decryption.ECB128(headerPart.GetElements(0x300, 0x40), keyset.keyAreaKeys[cryptoType][keyIndex]);
-                    bw.Write(dec_key_area);
                 }
                 else
                 {
@@ -304,7 +314,7 @@ namespace Kontract.Encryption
                         if (hasRightsID)
                         {
                             var enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
-                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(sectionList[i].mediaOffset * 0x200));
+                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200));
                             bw.Write(dec_buffer);
                         }
                         else
@@ -325,7 +335,7 @@ namespace Kontract.Encryption
                                 case 3:
                                     //CTR
                                     enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
-                                    dec_buffer = Decryption.CTR128(enc_buffer, dec_key_area.GetElements(0x20, 0x10), GenerateCTR(sectionList[i].mediaOffset * 0x200));
+                                    dec_buffer = Decryption.CTR128(enc_buffer, dec_key_area.GetElements(0x20, 0x10), GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200));
                                     bw.Write(dec_buffer);
                                     break;
                                 case 4:
@@ -333,6 +343,9 @@ namespace Kontract.Encryption
                                     //stub
                                     break;
                             }
+
+                            bw.BaseStream.Position = offset + 0x400 + i * 0x200 + 0x4;
+                            bw.Write((byte)0x1);
                         }
                     }
                 }
@@ -354,10 +367,15 @@ namespace Kontract.Encryption
             }
         }
 
-        private static byte[] GenerateCTR(long offset)
+        private static byte[] GenerateCTR(int section_id, long offset)
         {
             offset >>= 4;
             byte[] ctr = new byte[0x10];
+            for (int i = 0; i < 4; i++)
+            {
+                ctr[0x4 - i - 1] = (byte)(section_id & 0xFF);
+                section_id >>= 8;
+            }
             for (int i = 0; i < 8; i++)
             {
                 ctr[0x10 - i - 1] = (byte)(offset & 0xFF);

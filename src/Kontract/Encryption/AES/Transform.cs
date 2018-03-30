@@ -34,6 +34,7 @@ namespace Kontract.Encryption.AES
             aes.BlockSize = 128;
             aes.Key = key;
             aes.Mode = CipherMode.ECB;
+            aes.Padding = PaddingMode.None;
 
             var output = new byte[block.Length];
             aes.CreateDecryptor().TransformBlock(block, 0, block.Length, output, 0);
@@ -48,6 +49,7 @@ namespace Kontract.Encryption.AES
             aes.IV = iv;
             aes.Key = key;
             aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.None;
 
             var output = new byte[block.Length];
             aes.CreateDecryptor().TransformBlock(block, 0, block.Length, output, 0);
