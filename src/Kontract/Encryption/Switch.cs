@@ -116,12 +116,15 @@ namespace Kontract.Encryption
 
         private static byte[] xci_sha256 = new byte[] { 0x2e, 0x36, 0xcc, 0x55, 0x15, 0x7a, 0x35, 0x10, 0x90, 0xa7, 0x3e, 0x7a, 0xe7, 0x7c, 0xf5, 0x81, 0xf6, 0x9b, 0x0b, 0x6e, 0x48, 0xfb, 0x06, 0x6c, 0x98, 0x48, 0x79, 0xa6, 0xed, 0x7d, 0x2e, 0x96 };
 
-        public static void DecryptXCI(Stream input, Stream output, byte[] xci_header_key)
+        public static void DecryptXCI(Stream input, byte[] xci_header_key)
         {
+            if (!input.CanWrite)
+                throw new Exception("File not writeable. Is it open somewhere?");
+
             if (!SHA256.Create(xci_header_key).SequenceEqual(xci_sha256))
                 throw new InvalidDataException("The given XCI Header Key is wrong.");
 
-            using (var bw = new BinaryWriterX(output, true))
+            using (var bw = new BinaryWriterX(input, true))
             using (var br = new BinaryReaderX(input, true))
             {
                 //Decrypt XCI Header
@@ -145,7 +148,7 @@ namespace Kontract.Encryption
                 {
                     if (entry.name.Contains(".nca"))
                     {
-                        DecryptNCA(input, output, entry.entry.offset);
+                        DecryptNCA(input, entry.entry.offset);
                     }
                 }
             }
@@ -220,15 +223,14 @@ namespace Kontract.Encryption
         #endregion
 
         #region NCA Decryption
-        public static void DecryptNCA(Stream input, Stream output, long offset)
+        public static void DecryptNCA(Stream input, long offset)
         {
             var keyset = new Keyset();
 
-            using (var bw = new BinaryWriterX(output, true))
+            using (var bw = new BinaryWriterX(input, true))
             using (var br = new BinaryReaderX(input, true))
             {
                 br.BaseStream.Position = offset;
-                bw.BaseStream.Position = offset;
 
                 //Decrypt NCA Header
                 var enc_header = br.ReadBytes(0x400);
@@ -239,10 +241,12 @@ namespace Kontract.Encryption
                 {
                     headerPart = Decryption.XTS128(enc_header, keyset.ncaHeaderKey, 0x200, true);
                     magic = headerPart.GetElements(0x200, 4).Aggregate("", (o, b) => o + (char)b);
+                    bw.BaseStream.Position = offset;
                     bw.Write(headerPart);
                     if (magic == "NCA3")
                     {
                         headerPart2 = Decryption.XTS128(br.ReadBytes(0x800), keyset.ncaHeaderKey, 0x200, true, 2);
+                        bw.BaseStream.Position = offset + 0x400;
                         bw.Write(headerPart2);
                     }
                     else if (magic == "NCA2")
@@ -251,6 +255,7 @@ namespace Kontract.Encryption
                         {
                             var buffer = Decryption.XTS128(br.ReadBytes(0x200), keyset.ncaHeaderKey, 0x200, true);
                             Array.Copy(buffer, 0, headerPart2, i * 0x200, 0x200);
+                            bw.BaseStream.Position -= 0x200;
                             bw.Write(buffer);
                         }
                     }
@@ -309,12 +314,12 @@ namespace Kontract.Encryption
                     if (sectionList[i].mediaOffset != 0 && sectionList[i].endMediaOffset != 0)
                     {
                         br.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
-                        bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
 
                         if (hasRightsID)
                         {
                             var enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
                             var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200));
+                            bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
                             bw.Write(dec_buffer);
                         }
                         else
@@ -330,12 +335,14 @@ namespace Kontract.Encryption
                                     //XTS
                                     var enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
                                     var dec_buffer = Decryption.XTS128(enc_buffer, dec_key_area.GetElements(0, 0x20), 0x200);
+                                    bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
                                     bw.Write(dec_buffer);
                                     break;
                                 case 3:
                                     //CTR
                                     enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
                                     dec_buffer = Decryption.CTR128(enc_buffer, dec_key_area.GetElements(0x20, 0x10), GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200));
+                                    bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
                                     bw.Write(dec_buffer);
                                     break;
                                 case 4:
@@ -349,21 +356,6 @@ namespace Kontract.Encryption
                         }
                     }
                 }
-
-                //Body section decryption
-                /*if (ctx->tool_ctx->settings.has_contentkey) {
-                ctx->section_contexts[i].aes = new_aes_ctx(ctx->tool_ctx->settings.contentkey, 16, AES_MODE_CTR);
-            } else {
-                if (ctx->has_rights_id) {
-                    ctx->section_contexts[i].aes = new_aes_ctx(ctx->tool_ctx->settings.dec_titlekey, 16, AES_MODE_CTR);
-                } else {
-                    if (ctx->section_contexts[i].header->crypt_type == CRYPT_CTR || ctx->section_contexts[i].header->crypt_type == CRYPT_BKTR) {
-                        ctx->section_contexts[i].aes = new_aes_ctx(ctx->decrypted_keys[2], 16, AES_MODE_CTR);
-                    } else if (ctx->section_contexts[i].header->crypt_type == CRYPT_XTS) {
-                        ctx->section_contexts[i].aes = new_aes_ctx(ctx->decrypted_keys[0], 32, AES_MODE_XTS);
-                    }
-                }
-            }*/
             }
         }
 
@@ -380,6 +372,28 @@ namespace Kontract.Encryption
             {
                 ctr[0x10 - i - 1] = (byte)(offset & 0xFF);
                 offset >>= 8;
+            }
+            return ctr;
+        }
+
+        private static byte[] GenerateBktrCTR(int section_id, int ctr_val, long offset)
+        {
+            offset >>= 4;
+            byte[] ctr = new byte[0x10];
+            for (int i = 0; i < 4; i++)
+            {
+                ctr[0x4 - i - 1] = (byte)(section_id & 0xFF);
+                section_id >>= 8;
+            }
+            for (uint i = 0; i < 0x8; i++)
+            {
+                ctr[0x10 - i - 1] = (byte)(offset & 0xFF);
+                offset >>= 8;
+            }
+            for (uint j = 0; j < 4; j++)
+            {
+                ctr[0x8 - j - 1] = (byte)(ctr_val & 0xFF);
+                ctr_val >>= 8;
             }
             return ctr;
         }
