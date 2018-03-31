@@ -20,12 +20,6 @@ namespace image_mt
         DXT5_YCbCr = 0x2A
     }
 
-    public enum Version
-    {
-        v154 = 154,
-        v165 = 165
-    }
-
     // This particular enum is questionable as the data space for it is only 4-bits (maybe)
     public enum AlphaChannelFlags : byte
     {
@@ -68,7 +62,7 @@ namespace image_mt
     public class HeaderInfo
     {
         // Block 1
-        public Version Version;
+        public int Version;
         public int Unknown1;
         public int Unused1;
         public AlphaChannelFlags AlphaChannelFlags;
