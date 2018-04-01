@@ -39,6 +39,7 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findReplaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -119,6 +120,7 @@
             this.tsbSaveAs = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbFind = new System.Windows.Forms.ToolStripButton();
+            this.tsbFindReplace = new System.Windows.Forms.ToolStripButton();
             this.tsbSearchDirectory = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbKarameru = new System.Windows.Forms.ToolStripButton();
@@ -253,6 +255,7 @@
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.findToolStripMenuItem,
+            this.findReplaceToolStripMenuItem,
             this.searchDirectoryToolStripMenuItem,
             this.toolStripMenuItem1,
             this.propertiesToolStripMenuItem});
@@ -269,6 +272,16 @@
             this.findToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.findToolStripMenuItem.Text = "&Find";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
+            // findReplaceToolStripMenuItem
+            // 
+            this.findReplaceToolStripMenuItem.Enabled = false;
+            this.findReplaceToolStripMenuItem.Image = global::Kuriimu.Properties.Resources.menu_replace;
+            this.findReplaceToolStripMenuItem.Name = "findReplaceToolStripMenuItem";
+            this.findReplaceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this.findReplaceToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.findReplaceToolStripMenuItem.Text = "Find && Replace";
+            this.findReplaceToolStripMenuItem.Click += new System.EventHandler(this.findReplaceToolStripMenuItem_Click);
             // 
             // searchDirectoryToolStripMenuItem
             // 
@@ -1090,6 +1103,7 @@
             this.tsbSaveAs,
             this.toolStripSeparator2,
             this.tsbFind,
+            this.tsbFindReplace,
             this.tsbSearchDirectory,
             this.toolStripSeparator3,
             this.tsbKarameru,
@@ -1168,6 +1182,17 @@
             this.tsbFind.Size = new System.Drawing.Size(23, 22);
             this.tsbFind.Text = "Find";
             this.tsbFind.Click += new System.EventHandler(this.tsbFind_Click);
+            // 
+            // tsbFindReplace
+            // 
+            this.tsbFindReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbFindReplace.Enabled = false;
+            this.tsbFindReplace.Image = global::Kuriimu.Properties.Resources.menu_replace;
+            this.tsbFindReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbFindReplace.Name = "tsbFindReplace";
+            this.tsbFindReplace.Size = new System.Drawing.Size(23, 22);
+            this.tsbFindReplace.Text = "Find";
+            this.tsbFindReplace.Click += new System.EventHandler(this.tsbFindReplace_Click);
             // 
             // tsbSearchDirectory
             // 
@@ -1494,5 +1519,7 @@
         private System.Windows.Forms.ToolStripMenuItem newLabelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem searchDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tsbSearchDirectory;
+        private System.Windows.Forms.ToolStripMenuItem findReplaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tsbFindReplace;
     }
 }

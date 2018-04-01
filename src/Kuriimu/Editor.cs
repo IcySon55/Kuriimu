@@ -127,14 +127,19 @@ namespace Kuriimu
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Search search = new Search();
-            search.Entries = _entries;
-            search.ShowDialog();
+            var find = new Find {Entries = _entries};
+            find.ShowDialog();
 
-            if (search.Selected == null) return;
-            treEntries.SelectNodeByTextEntry(search.Selected);
+            if (find.Replaced)
+            {
+                _hasChanges = true;
+                UpdateForm();
+            }
 
-            if (!txtEdit.Text.Contains(Settings.Default.FindWhat)) return;
+            if (find.Selected == null) return;
+            treEntries.SelectNodeByTextEntry(find.Selected);
+
+            if (!txtEdit.Text.Contains(Settings.Default.FindWhat) || find.Replace) return;
             txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
             txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
             txtEdit.Focus();
@@ -142,6 +147,35 @@ namespace Kuriimu
         private void tsbFind_Click(object sender, EventArgs e)
         {
             findToolStripMenuItem_Click(sender, e);
+        }
+
+        private void findReplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var find = new Find
+            {
+                Entries = _entries,
+                Replace = true,
+                Current = (TextEntry) treEntries.SelectedNode.Tag
+            };
+            find.ShowDialog();
+
+            if (find.Replaced)
+            {
+                _hasChanges = true;
+                UpdateForm();
+            }
+
+            if (find.Selected == null) return;
+            treEntries.SelectNodeByTextEntry(find.Selected);
+
+            if (!txtEdit.Text.Contains(Settings.Default.FindWhat) || find.Replace) return;
+            txtEdit.SelectionStart = txtEdit.Text.IndexOf(Settings.Default.FindWhat);
+            txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
+            txtEdit.Focus();
+        }
+        private void tsbFindReplace_Click(object sender, EventArgs e)
+        {
+            findReplaceToolStripMenuItem_Click(sender, e);
         }
 
         private void searchDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1028,7 +1062,9 @@ namespace Kuriimu
                 saveAsToolStripMenuItem.Enabled = _fileOpen && _textAdapter.CanSave;
                 tsbSaveAs.Enabled = _fileOpen && _textAdapter.CanSave;
                 findToolStripMenuItem.Enabled = _fileOpen;
+                findReplaceToolStripMenuItem.Enabled = _fileOpen;
                 tsbFind.Enabled = _fileOpen;
+                tsbFindReplace.Enabled = _fileOpen;
                 propertiesToolStripMenuItem.Enabled = _fileOpen && _textAdapter.FileHasExtendedProperties;
                 tsbProperties.Enabled = _fileOpen && _textAdapter.FileHasExtendedProperties;
                 tslFontFamily.Enabled = _fileOpen;
