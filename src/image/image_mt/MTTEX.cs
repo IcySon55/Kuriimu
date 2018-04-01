@@ -165,15 +165,19 @@ namespace image_mt
                 Settings.Format = Formats[HeaderInfo.Format];
 
                 List<int> mipMaps = null;
-                if (HeaderInfo.Version != 0xa4)
+                if (HeaderInfo.Version == 0xa0)
+                {
+                    var texOverallSize = br.ReadInt32();
                     mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
-                //br.BaseStream.Position = br.BaseStream.Position + (HeaderInfo.Unknown1 - 1) & ~(HeaderInfo.Unknown1 - 1);
+                }
+                else if (HeaderInfo.Version != 0xa4)
+                    mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
 
                 for (var i = 0; i < HeaderInfo.MipMapCount; i++)
                 {
                     int texDataSize = 0;
                     if (HeaderInfo.Version != 0xa4)
-                        texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
+                        texDataSize = (i + 1 < HeaderInfo.MipMapCount ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     else
                         texDataSize = Formats[HeaderInfo.Format].BitDepth * (HeaderInfo.Width >> i) * (HeaderInfo.Height >> i) / 8;
 
@@ -181,12 +185,12 @@ namespace image_mt
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, 2);
 
                     //Set possible Swizzles
-                    if (Settings.Format.FormatName.Contains("DXT"))
-                        Settings.Swizzle = new BlockSwizzle(Settings.Width, Settings.Height);
-                    else if (HeaderInfo.Version == 0xa4 || HeaderInfo.Version == 0xa5 || HeaderInfo.Version == 0xa6)
+                    if (HeaderInfo.Version == 0xa4 || HeaderInfo.Version == 0xa5 || HeaderInfo.Version == 0xa6)
                         Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
                     else if (HeaderInfo.Version == 0xa0)
-                        Settings.Swizzle = null;    //Switch Swizzle
+                        Settings.Swizzle = new NXSwizzle(Settings.Width, Settings.Height, GetNXSwizzleFormat(Settings.Format.FormatName));    //Switch Swizzle
+                    else if (Settings.Format.FormatName.Contains("DXT"))
+                        Settings.Swizzle = new BlockSwizzle(Settings.Width, Settings.Height);
 
                     //Set possible pixel shaders
                     if ((Format)HeaderInfo.Format == Format.DXT5_B)
@@ -196,6 +200,21 @@ namespace image_mt
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
+            }
+        }
+
+        NXSwizzle.Format GetNXSwizzleFormat(string formatName)
+        {
+            switch (formatName)
+            {
+                case "DXT1":
+                    return NXSwizzle.Format.DXT1;
+                case "DXT5":
+                    return NXSwizzle.Format.DXT5;
+                case "RGBA8888":
+                    return NXSwizzle.Format.RGBA8888;
+                default:
+                    return NXSwizzle.Format.Empty;
             }
         }
 
@@ -220,12 +239,12 @@ namespace image_mt
                 foreach (var bmp in Bitmaps)
                 {
                     //Set possible Swizzles
-                    if (Settings.Format.FormatName.Contains("DXT"))
-                        Settings.Swizzle = new BlockSwizzle(bmp.Width, bmp.Height);
-                    else if (HeaderInfo.Version == 0xa4 || HeaderInfo.Version == 0xa5 || HeaderInfo.Version == 0xa6)
+                    if (HeaderInfo.Version == 0xa4 || HeaderInfo.Version == 0xa5 || HeaderInfo.Version == 0xa6)
                         Settings.Swizzle = new CTRSwizzle(bmp.Width, bmp.Height);
                     else if (HeaderInfo.Version == 0xa0)
-                        Settings.Swizzle = null;    //Switch Swizzle
+                        Settings.Swizzle = new NXSwizzle(bmp.Width, bmp.Height, GetNXSwizzleFormat(Settings.Format.FormatName));    //Switch Swizzle
+                    else if (Settings.Format.FormatName.Contains("DXT"))
+                        Settings.Swizzle = new BlockSwizzle(bmp.Width, bmp.Height);
 
                     bitmaps.Add(Common.Save(bmp, Settings));
                 }
@@ -233,6 +252,8 @@ namespace image_mt
                 // Mipmaps, but not for Version 0xa4
                 if (HeaderInfo.Version != 0xa4)
                 {
+                    if (HeaderInfo.Version == 0xa0)
+                        bw.Write(bitmaps.Sum(b => b.Length));
                     var offset = HeaderInfo.Version == 0x9a ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
                     foreach (var bitmap in bitmaps)
                     {

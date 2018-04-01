@@ -81,7 +81,7 @@
     <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
-	<Compile Include="Encryption\AES\Transform.cs" />
+    <Compile Include="Encryption\AES\Transform.cs" />
     <Compile Include="Encryption\AES\AES_XTS\RandomAccessSectorStream.cs" />
     <Compile Include="Encryption\AES\AES_XTS\SectorStream.cs" />
     <Compile Include="Encryption\AES\AES_XTS\Xts.cs" />
@@ -94,7 +94,7 @@
     <Compile Include="Encryption\MTFramework.cs" />
     <Compile Include="Encryption\Switch.cs" />
     <Compile Include="Hash\Crc32.cs" />
-	<Compile Include="Hash\SHA256.cs" />
+    <Compile Include="Hash\SHA256.cs" />
     <Compile Include="Image\Format\AI.cs" />
     <Compile Include="Image\Format\ATI.cs" />
     <Compile Include="Image\Format\DXT.cs" />
@@ -122,6 +122,7 @@
     <Compile Include="Image\Swizzle\Linear.cs" />
     <Compile Include="Image\Swizzle\Master.cs" />
     <Compile Include="Image\Swizzle\Nitro.cs" />
+    <Compile Include="Image\Swizzle\NX.cs" />
     <Compile Include="Image\Swizzle\WiiU.cs" />
     <Compile Include="Interface\IArchiveManager.cs" />
     <Compile Include="Interface\IImageAdapter.cs" />

@@ -87,7 +87,7 @@ namespace image_mt
             [2] = new RGBA(5, 5, 5, 1),
             [3] = new RGBA(8, 8, 8, 8),
             [4] = new RGBA(5, 6, 5),
-            [7] = new LA(8, 8),
+            [7] = new RGBA(8, 8, 8, 8,Kontract.IO.ByteOrder.BigEndian),//[7] = new LA(8, 8),
             [11] = new ETC1(),
             [12] = new ETC1(true),
             [14] = new LA(0, 4),
