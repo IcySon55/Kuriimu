@@ -87,7 +87,6 @@ namespace archive_nintendo.SARC
                 foreach (var afi in Files)
                 {
                     dataOffset = Support.Pad(dataOffset, afi.FileName, (byteOrder == ByteOrder.LittleEndian) ? System.CTR : System.WiiU);
-                    var alignment = 0;
 
                     // BXLIM Alignment Reading
                     if (afi.FileName.EndsWith("lim"))
@@ -96,6 +95,7 @@ namespace archive_nintendo.SARC
                         {
                             br.BaseStream.Position = br.BaseStream.Length - 0x28;
                             var type = br.PeekString();
+                            var alignment = 0;
                             if (type == "FLIM")
                             {
                                 br.BaseStream.Position = br.BaseStream.Length - 0x8;
