@@ -30,122 +30,12 @@ namespace image_mt
                 if (br.PeekString(4) == "\0XET")
                     br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
 
-
-                /*Version = br.ReadInt32() & 0xFFF;
-                br.BaseStream.Position = 0;
-                switch (Version)
-                {
-                    //encountered on Switch
-                    case 0xa0:  //Monster Hunter XX
-                        break;
-                    //encountered on PS3
-                    case 0x9a:  //E.X.Troopers
-                        Header = br.ReadStruct<Header>();
-                        var LocHeader = (Header)Header;
-                        HeaderInfo = new HeaderInfo
-                        {
-                            // Block 1
-                            Version = (int)LocHeader.Block1 & 0xFFF,
-                            Unknown1 = (int)((LocHeader.Block1 >> 12) & 0xFFF),
-                            Unused1 = (int)((LocHeader.Block1 >> 24) & 0xF),
-                            AlphaChannelFlags = (AlphaChannelFlags)((LocHeader.Block1 >> 28) & 0xF),
-                            // Block 2
-                            MipMapCount = (int)(LocHeader.Block2 & 0x3F),
-                            Width = (int)((LocHeader.Block2 >> 6) & 0x1FFF),
-                            Height = Math.Max((int)((LocHeader.Block2 >> 19) & 0x1FFF), MinHeight),
-                            // Block 3
-                            Unknown2 = (int)(LocHeader.Block3 & 0xFF),
-                            Format = (byte)((LocHeader.Block3 >> 8) & 0xFF),
-                            Unknown3 = (int)((LocHeader.Block3 >> 16) & 0xFFFF)
-                        };
-
-                        var LocHeaderInfo = (HeaderInfo)HeaderInfo;
-                        Settings.Format = Formats[LocHeaderInfo.Format];
-
-                        var mipMaps = br.ReadMultiple<int>(LocHeaderInfo.MipMapCount);
-                        for (var i = 0; i < mipMaps.Count; i++)
-                        {
-                            var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
-
-                            Settings.Width = Math.Max(LocHeaderInfo.Width >> i, 2);
-                            Settings.Height = Math.Max(LocHeaderInfo.Height >> i, 2);
-                            if (Settings.Format.FormatName.Contains("DXT"))
-                                Settings.Swizzle = new BlockSwizzle(Settings.Width, Settings.Height);
-
-                            if ((Format)LocHeaderInfo.Format == Format.DXT5_B)
-                                Settings.PixelShader = ToNoAlpha;
-                            else if ((Format)LocHeaderInfo.Format == Format.DXT5_YCbCr)
-                                Settings.PixelShader = ToProperColors;
-
-                            Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
-                        }
-                        break;
-                    //encountered on 3DS
-                    case 0xa4:  //Resident Evil The Mercenaries,
-                    case 0xa5:  //Dual Destinies
-                    case 0xa6:  //Spirit of Justice, Dai Gyakuten Saiban, Dai Gyakuten Saiban 2
-                        Header = br.ReadStruct<Header>();
-                        LocHeader = (Header)Header;
-                        HeaderInfo = new HeaderInfo
-                        {
-                            // Block 1
-                            Version = (int)LocHeader.Block1 & 0xFFF,
-                            Unknown1 = (int)((LocHeader.Block1 >> 12) & 0xFFF),
-                            Unused1 = (int)((LocHeader.Block1 >> 24) & 0xF),
-                            AlphaChannelFlags = (AlphaChannelFlags)((LocHeader.Block1 >> 28) & 0xF),
-                            // Block 2
-                            MipMapCount = (int)(LocHeader.Block2 & 0x3F),
-                            Width = (int)((LocHeader.Block2 >> 6) & 0x1FFF),
-                            Height = Math.Max((int)((LocHeader.Block2 >> 19) & 0x1FFF), MinHeight),
-                            // Block 3
-                            Unknown2 = (int)(LocHeader.Block3 & 0xFF),
-                            Format = (byte)((LocHeader.Block3 >> 8) & 0xFF),
-                            Unknown3 = (int)((LocHeader.Block3 >> 16) & 0xFFFF)
-                        };
-
-                        LocHeaderInfo = (HeaderInfo)HeaderInfo;
-                        Settings.Format = Formats[LocHeaderInfo.Format];
-                        Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
-
-                        if (Version != 0xa4)
-                        {
-                            mipMaps = br.ReadMultiple<int>(LocHeaderInfo.MipMapCount);
-                            for (var i = 0; i < mipMaps.Count; i++)
-                            {
-                                var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
-
-                                Settings.Width = Math.Max(LocHeaderInfo.Width >> i, 2);
-                                Settings.Height = Math.Max(LocHeaderInfo.Height >> i, 2);
-                                Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
-
-                                Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
-                            }
-                        }
-                        else
-                        {
-                            for (var i = 0; i < LocHeaderInfo.MipMapCount; i++)
-                            {
-                                var texDataSize = Formats[LocHeaderInfo.Format].BitDepth * (LocHeaderInfo.Width >> i) * (LocHeaderInfo.Height >> i) / 8;
-
-                                Settings.Width = Math.Max(LocHeaderInfo.Width >> i, 2);
-                                Settings.Height = Math.Max(LocHeaderInfo.Height >> i, 2);
-                                Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
-
-                                Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
-                            }
-                        }
-                        break;
-                    //encountered on mobile
-                    case 0x09:
-                        break;
-                }*/
-
                 // Header
                 Header = br.ReadStruct<Header>();
                 HeaderInfo = new HeaderInfo
                 {
                     // Block 1
-                    Version = (int)Header.Block1 & 0xFFF,
+                    Version = (Version)(Header.Block1 & 0xFFF),
                     Unknown1 = (int)((Header.Block1 >> 12) & 0xFFF),
                     Unused1 = (int)((Header.Block1 >> 24) & 0xF),
                     AlphaChannelFlags = (AlphaChannelFlags)((Header.Block1 >> 28) & 0xF),
@@ -162,21 +52,21 @@ namespace image_mt
                 // @todo: Consider whether the following settings make more sense if conditioned by the ByteOrder (or Platform)
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
-                Settings.Format = Formats[HeaderInfo.Format];
+                Settings.Format = (HeaderInfo.Version == image_mt.Version._Switchv1) ? SwitchFormats[HeaderInfo.Format] : Formats[HeaderInfo.Format];
 
                 List<int> mipMaps = null;
-                if (HeaderInfo.Version == 0xa0)
+                if (HeaderInfo.Version == image_mt.Version._Switchv1)
                 {
                     var texOverallSize = br.ReadInt32();
                     mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
                 }
-                else if (HeaderInfo.Version != 0xa4)
+                else if (HeaderInfo.Version != image_mt.Version._3DSv1)
                     mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
 
                 for (var i = 0; i < HeaderInfo.MipMapCount; i++)
                 {
                     int texDataSize = 0;
-                    if (HeaderInfo.Version != 0xa4)
+                    if (HeaderInfo.Version != image_mt.Version._3DSv1)
                         texDataSize = (i + 1 < HeaderInfo.MipMapCount ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     else
                         texDataSize = Formats[HeaderInfo.Format].BitDepth * (HeaderInfo.Width >> i) * (HeaderInfo.Height >> i) / 8;
@@ -185,10 +75,10 @@ namespace image_mt
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, 2);
 
                     //Set possible Swizzles
-                    if (HeaderInfo.Version == 0xa4 || HeaderInfo.Version == 0xa5 || HeaderInfo.Version == 0xa6)
+                    if (HeaderInfo.Version == image_mt.Version._3DSv1 || HeaderInfo.Version == image_mt.Version._3DSv2 || HeaderInfo.Version == image_mt.Version._3DSv3)
                         Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
-                    else if (HeaderInfo.Version == 0xa0)
-                        Settings.Swizzle = new NXSwizzle(Settings.Width, Settings.Height, GetNXSwizzleFormat(Settings.Format.FormatName));    //Switch Swizzle
+                    else if (HeaderInfo.Version == image_mt.Version._Switchv1)
+                        Settings.Swizzle = new SwitchSwizzle(Settings.Width, Settings.Height, Settings.Format.BitDepth, GetSwitchSwizzleFormat(Settings.Format.FormatName));
                     else if (Settings.Format.FormatName.Contains("DXT"))
                         Settings.Swizzle = new BlockSwizzle(Settings.Width, Settings.Height);
 
@@ -203,18 +93,18 @@ namespace image_mt
             }
         }
 
-        NXSwizzle.Format GetNXSwizzleFormat(string formatName)
+        SwitchSwizzle.Format GetSwitchSwizzleFormat(string formatName)
         {
             switch (formatName)
             {
                 case "DXT1":
-                    return NXSwizzle.Format.DXT1;
+                    return SwitchSwizzle.Format.BC1;
                 case "DXT5":
-                    return NXSwizzle.Format.DXT5;
+                    return SwitchSwizzle.Format.BC3;
                 case "RGBA8888":
-                    return NXSwizzle.Format.RGBA8888;
+                    return SwitchSwizzle.Format.RGBA8888;
                 default:
-                    return NXSwizzle.Format.Empty;
+                    return SwitchSwizzle.Format.Empty;
             }
         }
 
@@ -239,22 +129,22 @@ namespace image_mt
                 foreach (var bmp in Bitmaps)
                 {
                     //Set possible Swizzles
-                    if (HeaderInfo.Version == 0xa4 || HeaderInfo.Version == 0xa5 || HeaderInfo.Version == 0xa6)
+                    if (HeaderInfo.Version == image_mt.Version._3DSv1 || HeaderInfo.Version == image_mt.Version._3DSv2 || HeaderInfo.Version == image_mt.Version._3DSv3)
                         Settings.Swizzle = new CTRSwizzle(bmp.Width, bmp.Height);
-                    else if (HeaderInfo.Version == 0xa0)
-                        Settings.Swizzle = new NXSwizzle(bmp.Width, bmp.Height, GetNXSwizzleFormat(Settings.Format.FormatName));    //Switch Swizzle
+                    else if (HeaderInfo.Version == image_mt.Version._Switchv1)
+                        Settings.Swizzle = new SwitchSwizzle(bmp.Width, bmp.Height, Settings.Format.BitDepth, GetSwitchSwizzleFormat(Settings.Format.FormatName));    //Switch Swizzle
                     else if (Settings.Format.FormatName.Contains("DXT"))
                         Settings.Swizzle = new BlockSwizzle(bmp.Width, bmp.Height);
 
                     bitmaps.Add(Common.Save(bmp, Settings));
                 }
 
-                // Mipmaps, but not for Version 0xa4
-                if (HeaderInfo.Version != 0xa4)
+                // Mipmaps, but not for Version 3DS v1
+                if (HeaderInfo.Version != image_mt.Version._3DSv1)
                 {
-                    if (HeaderInfo.Version == 0xa0)
+                    if (HeaderInfo.Version == image_mt.Version._Switchv1)
                         bw.Write(bitmaps.Sum(b => b.Length));
-                    var offset = HeaderInfo.Version == 0x9a ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
+                    var offset = HeaderInfo.Version == image_mt.Version._PS3v1 ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
                     foreach (var bitmap in bitmaps)
                     {
                         bw.Write(offset);
