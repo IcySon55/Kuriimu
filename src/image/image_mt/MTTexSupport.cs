@@ -121,6 +121,8 @@ namespace image_mt
         public static Dictionary<byte, IImageFormat> SwitchFormats = new Dictionary<byte, IImageFormat>
         {
             [7] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x13] = new DXT(DXT.Version.DXT1),
+            [0x17] = new DXT(DXT.Version.DXT5)
         };
         #endregion
 
