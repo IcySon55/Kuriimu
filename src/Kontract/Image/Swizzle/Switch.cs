@@ -16,16 +16,16 @@ namespace Kontract.Image.Swizzle
             RGB565 = 0x07,
             RG88 = 0x09,
             RGBA8888 = 0x0B,
-            BC1 = 0x1A,
-            BC2 = 0x1B,
-            BC3 = 0x1C,
-            BC4 = 0x1D,
-            BC5 = 0x1E,
+            DXT1 = 0x1A,
+            DXT3 = 0x1B,
+            DXT5 = 0x1C,
+            ATI1 = 0x1D,
+            ATI2 = 0x1E,
             BC6H = 0x1F,
             BC7 = 0x20,
-            ASTC4x4 = 0x2d,
-            ASTC5x4 = 0x2e,
-            ASTC5x5 = 0x2f,
+            ASTC4x4 = 0x2D,
+            ASTC5x4 = 0x2E,
+            ASTC5x5 = 0x2F,
             ASTC6x5 = 0x30,
             ASTC6x6 = 0x31,
             ASTC8x5 = 0x32,
@@ -36,8 +36,8 @@ namespace Kontract.Image.Swizzle
             ASTC10x8 = 0x37,
             ASTC10x10 = 0x38,
             ASTC12x10 = 0x39,
-            ASTC12x12 = 0x3a,
-            Empty = 0xff
+            ASTC12x12 = 0x3A,
+            Empty = 0xFF
         }
 
         #region BitFields & Meta
@@ -74,17 +74,17 @@ namespace Kontract.Image.Swizzle
         #endregion
 
         #region Functions
-        bool isBlockBased(Format format) => (format == Format.BC1 || format == Format.BC2 || format == Format.BC3 || format == Format.BC4 || format == Format.BC5 || format == Format.BC6H || format == Format.BC7);
+        bool isBlockBased(Format format) => (format == Format.DXT1 || format == Format.DXT3 || format == Format.DXT5 || format == Format.ATI1 || format == Format.ATI2 || format == Format.BC6H || format == Format.BC7);
 
         (int, int) PadDimensions(int Width, int Height, Format format)
         {
             switch (format)
             {
-                case Format.BC1:
-                case Format.BC2:
-                case Format.BC3:
-                case Format.BC4:
-                case Format.BC5:
+                case Format.DXT1:
+                case Format.DXT3:
+                case Format.DXT5:
+                case Format.ATI1:
+                case Format.ATI2:
                 case Format.BC6H:
                 case Format.BC7:
                     return ((Width + 3) & ~3, (Height + 3) & ~3);

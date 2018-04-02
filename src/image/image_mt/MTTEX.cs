@@ -98,9 +98,9 @@ namespace image_mt
             switch (formatName)
             {
                 case "DXT1":
-                    return SwitchSwizzle.Format.BC1;
+                    return SwitchSwizzle.Format.DXT1;
                 case "DXT5":
-                    return SwitchSwizzle.Format.BC3;
+                    return SwitchSwizzle.Format.DXT5;
                 case "RGBA8888":
                     return SwitchSwizzle.Format.RGBA8888;
                 default:
