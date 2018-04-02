@@ -118,7 +118,7 @@ namespace image_mt
                 bw.WriteStruct(Header);
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
-                Settings.Format = Formats[HeaderInfo.Format];
+                Settings.Format = (HeaderInfo.Version == image_mt.Version._Switchv1) ? SwitchFormats[HeaderInfo.Format] : Formats[HeaderInfo.Format];
 
                 if ((Format)HeaderInfo.Format == Format.DXT5_B)
                     Settings.PixelShader = ToNoAlpha;
