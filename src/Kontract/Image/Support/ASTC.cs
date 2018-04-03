@@ -11,10 +11,27 @@ namespace Kontract.Image.Support
         {
             private Queue<Color> queue = new Queue<Color>();
 
-            private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
+            private int GetRField(byte[] block) => ((block[0] & 0x10) >> 4) | (((block[0] & 0x3) == 0) ? ((block[0] & 0x4) >> 1) | ((block[0] & 0x8) >> 1) : ((block[0] & 0x1) << 1) | ((block[0] & 0x2) << 1));
+            private Dictionary<int, (int, int, byte, byte, byte)> RFieldTable = new Dictionary<int, (int, int, byte, byte, byte)>
+            {
+                [0b0010] = (0, 1, 0, 0, 1),
+                [0b0011] = (0, 2, 1, 0, 0),
+                [0b0100] = (0, 3, 0, 0, 2),
+                [0b0101] = (0, 4, 0, 1, 0),
+                [0b0110] = (0, 5, 1, 0, 1),
+                [0b0111] = (0, 7, 0, 0, 3),
+                [0b1010] = (0, 9, 0, 1, 1),
+                [0b1011] = (0, 11, 1, 0, 2),
+                [0b1100] = (0, 15, 0, 0, 4),
+                [0b1101] = (0, 19, 0, 1, 2),
+                [0b1110] = (0, 23, 1, 0, 3),
+                [0b1111] = (0, 31, 0, 0, 5),
+            };
+
+            /*private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
 
-            private Color GetRGB565(ushort val) => Color.FromArgb(255, (val >> 11) * 33 / 4, (val >> 5) % 64 * 65 / 16, (val % 32) * 33 / 4);
+            private Color GetRGB565(ushort val) => Color.FromArgb(255, (val >> 11) * 33 / 4, (val >> 5) % 64 * 65 / 16, (val % 32) * 33 / 4);*/
 
             int blockWidth;
             int blockHeight;
@@ -30,6 +47,19 @@ namespace Kontract.Image.Support
                 if (!queue.Any())
                 {
                     var block = func();
+
+                    var blockMode = (block[1] & 0x7) | block[0];
+                    if ((blockMode & 0x1FC) == 0x1FC)
+                    {
+                        //void-extent
+                    }
+                    else
+                    {
+                        bool highPrec = ((block[1] >> 1) & 0x1) == 1;
+                        bool dualPlane = ((block[1] >> 2) & 0x1) == 1;
+                        var rField = GetRField(block);
+                        (int weightMin, int weightMax, byte trits, byte quints, byte bits) = RFieldTable[(((highPrec) ? 1 : 0) << 3) | rField];
+                    }
 
                     /*var (a0, a1) = ((byte)alpha, (byte)(alpha >> 8));
                     var (color0, color1) = ((ushort)block, (ushort)(block >> 16));
