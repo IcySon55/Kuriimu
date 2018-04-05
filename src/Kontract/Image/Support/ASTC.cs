@@ -2,16 +2,44 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.IO;
 
 namespace Kontract.Image.Support
 {
     public class ASTC
     {
+        public class BitReader
+        {
+            BinaryReader _br;
+            int _bitPos = 0;
+
+            public BitReader(byte[] bytes)
+            {
+                _br = new BinaryReader(new MemoryStream(bytes));
+            }
+
+            public int ReadBits(int pos, int length)
+            {
+                if (length == 0) return 0;
+
+                _br.BaseStream.Position = pos / 8;
+                int bitsInto = pos % 8;
+
+                var buffer = _br.ReadBytes(((bitsInto + length - 1) / 8) + 1);
+
+                int result = 0;
+                result |= buffer[0] >> bitsInto;
+                for (int i = 1; i < buffer.Length; i++) result |= (buffer[i] << (i * 8)) >> (bitsInto);
+
+                return (result & ((1 << length) - 1));
+            }
+        }
+
         public class Decoder
         {
             private Queue<Color> queue = new Queue<Color>();
 
-            private int GetRField(byte[] block) => ((block[0] & 0x10) >> 4) | (((block[0] & 0x3) == 0) ? ((block[0] & 0x4) >> 1) | ((block[0] & 0x8) >> 1) : ((block[0] & 0x1) << 1) | ((block[0] & 0x2) << 1));
+            private int GetRField(int blockMode) => ((blockMode & 0x10) >> 4) | (((blockMode & 0x3) == 0) ? ((blockMode & 0x4) >> 1) | ((blockMode & 0x8) >> 1) : ((blockMode & 0x1) << 1) | ((blockMode & 0x2) << 1));
             private Dictionary<int, (int, int, byte, byte, byte)> RFieldTable = new Dictionary<int, (int, int, byte, byte, byte)>
             {
                 [0b0010] = (0, 1, 0, 0, 1),
@@ -27,6 +55,8 @@ namespace Kontract.Image.Support
                 [0b1110] = (0, 23, 1, 0, 3),
                 [0b1111] = (0, 31, 0, 0, 5),
             };
+
+
 
             /*private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
@@ -46,19 +76,32 @@ namespace Kontract.Image.Support
             {
                 if (!queue.Any())
                 {
-                    var block = func();
+                    var bitR = new BitReader(func());
 
-                    var blockMode = (block[1] & 0x7) | block[0];
+                    //Blockmode -> Documentation C.2.10
+                    var blockMode = bitR.ReadBits(0, 11);
                     if ((blockMode & 0x1FC) == 0x1FC)
                     {
                         //void-extent
                     }
                     else
                     {
-                        bool highPrec = ((block[1] >> 1) & 0x1) == 1;
-                        bool dualPlane = ((block[1] >> 2) & 0x1) == 1;
-                        var rField = GetRField(block);
-                        (int weightMin, int weightMax, byte trits, byte quints, byte bits) = RFieldTable[(((highPrec) ? 1 : 0) << 3) | rField];
+                        bool highPrec = ((blockMode >> 9) & 0x1) == 1;
+                        bool dualPlane = ((blockMode >> 10) & 0x1) == 1;
+                        var rField = GetRField(blockMode);
+                        var (weightMin, weightMax, trits, quints, bits) = RFieldTable[(((highPrec) ? 1 : 0) << 3) | rField];
+
+                        //Partition and CEM -> Documentation C.2.11
+                        var parts = bitR.ReadBits(11, 2) + 1;    //4 == invalid
+                        if (parts == 1)
+                        {
+                            //single-partition
+                            var cem = bitR.ReadBits(13, 4);
+                        }
+                        else
+                        {
+                            //multi-partition - stub - Table C.2.11
+                        }
                     }
 
                     /*var (a0, a1) = ((byte)alpha, (byte)(alpha >> 8));
