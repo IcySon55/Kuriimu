@@ -71,13 +71,14 @@ namespace image_mt.Mobile
                 else
                 {
                     settings.Format = Support.Format[headerInfo.format];
-                    if (settings.Format.FormatName.Contains("DXT"))
+                    if (settings.Format.FormatName.Contains("DXT") || settings.Format.FormatName.Contains("ETC"))
                         settings.Swizzle = new BlockSwizzle(headerInfo.width, headerInfo.height);
 
-                    var mipMapOffsets = br.ReadMultiple<int>(headerInfo.mipMapCount);
-                    for (var i = 0; i < mipMapOffsets.Count; i++)
+                    var texOffsets = br.ReadMultiple<int>(3).Distinct().ToList();
+                    var texSizes = br.ReadMultiple<int>(3);
+                    for (var i = 0; i < texOffsets.Count; i++)
                     {
-                        var texDataSize = (i + 1 < mipMapOffsets.Count ? mipMapOffsets[i + 1] : (int)br.BaseStream.Length) - mipMapOffsets[i];
+                        var texDataSize = (i + 1 < texOffsets.Count ? texOffsets[i + 1] : (int)br.BaseStream.Length) - texOffsets[i];
                         settings.Width = Math.Max(headerInfo.width >> i, 2);
                         settings.Height = Math.Max(headerInfo.height >> i, 2);
 
@@ -153,19 +154,20 @@ namespace image_mt.Mobile
                     };
 
                     var texOffsets = new List<uint>();
-                    bw.BaseStream.Position = 0x10 + headerInfo.mipMapCount * 0x4;
+                    bw.BaseStream.Position = 0x28;
                     foreach (var bmp in bmps)
                     {
                         settings.Width = bmp.Width;
                         settings.Height = bmp.Height;
 
-                        if (Support.Format[headerInfo.format].FormatName.Contains("DXT"))
+                        if (Support.Format[headerInfo.format].FormatName.Contains("DXT") || settings.Format.FormatName.Contains("ETC"))
                             settings.Swizzle = new BlockSwizzle(bmp.Width, bmp.Height);
 
                         texOffsets.Add((uint)bw.BaseStream.Position);
 
                         bw.Write(Common.Save(bmp, settings));
                     }
+                    while (texOffsets.Count < 3) texOffsets.Add(texOffsets.Last());
 
                     bw.BaseStream.Position = 0x10;
                     foreach (var offset in texOffsets)

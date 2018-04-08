@@ -10,6 +10,7 @@ namespace Kontract.Image.Support
     public class ETC1
     {
         static readonly int[] order3ds = { 0, 4, 1, 5, 8, 12, 9, 13, 2, 6, 3, 7, 10, 14, 11, 15 };
+        static readonly int[] orderNormal = { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 };
 
         static int[][] modifiers =
         {
@@ -53,7 +54,7 @@ namespace Kontract.Image.Support
         {
             public ushort LSB;
             public ushort MSB;
-            byte flags;
+            public byte flags;
             public byte B;
             public byte G;
             public byte R;
@@ -189,6 +190,13 @@ namespace Kontract.Image.Support
         {
             Queue<Color> queue = new Queue<Color>();
 
+            bool _3ds_order;
+
+            public Decoder(bool _3ds_order)
+            {
+                this._3ds_order = _3ds_order;
+            }
+
             public Color Get(Func<PixelData> func)
             {
                 if (!queue.Any())
@@ -198,7 +206,7 @@ namespace Kontract.Image.Support
                     var basec1 = data.Block.Color1.Scale(data.Block.ColorDepth);
 
                     int flipbitmask = data.Block.FlipBit ? 2 : 8;
-                    foreach (int i in order3ds)
+                    foreach (int i in (_3ds_order) ? order3ds : orderNormal)
                     {
                         var basec = (i & flipbitmask) == 0 ? basec0 : basec1;
                         var mod = modifiers[(i & flipbitmask) == 0 ? data.Block.Table0 : data.Block.Table1];
@@ -224,6 +232,13 @@ namespace Kontract.Image.Support
 
             List<Color> queue = new List<Color>();
 
+            bool _3ds_order;
+
+            public Encoder(bool _3ds_order)
+            {
+                this._3ds_order = _3ds_order;
+            }
+
             public static Block PackSolidColor(RGB c)
             {
                 return (from i in Enumerable.Range(0, 64)
@@ -247,7 +262,7 @@ namespace Kontract.Image.Support
                 queue.Add(c);
                 if (queue.Count == 16)
                 {
-                    var colorsWindows = Enumerable.Range(0, 16).Select(j => queue[order3ds[order3ds[order3ds[j]]]]); // invert order3ds
+                    var colorsWindows = Enumerable.Range(0, 16).Select(j => (_3ds_order) ? queue[order3ds[order3ds[order3ds[j]]]] : queue[orderNormal[j]]); // invert order3ds
                     var alpha = colorsWindows.Reverse().Aggregate(0ul, (a, b) => (a * 16) | (byte)(b.A / 16));
                     var colors = colorsWindows.Select(c2 => new RGB(c2.R, c2.G, c2.B)).ToList();
 

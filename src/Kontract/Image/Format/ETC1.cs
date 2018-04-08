@@ -18,15 +18,17 @@ namespace Kontract.Image.Format
         public string FormatName { get; set; }
 
         bool alpha;
+        bool _3ds_order;
 
         ByteOrder byteOrder;
 
-        public ETC1(bool alpha = false, ByteOrder byteOrder = ByteOrder.LittleEndian)
+        public ETC1(bool alpha = false, bool _3ds_order = true, ByteOrder byteOrder = ByteOrder.LittleEndian)
         {
             BitDepth = alpha ? 8 : 4;
             BlockBitDepth = alpha ? 128 : 64;
 
             this.alpha = alpha;
+            this._3ds_order = _3ds_order;
 
             FormatName = (alpha) ? "ETC1A4" : "ETC1";
 
@@ -37,15 +39,26 @@ namespace Kontract.Image.Format
         {
             using (var br = new BinaryReaderX(new MemoryStream(tex), byteOrder))
             {
-                var etc1decoder = new Support.ETC1.Decoder();
+                var etc1decoder = new Support.ETC1.Decoder(_3ds_order);
 
-                //while (br.BaseStream.Position < br.BaseStream.Length)
                 while (true)
                 {
                     yield return etc1decoder.Get(() =>
                     {
                         var etc1Alpha = alpha ? br.ReadUInt64() : ulong.MaxValue;
-                        return new Support.ETC1.PixelData { Alpha = etc1Alpha, Block = br.ReadStruct<Support.ETC1.Block>() };
+                        if (etc1Alpha != 0)
+                            ;
+                        var colorBlock = br.ReadUInt64();
+                        var etc1Block = new Support.ETC1.Block
+                        {
+                            LSB = (ushort)(colorBlock & 0xFFFF),
+                            MSB = (ushort)((colorBlock >> 16) & 0xFFFF),
+                            flags = (byte)((colorBlock >> 32) & 0xFF),
+                            B = (byte)((colorBlock >> 40) & 0xFF),
+                            G = (byte)((colorBlock >> 48) & 0xFF),
+                            R = (byte)((colorBlock >> 56) & 0xFF)
+                        };
+                        return new Support.ETC1.PixelData { Alpha = etc1Alpha, Block = etc1Block };
                     });
                 }
             }
@@ -53,16 +66,23 @@ namespace Kontract.Image.Format
 
         public byte[] Save(IEnumerable<Color> colors)
         {
-            var etc1encoder = new Support.ETC1.Encoder();
+            var etc1encoder = new Support.ETC1.Encoder(_3ds_order);
 
             var ms = new MemoryStream();
-            using (var bw = new BinaryWriterX(ms))
+            using (var bw = new BinaryWriterX(ms, byteOrder))
             {
                 foreach (var color in colors)
                     etc1encoder.Set(color, data =>
                     {
                         if (alpha) bw.Write(data.Alpha);
-                        bw.WriteStruct(data.Block);
+                        ulong colorBlock = 0;
+                        colorBlock |= data.Block.LSB;
+                        colorBlock |= ((ulong)data.Block.MSB << 16);
+                        colorBlock |= ((ulong)data.Block.flags << 32);
+                        colorBlock |= ((ulong)data.Block.B << 40);
+                        colorBlock |= ((ulong)data.Block.G << 48);
+                        colorBlock |= ((ulong)data.Block.R << 56);
+                        bw.Write(colorBlock);
                     });
             }
 

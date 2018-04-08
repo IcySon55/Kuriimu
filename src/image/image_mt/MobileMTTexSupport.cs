@@ -19,7 +19,9 @@ namespace image_mt.Mobile
         public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>
         {
             [0x1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
-            [0x20] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian)
+            [0x1a] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x20] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x21] = new ETC1(false, false, Kontract.IO.ByteOrder.BigEndian)
         };
     }
 
