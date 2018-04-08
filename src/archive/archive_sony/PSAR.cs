@@ -88,7 +88,7 @@ namespace archive_sony
                 {
                     using (var brNames = new StreamReader(Files[0].FileData, Encoding.UTF8))
                         for (var i = 1; i < Header.TocEntryCount; i++)
-                            Files[i].FileName = brNames.ReadLine();
+                            Files[i].FileName = brNames.ReadLine() ?? "/" + i.ToString("00000000") + ".bin";
                 }
                 else
                 {
@@ -115,23 +115,28 @@ namespace archive_sony
                 br.BaseStream.Position -= 2;
                 SdatEncrypted = compression == SdatHeader;
             }
-            if (SdatEncrypted) return;
 
             do
             {
                 if (blocks[(int)index] == 0)
                 {
                     size += Header.BlockSize;
-                    afi.Blocks.Add(new Block { Size = Header.BlockSize });
+                    afi.Blocks.Add(new Block
+                    {
+                        Size = Header.BlockSize,
+                        Compression = Compression.None
+                    });
                 }
                 else
                 {
                     var compression = br.ReadUInt16();
                     br.BaseStream.Position -= 2;
 
+                    var localIndex = index - entry.Index;
+
                     if (compression == ZLibHeader)
                     {
-                        var blockSize = entry.Size - (index - entry.Index) * Header.BlockSize;
+                        var blockSize = entry.Size - localIndex * Header.BlockSize;
                         size += blockSize < Header.BlockSize ? blockSize : Header.BlockSize;
                         afi.Blocks.Add(new Block
                         {
@@ -139,10 +144,24 @@ namespace archive_sony
                             Compression = Compression.ZLib
                         });
                     }
+                    else if (compression == SdatHeader)
+                    {
+                        var blockSize = entry.Size - localIndex * Header.BlockSize;
+                        size += blockSize < Header.BlockSize ? blockSize : Header.BlockSize;
+                        afi.Blocks.Add(new Block
+                        {
+                            Size = blockSize < Header.BlockSize ? blockSize : Header.BlockSize,
+                            Compression = Compression.Sdat
+                        });
+                    }
                     else
                     {
                         size += blocks[(int)index];
-                        afi.Blocks.Add(new Block { Size = blocks[(int)index] });
+                        afi.Blocks.Add(new Block
+                        {
+                            Size = blocks[(int)index],
+                            Compression = Compression.None
+                        });
                     }
                 }
                 index++;

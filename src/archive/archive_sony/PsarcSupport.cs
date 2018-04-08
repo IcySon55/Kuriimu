@@ -32,8 +32,9 @@ namespace archive_sony
                                 ms.Write(br.ReadBytes((int)block.Size), (int)ms.Position, (int)block.Size);
                                 break;
                             case Compression.ZLib:
-                                var data = DecompressZLib(br.BaseStream);
-                                ms.Write(data, (int)ms.Position, data.Length);
+                                br.BaseStream.Position += 2;
+                                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)block.Size - 2)), CompressionMode.Decompress))
+                                    ds.CopyTo(ms);
                                 break;
                         }
                     }
@@ -49,18 +50,6 @@ namespace archive_sony
         public PsarcFileInfo()
         {
             Blocks = new List<Block>();
-        }
-
-        public byte[] DecompressZLib(Stream inData)
-        {
-            using (var br = new BinaryReaderX(inData, true))
-            {
-                var ms = new MemoryStream();
-                br.BaseStream.Position = 2;
-                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)), CompressionMode.Decompress))
-                    ds.CopyTo(ms);
-                return ms.ToArray();
-            }
         }
     }
 
