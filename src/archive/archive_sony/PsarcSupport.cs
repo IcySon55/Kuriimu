@@ -13,20 +13,42 @@ namespace archive_sony
         public int ID;
         public Compression Compression;
         public Entry Entry { get; set; }
+        public List<Block> Blocks { get; }
 
         public override Stream FileData
         {
-            // TODO: Decompress the SubStream by block
-            get { return null; }
-        }
+            get
+            {
+                if (State != ArchiveFileState.Archived) return base.FileData;
 
-        public List<long> Blocks { get; }
+                var ms = new MemoryStream();
+                using (var br = new BinaryReaderX(base.FileData, true, ByteOrder.BigEndian))
+                {
+                    foreach (var block in Blocks)
+                    {
+                        switch (block.Compression)
+                        {
+                            case Compression.None:
+                                ms.Write(br.ReadBytes((int)block.Size), (int)ms.Position, (int)block.Size);
+                                break;
+                            case Compression.ZLib:
+                                var data = DecompressZLib(br.BaseStream);
+                                ms.Write(data, (int)ms.Position, data.Length);
+                                break;
+                        }
+                    }
+                }
+                ms.Position = 0;
+
+                return ms;
+            }
+        }
 
         public override long? FileSize => Entry.Size;
 
         public PsarcFileInfo()
         {
-            Blocks = new List<long>();
+            Blocks = new List<Block>();
         }
 
         public byte[] DecompressZLib(Stream inData)
@@ -35,7 +57,7 @@ namespace archive_sony
             {
                 var ms = new MemoryStream();
                 br.BaseStream.Position = 2;
-                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length - 6)), CompressionMode.Decompress))
+                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)), CompressionMode.Decompress))
                     ds.CopyTo(ms);
                 return ms.ToArray();
             }
@@ -48,8 +70,7 @@ namespace archive_sony
         public Magic Magic;
         public ushort Major;
         public ushort Minor;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 4)]
-        public string Compression;
+        public Magic Compression;
         public int TocSize; // zSize
         public int TocEntrySize;
         public int TocEntryCount;
@@ -67,8 +88,15 @@ namespace archive_sony
         public long Offset; // 40 bit (5 bytes)
     }
 
+    public sealed class Block
+    {
+        public long Size = 0;
+        public Compression Compression = Compression.None;
+    }
+
     public enum Compression
     {
+        None,
         ZLib,
         LZMA,
         Sdat

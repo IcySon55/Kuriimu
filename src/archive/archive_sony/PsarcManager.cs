@@ -43,10 +43,6 @@ namespace archive_sony
         public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-
-            var hpiFilename = filename;
-            var hpbFilename = filename.Remove(filename.Length - 1) + "B";
-
             _psar = new PSAR(File.OpenRead(filename));
         }
 

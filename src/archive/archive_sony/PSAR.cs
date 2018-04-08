@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Kontract.Interface;
 using Kontract.IO;
 
@@ -29,12 +30,12 @@ namespace archive_sony
                 Header = br.ReadStruct<Header>();
 
                 // Determine BlockType
-                uint j = 256;
+                uint blockIterator = 256;
                 do
                 {
-                    j *= 256;
+                    blockIterator *= 256;
                     BlockType = (ushort)(BlockType + 1);
-                } while (j < Header.BlockSize);
+                } while (blockIterator < Header.BlockSize);
 
                 // Entries
                 for (var i = 0; i < Header.TocEntryCount; i++)
@@ -54,7 +55,8 @@ namespace archive_sony
                             Index = index,
                             Size = (long)length,
                             Offset = (long)offset
-                        }
+                        },
+                        State = ArchiveFileState.Archived
                     });
                 }
 
@@ -66,15 +68,24 @@ namespace archive_sony
                 var numBlocks = (Header.TocSize - (int)br.BaseStream.Position) / BlockType;
                 var blocks = new List<uint>();
                 for (var i = 0; i < numBlocks; i++)
-                    blocks.Add(BitConverter.ToUInt32(br.ReadBytes(BlockType).ToArray(), 0));
+                {
+                    var bytes = br.ReadBytes(BlockType).ToList();
+                    for (var j = 0; j < BlockType % 4; j++)
+                        bytes.Add(0);
+                    blocks.Add(BitConverter.ToUInt32(bytes.ToArray(), 0));
+                }
 
                 // Manifest
                 ReadBlocks(br, 0, blocks);
 
+                // Files
+                for (var i = 1; i < Header.TocEntryCount; i++)
+                    ReadBlocks(br, i, blocks);
+
                 // Load Filenames
                 if (!SdatEncrypted)
                 {
-                    using (var brNames = new StreamReader(Files[0].FileData))
+                    using (var brNames = new StreamReader(Files[0].FileData, Encoding.UTF8))
                         for (var i = 1; i < Header.TocEntryCount; i++)
                             Files[i].FileName = brNames.ReadLine();
                 }
@@ -99,6 +110,7 @@ namespace archive_sony
             if (entryIndex == 0)
             {
                 var header = br.ReadUInt16();
+                br.BaseStream.Position -= 2;
                 SdatEncrypted = header == SdatHeader;
             }
             if (SdatEncrypted) return;
@@ -108,6 +120,7 @@ namespace archive_sony
                 if (blocks[(int)index] == 0)
                 {
                     subSize += Header.BlockSize;
+                    Files[entryIndex].Blocks.Add(new Block { Size = Header.BlockSize });
                 }
                 else
                 {
@@ -118,17 +131,27 @@ namespace archive_sony
                     {
                         var size = entry.Size - (index - entry.Index) * Header.BlockSize;
                         subSize += size < Header.BlockSize ? size : Header.BlockSize;
+                        Files[entryIndex].Blocks.Add(new Block
+                        {
+                            Size = size < Header.BlockSize ? size : Header.BlockSize,
+                            Compression = Compression.ZLib
+                        });
                     }
                     else
                     {
-                        subSize += (int)blocks[(int)index];
+                        subSize += blocks[(int)index];
+                        Files[entryIndex].Blocks.Add(new Block
+                        {
+                            Size = blocks[(int)index],
+                            Compression = Compression.None
+                        });
                     }
                 }
                 index++;
             } while (subSize < entry.Size);
 
             // Set FileData
-            Files[entryIndex].FileData = new SubStream(br.BaseStream, entry.Offset, subSize);
+            Files[entryIndex].FileData = new SubStream(br.BaseStream, entry.Offset, Math.Min(subSize, br.BaseStream.Length - entry.Offset));
         }
 
         public void Save(Stream output)
