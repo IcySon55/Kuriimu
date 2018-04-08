@@ -75,7 +75,7 @@ namespace archive_sony
         public int TocEntrySize;
         public int TocEntryCount;
         public int BlockSize;
-        public uint ArchiveFlags;
+        public int ArchiveFlags;
 
         public string Version => $"v{Major}.{Minor}";
     }
@@ -98,7 +98,7 @@ namespace archive_sony
     {
         None,
         ZLib,
-        LZMA,
+        Lzma,
         Sdat
     }
 }

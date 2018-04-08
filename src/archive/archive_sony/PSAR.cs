@@ -14,6 +14,7 @@ namespace archive_sony
 
         private const string ManifestName = "/psarc.manifest";
         private const ushort ZLibHeader = 0x78DA;
+        //private const ushort LzmaHeader = 0x????;
         private const ushort SdatHeader = 0x0001;
 
         private Stream _stream;
@@ -99,19 +100,20 @@ namespace archive_sony
 
         public void ReadBlocks(BinaryReaderX br, int entryIndex, List<uint> blocks)
         {
+            var afi = Files[entryIndex];
             var entry = Files[entryIndex].Entry;
             if (entry.Size == 0) return;
 
             br.BaseStream.Position = entry.Offset;
             var index = entry.Index;
-            long subSize = 0;
+            long size = 0;
 
             // Check for SDAT Encryption
             if (entryIndex == 0)
             {
-                var header = br.ReadUInt16();
+                var compression = br.ReadUInt16();
                 br.BaseStream.Position -= 2;
-                SdatEncrypted = header == SdatHeader;
+                SdatEncrypted = compression == SdatHeader;
             }
             if (SdatEncrypted) return;
 
@@ -119,8 +121,8 @@ namespace archive_sony
             {
                 if (blocks[(int)index] == 0)
                 {
-                    subSize += Header.BlockSize;
-                    Files[entryIndex].Blocks.Add(new Block { Size = Header.BlockSize });
+                    size += Header.BlockSize;
+                    afi.Blocks.Add(new Block { Size = Header.BlockSize });
                 }
                 else
                 {
@@ -129,29 +131,25 @@ namespace archive_sony
 
                     if (compression == ZLibHeader)
                     {
-                        var size = entry.Size - (index - entry.Index) * Header.BlockSize;
-                        subSize += size < Header.BlockSize ? size : Header.BlockSize;
-                        Files[entryIndex].Blocks.Add(new Block
+                        var blockSize = entry.Size - (index - entry.Index) * Header.BlockSize;
+                        size += blockSize < Header.BlockSize ? blockSize : Header.BlockSize;
+                        afi.Blocks.Add(new Block
                         {
-                            Size = size < Header.BlockSize ? size : Header.BlockSize,
+                            Size = blockSize < Header.BlockSize ? blockSize : Header.BlockSize,
                             Compression = Compression.ZLib
                         });
                     }
                     else
                     {
-                        subSize += blocks[(int)index];
-                        Files[entryIndex].Blocks.Add(new Block
-                        {
-                            Size = blocks[(int)index],
-                            Compression = Compression.None
-                        });
+                        size += blocks[(int)index];
+                        afi.Blocks.Add(new Block { Size = blocks[(int)index] });
                     }
                 }
                 index++;
-            } while (subSize < entry.Size);
+            } while (size < entry.Size);
 
-            // Set FileData
-            Files[entryIndex].FileData = new SubStream(br.BaseStream, entry.Offset, Math.Min(subSize, br.BaseStream.Length - entry.Offset));
+            // Set FileData - Math.Min is a temporary fix for the last file just so that the UI can load the manifest.
+            afi.FileData = new SubStream(br.BaseStream, entry.Offset, Math.Min(size, br.BaseStream.Length - entry.Offset));
         }
 
         public void Save(Stream output)
