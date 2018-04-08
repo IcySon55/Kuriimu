@@ -56,7 +56,67 @@ namespace Kontract.Image.Support
                 [0b1111] = (0, 31, 0, 0, 5),
             };
 
+            private int[] GetValuesFromTrits(int tritBlock, int bits)
+            {
+                int[] result = new int[5];
 
+                var tritsOnly = ((tritBlock >> bits) & 0x3) |
+                    (((tritBlock >> (bits * 2 + 2)) & 0x3) << 2) |
+                    (((tritBlock >> (bits * 3 + 4)) & 0x1) << 4) |
+                    (((tritBlock >> (bits * 4 + 5)) & 0x3) << 5) |
+                    (((tritBlock >> (bits * 5 + 7)) & 0x1) << 7);
+
+                //get values for trits
+                int c = 0;
+                if (((tritsOnly >> 2) & 0x7) == 0x7)
+                {
+                    c = (tritsOnly & 0x3) | (((tritsOnly >> 5) & 0x7) << 3);
+                    result[4] = result[3] = 2;
+                }
+                else
+                {
+                    c = tritsOnly & 0x1F;
+
+                    if (((tritsOnly >> 5) & 0x3) == 0x3)
+                    {
+                        result[4] = 2;
+                        result[3] = tritsOnly >> 7;
+                    }
+                    else
+                    {
+                        result[4] = tritsOnly >> 7;
+                        result[3] = (tritsOnly >> 5) & 0x3;
+                    }
+                }
+
+                if ((c & 0x3) == 0x3)
+                {
+                    result[2] = 2;
+                    result[1] = (c >> 4) & 0x1;
+                    result[0] = ((c & 0x8) >> 2) | (((c & 0x4) >> 2) & ~((c & 0x8) >> 3));
+                }
+                else if (((c & 0xc) >> 2) == 0x3)
+                {
+                    result[2] = 2;
+                    result[1] = 2;
+                    result[0] = c & 0x3;
+                }
+                else
+                {
+                    result[2] = (c & 0x10) >> 4;
+                    result[1] = (c & 0xc) >> 2;
+                    result[0] = (c & 0x2) | ((c & 0x1) & ~((c & 0x2) >> 1));
+                }
+
+                //calculate final values
+                result[0] = (result[0] << bits) | (tritBlock & ((1 << bits) - 1));
+                result[1] = (result[1] << bits) | ((tritBlock >> (2 + bits)) & ((1 << bits) - 1));
+                result[2] = (result[2] << bits) | ((tritBlock >> (4 + bits * 2)) & ((1 << bits) - 1));
+                result[3] = (result[3] << bits) | ((tritBlock >> (5 + bits * 3)) & ((1 << bits) - 1));
+                result[4] = (result[4] << bits) | ((tritBlock >> (7 + bits * 4)) & ((1 << bits) - 1));
+
+                return result;
+            }
 
             /*private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
@@ -97,6 +157,15 @@ namespace Kontract.Image.Support
                         {
                             //single-partition
                             var cem = bitR.ReadBits(13, 4);
+                            if (trits == 0 && quints == 0)
+                            {
+                                //to get value i, do bitR.ReadBits(pos+i*bits,bits)
+                            }
+                            else if (trits != 0)
+                            {
+                                var tritBlock = bitR.ReadBits(17, 8 + 5 * bits);
+                                var tritValues = GetValuesFromTrits(tritBlock, bits);
+                            }
                         }
                         else
                         {
