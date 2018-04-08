@@ -4,21 +4,22 @@ using Kontract.Interface;
 using Kontract;
 using Kontract.Image.Format;
 using System.Collections.Generic;
+using Kontract.Image.Swizzle;
+using System.Drawing;
 
 namespace image_mt.Mobile
 {
-    public enum Version : short
+    public enum Version : ushort
     {
-        v9 = 9
+        _Mobilev1 = 0x09,
     }
 
     public class Support
     {
         public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>
         {
-            [1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
-            [0x31] = new DXT(DXT.Version.DXT5, false, Kontract.IO.ByteOrder.BigEndian),
-            [0x20]=new RGBA(8,8,8,8,Kontract.IO.ByteOrder.BigEndian)
+            [0x1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x20] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian)
         };
     }
 
@@ -65,5 +66,23 @@ namespace image_mt.Mobile
         [Category("Properties")]
         [ReadOnly(true)]
         public string Format { get; set; }
+    }
+
+    public class BlockSwizzle : IImageSwizzle
+    {
+        private MasterSwizzle _swizzle;
+
+        public int Width { get; }
+        public int Height { get; }
+
+        public BlockSwizzle(int width, int height)
+        {
+            Width = (width + 3) & ~3;
+            Height = (height + 3) & ~3;
+
+            _swizzle = new MasterSwizzle(Width, new Point(0, 0), new[] { (1, 0), (2, 0), (0, 1), (0, 2) });
+        }
+
+        public Point Get(Point point) => _swizzle.Get(point.Y * Width + point.X);
     }
 }

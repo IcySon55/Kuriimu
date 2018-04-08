@@ -28,8 +28,6 @@ namespace image_mt
         _3DSv2 = 0xa5,
         _3DSv3 = 0xa6,
 
-        _Mobilev1 = 0x09,
-
         _Switchv1 = 0xa0
     }
 

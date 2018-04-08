@@ -103,6 +103,7 @@
     <Compile Include="Image\Format\HL.cs" />
     <Compile Include="Image\Format\LA.cs" />
     <Compile Include="Image\Format\Palette.cs" />
+    <Compile Include="Image\Format\PVRTC.cs" />
     <Compile Include="Image\Format\RGBA.cs" />
     <Compile Include="Image\Common.cs" />
     <Compile Include="Image\Support\ASTC.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Image\Support\BCn\Helpers.cs" />
     <Compile Include="Image\Support\BCn\ImageEncoder.cs" />
     <Compile Include="Image\Support\BCn\ImageEncodingHelper.cs" />
+    <Compile Include="Image\Support\PVRTC.cs" />
     <Compile Include="Image\Support\Support.cs" />
     <Compile Include="Image\Support\DXT.cs" />
     <Compile Include="Image\Support\ETC1.cs" />

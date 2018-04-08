@@ -44,7 +44,7 @@ namespace image_mt.Mobile
             if (FileInfo.Exists)
             {
                 _tex = new MobileMTTEX(FileInfo.OpenRead());
-                _bitmaps = _tex.bmps.Select(b => new MobileMTTexBitmapInfo { Bitmap = b, Format = _tex.settings.Format.FormatName }).ToList<BitmapInfo>();
+                _bitmaps = _tex.bmps.Select((b, i) => new MobileMTTexBitmapInfo { Bitmap = b, Format = _tex.formatNames[i] }).ToList<BitmapInfo>();
             }
         }
 
