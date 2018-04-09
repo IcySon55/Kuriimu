@@ -37,8 +37,8 @@ namespace image_mt.Mobile
 
                     //Block 3
                     format = (int)(header.Block3 >> 26 & 0x3F),
-                    width = (short)(header.Block3 >> 13 & 0x1FFF),
-                    height = (short)(header.Block3 & 0x1FFF)
+                    height = (short)(header.Block3 >> 13 & 0x1FFF),
+                    width = (short)(header.Block3 & 0x1FFF)
                 };
 
                 if (headerInfo.format == 0x31)
@@ -101,7 +101,7 @@ namespace image_mt.Mobile
             {
                 header.Block1 = (uint)((ushort)headerInfo.version | (headerInfo.unk2 << 16) | (headerInfo.unk1 << 24));
                 header.Block2 = (uint)((headerInfo.r1 << 4) | (headerInfo.mipMapCount));
-                header.Block3 = (uint)((headerInfo.format << 26) | (headerInfo.width << 13) | (ushort)headerInfo.height);
+                header.Block3 = (uint)((headerInfo.format << 26) | (headerInfo.height << 13) | (ushort)headerInfo.width);
                 bw.WriteStruct(header);
 
                 if (headerInfo.format == 0x31)
