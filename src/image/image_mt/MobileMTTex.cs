@@ -28,7 +28,7 @@ namespace image_mt.Mobile
                 {
                     //Block 1
                     unk1 = (byte)(header.Block1 >> 24),
-                    unk2 = (byte)(header.Block1 >> 16 & 0xFF),
+                    format = (byte)(header.Block1 >> 16 & 0xFF),
                     version = (Version)(header.Block1 & 0xFFFF),
 
                     //Block 2
@@ -36,12 +36,12 @@ namespace image_mt.Mobile
                     mipMapCount = (byte)(header.Block2 & 0xF),
 
                     //Block 3
-                    format = (int)(header.Block3 >> 26 & 0x3F),
+                    unk2 = (int)(header.Block3 >> 26 & 0x3F),
                     height = (short)(header.Block3 >> 13 & 0x1FFF),
                     width = (short)(header.Block3 & 0x1FFF)
                 };
 
-                if (headerInfo.format == 0x31)
+                if (headerInfo.format == 0xc)
                 {
                     var texOffsets = br.ReadMultiple<int>(3);
                     var texSizes = br.ReadMultiple<int>(3);
@@ -99,12 +99,12 @@ namespace image_mt.Mobile
         {
             using (var bw = new BinaryWriterX(output))
             {
-                header.Block1 = (uint)((ushort)headerInfo.version | (headerInfo.unk2 << 16) | (headerInfo.unk1 << 24));
+                header.Block1 = (uint)((ushort)headerInfo.version | (headerInfo.format << 16) | (headerInfo.unk1 << 24));
                 header.Block2 = (uint)((headerInfo.r1 << 4) | (headerInfo.mipMapCount));
-                header.Block3 = (uint)((headerInfo.format << 26) | (headerInfo.height << 13) | (ushort)headerInfo.width);
+                header.Block3 = (uint)((headerInfo.unk2 << 26) | (headerInfo.height << 13) | (ushort)headerInfo.width);
                 bw.WriteStruct(header);
 
-                if (headerInfo.format == 0x31)
+                if (headerInfo.format == 0xc)
                 {
                     bw.BaseStream.Position = 0x10 + 3 * 2 * 0x4;
 

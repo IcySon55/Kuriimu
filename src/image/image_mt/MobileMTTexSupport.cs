@@ -19,9 +19,7 @@ namespace image_mt.Mobile
         public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>
         {
             [0x1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
-            [0x1a] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
-            [0x20] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
-            [0x21] = new ETC1(false, false, Kontract.IO.ByteOrder.BigEndian)
+            [0xa] = new ETC1(false, false, Kontract.IO.ByteOrder.BigEndian)
         };
     }
 
@@ -50,7 +48,7 @@ namespace image_mt.Mobile
     {
         //Block 1
         public byte unk1;
-        public byte unk2;
+        public byte format;
         public Version version;
 
         //Block 2
@@ -58,7 +56,7 @@ namespace image_mt.Mobile
         public byte mipMapCount;
 
         //Block3
-        public int format;
+        public int unk2;
         public short width;
         public short height;
     }
