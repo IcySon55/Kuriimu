@@ -21,6 +21,7 @@ namespace Kontract.Image.Support
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
 
             private Color GetRGB565(ushort val) => Color.FromArgb(255, (val >> 11) * 33 / 4, (val >> 5) % 64 * 65 / 16, (val % 32) * 33 / 4);
+            private Color GetRGB555(ushort val) => Color.FromArgb(255, ((val >> 10) % 32) * 33 / 4, ((val >> 5) % 32) * 33 / 4, (val % 32) * 33 / 4);
 
             public Decoder(Formats format = Formats.DXT1)
             {
