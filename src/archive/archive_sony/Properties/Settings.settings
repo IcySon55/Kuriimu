@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="PluginName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">PSAR</Value>
+      <Value Profile="(Default)">PSARC</Value>
     </Setting>
   </Settings>
 </SettingsFile>

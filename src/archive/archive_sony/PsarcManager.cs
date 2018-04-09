@@ -8,7 +8,7 @@ namespace archive_sony
 {
     class PsarcManager : IArchiveManager
     {
-        private PSAR _psar = null;
+        private PSARC _psar = null;
 
         #region Properties
 
@@ -43,7 +43,7 @@ namespace archive_sony
         public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            _psar = new PSAR(File.OpenRead(filename));
+            _psar = new PSARC(File.OpenRead(filename));
         }
 
         public void Save(string filename)

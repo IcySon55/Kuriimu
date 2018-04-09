@@ -25,7 +25,7 @@ namespace archive_sony.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PSAR")]
+        [global::System.Configuration.DefaultSettingValueAttribute("PSARC")]
         public string PluginName {
             get {
                 return ((string)(this["PluginName"]));

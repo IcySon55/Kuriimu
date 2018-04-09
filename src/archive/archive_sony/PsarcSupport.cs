@@ -11,9 +11,9 @@ namespace archive_sony
     public class PsarcFileInfo : ArchiveFileInfo
     {
         public int ID;
-        public Compression Compression;
         public Entry Entry { get; set; }
-        public List<Block> Blocks { get; }
+        public int BlockSize { get; set; }
+        public List<uint> BlockSizes { get; set; }
 
         public override Stream FileData
         {
@@ -24,20 +24,32 @@ namespace archive_sony
                 var ms = new MemoryStream();
                 using (var br = new BinaryReaderX(base.FileData, true, ByteOrder.BigEndian))
                 {
-                    foreach (var block in Blocks)
+                    br.BaseStream.Position = Entry.Offset;
+                    var index = Entry.FirstBlockIndex;
+
+                    do
                     {
-                        switch (block.Compression)
+                        if (BlockSizes[index] == 0)
+                            ms.Write(br.ReadBytes(BlockSize), 0, BlockSize);
+                        else
                         {
-                            case Compression.None:
-                                ms.Write(br.ReadBytes((int)block.Size), (int)ms.Position, (int)block.Size);
-                                break;
-                            case Compression.ZLib:
+                            var compression = br.ReadUInt16();
+                            br.BaseStream.Position -= 2;
+
+                            if (compression == PSARC.ZLibHeader)
+                            {
                                 br.BaseStream.Position += 2;
-                                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)block.Size - 2)), CompressionMode.Decompress))
+                                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)BlockSizes[index] - 2)), CompressionMode.Decompress, true))
                                     ds.CopyTo(ms);
-                                break;
+                            }
+                            // TODO: Add SDAT decryption support
+                            //else if (compression == PSAR.SdatHeader)
+                            //    ms.Write(br.ReadBytes((int)BlockSizes[index]), 0, (int)BlockSizes[index]);
+                            else
+                                ms.Write(br.ReadBytes((int)BlockSizes[index]), 0, (int)BlockSizes[index]);
                         }
-                    }
+                        index++;
+                    } while (ms.Position < Entry.UncompressedSize);
                 }
                 ms.Position = 0;
 
@@ -45,11 +57,11 @@ namespace archive_sony
             }
         }
 
-        public override long? FileSize => Entry.Size;
+        public override long? FileSize => Entry.UncompressedSize;
 
         public PsarcFileInfo()
         {
-            Blocks = new List<Block>();
+            BlockSizes = new List<uint>();
         }
     }
 
@@ -72,15 +84,9 @@ namespace archive_sony
     public sealed class Entry
     {
         public byte[] MD5Hash;
-        public uint Index;
-        public long Size; // 40 bit (5 bytes)
+        public int FirstBlockIndex;
+        public long UncompressedSize; // 40 bit (5 bytes)
         public long Offset; // 40 bit (5 bytes)
-    }
-
-    public sealed class Block
-    {
-        public long Size = 0;
-        public Compression Compression = Compression.None;
     }
 
     public enum Compression

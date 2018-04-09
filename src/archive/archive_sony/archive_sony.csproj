@@ -46,7 +46,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="PSAR.cs" />
+    <Compile Include="PSARC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PsarcManager.cs" />
     <Compile Include="PsarcSupport.cs" />
