@@ -36,11 +36,13 @@ namespace archive_sony
                             var compression = br.ReadUInt16();
                             br.BaseStream.Position -= 2;
 
+                            var blockStart = br.BaseStream.Position;
                             if (compression == PSARC.ZLibHeader)
                             {
                                 br.BaseStream.Position += 2;
-                                using (var ds = new DeflateStream(new MemoryStream(br.ReadBytes((int)BlockSizes[index] - 2)), CompressionMode.Decompress, true))
+                                using (var ds = new DeflateStream(br.BaseStream, CompressionMode.Decompress, true))
                                     ds.CopyTo(ms);
+                                br.BaseStream.Position = blockStart + BlockSizes[index];
                             }
                             // TODO: Add SDAT decryption support
                             //else if (compression == PSAR.SdatHeader)
