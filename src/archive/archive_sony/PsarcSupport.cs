@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
@@ -13,7 +14,7 @@ namespace archive_sony
         public int ID;
         public Entry Entry { get; set; }
         public int BlockSize { get; set; }
-        public List<uint> BlockSizes { get; set; }
+        public List<int> BlockSizes { get; set; }
 
         public override Stream FileData
         {
@@ -25,11 +26,10 @@ namespace archive_sony
                 using (var br = new BinaryReaderX(base.FileData, true, ByteOrder.BigEndian))
                 {
                     br.BaseStream.Position = Entry.Offset;
-                    var index = Entry.FirstBlockIndex;
 
-                    do
+                    for (var i = Entry.FirstBlockIndex; i < Entry.FirstBlockIndex + Math.Ceiling((double)Entry.UncompressedSize / BlockSize); i++)
                     {
-                        if (BlockSizes[index] == 0)
+                        if (BlockSizes[i] == 0)
                             ms.Write(br.ReadBytes(BlockSize), 0, BlockSize);
                         else
                         {
@@ -42,16 +42,15 @@ namespace archive_sony
                                 br.BaseStream.Position += 2;
                                 using (var ds = new DeflateStream(br.BaseStream, CompressionMode.Decompress, true))
                                     ds.CopyTo(ms);
-                                br.BaseStream.Position = blockStart + BlockSizes[index];
+                                br.BaseStream.Position = blockStart + BlockSizes[i];
                             }
                             // TODO: Add SDAT decryption support
                             //else if (compression == PSAR.SdatHeader)
                             //    ms.Write(br.ReadBytes((int)BlockSizes[index]), 0, (int)BlockSizes[index]);
                             else
-                                ms.Write(br.ReadBytes((int)BlockSizes[index]), 0, (int)BlockSizes[index]);
+                                ms.Write(br.ReadBytes(BlockSizes[i]), 0, BlockSizes[i]);
                         }
-                        index++;
-                    } while (ms.Position < Entry.UncompressedSize);
+                    }
                 }
                 ms.Position = 0;
 
@@ -59,11 +58,13 @@ namespace archive_sony
             }
         }
 
+        public Stream BaseFileData => base.FileData;
+
         public override long? FileSize => Entry.UncompressedSize;
 
         public PsarcFileInfo()
         {
-            BlockSizes = new List<uint>();
+            BlockSizes = new List<int>();
         }
     }
 
@@ -78,7 +79,7 @@ namespace archive_sony
         public int TocEntrySize;
         public int TocEntryCount;
         public int BlockSize;
-        public int ArchiveFlags;
+        public ArchiveFlags ArchiveFlags;
 
         public string Version => $"v{Major}.{Minor}";
     }
@@ -91,11 +92,10 @@ namespace archive_sony
         public long Offset; // 40 bit (5 bytes)
     }
 
-    public enum Compression
+    public enum ArchiveFlags
     {
-        None,
-        ZLib,
-        Lzma,
-        Sdat
+        RelativePaths = 0,
+        IgnoreCasePaths = 1,
+        AbsolutePaths = 2
     }
 }

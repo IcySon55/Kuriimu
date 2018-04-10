@@ -8,7 +8,7 @@ namespace archive_sony
 {
     class PsarcManager : IArchiveManager
     {
-        private PSARC _psar = null;
+        private PSARC _psar;
 
         #region Properties
 
@@ -23,7 +23,7 @@ namespace archive_sony
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
+        public bool CanSave => true;
         public bool CanReplaceFiles => true;
 
         public FileInfo FileInfo { get; set; }
@@ -46,31 +46,26 @@ namespace archive_sony
             _psar = new PSARC(File.OpenRead(filename));
         }
 
-        public void Save(string filename)
+        public void Save(string filename = "")
         {
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
 
-            var hpiFilename = FileInfo.FullName;
-            var hpbFilename = FileInfo.FullName.Remove(FileInfo.FullName.Length - 1) + "B";
-
             // Save As...
-            if (!string.IsNullOrWhiteSpace(filename))
+            if (!string.IsNullOrEmpty(filename))
             {
-                //_psar.Save(File.Create(hpiFilename), File.Create(hpbFilename));
+                _psar.Save(FileInfo.Create());
                 _psar.Close();
             }
             else
             {
-                // Create the temp files
-                //_psar.Save(File.Create(hpiFilename + ".tmp"), File.Create(hpbFilename + ".tmp"));
+                // Create the temp file
+                _psar.Save(File.Create(FileInfo.FullName + ".tmp"));
                 _psar.Close();
-                // Delete the originals
+                // Delete the original
                 FileInfo.Delete();
-                File.Delete(hpbFilename);
-                // Rename the temporary files
-                File.Move(hpiFilename + ".tmp", hpiFilename);
-                File.Move(hpbFilename + ".tmp", hpbFilename);
+                // Rename the temporary file
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
             }
 
             // Reload the new file to make sure everything is in order
