@@ -44,9 +44,7 @@ namespace archive_sony
                                     ds.CopyTo(ms);
                                 br.BaseStream.Position = blockStart + BlockSizes[i];
                             }
-                            // TODO: Add SDAT decryption support
-                            //else if (compression == PSAR.SdatHeader)
-                            //    ms.Write(br.ReadBytes((int)BlockSizes[index]), 0, (int)BlockSizes[index]);
+                            // TODO: Add LZMA decompression support
                             else
                                 ms.Write(br.ReadBytes(BlockSizes[i]), 0, BlockSizes[i]);
                         }

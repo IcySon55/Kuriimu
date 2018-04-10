@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -153,8 +152,7 @@ namespace archive_sony
                             break;
                     }
                 }
-                var firstFileOffset = compressedBlocksOffset + compressedBlockCount * BlockLength;
-                bw.BaseStream.Position = firstFileOffset;
+                bw.BaseStream.Position = Header.TocSize = compressedBlocksOffset + compressedBlockCount * BlockLength;
 
                 // Writing Files
                 var compressedBlocks = new List<int>();
@@ -183,7 +181,6 @@ namespace archive_sony
 
                 // Header
                 bw.BaseStream.Position = 0;
-                Header.TocSize = firstFileOffset;
                 bw.WriteStruct(Header);
             }
         }
@@ -203,13 +200,18 @@ namespace archive_sony
 
                 // Write File Chunks and Add Blocks
                 using (var br = new BinaryReaderX(afi.BaseFileData, true))
+                {
+                    br.BaseStream.Position = originalOffset;
                     for (var i = originalBlockIndex; i < originalBlockIndex + Math.Ceiling((double)entry.UncompressedSize / Header.BlockSize); i++)
                     {
-                        br.BaseStream.Position = originalOffset;
-                        bw.Write(br.ReadBytes(CompressedBlockSizes[i]));
+                        if (CompressedBlockSizes[i] == 0)
+                            bw.Write(br.ReadBytes(Header.BlockSize));
+                        else
+                            bw.Write(br.ReadBytes(CompressedBlockSizes[i]));
                         compressedBlocks.Add(CompressedBlockSizes[i]);
-                        lastPosition = bw.BaseStream.Position;
                     }
+                    lastPosition = bw.BaseStream.Position;
+                }
             }
             else
             {
