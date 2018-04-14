@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.JScript" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,14 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\RunProcessAsync.cs" />
     <Compile Include="Knit.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Knit.Designer.cs">
       <DependentUpon>Knit.cs</DependentUpon>
     </Compile>
-    <Compile Include="meta\Meta.cs" />
-    <Compile Include="meta\Patch.cs" />
+    <Compile Include="steps\StepDebugShowVariable.cs" />
+    <Compile Include="steps\StepExecuteProgram.cs" />
+    <Compile Include="TransparentTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TransparentTextBox.Designer.cs">
+      <DependentUpon>TransparentTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="xml\Meta.cs" />
+    <Compile Include="xml\Patch.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="steps\StepDelay.cs" />
@@ -84,7 +94,17 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /y $(TargetPath) "D:\DS\Coropata\Patch\$(TargetFileName)"</PostBuildEvent>

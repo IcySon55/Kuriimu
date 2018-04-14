@@ -20,8 +20,8 @@ namespace Knit
         /// <summary>
         /// The name of the variable that this step might store a value to.
         /// </summary>
-        [XmlAttribute("storeTo")]
-        public string StoreTo { get; set; } = string.Empty;
+        [XmlAttribute("variable")]
+        public string Variable { get; set; } = string.Empty;
 
         /// <summary>
         /// Determines the weight of the step compared to the other steps.
@@ -29,11 +29,17 @@ namespace Knit
         [XmlAttribute("weight")]
         public int Weight { get; set; }
 
+        /// <summary>
+        /// Allows the UI to pass the working directory to every step.
+        /// </summary>
+        [XmlIgnore]
+        public string WorkingDirectory { get; set; }
+
         // Methods
         /// <summary>
         /// The method that is called by the UI to perform the step actions.
         /// </summary>
-        public abstract Task<StepResults> Perform(Dictionary<string, object> valueCache, IProgress<ProgressReport> progress);
+        public abstract Task<StepResults> Perform(Dictionary<string, object> variableCache, IProgress<ProgressReport> progress);
     }
 
     /// <summary>
@@ -44,7 +50,7 @@ namespace Knit
         /// <summary>
         /// The current progress percentage being reported between 0 and 100.
         /// </summary>
-        public float Percentage { get; set; } = 0.0f;
+        public double Percentage { get; set; } = 0.0;
 
         /// <summary>
         /// The current status message of the step for this progress report.
@@ -54,7 +60,7 @@ namespace Knit
         /// <summary>
         /// Simple check for whether or not there is a message.
         /// </summary>
-        public bool HasMessage => Message != string.Empty;
+        public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
     }
 
     /// <summary>
@@ -75,7 +81,7 @@ namespace Knit
         /// <summary>
         /// Simple check for whether or not there is a message.
         /// </summary>
-        public bool HasMessage => Message != string.Empty;
+        public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
     }
 
     /// <summary>

@@ -29,18 +29,20 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.pgbPatch = new System.Windows.Forms.ProgressBar();
-            this.lblStatus = new System.Windows.Forms.Label();
+            this.txtStatus = new System.Windows.Forms.TextBox();
+            this.prgProgress = new System.Windows.Forms.ProgressBar();
             this.btnExit = new System.Windows.Forms.Button();
             this.btnPatch = new System.Windows.Forms.Button();
+            this.btnMusic = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
-            this.panel1.Controls.Add(this.pgbPatch);
-            this.panel1.Controls.Add(this.lblStatus);
+            this.panel1.Controls.Add(this.btnMusic);
+            this.panel1.Controls.Add(this.txtStatus);
+            this.panel1.Controls.Add(this.prgProgress);
             this.panel1.Controls.Add(this.btnExit);
             this.panel1.Controls.Add(this.btnPatch);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -49,33 +51,32 @@
             this.panel1.Size = new System.Drawing.Size(584, 312);
             this.panel1.TabIndex = 0;
             // 
-            // pgbPatch
+            // txtStatus
             // 
-            this.pgbPatch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgbPatch.Location = new System.Drawing.Point(6, 254);
-            this.pgbPatch.Margin = new System.Windows.Forms.Padding(0);
-            this.pgbPatch.Name = "pgbPatch";
-            this.pgbPatch.Size = new System.Drawing.Size(572, 23);
-            this.pgbPatch.TabIndex = 6;
+            this.txtStatus.BackColor = System.Drawing.SystemColors.Window;
+            this.txtStatus.Location = new System.Drawing.Point(6, 284);
+            this.txtStatus.Multiline = true;
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
+            this.txtStatus.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtStatus.ShortcutsEnabled = false;
+            this.txtStatus.Size = new System.Drawing.Size(572, 23);
+            this.txtStatus.TabIndex = 8;
+            this.txtStatus.WordWrap = false;
             // 
-            // lblStatus
+            // prgProgress
             // 
-            this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblStatus.BackColor = System.Drawing.Color.Transparent;
-            this.lblStatus.Location = new System.Drawing.Point(5, 284);
-            this.lblStatus.Margin = new System.Windows.Forms.Padding(0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(417, 23);
-            this.lblStatus.TabIndex = 7;
-            this.lblStatus.Text = "Status";
-            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.prgProgress.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.prgProgress.Location = new System.Drawing.Point(6, 256);
+            this.prgProgress.Margin = new System.Windows.Forms.Padding(0);
+            this.prgProgress.Name = "prgProgress";
+            this.prgProgress.Size = new System.Drawing.Size(572, 23);
+            this.prgProgress.TabIndex = 6;
             // 
             // btnExit
             // 
-            this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExit.Location = new System.Drawing.Point(504, 284);
+            this.btnExit.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnExit.Location = new System.Drawing.Point(504, 230);
             this.btnExit.Margin = new System.Windows.Forms.Padding(0);
             this.btnExit.Name = "btnExit";
             this.btnExit.Size = new System.Drawing.Size(75, 23);
@@ -86,15 +87,30 @@
             // 
             // btnPatch
             // 
-            this.btnPatch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPatch.Location = new System.Drawing.Point(426, 284);
+            this.btnPatch.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnPatch.BackColor = System.Drawing.Color.Transparent;
+            this.btnPatch.Location = new System.Drawing.Point(426, 230);
             this.btnPatch.Margin = new System.Windows.Forms.Padding(0);
             this.btnPatch.Name = "btnPatch";
             this.btnPatch.Size = new System.Drawing.Size(75, 23);
             this.btnPatch.TabIndex = 5;
             this.btnPatch.Text = "&Patch...";
-            this.btnPatch.UseVisualStyleBackColor = true;
+            this.btnPatch.UseVisualStyleBackColor = false;
             this.btnPatch.Click += new System.EventHandler(this.btnPatch_Click);
+            // 
+            // btnMusic
+            // 
+            this.btnMusic.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnMusic.BackColor = System.Drawing.Color.Transparent;
+            this.btnMusic.Location = new System.Drawing.Point(6, 230);
+            this.btnMusic.Margin = new System.Windows.Forms.Padding(0);
+            this.btnMusic.Name = "btnMusic";
+            this.btnMusic.Size = new System.Drawing.Size(23, 23);
+            this.btnMusic.TabIndex = 9;
+            this.btnMusic.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnMusic.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnMusic.UseVisualStyleBackColor = false;
+            this.btnMusic.Click += new System.EventHandler(this.btnMusic_Click);
             // 
             // frmMain
             // 
@@ -106,8 +122,10 @@
             this.MaximizeBox = false;
             this.Name = "frmMain";
             this.Text = "Knit";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -115,10 +133,11 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ProgressBar pgbPatch;
-        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ProgressBar prgProgress;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.Button btnPatch;
+        private System.Windows.Forms.TextBox txtStatus;
+        private System.Windows.Forms.Button btnMusic;
     }
 }
 

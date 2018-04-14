@@ -4,14 +4,23 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using WMPLib;
 
 namespace Knit
 {
     public partial class frmMain : Form
     {
         private bool Patching { get; set; }
-        private string PatchDir { get; set; }
-        private string MetaDir { get; set; }
+        private bool Cancelled { get; set; }
+        private string BaseDiriectory { get; set; }
+        private string MetaDirectory { get; set; }
+        private string ExitButtonText { get; set; }
+
+        private bool MusicOn { get; set; }
+        private string MusicPath { get; set; }
+        private Image MusicOnIcon { get; set; }
+        private Image MusicOffIcon { get; set; }
+        private System.Media.SoundPlayer player = new System.Media.SoundPlayer();
 
         public frmMain()
         {
@@ -21,86 +30,162 @@ namespace Knit
         private void frmMain_Load(object sender, EventArgs e)
         {
             // Initialize
-            PatchDir = "patch";
-            MetaDir = Path.Combine(PatchDir, "meta");
+            BaseDiriectory = "patch";
+            MetaDirectory = Path.Combine(BaseDiriectory, "meta");
 
-            // Confirm Status
-            //var currentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
-            //Directory.SetCurrentDirectory(currentDirectory);
+            // TODO: Create hash verification step
 
             LoadMeta();
             UpdateForm();
+            UpdateMusic();
+        }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            player.Stop();
         }
 
         private void LoadMeta()
         {
             // Meta
-            var meta = Meta.Load(Path.Combine(MetaDir, "meta.xml"));
-            var background = new Bitmap(Path.Combine(MetaDir, meta.Background));
-            var icon = new Icon(Path.Combine(MetaDir, meta.Icon));
+            var meta = Meta.Load(Path.Combine(MetaDirectory, "meta.xml"));
+            var background = new Bitmap(Path.Combine(MetaDirectory, meta.Background));
+            var icon = new Icon(Path.Combine(MetaDirectory, meta.Icon));
 
             // Apply meta info
             Text = $"{meta.Title}{(meta.Version != "" ? $" {meta.Version}" : "")}";
             Icon = icon;
-            BackgroundImage = background;
             ClientSize = background.Size;
-            btnPatch.Text = meta.Button;
+
+            BackgroundImage = background;
+
+            // Progress Bar
+            prgProgress.Location = meta.Layout.ProgressBar.Location;
+            prgProgress.Size = meta.Layout.ProgressBar.Size;
+
+            // Patch Button
+            btnPatch.Text = meta.Layout.PatchButton.Text;
+            btnPatch.Location = meta.Layout.PatchButton.Location;
+            btnPatch.Size = meta.Layout.PatchButton.Size;
+
+            // Exit Button
+            ExitButtonText = meta.Layout.ExitButton.Text;
+            btnExit.Text = meta.Layout.ExitButton.Text;
+            btnExit.Location = meta.Layout.ExitButton.Location;
+            btnExit.Size = meta.Layout.ExitButton.Size;
+
+            // Music
+            MusicOn = true;
+            MusicPath = Path.Combine(MetaDirectory, meta.Music);
+            var onPath = Path.Combine(MetaDirectory, meta.Layout.MusicButton.On);
+            var offPath = Path.Combine(MetaDirectory, meta.Layout.MusicButton.Off);
+            if (File.Exists(onPath))
+                MusicOnIcon = Image.FromFile(onPath);
+            if (File.Exists(offPath))
+                MusicOffIcon = Image.FromFile(offPath);
+            btnMusic.Text = meta.Layout.MusicButton.Text;
+            btnMusic.Location = meta.Layout.MusicButton.Location;
+            btnMusic.Size = meta.Layout.MusicButton.Size;
+            btnMusic.Visible = !string.IsNullOrWhiteSpace(MusicPath);
+
+            // Status Bar
+            txtStatus.BorderStyle = meta.Layout.StatusTextBox.Border;
+            txtStatus.Location = meta.Layout.StatusTextBox.Location;
+            txtStatus.Size = meta.Layout.StatusTextBox.Size;
+
+            meta.Save(Path.Combine(MetaDirectory, "meta.xml"));
         }
 
         private void UpdateForm()
         {
             btnPatch.Enabled = !Patching;
-            btnExit.Text = !Patching ? "Exit" : "Cancel";
+            btnExit.Text = !Patching ? ExitButtonText : "Cancel";
+            btnExit.Enabled = true;
+        }
+
+        private void UpdateMusic()
+        {
+            btnMusic.Image = MusicOn ? MusicOnIcon : MusicOffIcon;
+
+            if (!File.Exists(MusicPath)) return;
+            player.SoundLocation = MusicPath;
+
+            try
+            {
+                if (MusicOn)
+                    player.PlayLooping();
+                else if (!MusicOn)
+                    player.Stop();
+            }
+            catch (Exception) {}
         }
 
         private async void btnPatch_Click(object sender, EventArgs e)
         {
             // Startup
             Patching = true;
-            pgbPatch.Value = 0;
+            prgProgress.Value = 0;
+            txtStatus.Text = string.Empty;
             UpdateForm();
 
             // Variables
-            var stop = false;
-            var progress = 0;
-            var valueCache = new Dictionary<string, object>();
+            var error = false;
+            var percentage = 0;
+            var variableCache = new Dictionary<string, object>();
 
             // Steps
-            var patch = Patch.Load(Path.Combine(MetaDir, "patch.xml"));
-            pgbPatch.Maximum = patch.Steps.Sum(s => s.Weight);
+            var patch = Patch.Load(Path.Combine(MetaDirectory, "patch.xml"));
+            prgProgress.Maximum = patch.Steps.Sum(s => s.Weight);
 
             foreach (var step in patch.Steps)
             {
-                var pgr = new Progress<ProgressReport>(p =>
+                step.WorkingDirectory = Path.Combine(Environment.CurrentDirectory, BaseDiriectory);
+
+                var progress = new Progress<ProgressReport>(p =>
                 {
-                    pgbPatch.Value = progress + (int)(p.Percentage / 100 * step.Weight);
+                    prgProgress.Value = percentage + (int)(p.Percentage / 100 * step.Weight);
                     if (p.HasMessage)
-                        lblStatus.Text = p.Message;
+                        txtStatus.AppendText(p.Message.Trim() + "\r\n");
                 });
 
-                var results = await step.Perform(valueCache, pgr);
-
-                lblStatus.Text = results.Message;
-                switch (results.Status)
+                try
                 {
-                    case StepStatus.Failure:
-                    case StepStatus.Cancel:
-                    case StepStatus.Error:
-                        stop = true;
-                        break;
-                    case StepStatus.Success:
-                    case StepStatus.Skip:
-                        progress += step.Weight;
-                        break;
+                    var results = await step.Perform(variableCache, progress);
+
+                    switch (results.Status)
+                    {
+                        case StepStatus.Failure:
+                        case StepStatus.Cancel:
+                        case StepStatus.Error:
+                            error = true;
+                            break;
+                        case StepStatus.Success:
+                        case StepStatus.Skip:
+                            percentage += step.Weight;
+                            break;
+                    }
+
+                    if (results.HasMessage)
+                        txtStatus.AppendText(results.Message.Trim() + "\r\n");
+                }
+                catch (Exception ex)
+                {
+                    txtStatus.AppendText("Exception: " + ex.Message.Trim() + "\r\n");
+                    error = true;
                 }
 
-                if (stop)
+                if (error)
+                    break;
+                if (Cancelled)
                     break;
             }
 
-            if (!stop)
-                lblStatus.Text = "Patch applied successfully!";
+            if (!error && !Cancelled)
+                txtStatus.AppendText("Patch applied successfully!\r\n");
+            if (Cancelled)
+                txtStatus.AppendText("Cancelled...\r\n");
             Patching = false;
+            Cancelled = false;
             UpdateForm();
         }
 
@@ -111,8 +196,16 @@ namespace Knit
             else
             {
                 Patching = false;
-                UpdateForm();
+                Cancelled = true;
+                btnExit.Text = "Cancelling...";
+                btnExit.Enabled = false;
             }
+        }
+
+        private void btnMusic_Click(object sender, EventArgs e)
+        {
+            MusicOn = !MusicOn;
+            UpdateMusic();
         }
     }
 }

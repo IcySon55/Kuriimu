@@ -16,12 +16,12 @@ namespace Knit.steps
         public string OpenFileFilter { get; set; } = "All files (*.*)|*.*";
 
         // Methods
-        public override async Task<StepResults> Perform(Dictionary<string, object> valueCache, IProgress<ProgressReport> progress)
+        public override async Task<StepResults> Perform(Dictionary<string, object> variableCache, IProgress<ProgressReport> progress)
         {
             var progressReport = new ProgressReport();
             var stepResults = new StepResults();
 
-            if (StoreTo == string.Empty)
+            if (Variable == string.Empty)
             {
                 stepResults.Status = StepStatus.Error;
                 stepResults.Message = "StepSelectFile requires a StoreTo variable but none was provided.";
@@ -38,14 +38,14 @@ namespace Knit.steps
 
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        valueCache[StoreTo] = ofd.FileName;
+                        variableCache[Variable] = ofd.FileName;
                         progressReport.Percentage = 100;
-                        stepResults.Message = $"User selected {ofd.FileName}.";
+                        stepResults.Message = $"File selected: \"{ofd.FileName}\".";
                     }
                     else
                     {
                         stepResults.Status = StepStatus.Cancel;
-                        stepResults.Message = "User cancelled selecting a file.";
+                        stepResults.Message = "File selection cancelled.";
                     }
                 }
                 catch (Exception ex)

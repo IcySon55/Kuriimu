@@ -19,6 +19,9 @@ namespace Knit
         [XmlArray("steps")]
         [XmlArrayItem("step-delay", typeof(StepDelay))]
         [XmlArrayItem("step-select-file", typeof(StepSelectFile))]
+        [XmlArrayItem("step-execute-program", typeof(StepExecuteProgram))]
+        // DEBUG
+        [XmlArrayItem("step-debug-show-variable", typeof(StepDebugShowVariable))]
         public List<Step> Steps { get; set; }
 
         #endregion
