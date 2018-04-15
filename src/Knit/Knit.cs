@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -109,7 +110,7 @@ namespace Knit
             btnWebsite.Text = Meta.Layout.WebsiteButton.Text;
             btnWebsite.Location = Meta.Layout.WebsiteButton.Location;
             btnWebsite.Size = Meta.Layout.WebsiteButton.Size;
-            btnWebsite.Visible = !string.IsNullOrWhiteSpace(Meta.Website);
+            btnWebsite.Visible = !string.IsNullOrWhiteSpace(Meta.Website) && Regex.IsMatch(Meta.Website, @"^https?://");
             tt.SetToolTip(btnWebsite, $"Website: {Meta.Website}");
 
             // Status Bar
