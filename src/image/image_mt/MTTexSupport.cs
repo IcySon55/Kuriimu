@@ -104,7 +104,7 @@ namespace image_mt
             [12] = new ETC1(true),
             [14] = new LA(0, 4),
             [15] = new LA(4, 0),
-            [16] = new LA(8, 0),
+            [16] = new LA(4, 4),
             [17] = new RGBA(8, 8, 8),
 
             [19] = new DXT(DXT.Version.DXT1),
