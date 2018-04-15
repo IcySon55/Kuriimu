@@ -47,18 +47,17 @@ namespace image_mt.Mobile
     public class HeaderInfo
     {
         //Block 1
-        public byte unk1;
-        public byte format;
-        public Version version;
+        public short unk1;
+        public byte unk2;
+        public byte unk3;
 
         //Block 2
-        public byte r1;
-        public byte mipMapCount;
+        public int r1;
 
         //Block3
-        public int unk2;
-        public short width;
-        public short height;
+        public byte unk4;
+        public byte width;
+        public byte height;
     }
 
     public sealed class MobileMTTexBitmapInfo : BitmapInfo
