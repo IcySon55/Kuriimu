@@ -172,7 +172,7 @@ namespace Knit
 
                 var progress = new Progress<ProgressReport>(p =>
                 {
-                    prgProgress.Value = percentage + (int)(p.Percentage / 100 * step.Weight);
+                    prgProgress.Value = Math.Min(percentage + (int)(p.Percentage / 100 * step.Weight), prgProgress.Maximum);
                     if (p.HasMessage)
                         txtStatus.AppendText(p.Message.Trim() + "\r\n");
                 });
@@ -195,11 +195,11 @@ namespace Knit
                     }
 
                     if (results.HasMessage)
-                        txtStatus.AppendText(results.Message.Trim() + "\r\n");
+                        txtStatus.AppendText(results.Message.Trim() + (error ? "" : "\r\n"));
                 }
                 catch (Exception ex)
                 {
-                    txtStatus.AppendText("Exception: " + ex.Message.Trim() + "\r\n");
+                    txtStatus.AppendText("Exception: " + ex.Message.Trim());
                     error = true;
                 }
 
@@ -221,9 +221,9 @@ namespace Knit
             }
 
             if (!error && !Cancelled)
-                txtStatus.AppendText("Patch applied successfully!\r\n");
+                txtStatus.AppendText("Patch applied successfully!");
             if (Cancelled)
-                txtStatus.AppendText("Cancelled...\r\n");
+                txtStatus.AppendText("Cancelled...");
 
             Patching = false;
             Cancelled = false;
