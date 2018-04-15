@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -27,19 +26,24 @@ namespace Knit
         [XmlAttribute("endMessage")]
         public string EndMessage { get; set; } = string.Empty;
 
+        [XmlAttribute("errorMessage")]
+        public string ErrorMessage { get; set; } = string.Empty;
+
+        [XmlAttribute("stopOnText")]
+        public string StopOnText { get; set; } = string.Empty;
+
+        [XmlAttribute("stopOnStdErr")]
+        public bool StopOnStdErr { get; set; } = true;
+
         // Methods
         public override async Task<StepResults> Perform(Dictionary<string, object> variableCache, IProgress<ProgressReport> progress)
         {
-            progress.Report(new ProgressReport { Message = StartMessage });
-            var arguments = variableCache.Aggregate(Arguments, (str, pair) => str.Replace("{" + pair.Key + "}", pair.Value.ToString()));
+            var progressReport = new ProgressReport();
+            var stepResults = new StepResults { Status = StepStatus.Success };
 
-            // Handle variable modifiers
-            foreach (var key in variableCache.Keys)
-            {
-                var pathKey = "{" + key + @":DIR}";
-                if (Arguments.Contains(pathKey))
-                    arguments = Regex.Replace(arguments, pathKey + @"\\?", Path.GetDirectoryName(variableCache[key].ToString()) + "\\");
-            }
+            progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache) });
+            var arguments = Common.ProcessVariableTokens(Arguments, variableCache);
+            var error = false;
 
             var startInfo = new ProcessStartInfo()
             {
@@ -48,31 +52,51 @@ namespace Knit
                 Arguments = arguments
             };
 
-            // Process Async
             var rpa = new RunProcessAsync();
-            rpa.OutputDataReceived += HandleOutput;
-            rpa.ErrorDataReceived += HandleOutput;
-            rpa.Exited += (sender, args) =>
-            {
-                progress.Report(new ProgressReport { Message = EndMessage });
-            };
-
-            void HandleOutput(object sender, EventArgs e)
+            rpa.OutputDataReceived += (sender, e) =>
             {
                 var dr = (DataReceivedEventArgs)e;
+                if (dr.Data == null) return;
 
                 if (PercentageRegex != string.Empty)
                 {
                     double.TryParse(Regex.Match(dr.Data, PercentageRegex, RegexOptions.IgnoreCase).Value, out var percentage);
-                    progress.Report(new ProgressReport { Message = string.Empty, Percentage = percentage });
+                    progress.Report(new ProgressReport { Message = string.Empty, Percentage = percentage / Weight * 100 });
                 }
                 else
-                    progress.Report(new ProgressReport { Message = dr.Data, Percentage = 0 });
-            }
+                    progress.Report(new ProgressReport { Message = dr.Data });
+
+                if (!string.IsNullOrWhiteSpace(StopOnText) && dr.Data.Contains(StopOnText))
+                    error = true;
+            };
+
+            rpa.ErrorDataReceived += (sender, e) =>
+            {
+                var dr = (DataReceivedEventArgs)e;
+                if (dr.Data == null) return;
+
+                if (StopOnStdErr)
+                    error = true;
+                if (!string.IsNullOrWhiteSpace(StopOnText) && dr.Data.Contains(StopOnText))
+                    error = true;
+
+                progress.Report(new ProgressReport { Message = dr.Data });
+            };
+
+            rpa.Exited += (sender, args) =>
+            {
+                progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens( !error ? EndMessage : ErrorMessage, variableCache) });
+            };
 
             await rpa.StartAsync(startInfo);
 
-            return new StepResults { Status = StepStatus.Success };
+            if (!error)
+                progressReport.Percentage = Weight;
+            else
+                stepResults.Status = StepStatus.Failure;
+
+            progress.Report(progressReport);
+            return stepResults;
         }
 
     }

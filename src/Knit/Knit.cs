@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using WMPLib;
 
 namespace Knit
 {
@@ -22,6 +22,8 @@ namespace Knit
         private Image MusicOffIcon { get; set; }
         private System.Media.SoundPlayer player = new System.Media.SoundPlayer();
 
+        private Meta Meta { get; set; } = new Meta();
+
         public frmMain()
         {
             InitializeComponent();
@@ -32,8 +34,6 @@ namespace Knit
             // Initialize
             BaseDiriectory = "patch";
             MetaDirectory = Path.Combine(BaseDiriectory, "meta");
-
-            // TODO: Create hash verification step
 
             LoadMeta();
             UpdateForm();
@@ -48,52 +48,76 @@ namespace Knit
         private void LoadMeta()
         {
             // Meta
-            var meta = Meta.Load(Path.Combine(MetaDirectory, "meta.xml"));
-            var background = new Bitmap(Path.Combine(MetaDirectory, meta.Background));
-            var icon = new Icon(Path.Combine(MetaDirectory, meta.Icon));
+            Meta = Meta.Load(Path.Combine(MetaDirectory, "meta.xml"));
+            var background = new Bitmap(Path.Combine(MetaDirectory, Meta.Background));
+            var icon = new Icon(Path.Combine(MetaDirectory, Meta.Icon));
+            var tt = new ToolTip();
 
-            // Apply meta info
-            Text = $"{meta.Title}{(meta.Version != "" ? $" {meta.Version}" : "")}";
+            // Title
+            var title = new List<string>();
+            if (Meta.Title.Trim() != string.Empty) title.Add(Meta.Title.Trim());
+            if (Meta.Author.Trim() != string.Empty) title.Add(Meta.Author.Trim());
+            if (Meta.Version.Trim() != string.Empty) title.Add(Meta.Version.Trim());
+            Text = string.Join(" - ", title);
+
             Icon = icon;
             ClientSize = background.Size;
-
             BackgroundImage = background;
 
             // Progress Bar
-            prgProgress.Location = meta.Layout.ProgressBar.Location;
-            prgProgress.Size = meta.Layout.ProgressBar.Size;
+            prgProgress.Location = Meta.Layout.ProgressBar.Location;
+            prgProgress.Size = Meta.Layout.ProgressBar.Size;
 
             // Patch Button
-            btnPatch.Text = meta.Layout.PatchButton.Text;
-            btnPatch.Location = meta.Layout.PatchButton.Location;
-            btnPatch.Size = meta.Layout.PatchButton.Size;
+            btnPatch.Text = Meta.Layout.PatchButton.Text;
+            btnPatch.Location = Meta.Layout.PatchButton.Location;
+            btnPatch.Size = Meta.Layout.PatchButton.Size;
 
             // Exit Button
-            ExitButtonText = meta.Layout.ExitButton.Text;
-            btnExit.Text = meta.Layout.ExitButton.Text;
-            btnExit.Location = meta.Layout.ExitButton.Location;
-            btnExit.Size = meta.Layout.ExitButton.Size;
+            ExitButtonText = Meta.Layout.ExitButton.Text;
+            btnExit.Text = Meta.Layout.ExitButton.Text;
+            btnExit.Location = Meta.Layout.ExitButton.Location;
+            btnExit.Size = Meta.Layout.ExitButton.Size;
 
             // Music
             MusicOn = true;
-            MusicPath = Path.Combine(MetaDirectory, meta.Music);
-            var onPath = Path.Combine(MetaDirectory, meta.Layout.MusicButton.On);
-            var offPath = Path.Combine(MetaDirectory, meta.Layout.MusicButton.Off);
+            MusicPath = Path.Combine(MetaDirectory, Meta.Music);
+            var onPath = Path.Combine(MetaDirectory, Meta.Layout.MusicButton.On ?? "");
+            var offPath = Path.Combine(MetaDirectory, Meta.Layout.MusicButton.Off ?? "");
             if (File.Exists(onPath))
                 MusicOnIcon = Image.FromFile(onPath);
             if (File.Exists(offPath))
                 MusicOffIcon = Image.FromFile(offPath);
-            btnMusic.Text = meta.Layout.MusicButton.Text;
-            btnMusic.Location = meta.Layout.MusicButton.Location;
-            btnMusic.Size = meta.Layout.MusicButton.Size;
+            btnMusic.Text = Meta.Layout.MusicButton.Text;
+            btnMusic.Location = Meta.Layout.MusicButton.Location;
+            btnMusic.Size = Meta.Layout.MusicButton.Size;
             btnMusic.Visible = !string.IsNullOrWhiteSpace(MusicPath);
 
-            // Status Bar
-            txtStatus.BorderStyle = meta.Layout.StatusTextBox.Border;
-            txtStatus.Location = meta.Layout.StatusTextBox.Location;
-            txtStatus.Size = meta.Layout.StatusTextBox.Size;
+            // About
+            var iconPath = Path.Combine(MetaDirectory, Meta.Layout.AboutButton.Icon ?? "");
+            if (File.Exists(iconPath))
+                btnAbout.Image = Image.FromFile(iconPath);
+            btnAbout.Text = Meta.Layout.AboutButton.Text;
+            btnAbout.Location = Meta.Layout.AboutButton.Location;
+            btnAbout.Size = Meta.Layout.AboutButton.Size;
+            tt.SetToolTip(btnAbout, "About");
 
-            meta.Save(Path.Combine(MetaDirectory, "meta.xml"));
+            // Website
+            iconPath = Path.Combine(MetaDirectory, Meta.Layout.WebsiteButton.Icon ?? "");
+            if (File.Exists(iconPath))
+                btnWebsite.Image = Image.FromFile(iconPath);
+            btnWebsite.Text = Meta.Layout.WebsiteButton.Text;
+            btnWebsite.Location = Meta.Layout.WebsiteButton.Location;
+            btnWebsite.Size = Meta.Layout.WebsiteButton.Size;
+            btnWebsite.Visible = !string.IsNullOrWhiteSpace(Meta.Website);
+            tt.SetToolTip(btnWebsite, $"Website: {Meta.Website}");
+
+            // Status Bar
+            txtStatus.ForeColor = Meta.Layout.StatusTextBox.Color;
+            txtStatus.BorderStyle = Meta.Layout.StatusTextBox.Border;
+            txtStatus.Location = Meta.Layout.StatusTextBox.Location;
+            txtStatus.Size = Meta.Layout.StatusTextBox.Size;
+            txtStatus.BackColor = Meta.Layout.StatusTextBox.BackColor;
         }
 
         private void UpdateForm()
@@ -106,6 +130,7 @@ namespace Knit
         private void UpdateMusic()
         {
             btnMusic.Image = MusicOn ? MusicOnIcon : MusicOffIcon;
+            new ToolTip().SetToolTip(btnMusic, MusicOn ? "Music Off" : "Music On");
 
             if (!File.Exists(MusicPath)) return;
             player.SoundLocation = MusicPath;
@@ -117,7 +142,7 @@ namespace Knit
                 else if (!MusicOn)
                     player.Stop();
             }
-            catch (Exception) {}
+            catch (Exception) { }
         }
 
         private async void btnPatch_Click(object sender, EventArgs e)
@@ -125,6 +150,7 @@ namespace Knit
             // Startup
             Patching = true;
             prgProgress.Value = 0;
+            prgProgress.SetState(ProgressBarStyle.Normal);
             txtStatus.Text = string.Empty;
             UpdateForm();
 
@@ -139,6 +165,8 @@ namespace Knit
 
             foreach (var step in patch.Steps)
             {
+                if (!patch.Debug && step is IIsDebugStep) continue;
+
                 step.WorkingDirectory = Path.Combine(Environment.CurrentDirectory, BaseDiriectory);
 
                 var progress = new Progress<ProgressReport>(p =>
@@ -180,10 +208,22 @@ namespace Knit
                     break;
             }
 
+            if (error)
+            {
+                await Task.Delay(500);
+                prgProgress.SetState(ProgressBarStyle.Error);
+            }
+            else if (Cancelled)
+            {
+                await Task.Delay(500);
+                prgProgress.SetState(ProgressBarStyle.Pause);
+            }
+
             if (!error && !Cancelled)
                 txtStatus.AppendText("Patch applied successfully!\r\n");
             if (Cancelled)
                 txtStatus.AppendText("Cancelled...\r\n");
+
             Patching = false;
             Cancelled = false;
             UpdateForm();
@@ -206,6 +246,16 @@ namespace Knit
         {
             MusicOn = !MusicOn;
             UpdateMusic();
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"{Meta.About}", $"About {Meta.Title}", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnWebsite_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(Meta.Website);
         }
     }
 }

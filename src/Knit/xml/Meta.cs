@@ -16,11 +16,17 @@ namespace Knit
         [XmlElement("title")]
         public string Title { get; set; } = "Knit";
 
+        [XmlElement("author")]
+        public string Author { get; set; } = string.Empty;
+
         [XmlElement("version")]
         public string Version { get; set; } = string.Empty;
 
-        [XmlElement("author")]
-        public string Author { get; set; } = string.Empty;
+        [XmlElement("about")]
+        public string About { get; set; } = string.Empty;
+
+        [XmlElement("website")]
+        public string Website { get; set; } = string.Empty;
 
         [XmlElement("icon")]
         public string Icon { get; set; } = "icon.ico";
@@ -109,6 +115,12 @@ namespace Knit
         [XmlElement("musicButton")]
         public AppearanceMusic MusicButton { get; set; }
 
+        [XmlElement("aboutButton")]
+        public AppearanceIcon AboutButton { get; set; }
+
+        [XmlElement("websiteButton")]
+        public AppearanceIcon WebsiteButton { get; set; }
+
         [XmlElement("statusTextBox")]
         public AppearanceTextBox StatusTextBox { get; set; }
 
@@ -138,6 +150,18 @@ namespace Knit
                 Width = 23,
                 Height = 23
             };
+            AboutButton = new AppearanceIcon
+            {
+                X = 75 * 2,
+                Width = 23,
+                Height = 23
+            };
+            WebsiteButton = new AppearanceIcon
+            {
+                X = 75 * 2,
+                Width = 23,
+                Height = 23
+            };
             StatusTextBox = new AppearanceTextBox
             {
                 Y = 23 * 2,
@@ -150,8 +174,15 @@ namespace Knit
 
     public class Appearance
     {
+        [XmlIgnore]
+        public Color Color { get; set; } = Color.Black;
+
         [XmlAttribute("color")]
-        public string Color { get; set; } = "#000000";
+        public string ColorXml
+        {
+            get => ColorTranslator.ToHtml(Color);
+            set => Color = ColorTranslator.FromHtml(value);
+        }
 
         [XmlAttribute("text")]
         public string Text { get; set; } = string.Empty;
@@ -192,9 +223,25 @@ namespace Knit
         public string Off { get; set; }
     }
 
+    public class AppearanceIcon : Appearance
+    {
+        [XmlElement("icon")]
+        public string Icon { get; set; }
+    }
+
     public class AppearanceTextBox : Appearance
     {
         [XmlAttribute("border")]
         public BorderStyle Border { get; set; }
+
+        [XmlIgnore]
+        public Color BackColor { get; set; } = Color.White;
+
+        [XmlAttribute("backColor")]
+        public string BackColorXml
+        {
+            get => ColorTranslator.ToHtml(BackColor);
+            set => BackColor = ColorTranslator.FromHtml(value);
+        }
     }
 }

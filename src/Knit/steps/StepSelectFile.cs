@@ -32,7 +32,7 @@ namespace Knit.steps
                 {
                     var ofd = new OpenFileDialog
                     {
-                        Title = OpenFileTitle,
+                        Title = Common.ProcessVariableTokens(OpenFileTitle, variableCache),
                         Filter = OpenFileFilter
                     };
 

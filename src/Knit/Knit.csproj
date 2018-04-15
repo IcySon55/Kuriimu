@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="common\Common.cs" />
+    <Compile Include="common\Hashing.cs" />
     <Compile Include="common\RunProcessAsync.cs" />
     <Compile Include="Knit.cs">
       <SubType>Form</SubType>
@@ -54,6 +56,7 @@
       <DependentUpon>Knit.cs</DependentUpon>
     </Compile>
     <Compile Include="steps\StepDebugShowVariable.cs" />
+    <Compile Include="steps\StepVerifyHash.cs" />
     <Compile Include="steps\StepExecuteProgram.cs" />
     <Compile Include="TransparentTextBox.cs">
       <SubType>Component</SubType>

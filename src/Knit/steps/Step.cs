@@ -95,4 +95,9 @@ namespace Knit
         Skip,
         Error
     }
+
+    /// <summary>
+    /// Marker interface that tells the UI the step is meant for debugging only.
+    /// </summary>
+    public interface IIsDebugStep { }
 }
