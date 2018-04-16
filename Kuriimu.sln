@@ -388,6 +388,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_3ds_lz", "src\archi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_sony", "src\archive\archive_sony\archive_sony.csproj", "{137E1DC3-BF35-4DEC-A868-72A80926E18D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "archive_spc", "src\archive\archive_spc\archive_spc.csproj", "{A0E7FEB9-57DD-4023-A034-9D8DF2DDEAA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -878,6 +880,10 @@ Global
 		{137E1DC3-BF35-4DEC-A868-72A80926E18D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{137E1DC3-BF35-4DEC-A868-72A80926E18D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{137E1DC3-BF35-4DEC-A868-72A80926E18D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0E7FEB9-57DD-4023-A034-9D8DF2DDEAA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0E7FEB9-57DD-4023-A034-9D8DF2DDEAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0E7FEB9-57DD-4023-A034-9D8DF2DDEAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0E7FEB9-57DD-4023-A034-9D8DF2DDEAA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -995,6 +1001,7 @@ Global
 		{C83024E6-7779-423B-95D0-A84D21184C3C} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 		{D73D49B2-BC2C-4106-83CC-880A331A5F20} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 		{137E1DC3-BF35-4DEC-A868-72A80926E18D} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
+		{A0E7FEB9-57DD-4023-A034-9D8DF2DDEAA4} = {793D1110-C4FD-41A5-9124-6138A5C0B8A7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED651E5D-29BA-4588-933B-F512BBB01EE3}
