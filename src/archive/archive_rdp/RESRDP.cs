@@ -48,7 +48,7 @@ namespace archive_rdp
                     subEntryList.AddRange(br.ReadMultiple<ResSubEntry>(entry.entryCount));
                 }
 
-                return subEntryList;
+                return (subEntryList, new List<string>());
             }
         }
 
