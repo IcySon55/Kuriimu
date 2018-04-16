@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
@@ -32,16 +33,23 @@ namespace archive_vap
 
         public bool Identify(string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
+            try
             {
-                var fileCount = br.ReadInt32();
-                if (fileCount < 0 || (0xc + (fileCount - 1) * 0x8) < 0) return false;
-                br.BaseStream.Position = 0xc + (fileCount - 1) * 0x8;
+                using (var br = new BinaryReaderX(File.OpenRead(filename)))
+                {
+                    var fileCount = br.ReadInt32();
+                    if (fileCount < 0 || (0xc + (fileCount - 1) * 0x8) < 0) return false;
+                    br.BaseStream.Position = 0xc + (fileCount - 1) * 0x8;
 
-                var offset = br.ReadInt32();
-                var size = br.ReadInt32();
+                    var offset = br.ReadInt32();
+                    var size = br.ReadInt32();
 
-                return br.BaseStream.Length == offset + size;
+                    return br.BaseStream.Length == offset + size;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
