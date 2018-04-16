@@ -89,6 +89,7 @@
             this.prgProgress.Name = "prgProgress";
             this.prgProgress.Size = new System.Drawing.Size(572, 23);
             this.prgProgress.Step = 1;
+            this.prgProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prgProgress.TabIndex = 6;
             // 
             // btnExit

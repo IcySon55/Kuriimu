@@ -21,7 +21,7 @@ namespace Knit
         private string MusicPath { get; set; }
         private Image MusicOnIcon { get; set; }
         private Image MusicOffIcon { get; set; }
-        private System.Media.SoundPlayer player = new System.Media.SoundPlayer();
+        WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
 
         private Meta Meta { get; set; } = new Meta();
 
@@ -43,7 +43,7 @@ namespace Knit
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            player.Stop();
+            wplayer.controls.stop();
         }
 
         private void LoadMeta()
@@ -134,14 +134,15 @@ namespace Knit
             new ToolTip().SetToolTip(btnMusic, MusicOn ? "Music Off" : "Music On");
 
             if (!File.Exists(MusicPath)) return;
-            player.SoundLocation = MusicPath;
+            wplayer.URL = MusicPath;
+            wplayer.settings.setMode("loop", true);
 
             try
             {
                 if (MusicOn)
-                    player.PlayLooping();
+                    wplayer.controls.play();
                 else if (!MusicOn)
-                    player.Stop();
+                    wplayer.controls.stop();
             }
             catch (Exception) { }
         }

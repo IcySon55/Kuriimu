@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_vap
+namespace archive_spc
 {
-    public class VapManager : IArchiveManager
+    public class archive_pakManager : IArchiveManager
     {
-        private VAP _vap = null;
+        private SPC _spc = null;
 
         #region Properties
 
         // Information
-        public string Name => "VAP";
-        public string Description => "V Archive Package";
-        public string Extension => "*.vap";
-        public string About => "This is the VAP archive manager for Karameru.";
+        public string Name => "SPC";
+        public string Description => "SPC";
+        public string Extension => "*.spc";
+        public string About => "This is the SPC archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -25,7 +24,7 @@ namespace archive_vap
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
@@ -37,17 +36,12 @@ namespace archive_vap
             {
                 using (var br = new BinaryReaderX(File.OpenRead(filename)))
                 {
-                    var fileCount = br.ReadInt32();
-                    if (fileCount < 0 || (0xc + (fileCount - 1) * 0x8) < 0) return false;
-                    br.BaseStream.Position = 0xc + (fileCount - 1) * 0x8;
-
-                    var offset = br.ReadInt32();
-                    var size = br.ReadInt32();
-
-                    return br.BaseStream.Length == offset + size;
+                    var fileCount = br.ReadUInt16();
+                    br.BaseStream.Position = br.ReadUInt16() + (fileCount - 1) * 8;
+                    return (br.ReadInt32() + br.ReadInt32() == br.BaseStream.Length);
                 }
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
@@ -58,7 +52,7 @@ namespace archive_vap
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _vap = new VAP(FileInfo.OpenRead());
+                _spc = new SPC(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -69,14 +63,14 @@ namespace archive_vap
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _vap.Save(FileInfo.Create());
-                _vap.Close();
+                _spc.Save(FileInfo.Create());
+                _spc.Close();
             }
             else
             {
                 // Create the temp file
-                _vap.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _vap.Close();
+                _spc.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _spc.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -89,11 +83,11 @@ namespace archive_vap
 
         public void Unload()
         {
-            _vap?.Close();
+            _spc?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _vap.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _spc.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 
