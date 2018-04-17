@@ -23,8 +23,10 @@ namespace Kontract.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.GZip;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress Size First", null, Compress));
+            tsb3.DropDownItems[1].Tag = Compression.GZipSF;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
-            tsb3.DropDownItems[1].Tag = Compression.GZip;
+            tsb3.DropDownItems[2].Tag = Compression.GZip;
             //  ZLib
             tsb2.DropDownItems.Add(new ToolStripMenuItem("ZLib", null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[1];
@@ -336,6 +338,9 @@ namespace Kontract.UI
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
                             break;
+                        case Compression.GZipSF:
+                            outFs.Write(GZip.Compress(openFile, true));
+                            break;
                         case Compression.ZLib:
                             outFs.Write(ZLib.Compress(openFile));
                             break;
@@ -357,6 +362,7 @@ namespace Kontract.UI
         {
             ZLib,
             GZip,
+            GZipSF,
 
             Level5,
             Nintendo,
