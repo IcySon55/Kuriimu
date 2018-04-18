@@ -225,8 +225,7 @@ namespace Kontract.IO
             var remainder = BaseStream.Position % alignment;
             if (remainder <= 0) return alignmentByte;
             alignmentByte = ReadByte();
-            BaseStream.Seek(-1, SeekOrigin.Current);
-            BaseStream.Seek(alignment - remainder, SeekOrigin.Current);
+            BaseStream.Position += alignment - remainder - 1;
 
             return alignmentByte;
         }
