@@ -42,6 +42,7 @@ namespace archive_nintendo.NUS3
 
                 try
                 {
+                    // TODO: Replace this decompression with zLib magic detection to speed things up.
                     br.BaseStream.Position = 0;
                     byte[] decomp = ZLib.Decompress(new MemoryStream(br.ReadBytes((int)br.BaseStream.Length)));
                     using (var br2 = new BinaryReaderX(new MemoryStream(decomp)))
