@@ -83,7 +83,10 @@ namespace Kuriimu
                 DialogResult dr = MessageBox.Show("Would you like to save your changes before exiting?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
                 if (dr == DialogResult.Yes)
-                    SaveFile();
+                {
+                    if (SaveFile() != DialogResult.OK)
+                        e.Cancel = true;
+                }
                 else if (dr == DialogResult.Cancel)
                     e.Cancel = true;
             }
