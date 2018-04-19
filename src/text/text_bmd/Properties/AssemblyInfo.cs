@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("text_bmd")]
 [assembly: AssemblyDescription("This is the BMD text adapter for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("text_bmd")]
-[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("game_shin_megami_tensei_iv")]
 [assembly: AssemblyDescription("Shin Megami Tensei IV game handler for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("game_shin_megami_tensei_iv")]
-[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

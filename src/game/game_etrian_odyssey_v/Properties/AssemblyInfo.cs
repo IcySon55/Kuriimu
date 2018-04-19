@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("game_etrian_odyssey_v")]
 [assembly: AssemblyDescription("Etrian Odyssey V game handler for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("game_etrian_odyssey_v")]
-[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

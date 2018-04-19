@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("text_mdt")]
 [assembly: AssemblyDescription("This is the MDT text adapter for Kuriimu.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("text_mdt")]
-[assembly: AssemblyCopyright("Copyright © Fan Translators Inc. 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

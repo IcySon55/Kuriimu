@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ext_ridge_racer")]
 [assembly: AssemblyDescription("Ridge Racer BGMDB Editor allows you to create BGMDB files for custom DLC music tracks for Ridge Racer Vita.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("ext_ridge_racer")]
 [assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]

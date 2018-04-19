@@ -11,9 +11,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kukkii")]
 [assembly: AssemblyDescription("Kukkii is the game translation image converter for authors of fan translations.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("Kukkii")]
-[assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

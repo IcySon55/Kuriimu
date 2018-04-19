@@ -11,9 +11,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kuriimu")]
 [assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepiecefreak\r\nGIT Info:\r\n\tBranch:\t$gitOwner$/$gitRepo$/$gitBranch$\r\n\tCommit:\t$gitHashShort$\r\n\tCompiled:\t$compileTime$\r\n\tby:\t$gitUser$ ($gitEmail$)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("Kuriimu")]
-[assembly: AssemblyCopyright("Copyright © IcySon55 2017")]
+[assembly: AssemblyCopyright("Copyright © Fan Translators Int. 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
