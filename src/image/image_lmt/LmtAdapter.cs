@@ -16,7 +16,7 @@ namespace image_lmt
         #region Properties
 
         public string Name => "LMT";
-        public string Description => "Whatever LMT means";
+        public string Description => "LMT Format";
         public string Extension => "*.lmt";
         public string About => "This is the LMT image adapter for Kukkii.";
 

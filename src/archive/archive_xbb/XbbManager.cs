@@ -16,7 +16,7 @@ namespace archive_xbb
 
         // Information
         public string Name => "XBB";
-        public string Description => "Whatever XBB should mean";
+        public string Description => "XBB Format";
         public string Extension => "*.xbb";
         public string About => "This is the XBB archive manager for Karameru.";
 

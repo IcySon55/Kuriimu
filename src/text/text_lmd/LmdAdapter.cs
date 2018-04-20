@@ -22,30 +22,19 @@ namespace text_lmd
 
         // Information
         public string Name => "LMD";
-
-        public string Description => "Whatever LMD should mean";
-
+        public string Description => "LMD Format";
         public string Extension => "*.lmd";
-
         public string About => "This is the LMD text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
-
         public bool CanAddEntries => false;
-
         public bool CanRenameEntries => false;
-
         public bool CanDeleteEntries => false;
-
         public bool CanSortEntries => true;
-
         public bool EntriesHaveSubEntries => false;
-
         public bool EntriesHaveUniqueNames => true;
-
         public bool EntriesHaveExtendedProperties => false;
 
         public FileInfo FileInfo

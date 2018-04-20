@@ -22,30 +22,19 @@ namespace text_zds
 
         // Information
         public string Name => "ZDS";
-
-        public string Description => "Whatever ZDS should mean";
-
+        public string Description => "ZDS Format";
         public string Extension => "*.zds";
-
         public string About => "This is the ZDS text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
-
         public bool CanAddEntries => false;
-
         public bool CanRenameEntries => false;
-
         public bool CanDeleteEntries => false;
-
         public bool CanSortEntries => true;
-
         public bool EntriesHaveSubEntries => false;
-
         public bool EntriesHaveUniqueNames => true;
-
         public bool EntriesHaveExtendedProperties => false;
 
         public FileInfo FileInfo

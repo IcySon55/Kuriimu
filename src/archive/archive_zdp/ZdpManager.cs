@@ -15,7 +15,7 @@ namespace archive_zdp
 
         // Information
         public string Name => "ZDP";
-        public string Description => "Whatever ZDP should mean";
+        public string Description => "ZDP Format";
         public string Extension => "*.zdp";
         public string About => "This is the ZDP archive manager for Karameru.";
 

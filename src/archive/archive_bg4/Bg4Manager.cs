@@ -15,7 +15,7 @@ namespace archive_bg4
 
         // Information
         public string Name => "BG4";
-        public string Description => "Whatever BG4 means";
+        public string Description => "BG4 Format";
         public string Extension => "*.dat";
         public string About => "This is the BG4 archive manager for Karameru.";
 
