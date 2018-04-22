@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using Kontract.Interface;
+using Kontract.IO;
 
 namespace archive_nintendo.MMB
 {
@@ -34,6 +35,8 @@ namespace archive_nintendo.MMB
             var result = true;
             try
             {
+                using (var br = new BinaryReaderX(File.OpenRead(filename)))
+                    if (br.PeekInt32() == 0) return false;
                 var mmb = new MMB(File.OpenRead(filename));
             }
             catch
