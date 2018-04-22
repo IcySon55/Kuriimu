@@ -208,6 +208,13 @@ namespace Kontract.IO
             return value;
         }
 
+        public int PeekInt32()
+        {
+            var value = ReadInt32();
+            BaseStream.Position -= 4;
+            return value;
+        }
+
         public int ReadNibble()
         {
             if (_nibble == -1)

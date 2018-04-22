@@ -22,14 +22,5 @@ namespace archive_sony.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("PSARC")]
-        public string PluginName {
-            get {
-                return ((string)(this["PluginName"]));
-            }
-        }
     }
 }

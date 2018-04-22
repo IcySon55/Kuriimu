@@ -4,19 +4,19 @@ using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_sony.PSARC
+namespace archive_sony.PPVAX
 {
-    class PsarcManager : IArchiveManager
+    class PpvaxManager : IArchiveManager
     {
-        private PSARC _psar;
+        private PPVAX _ppvax;
 
         #region Properties
 
         // Information
-        public string Name => "PSARC";
-        public string Description => "PlayStation Archive";
-        public string Extension => "*.psarc";
-        public string About => "This is the PSARC archive manager for Karameru.";
+        public string Name => "PPVAX";
+        public string Description => "Persona 1 Audio Binary";
+        public string Extension => "*.bin";
+        public string About => "This is the PPVAX archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -36,14 +36,29 @@ namespace archive_sony.PSARC
 
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return br.BaseStream.Length >= 4 && br.ReadString(4) == "PSAR";
+                if (br.BaseStream.Length >= 4)
+                {
+                    if (br.ReadInt32() == 2048)
+                        return true;
+                    else
+                        br.BaseStream.Position = 0;
+
+                    for (var i = 0; i < 6; i++)
+                        if (br.ReadInt32() != 0)
+                            return false;
+
+                    if (br.ReadInt32() == 2048)
+                        return true;
+                }
+
+                return false;
             }
         }
 
         public void Load(string filename)
         {
             FileInfo = new FileInfo(filename);
-            _psar = new PSARC(File.OpenRead(filename));
+            _ppvax = new PPVAX(File.OpenRead(filename));
         }
 
         public void Save(string filename = "")
@@ -54,14 +69,14 @@ namespace archive_sony.PSARC
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _psar.Save(FileInfo.Create());
-                _psar.Close();
+                _ppvax.Save(FileInfo.Create());
+                _ppvax.Close();
             }
             else
             {
                 // Create the temp file
-                _psar.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _psar.Close();
+                _ppvax.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _ppvax.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -74,11 +89,11 @@ namespace archive_sony.PSARC
 
         public void Unload()
         {
-            _psar?.Close();
+            _ppvax?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _psar.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _ppvax.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

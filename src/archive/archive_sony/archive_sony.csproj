@@ -46,9 +46,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="PPVAX.cs" />
     <Compile Include="PSARC.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PpvaxManager.cs" />
     <Compile Include="PsarcManager.cs" />
+    <Compile Include="PpvaxSupport.cs" />
     <Compile Include="PsarcSupport.cs" />
   </ItemGroup>
   <ItemGroup>

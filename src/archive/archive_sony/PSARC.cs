@@ -7,7 +7,7 @@ using System.Text;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_sony
+namespace archive_sony.PSARC
 {
     public sealed class PSARC
     {

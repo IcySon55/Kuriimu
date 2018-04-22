@@ -7,7 +7,7 @@ using Kontract;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_sony
+namespace archive_sony.PSARC
 {
     public class PsarcFileInfo : ArchiveFileInfo
     {
