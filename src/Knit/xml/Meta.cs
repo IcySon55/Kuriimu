@@ -37,6 +37,9 @@ namespace Knit
         [XmlElement("music")]
         public string Music { get; set; } = "theme.mp3";
 
+        [XmlElement("volume")]
+        public int Volume { get; set; } = 50;
+
         [XmlElement("layout")]
         public Layout Layout { get; set; }
 

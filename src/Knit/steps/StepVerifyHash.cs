@@ -16,6 +16,9 @@ namespace Knit.steps
         [XmlAttribute("hash")]
         public string Hash { get; set; } = string.Empty;
 
+        [XmlAttribute("startMessage")]
+        public string StartMessage { get; set; } = string.Empty;
+
         [XmlAttribute("validMessage")]
         public string ValidMessage { get; set; } = string.Empty;
 
@@ -28,6 +31,8 @@ namespace Knit.steps
             var progressReport = new ProgressReport();
             var stepResults = new StepResults { Message = Common.ProcessVariableTokens(ValidMessage, variableCache), Status = StepStatus.Success };
             Hash = Hash.ToUpper();
+
+            progress.Report(new ProgressReport { Message = StartMessage, Percentage = 0 });
 
             if (Variable == string.Empty || !variableCache.ContainsKey(Variable))
             {
@@ -54,7 +59,7 @@ namespace Knit.steps
                         stepResults.Status = StepStatus.Failure;
                         break;
                     case HashTypes.SHA1:
-                        result = SHA1Hash.Create(File.OpenRead(variableCache[Variable].ToString()));
+                        result = await SHA1Hash.ComputeHashAsync(File.OpenRead(variableCache[Variable].ToString()), progress);
                         if (Hash != result)
                         {
                             stepResults.Message = $"Expected {Hash} but got {result} instead.\r\n" + Common.ProcessVariableTokens(InvalidMessage, variableCache);
@@ -62,7 +67,7 @@ namespace Knit.steps
                         }
                         break;
                     case HashTypes.SHA256:
-                        result = SHA256Hash.Create(File.OpenRead(variableCache[Variable].ToString()));
+                        result = await SHA256Hash.ComputeHashAsync(File.OpenRead(variableCache[Variable].ToString()), progress);
                         if (Hash != result)
                         {
                             stepResults.Message = $"Expected {Hash} but got {result} instead.\r\n" + Common.ProcessVariableTokens(InvalidMessage, variableCache);
@@ -72,7 +77,7 @@ namespace Knit.steps
                 }
 
             if (stepResults.Status == StepStatus.Success)
-                progressReport.Percentage = Weight;
+                progressReport.Percentage = 100;
 
             progress.Report(progressReport);
             return stepResults;

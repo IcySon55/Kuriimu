@@ -135,6 +135,7 @@ namespace Knit
 
             if (!File.Exists(MusicPath)) return;
             wplayer.URL = MusicPath;
+            wplayer.settings.volume = Math.Min(Math.Max(0, Meta.Volume), 100);
             wplayer.settings.setMode("loop", true);
 
             try

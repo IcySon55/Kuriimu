@@ -110,6 +110,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y $(TargetPath) "D:\DS\Coropata\Patch\$(TargetFileName)"</PostBuildEvent>
+    <PostBuildEvent>copy /y $(TargetPath) "D:\DS\Coropata\Patch\$(TargetFileName)"
+copy /y $(TargetPath) "D:\PSP\Persona1\Patch\$(TargetFileName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

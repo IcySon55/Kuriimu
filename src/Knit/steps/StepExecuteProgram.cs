@@ -29,8 +29,9 @@ namespace Knit
         [XmlAttribute("errorMessage")]
         public string ErrorMessage { get; set; } = string.Empty;
 
-        [XmlAttribute("stopOnText")]
-        public string StopOnText { get; set; } = string.Empty;
+        [XmlArray("stop-on-text")]
+        [XmlArrayItem("text")]
+        public List<string> StopOnText { get; set; } = new List<string>();
 
         [XmlAttribute("stopOnStdErr")]
         public bool StopOnStdErr { get; set; } = true;
@@ -66,8 +67,9 @@ namespace Knit
                 else
                     progress.Report(new ProgressReport { Message = dr.Data });
 
-                if (!string.IsNullOrWhiteSpace(StopOnText) && dr.Data.Contains(StopOnText))
-                    error = true;
+                foreach (var sot in StopOnText)
+                    if (!string.IsNullOrWhiteSpace(sot) && dr.Data.Contains(sot))
+                        error = true;
             };
 
             rpa.ErrorDataReceived += (sender, e) =>
@@ -77,15 +79,16 @@ namespace Knit
 
                 if (StopOnStdErr)
                     error = true;
-                if (!string.IsNullOrWhiteSpace(StopOnText) && dr.Data.Contains(StopOnText))
-                    error = true;
+                foreach (var sot in StopOnText)
+                    if (!string.IsNullOrWhiteSpace(sot) && dr.Data.Contains(sot))
+                        error = true;
 
                 progress.Report(new ProgressReport { Message = dr.Data });
             };
 
             rpa.Exited += (sender, args) =>
             {
-                progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens( !error ? EndMessage : ErrorMessage, variableCache) });
+                progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(!error ? EndMessage : ErrorMessage, variableCache) });
             };
 
             await rpa.StartAsync(startInfo);
@@ -98,6 +101,5 @@ namespace Knit
             progress.Report(progressReport);
             return stepResults;
         }
-
     }
 }
