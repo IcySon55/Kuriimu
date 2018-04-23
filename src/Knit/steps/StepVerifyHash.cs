@@ -76,9 +76,6 @@ namespace Knit.steps
                         break;
                 }
 
-            if (stepResults.Status == StepStatus.Success)
-                progressReport.Percentage = 100;
-
             progress.Report(progressReport);
             return stepResults;
         }

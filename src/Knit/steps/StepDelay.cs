@@ -23,6 +23,8 @@ namespace Knit.steps
                     });
                     await Task.Delay(Delay / Weight);
                 }
+            else
+                await Task.Delay(Delay);
 
             return new StepResults { Status = StepStatus.Success };
         }

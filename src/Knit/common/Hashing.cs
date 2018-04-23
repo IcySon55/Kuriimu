@@ -11,7 +11,6 @@ namespace Knit.Hashing
         public static async Task<string> ComputeHashAsync(Stream input, IProgress<ProgressReport> progress)
         {
             var sha1 = SHA1.Create();
-            var progressReport = new ProgressReport();
             const int bufferSize = 2048;
 
             sha1.Initialize();
@@ -24,13 +23,11 @@ namespace Knit.Hashing
                 if (input.Position == streamLength)
                 {
                     sha1.TransformFinalBlock(buffer, 0, read);
-                    progressReport.Percentage = 100;
-                    progress.Report(progressReport);
+                    progress.Report(new ProgressReport { Percentage = 100 });
                     break;
                 }
                 sha1.TransformBlock(buffer, 0, read, default(byte[]), default(int));
-                progressReport.Percentage = (double)input.Position / Math.Max(input.Length, 1) * 100;
-                progress.Report(progressReport);
+                progress.Report(new ProgressReport { Percentage = (double)input.Position / Math.Max(input.Length, 1) * 100 });
             }
 
             return string.Join("", sha1.Hash.Select(b => b.ToString("X2")));
@@ -42,7 +39,6 @@ namespace Knit.Hashing
         public static async Task<string> ComputeHashAsync(Stream input, IProgress<ProgressReport> progress)
         {
             var sha256 = SHA256.Create();
-            var progressReport = new ProgressReport();
             const int bufferSize = 2048;
 
             sha256.Initialize();
@@ -55,13 +51,11 @@ namespace Knit.Hashing
                 if (input.Position == streamLength)
                 {
                     sha256.TransformFinalBlock(buffer, 0, read);
-                    progressReport.Percentage = 100;
-                    progress.Report(progressReport);
+                    progress.Report(new ProgressReport { Percentage = 100 });
                     break;
                 }
                 sha256.TransformBlock(buffer, 0, read, default(byte[]), default(int));
-                progressReport.Percentage = (double)input.Position / Math.Max(input.Length, 1) * 100;
-                progress.Report(progressReport);
+                progress.Report(new ProgressReport { Percentage = (double)input.Position / Math.Max(input.Length, 1) * 100 });
             }
 
             return string.Join("", sha256.Hash.Select(b => b.ToString("X2")));
