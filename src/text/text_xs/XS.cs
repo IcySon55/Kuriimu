@@ -67,7 +67,7 @@ namespace text_xs
         {
             var sjis = Encoding.GetEncoding("SJIS");
 
-            using (BinaryWriterX bw = new BinaryWriterX(File.OpenWrite(filename)))
+            using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename)))
             {
                 //Table 0
                 bw.BaseStream.Position = 0x14;
