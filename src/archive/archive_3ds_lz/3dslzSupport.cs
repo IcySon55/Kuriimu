@@ -1,20 +1,12 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
-using Kontract.Compression;
+﻿using Kontract.Compression;
 using Kontract.Interface;
+using System.IO;
 
 namespace archive_3ds_lz
 {
-    // TODO: Define your format's logical blocks here to keep the main file clean and straight forward
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class archive_3dslzFileEntry
+    public class _3dslzFileInfo : ArchiveFileInfo
     {
-        public int Size = 0;
-    }
-
-    public class archive_3dslzFileInfo : ArchiveFileInfo
-    {
-        public archive_3dslzFileEntry Entry { get; set; }
+        public int Size { get; set; } = 0;
 
         public override Stream FileData
         {
@@ -24,6 +16,6 @@ namespace archive_3ds_lz
 
         public Stream CompressedFileData => _fileData;
 
-        public override long? FileSize => Entry?.Size;
+        public override long? FileSize => Size;
     }
 }

@@ -6,9 +6,9 @@ using Kontract.IO;
 
 namespace archive_3ds_lz
 {
-    public class archive_3dslzManager : IArchiveManager
+    public class _3dslzManager : IArchiveManager
     {
-        private archive_3DSLZ _3dslz = null;
+        private _3DSLZ _3dslz = null;
 
         #region Properties
 
@@ -44,7 +44,7 @@ namespace archive_3ds_lz
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _3dslz = new archive_3DSLZ(FileInfo.OpenRead());
+                _3dslz = new _3DSLZ(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
