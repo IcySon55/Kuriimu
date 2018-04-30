@@ -35,6 +35,10 @@ namespace image_g1t
                     var metainfo = br.ReadStruct<Meta>();
                     meta.Add(metainfo);
 
+                    //Check if format exists
+                    if (!Support.Format.ContainsKey(metainfo.format))
+                        throw new Exception($"Unsupported image format {metainfo.format}.");
+
                     var setting = new ImageSettings
                     {
                         Width = metainfo.width,
