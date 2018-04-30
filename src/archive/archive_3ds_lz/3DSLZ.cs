@@ -8,15 +8,15 @@ using Kontract.IO;
 
 namespace archive_3ds_lz
 {
-    public class archive_3DSLZ
+    public class _3DSLZ
     {
-        public List<archive_3dslzFileInfo> Files = new List<archive_3dslzFileInfo>();
+        public List<_3dslzFileInfo> Files = new List<_3dslzFileInfo>();
         private Stream _stream = null;
 
         private const string Magic = "3DS-LZ\r\n";
         private const int _alignment = 0x40;
 
-        public archive_3DSLZ(Stream input)
+        public _3DSLZ(Stream input)
         {
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
@@ -38,7 +38,7 @@ namespace archive_3ds_lz
                         var ext = br.ReadString(4);
                         if (!Regex.IsMatch(ext, "[A-Za-z]"))
                             ext = "BIN";
-                        fileExts.Add(ext);
+                        fileExts.Add(Regex.Replace(ext, "[^A-Za-z]", ""));
                         br.BaseStream.Position -= 4;
                         br.BaseStream.Position -= 5;
                     }
@@ -58,9 +58,9 @@ namespace archive_3ds_lz
                 // Create AFIs
                 for (var i = 0; i < fileOffsets.Count; i++)
                 {
-                    Files.Add(new archive_3dslzFileInfo
+                    Files.Add(new _3dslzFileInfo
                     {
-                        Entry = new archive_3dslzFileEntry { Size = fileSizes[i] },
+                        Size = fileSizes[i],
                         FileName = $@"File_{i:000000}.{fileExts[i]}",
                         State = ArchiveFileState.Archived,
                         FileData = new SubStream(input, fileOffsets[i], fileSizes[i])
