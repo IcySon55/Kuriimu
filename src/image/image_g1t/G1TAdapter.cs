@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -8,20 +8,20 @@ using Kontract.IO;
 using System.ComponentModel;
 using System.Linq;
 
-namespace image_f3xt
+namespace image_g1t
 {
-    public class F3xtAdapter : IImageAdapter
+    public class G1tAdapter : IImageAdapter
     {
-        private F3XT _f3xt = null;
+        private G1T _g1t = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
 
         // Information
-        public string Name => "F3XT";
-        public string Description => "F3XT Texture";
-        public string Extension => "*.tex";
-        public string About => "This is the F3XT image adapter for Kukkii.";
+        public string Name => "G1T";
+        public string Description => "G1T Texture";
+        public string Extension => "*.g1t";
+        public string About => "This is the G1T image adapter for Kukkii.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -36,7 +36,7 @@ namespace image_f3xt
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(4) == "F3XT";
+                return br.ReadString(8) == "GT1G0600";
             }
         }
 
@@ -46,9 +46,9 @@ namespace image_f3xt
 
             if (FileInfo.Exists)
             {
-                _f3xt = new F3XT(FileInfo.OpenRead());
+                _g1t = new G1T(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new F3XTBitmapInfo { Bitmap = _f3xt.Image, Format = _f3xt.settings.Format.FormatName } };
+                _bitmaps = _g1t.bmps.Select((b, i) => new G1TBitmapInfo { Bitmap = b, Format = _g1t.settings[i].Format.FormatName }).ToList<BitmapInfo>();
             }
         }
 
@@ -58,8 +58,8 @@ namespace image_f3xt
                 FileInfo = new FileInfo(filename);
 
 
-            _f3xt.Image = _bitmaps[0].Bitmap;
-            _f3xt.Save(FileInfo.Create());
+            _g1t.bmps = _bitmaps.Select(b => b.Bitmap).ToList();
+            _g1t.Save(FileInfo.Create());
         }
 
         // Bitmaps
@@ -67,7 +67,7 @@ namespace image_f3xt
 
         public bool ShowProperties(Icon icon) => false;
 
-        public sealed class F3XTBitmapInfo : BitmapInfo
+        public sealed class G1TBitmapInfo : BitmapInfo
         {
             [Category("Properties")]
             [ReadOnly(true)]
