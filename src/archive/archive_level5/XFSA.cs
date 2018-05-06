@@ -16,13 +16,14 @@ namespace archive_level5.XFSA
         Stream _stream = null;
 
         Header header;
-        byte table1Comp;
+        Level5.Method table0Comp;
+        List<Table0Entry> table0;
+        Level5.Method table1Comp;
         List<Table1Entry> table1;
-        byte table2Comp;
-        List<Table2Entry> table2;
-        byte[] nameC;
-        byte entriesComp;
-        List<FileEntryIndex> entries = new List<FileEntryIndex>();
+        Level5.Method entriesComp;
+        List<FileEntry> entries = new List<FileEntry>();
+        Level5.Method stringComp;
+        byte[] stringTable;
         List<string> fileNames = new List<string>();
 
         public XFSA(Stream input)
@@ -33,87 +34,129 @@ namespace archive_level5.XFSA
                 //Header
                 header = br.ReadStruct<Header>();
 
-                //1st table
-                br.BaseStream.Position = header.offset1;
-                table1Comp = (byte)(br.ReadByte() & 7);
-                br.BaseStream.Position--;
-                var tmpT1 = br.ReadBytes((int)(header.offset2 - header.offset1));
-                table1 = new BinaryReaderX(Support.DecompressToStream(tmpT1)).ReadMultiple<Table1Entry>(header.table1EntryCount);
+                //Table 0
+                br.BaseStream.Position = header.table0Offset;
+                table0Comp = GetCompressionMethod(br.BaseStream);
+                table0 = new BinaryReaderX(new MemoryStream(Level5.Decompress(br.BaseStream))).ReadMultiple<Table0Entry>(header.table0EntryCount);
 
-                //2nd table
-                br.BaseStream.Position = header.offset2;
-                table2Comp = (byte)(br.ReadByte() & 7);
-                br.BaseStream.Position--;
-                var tmpT2 = br.ReadBytes((int)(header.fileEntryTableOffset - header.offset2));
-                table2 = new BinaryReaderX(Support.DecompressToStream(tmpT2)).ReadMultiple<Table2Entry>(header.table2EntryCount);
+                //Table 1
+                br.BaseStream.Position = header.table1Offset;
+                table1Comp = GetCompressionMethod(br.BaseStream);
+                table1 = new BinaryReaderX(new MemoryStream(Level5.Decompress(br.BaseStream))).ReadMultiple<Table1Entry>(header.table1EntryCount);
 
                 //File Entry Table
                 br.BaseStream.Position = header.fileEntryTableOffset;
-                entriesComp = (byte)(br.ReadByte() & 7);
-                br.BaseStream.Position--;
-                entries = new BinaryReaderX(Support.DecompressToStream(br.ReadBytes((int)(header.nameTableOffset - header.fileEntryTableOffset))))
-                    .ReadMultipleEntriesInc((int)header.fileEntryCount).ToList();
+                entriesComp = GetCompressionMethod(br.BaseStream);
+                entries = new BinaryReaderX(new MemoryStream(Level5.Decompress(br.BaseStream))).ReadMultiple<FileEntry>(header.fileEntryCount);
 
-                //Name Table
+                //String Table
                 br.BaseStream.Position = header.nameTableOffset;
-                nameC = br.ReadBytes((int)(header.dataOffset - header.nameTableOffset));
-                fileNames = GetFileNames(Level5.Decompress(new MemoryStream(nameC)));
+                stringComp = GetCompressionMethod(br.BaseStream);
+                stringTable = Level5.Decompress(br.BaseStream);
 
                 //Add Files
-                List<uint> combs = new List<uint>();
-                foreach (var name in fileNames)
+                using (var stringReader = new BinaryReaderX(new MemoryStream(stringTable)))
                 {
-                    var crc32 = Crc32.Create(name.Split('/').Last(), Encoding.GetEncoding("SJIS"));
-                    var entry = entries.Find(c => c.entry.crc32 == crc32 && !combs.Contains(c.entry.comb1));
-                    combs.Add(entry.entry.comb1);
-                    Files.Add(new XFSAFileInfo
+                    foreach (var dir in table0)
                     {
-                        State = ArchiveFileState.Archived,
-                        FileName = name,
-                        FileData = new SubStream(br.BaseStream, header.dataOffset + ((entry.entry.comb1 & 0x01ffffff) << 4), entry.entry.comb2 & 0x000fffff),
-                        entry = entry
-                    });
+                        stringReader.BaseStream.Position = dir.dirNameOffset;
+                        var dirName = stringReader.ReadCStringSJIS();
+                        var fileCountInDir = 0;
+                        foreach (var file in entries.Where((e, i) => i >= dir.fileEntryOffset && i < dir.fileEntryOffset + dir.fileCountInDir))
+                        {
+                            stringReader.BaseStream.Position = dir.firstFileNameInDir + file.nameOffset;
+                            var fileName = stringReader.ReadCStringSJIS();
+                            Files.Add(new XFSAFileInfo
+                            {
+                                State = ArchiveFileState.Archived,
+                                FileName = Path.Combine(dirName, fileName),
+                                FileData = new SubStream(br.BaseStream, header.dataOffset + (file.offset << 4), file.size),
+                                fileEntry = file,
+                                fileCountInDir = fileCountInDir++,
+                                dirEntry = dir
+                            });
+                        }
+                    }
                 }
             }
         }
 
-        public List<string> GetFileNames(byte[] namePart)
+        private Level5.Method GetCompressionMethod(Stream str)
         {
-            List<string> names = new List<string>();
+            var comp = (byte)(str.ReadByte() & 7);
+            str.Position--;
 
-            using (var br = new BinaryReaderX(new MemoryStream(namePart)))
-            {
-                string currentDir = "";
-                br.BaseStream.Position = 1;
-
-                while (br.BaseStream.Position < br.BaseStream.Length)
-                {
-                    string tmpString = br.ReadCStringSJIS();
-                    if (tmpString[tmpString.Length - 1] == '/')
-                    {
-                        currentDir = tmpString;
-                    }
-                    else
-                    {
-                        names.Add(currentDir + tmpString);
-                    }
-                }
-            }
-
-            return names;
+            return (Level5.Method)comp;
         }
 
         public void Save(Stream xfsa)
         {
+            //Update FileInfo
+            int offset = 0;
+            foreach (var file in Files)
+            {
+                entries[file.dirEntry.fileEntryOffset + file.fileCountInDir].offset = offset >> 4;
+                file.fileEntry.offset = offset >> 4;
+
+                entries[file.dirEntry.fileEntryOffset + file.fileCountInDir].size = (int)file.FileSize;
+                file.fileEntry.size = (int)file.FileSize;
+
+                var newOffset = ((offset + file.FileSize) % 16 == 0) ? offset + file.FileSize + 16 : (offset + file.FileSize + 0xf) & ~0xf;
+                offset = (int)newOffset;
+            }
+
+            using (var bw = new BinaryWriterX(xfsa))
+            {
+                //Table 0
+                bw.BaseStream.Position = 0x24;
+                header.table0Offset = (int)bw.BaseStream.Position;
+                header.table0EntryCount = (short)table0.Count;
+                bw.Write(CompressTable(table0, table0Comp));
+
+                //Table 1
+                bw.BaseStream.Position = (bw.BaseStream.Position + 3) & ~3;
+                header.table1Offset = (int)bw.BaseStream.Position;
+                header.table1EntryCount = (short)table1.Count;
+                bw.Write(CompressTable(table1, table1Comp));
+
+                //FileEntries
+                bw.BaseStream.Position = (bw.BaseStream.Position + 3) & ~3;
+                header.fileEntryTableOffset = (int)bw.BaseStream.Position;
+                header.fileEntryCount = entries.Count;
+                bw.Write(CompressTable(entries, entriesComp));
+
+                //StringTable
+                bw.BaseStream.Position = (bw.BaseStream.Position + 3) & ~3;
+                header.nameTableOffset = (int)bw.BaseStream.Position;
+                bw.Write(Level5.Compress(new MemoryStream(stringTable), stringComp));
+
+                //FileData
+                bw.BaseStream.Position = (bw.BaseStream.Position + 0xf) & ~0xf;
+                header.dataOffset = (int)bw.BaseStream.Position;
+                foreach (var file in Files)
+                {
+                    bw.BaseStream.Position = header.dataOffset + (file.fileEntry.offset << 4);
+                    file.FileData.CopyTo(bw.BaseStream);
+                    if (bw.BaseStream.Position % 16 == 0)
+                        bw.WritePadding(16);
+                    else
+                        bw.WriteAlignment(16);
+                }
+
+                //Header
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
+            }
+
             //Table 1
-            var ms = new MemoryStream();
-            new BinaryWriterX(ms, true).WriteMultiple(table1);
+            /*var ms = new MemoryStream();
+            new BinaryWriterX(ms, true).WriteMultiple(table0);
             ms.Position = 0;
             var newTable1 = Level5.Compress(ms, (Level5.Method)table1Comp);
 
             //Table 2
             ms = new MemoryStream();
-            new BinaryWriterX(ms, true).WriteMultiple(table2);
+            new BinaryWriterX(ms, true).WriteMultiple(table1);
             ms.Position = 0;
             var newTable2 = Level5.Compress(ms, (Level5.Method)table2Comp);
 
@@ -199,23 +242,32 @@ namespace archive_level5.XFSA
                     offset = (uint)(((offset + file.FileData.Length) + 0xf) & ~0xf);
                 }*/
 
-                //Nametable
-                //bw.Write(nameC);
+            //Nametable
+            //bw.Write(nameC);
 
-                //Files
-                //bw.BaseStream.Position = dataOffset;
-                //foreach (var file in files)
-                //{
-                //    file.FileData.CopyTo(bw.BaseStream);
-                //    bw.BaseStream.Position = (bw.BaseStream.Position + 0xf) & ~0xf;
-                //}
+            //Files
+            //bw.BaseStream.Position = dataOffset;
+            //foreach (var file in files)
+            //{
+            //    file.FileData.CopyTo(bw.BaseStream);
+            //    bw.BaseStream.Position = (bw.BaseStream.Position + 0xf) & ~0xf;
+            //}
 
-                //Header
-                //header.nameTableOffset = (uint)(0x24 + table1.Length + table2.Length + entries.Count * 0xc + 4);
-                //header.dataOffset = (uint)dataOffset;
-                //bw.BaseStream.Position = 0;
-                //bw.WriteStruct(header);
-            }
+            //Header
+            //header.nameTableOffset = (uint)(0x24 + table1.Length + table2.Length + entries.Count * 0xc + 4);
+            //header.dataOffset = (uint)dataOffset;
+            //bw.BaseStream.Position = 0;
+            //bw.WriteStruct(header);
+            //}
+        }
+
+        private byte[] CompressTable<T>(List<T> table, Level5.Method method)
+        {
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms, true))
+                bw.WriteMultiple(table);
+            ms.Position = 0;
+            return Level5.Compress(ms, method);
         }
 
         public void Close()

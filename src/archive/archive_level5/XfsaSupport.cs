@@ -37,7 +37,9 @@ namespace archive_level5.XFSA
 
     public class XFSAFileInfo : ArchiveFileInfo
     {
-        public FileEntryIndex entry;
+        public FileEntry fileEntry;
+        public Table0Entry dirEntry;
+        public int fileCountInDir;
 
         public int UpdateEntry(int offset)
         {
@@ -52,8 +54,8 @@ namespace archive_level5.XFSA
             }
 
             //Edit entry
-            entry.entry.comb1 = (entry.entry.comb1 & 0xfe000000) | (uint)(offset >> 4);
-            entry.entry.comb2 = (entry.entry.comb2 & 0xfff00000) | ((uint)FileSize);
+            //entry.entry.comb1 = (entry.entry.comb1 & 0xfe000000) | (uint)(offset >> 4);
+            //entry.entry.comb2 = (entry.entry.comb2 & 0xfff00000) | ((uint)FileSize);
 
             return ((offset + (int)FileSize) % 0x10 != 0) ? (((offset + (int)FileSize) + 0xf) & ~0xf) : offset + (int)FileSize + 0x10;
         }
@@ -63,28 +65,35 @@ namespace archive_level5.XFSA
     public class Header
     {
         public Magic magic;
-        public uint offset1;
-        public uint offset2;
-        public uint fileEntryTableOffset;
-        public uint nameTableOffset;
-        public uint dataOffset;
-        public ushort table1EntryCount;
-        public ushort table2EntryCount;
-        public uint fileEntryCount;
-        public uint unk4;
+        public int table0Offset;
+        public int table1Offset;
+        public int fileEntryTableOffset;
+        public int nameTableOffset;
+        public int dataOffset;
+        public short table0EntryCount;
+        public short table1EntryCount;
+        public int fileEntryCount;
+        public int infoSecDecompSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class Table0Entry
+    {
+        public uint hash;
+        public uint comb1;
+        public short fileEntryOffset;
+        public short unk1;
+        public uint comb3;
+
+        public uint firstFileNameInDir { get { return comb1 >> 14; } set { comb1 = (comb1 & 0x3FFF) + (value << 14); } }
+        public uint fileCountInDir { get { return comb1 & 0x3FFF; } set { comb1 = (uint)((comb1 & ~0x3FFF) + (value & 0x3FFF)); } }
+
+        public uint dirNameOffset { get { return comb3 >> 14; } set { comb3 = (comb3 & 0x3FFF) + (value << 14); } }
+        public uint dirCountInDir { get { return comb3 & 0x3FFF; } set { comb3 = (uint)((comb3 & ~0x3FFF) + (value & 0x3FFF)); } }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Table1Entry
-    {
-        public uint hash;
-        public uint unk1;
-        public uint unk2;
-        public uint unk3;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class Table2Entry
     {
         public uint hash;
     }
@@ -95,6 +104,10 @@ namespace archive_level5.XFSA
         public uint crc32;  //lower case filename hash
         public uint comb1; //offset combined with an unknown value, offset is last 24 bits with 4bit left-shift
         public uint comb2;   //size combined with an unknown value, size is last 20 bits
+
+        public int offset { get { return (int)comb1 & 0x03FFFFFF; } set { comb1 = (uint)((comb1 & ~0x03FFFFFF) + (value & 0x03FFFFFF)); } }
+        public int size { get { return (int)comb2 & 0x007FFFFF; } set { comb2 = (uint)((comb2 & ~0x007FFFFF) + (value & 0x007FFFFF)); } }
+        public int nameOffset => (int)((comb1 >> 26) * 512 + (comb2 >> 23));
     }
 
     public class FileEntryIndex
