@@ -11,17 +11,19 @@ namespace archive_3ds_lz
     public class _3DSLZ
     {
         public List<_3dslzFileInfo> Files = new List<_3dslzFileInfo>();
+        public bool UseFixedOffsets = false;
         private Stream _stream = null;
 
         private const string Magic = "3DS-LZ\r\n";
         private const int _alignment = 0x40;
+
+        private List<int> _fileOffsets = new List<int>();
 
         public _3DSLZ(Stream input)
         {
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
-                var fileOffsets = new List<int>();
                 var fileExts = new List<string>();
                 var fileSizes = new List<int>();
 
@@ -31,7 +33,7 @@ namespace archive_3ds_lz
                     var dddHeader = br.ReadString(Magic.Length);
                     if (dddHeader == Magic)
                     {
-                        fileOffsets.Add((int)br.BaseStream.Position);
+                        _fileOffsets.Add((int)br.BaseStream.Position);
 
                         // Get Extension
                         br.BaseStream.Position += 5;
@@ -47,23 +49,23 @@ namespace archive_3ds_lz
                 }
 
                 // FileSizes
-                for (var i = 0; i < fileOffsets.Count; i++)
+                for (var i = 0; i < _fileOffsets.Count; i++)
                 {
-                    if (i == fileOffsets.Count - 1)
-                        fileSizes.Add((int)br.BaseStream.Length - fileOffsets[i]);
+                    if (i == _fileOffsets.Count - 1)
+                        fileSizes.Add((int)br.BaseStream.Length - _fileOffsets[i]);
                     else
-                        fileSizes.Add(fileOffsets[i + 1] - fileOffsets[i] - Magic.Length);
+                        fileSizes.Add(_fileOffsets[i + 1] - _fileOffsets[i] - Magic.Length);
                 }
 
                 // Create AFIs
-                for (var i = 0; i < fileOffsets.Count; i++)
+                for (var i = 0; i < _fileOffsets.Count; i++)
                 {
                     Files.Add(new _3dslzFileInfo
                     {
                         Size = fileSizes[i],
                         FileName = $@"File_{i:000000}.{fileExts[i]}",
                         State = ArchiveFileState.Archived,
-                        FileData = new SubStream(input, fileOffsets[i], fileSizes[i])
+                        FileData = new SubStream(input, _fileOffsets[i], fileSizes[i])
                     });
                 }
             }
@@ -73,8 +75,11 @@ namespace archive_3ds_lz
         {
             using (var bw = new BinaryWriterX(output))
             {
-                foreach (var afi in Files)
+                for (var i = 0; i < Files.Count; i++)
                 {
+                    var afi = Files[i];
+                    if (UseFixedOffsets)
+                        bw.BaseStream.Position = _fileOffsets[i] - Magic.Length;
                     bw.WriteASCII(Magic);
                     if (afi.State == ArchiveFileState.Archived)
                         afi.CompressedFileData.CopyTo(bw.BaseStream);

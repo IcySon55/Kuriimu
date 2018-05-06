@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using Kontract.Interface;
 using Kontract.IO;
 
@@ -51,6 +52,9 @@ namespace archive_3ds_lz
         {
             if (!string.IsNullOrEmpty(filename))
                 FileInfo = new FileInfo(filename);
+
+            if (MessageBox.Show("Use fixed offsets to save the file?", "Fixed Offsets?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                _3dslz.UseFixedOffsets = true;
 
             // Save As...
             if (!string.IsNullOrEmpty(filename))
