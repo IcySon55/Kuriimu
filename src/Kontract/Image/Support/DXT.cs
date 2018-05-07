@@ -16,18 +16,15 @@ namespace Kontract.Image.Support
         {
             private Queue<Color> queue = new Queue<Color>();
             public Formats Format { get; set; }
-            bool use_exotic { get; set; }
 
             private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
 
             private Color GetRGB565(ushort val) => Color.FromArgb(255, (val >> 11) * 33 / 4, (val >> 5) % 64 * 65 / 16, (val % 32) * 33 / 4);
-            private Color GetRGB555(ushort val) => Color.FromArgb(255, ((val >> 10) % 32) * 33 / 4, ((val >> 5) % 32) * 33 / 4, (val % 32) * 33 / 4);
 
-            public Decoder(Formats format = Formats.DXT1, bool use_exotic = false)
+            public Decoder(Formats format = Formats.DXT1)
             {
                 Format = format;
-                this.use_exotic = use_exotic;
             }
 
             public Color Get(Func<(ulong alpha, ulong block)> func)
@@ -52,8 +49,6 @@ namespace Kontract.Image.Support
                         }
                         else if (Format == Formats.DXT5)
                         {
-                            if (use_exotic)
-                                c0 = GetRGB555(color0);
                             alp = code == 0 ? a0
                             : code == 1 ? a1
                             : a0 > a1 ? Interpolate(a0, a1, 8 - code, 7)
@@ -61,25 +56,11 @@ namespace Kontract.Image.Support
                             : code % 2 * 255;
                         }
                         code = (int)(block >> 32 + 2 * i) & 3;
-                        Color clr;
-                        if (Format == Formats.DXT5 && use_exotic)
-                        {
-                            clr = code == 0 ? c0
-                                : code == 1 && color0 > color1 ? InterpolateColor(c0, c1, 3, 3)
-                                : code == 2 && color0 > color1 ? InterpolateColor(c0, c1, 2, 3)
-                                : code == 3 && color0 > color1 ? InterpolateColor(c0, c1, 1, 3)
-                                : code == 1 ? InterpolateColor(c0, c1, 2, 3)
-                                : code == 2 ? InterpolateColor(c0, c1, 1, 3)
-                                : c1;
-                        }
-                        else
-                        {
-                            clr = code == 0 ? c0
+                        Color clr = code == 0 ? c0
                                 : code == 1 ? c1
                                 : Format == Formats.DXT5 || color0 > color1 ? InterpolateColor(c0, c1, 4 - code, 3)
                                 : code == 2 ? InterpolateColor(c0, c1, 1, 2)
                                 : Color.Black;
-                        }
                         queue.Enqueue(Color.FromArgb(alp, clr));
                     }
                 }
@@ -91,12 +72,10 @@ namespace Kontract.Image.Support
         {
             List<Color> queue = new List<Color>();
             public Formats Format { get; set; }
-            bool use_exotic { get; set; }
 
-            public Encoder(Formats format = Formats.DXT1, bool use_exotic = false)
+            public Encoder(Formats format = Formats.DXT1)
             {
                 Format = format;
-                this.use_exotic = use_exotic;
             }
 
             public void Set(Color c, Action<(ulong alpha, ulong block)> func)
@@ -120,7 +99,7 @@ namespace Kontract.Image.Support
                         queue.Select(clr => clr.G / 255f).ToArray(),
                         queue.Select(clr => clr.B / 255f).ToArray()
                     );
-                    var outColor = colorEncoder.Encode(use_exotic).PackedValue;
+                    var outColor = colorEncoder.Encode().PackedValue;
 
                     func((outAlpha, outColor));
                     queue.Clear();

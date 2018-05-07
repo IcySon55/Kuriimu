@@ -280,7 +280,7 @@ namespace Kontract.Image.Support.BCn
             if (aValues[aIdx += colPitch] < alphaRef) alphaMask |= 0x8000;
         }
 
-        public BC1Block Encode(bool use_exotic = false)
+        public BC1Block Encode()
         {
             BC1Block ret;
 

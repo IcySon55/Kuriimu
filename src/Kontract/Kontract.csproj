@@ -98,6 +98,7 @@
     <Compile Include="Hash\SHA256.cs" />
     <Compile Include="Image\Format\AI.cs" />
     <Compile Include="Image\Format\ASTC.cs" />
+    <Compile Include="Image\Format\ATC.cs" />
     <Compile Include="Image\Format\ATI.cs" />
     <Compile Include="Image\Format\DXT.cs" />
     <Compile Include="Image\Format\ETC1.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Image\Format\RGBA.cs" />
     <Compile Include="Image\Common.cs" />
     <Compile Include="Image\Support\ASTC.cs" />
+    <Compile Include="Image\Support\ATC.cs" />
     <Compile Include="Image\Support\ATI.cs" />
     <Compile Include="Image\Support\BCn\BC1BlockEncoder.cs" />
     <Compile Include="Image\Support\BCn\BC2ABlockEncoder.cs" />
