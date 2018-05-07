@@ -7,8 +7,8 @@
     <ProjectGuid>{5D72870E-440F-4BC2-BC3F-01525F138FA7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>archive_bam</RootNamespace>
-    <AssemblyName>archive_bam</AssemblyName>
+    <RootNamespace>archive_atlus</RootNamespace>
+    <AssemblyName>archive_atlus</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FbinSupport.cs" />
+    <Compile Include="FbinManager.cs" />
+    <Compile Include="FBIN.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

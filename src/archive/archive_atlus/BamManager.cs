@@ -4,7 +4,7 @@ using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_bam
+namespace archive_atlus.BAM
 {
     public class BamManager : IArchiveManager
     {
