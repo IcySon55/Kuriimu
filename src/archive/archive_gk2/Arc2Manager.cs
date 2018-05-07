@@ -37,7 +37,7 @@ namespace archive_gk2.arc2
                 try
                 {
                     var limit = br.ReadUInt32();
-                    if (limit >= br.BaseStream.Length) return false;
+                    if (limit >= br.BaseStream.Length || limit == 0) return false;
 
                     var off = limit;
                     while (br.BaseStream.Position < limit)

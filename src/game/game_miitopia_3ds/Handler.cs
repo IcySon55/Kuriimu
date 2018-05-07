@@ -72,10 +72,6 @@ namespace game_miitopia_3ds
         // this value is incremented after a new (key, value) pair is added to the dictionary
         int rubyCodeID = 0;
 
-        public Handler()
-        {
-        }
-
         public string Name { get; } = "Miitopia";
 
         // Displaying the text

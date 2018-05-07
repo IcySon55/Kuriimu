@@ -24,24 +24,8 @@ namespace image_nintendo.SMDH
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public class AppSettings
         {
-            public AppSettings(Stream input)
-            {
-                using (var br = new BinaryReaderX(input, true))
-                {
-                    gameRating = br.ReadBytes(0x10);
-                    regionLockout = br.ReadInt32();
-                    makerID = br.ReadInt32();
-                    makerBITID = br.ReadInt64();
-                    flags = br.ReadInt32();
-                    eulaVerMinor = br.ReadByte();
-                    eulaVerMajor = br.ReadByte();
-                    reserved = br.ReadInt16();
-                    animDefaultFrame = br.ReadInt32();
-                    streetPassID = br.ReadInt32();
-                }
-            }
-
-            public byte[] gameRating = new byte[0x10];
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
+            public byte[] gameRating;
             public int regionLockout;
             public int makerID;
             public long makerBITID;
@@ -51,23 +35,6 @@ namespace image_nintendo.SMDH
             public short reserved;
             public int animDefaultFrame;
             public int streetPassID;
-
-            public void Write(Stream input)
-            {
-                using (var bw = new BinaryWriterX(input, true))
-                {
-                    bw.Write(gameRating);
-                    bw.Write(regionLockout);
-                    bw.Write(makerID);
-                    bw.Write(makerBITID);
-                    bw.Write(flags);
-                    bw.Write(eulaVerMinor);
-                    bw.Write(eulaVerMajor);
-                    bw.Write(reserved);
-                    bw.Write(animDefaultFrame);
-                    bw.Write(streetPassID);
-                }
-            }
         }
 
         public Header header;
@@ -94,7 +61,7 @@ namespace image_nintendo.SMDH
                 }
 
                 //Application Settings
-                appSettings = new AppSettings(br.BaseStream);
+                appSettings = br.ReadStruct<AppSettings>();
                 br.BaseStream.Position += 0x8;
 
                 var settings = new ImageSettings
@@ -102,7 +69,7 @@ namespace image_nintendo.SMDH
                     Width = 24,
                     Height = 24,
                     Format = new RGBA(5, 6, 5),
-                    Swizzle = new CTRSwizzle(24, 24)
+                    Swizzle = new CTRSwizzle(24, 24, 0, false)
                 };
                 bmps.Add(Common.Load(br.ReadBytes(0x480), settings));
 
@@ -111,7 +78,7 @@ namespace image_nintendo.SMDH
                     Width = 48,
                     Height = 48,
                     Format = new RGBA(5, 6, 5),
-                    Swizzle = new CTRSwizzle(48, 48)
+                    Swizzle = new CTRSwizzle(48, 48, 0, false)
                 };
                 bmps.Add(Common.Load(br.ReadBytes(0x1200), settings));
             }
@@ -136,8 +103,8 @@ namespace image_nintendo.SMDH
                 }
 
                 //Application Settings
-                appSettings.Write(bw.BaseStream);
-                bw.BaseStream.Position = bw.BaseStream.Position + 0xf & ~0xf;
+                bw.WriteStruct(appSettings);
+                bw.BaseStream.Position = (bw.BaseStream.Position + 0xf) & ~0xf;
 
                 //Bitmap Data
                 var settings = new ImageSettings
@@ -145,7 +112,7 @@ namespace image_nintendo.SMDH
                     Width = 24,
                     Height = 24,
                     Format = new RGBA(5, 6, 5),
-                    Swizzle = new CTRSwizzle(24, 24)
+                    Swizzle = new CTRSwizzle(24, 24, 0, false)
                 };
                 bw.Write(Common.Save(bmps[0], settings));
 
@@ -154,7 +121,7 @@ namespace image_nintendo.SMDH
                     Width = 48,
                     Height = 48,
                     Format = new RGBA(5, 6, 5),
-                    Swizzle = new CTRSwizzle(48, 48)
+                    Swizzle = new CTRSwizzle(48, 48, 0, false)
                 };
                 bw.Write(Common.Save(bmps[1], settings));
             }

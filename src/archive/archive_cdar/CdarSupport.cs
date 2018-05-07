@@ -18,7 +18,10 @@ namespace archive_cdar
             get
             {
                 if (State != ArchiveFileState.Archived || entry.decompSize == 0) return base.FileData;
-                return new MemoryStream(ZLib.Decompress(base.FileData));
+                if (entry.compSize != entry.decompSize)
+                    return new MemoryStream(ZLib.Decompress(base.FileData));
+
+                return base.FileData;
             }
         }
 

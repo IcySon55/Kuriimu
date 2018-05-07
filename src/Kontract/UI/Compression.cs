@@ -23,8 +23,10 @@ namespace Kontract.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
             tsb3.DropDownItems[0].Tag = Compression.GZip;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress Size First", null, Compress));
+            tsb3.DropDownItems[1].Tag = Compression.GZipSF;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
-            tsb3.DropDownItems[1].Tag = Compression.GZip;
+            tsb3.DropDownItems[2].Tag = Compression.GZip;
             //  ZLib
             tsb2.DropDownItems.Add(new ToolStripMenuItem("ZLib", null));
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[1];
@@ -178,6 +180,13 @@ namespace Kontract.UI
             tsb3.DropDownItems[0].Tag = Compression.LZ10VLE;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.LZ10VLE;
+            //    PSVSpikeChun
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("PSVita SpikeChun", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[2];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.PSVSpikeChun;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.PSVSpikeChun;
         }
 
         public static void Decompress(object sender, EventArgs e)
@@ -239,6 +248,9 @@ namespace Kontract.UI
                             break;
                         case Compression.ZLib:
                             outFs.Write(ZLib.Decompress(openFile));
+                            break;
+                        case Compression.PSVSpikeChun:
+                            outFs.Write(PSVSpikeChun.Decompress(openFile));
                             break;
                     }
             }
@@ -326,8 +338,14 @@ namespace Kontract.UI
                         case Compression.GZip:
                             outFs.Write(GZip.Compress(openFile));
                             break;
+                        case Compression.GZipSF:
+                            outFs.Write(GZip.Compress(openFile, true));
+                            break;
                         case Compression.ZLib:
                             outFs.Write(ZLib.Compress(openFile));
+                            break;
+                        case Compression.PSVSpikeChun:
+                            outFs.Write(PSVSpikeChun.Compress(openFile));
                             break;
                     }
             }
@@ -344,6 +362,7 @@ namespace Kontract.UI
         {
             ZLib,
             GZip,
+            GZipSF,
 
             Level5,
             Nintendo,
@@ -373,7 +392,9 @@ namespace Kontract.UI
             Yaz0LE,
             Yaz0BE,
             Yay0LE,
-            Yay0BE
+            Yay0BE,
+
+            PSVSpikeChun
         }
     }
 }

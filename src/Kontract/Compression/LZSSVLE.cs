@@ -46,7 +46,8 @@ namespace Kontract.Compression
                         var length = lengthOffset.Item1;
                         var offset = lengthOffset.Item2;
                         if (offset % 2 == 0) offset = ReadVLC(offset / 2) * 2;
-                        if (length == 0) length = ReadVLC();
+                        else offset >>= 1;
+                        if (length == 0) length = ReadVLC(length);
                         while (length-- >= 0) buffer.Add(buffer[buffer.Count - offset / 2 - 1]);
                     }
                 }

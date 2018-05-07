@@ -50,6 +50,9 @@
     <Compile Include="B123.cs" />
     <Compile Include="B123Manager.cs" />
     <Compile Include="B123Support.cs" />
+    <Compile Include="LPC2.cs" />
+    <Compile Include="Lpc2Manager.cs" />
+    <Compile Include="Lpc2Support.cs" />
     <Compile Include="PCK.cs" />
     <Compile Include="PckManager.cs" />
     <Compile Include="PckSupport.cs" />

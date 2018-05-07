@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using Kontract.Interface;
 using System.Runtime.InteropServices;
+using System.IO;
+using Kontract.IO;
+using System.Linq;
 
 namespace tt.text_ttbin
 {
@@ -72,8 +75,8 @@ namespace tt.text_ttbin
     {
         public string Name;
 
-        public uint TextID;
-        public uint TextOffset;
+        public int TextID;
+        public int TextOffset;
         public string Text;
 
         public Label()
@@ -90,26 +93,127 @@ namespace tt.text_ttbin
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Header
     {
-        public uint unk1;
+        public uint entryCount;
         public uint dataOffset;
         public uint dataLength;
+        public uint unk1; //maybe textsCount?
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct EditorStruct
+    public class CfgEntry
     {
-        public uint entryOffset;
-        public uint ID;
-        public ushort endingFlag;
-        public ushort filling;
-    }
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct TextStruct
-    {
-        public uint entryOffset;
-        public uint ID;
-        public uint unk1;
-        public uint unk2;
-        public uint unk3;
+        public CfgEntry(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                hash = br.ReadUInt32();
+                entryCount = br.ReadByte();
+                var types = br.ReadBytes(GetBytesToRead(entryCount)).Reverse();
+
+                var scannedTypes = 0;
+                foreach (var typeChunk in types)
+                {
+                    for (var i = 0; i < 4; i++)
+                    {
+                        var type = (byte)((typeChunk >> i * 2) & 0x3);
+                        if (type != 0x3)
+                        {
+                            object value = null;
+                            switch (type)
+                            {
+                                case 0:
+                                    value = br.ReadInt32();
+                                    break;
+                                case 1:
+                                    value = br.ReadInt32();
+                                    break;
+                                case 2:
+                                    value = br.ReadSingle();
+                                    break;
+                            }
+
+                            metaInfo.Add(new Meta
+                            {
+                                type = type,
+                                value = value
+                            });
+
+                            scannedTypes++;
+                        }
+
+                        if (scannedTypes >= entryCount) break;
+                    }
+
+                    if (scannedTypes >= entryCount) break;
+                }
+            }
+        }
+
+        int GetBytesToRead(int entryCount)
+        {
+            if (entryCount <= 12)
+                return 3;
+            else
+            {
+                var longerEntry = entryCount - 12;
+                var bytesToRead = longerEntry / 16 * 4 + 3;
+                return (longerEntry % 16 == 0) ? bytesToRead : bytesToRead + 4;
+            }
+        }
+
+        public void Write(Stream input)
+        {
+            //Create Types Bitfield
+            var types = new List<byte>();
+
+            int tmpCount = entryCount;
+            while (tmpCount > 0)
+            {
+                byte typeChunk = 0;
+                for (int i = 0; i < 4; i++)
+                {
+                    typeChunk <<= 2;
+                    typeChunk |= metaInfo[tmpCount - 1].type;
+
+                    if (--tmpCount <= 0)
+                    {
+                        break;
+                    }
+                }
+                types.Add(typeChunk);
+            }
+            types.Reverse();
+            while ((types.Count() + 1) % 4 != 0) types.Add(0xff);
+
+            //Writing the entry
+            using (var bw = new BinaryWriterX(input, true))
+            {
+                bw.Write(hash);
+                bw.Write(entryCount);
+                bw.Write(types.ToArray());
+                foreach (var meta in metaInfo)
+                    switch (meta.type)
+                    {
+                        case 0:
+                            bw.Write((int)meta.value);
+                            break;
+                        case 1:
+                            bw.Write((int)meta.value);
+                            break;
+                        case 2:
+                            bw.Write((float)meta.value);
+                            break;
+                    }
+            }
+        }
+
+        public uint hash;
+        public byte entryCount;
+        public List<Meta> metaInfo = new List<Meta>();
+
+        public class Meta
+        {
+            public byte type;
+            public object value;
+        }
     }
 }

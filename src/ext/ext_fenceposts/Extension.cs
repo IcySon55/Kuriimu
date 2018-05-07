@@ -27,9 +27,13 @@ namespace ext_fenceposts
         private BackgroundWorker _workerDumper = new BackgroundWorker();
         private BackgroundWorker _workerInjector = new BackgroundWorker();
 
-        public frmExtension()
+        public frmExtension(string[] args = null)
         {
             InitializeComponent();
+
+            // Load passed in file
+            if (args != null && args.Length > 0 && File.Exists(args[0]))
+                OpenFile(args[0]);
         }
 
         private void Fenceposts_Load(object sender, EventArgs e)
@@ -655,11 +659,18 @@ namespace ext_fenceposts
                 {
                     // In place string update
                     bw.BaseStream.Seek(entry.OffsetLong, SeekOrigin.Begin);
+                    var start = bw.BaseStream.Position;
                     bw.Write(editedText, 0, Math.Min(editedText.Length, entry.MaxLength));
                     if (_kup.Encoding.IsSingleByte)
-                        bw.Write(new byte[] { 0x0 });
+                    {
+                        if (entry.MaxLength - (bw.BaseStream.Position - start) > 0)
+                            bw.Write(new byte[] { 0x0 });
+                    }
                     else
-                        bw.Write(new byte[] { 0x0, 0x0 });
+                    {
+                        if (entry.MaxLength - (bw.BaseStream.Position - start) > 1)
+                            bw.Write(new byte[] { 0x0, 0x0 });
+                    }
                 }
 
                 _workerInjector.ReportProgress((int)(((double)count) / ((double)_kup.Entries.Count) * prgBottom.Maximum), "BOTTOM");

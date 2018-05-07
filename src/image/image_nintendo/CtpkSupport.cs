@@ -45,7 +45,7 @@ namespace image_nintendo.CTPK
     public class CtpkEntry
     {
         public TexEntry texEntry;
-        public List<uint> dataSizes = new List<uint>();
+        public List<int> dataSizes = new List<int>();
         public string name;
         public HashEntry hash;
         public MipmapEntry mipmapEntry;

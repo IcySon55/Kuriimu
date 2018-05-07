@@ -26,7 +26,7 @@ namespace archive_level5.XPCK
                 Entry.tmp2 = (ushort)(FileSize & 0xffff);
                 Entry.tmp2Z = (byte)((FileSize & 0xff0000) >> 16);
 
-                return (bw.BaseStream.Position % 4 > 0) ? (int)(absDataOffset + FileSize + 0x3) & ~0x3 : (int)(absDataOffset + FileSize + 4);
+                return ((absDataOffset + FileSize) % 4 > 0) ? (int)(absDataOffset + FileSize + 0x3) & ~0x3 : (int)(absDataOffset + FileSize + 4);
             }
         }
     }

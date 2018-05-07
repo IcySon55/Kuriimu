@@ -31,7 +31,7 @@ namespace image_nintendo.CTPK
                 foreach (var entry in entries) entry.texEntry = br.ReadStruct<TexEntry>();
 
                 //DataSize List
-                foreach (var entry in entries) for (int i = 0; i < entry.texEntry.mipLvl; i++) entry.dataSizes.Add(br.ReadUInt32());
+                foreach (var entry in entries) for (int i = 0; i < entry.texEntry.mipLvl; i++) entry.dataSizes.Add(br.ReadInt32());
 
                 //Name List
                 foreach (var entry in entries) entry.name = br.ReadCStringA();
@@ -61,7 +61,7 @@ namespace image_nintendo.CTPK
                     };
 
                     _settings.Add(settings);
-                    bmps.Add(Common.Load(br.ReadBytes((int)entries[i].dataSizes[0]), settings));
+                    bmps.Add(Common.Load(br.ReadBytes((entries[i].dataSizes[0] == 0) ? entries[i].texEntry.texDataSize : entries[i].dataSizes[0]), settings));
 
                     //Mipmaps
                     if (entries[i].texEntry.mipLvl > 1)
@@ -77,7 +77,7 @@ namespace image_nintendo.CTPK
                             };
 
                             _settings.Add(settings);
-                            bmps.Add(Common.Load(br.ReadBytes((int)entries[i].dataSizes[j]), settings));
+                            bmps.Add(Common.Load(br.ReadBytes(entries[i].dataSizes[j]), settings));
                         }
                     }
                 }

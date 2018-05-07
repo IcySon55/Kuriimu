@@ -89,7 +89,7 @@ namespace image_nintendo.CHNK
                         Width = width,
                         Height = height,
                         Format = new Palette(pal, bitDepth),
-                        Swizzle = new Linear(paddedWidth)
+                        Swizzle = new Linear(paddedWidth, height)
                     };
                     Bitmaps.Add(Common.Load(txims[i].Data, settings));
                 }

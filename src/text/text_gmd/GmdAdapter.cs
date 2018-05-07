@@ -29,7 +29,7 @@ namespace text_gmd
         public bool FileHasExtendedProperties => false;
         public bool CanSave => true;
         public bool CanAddEntries => false;
-        public bool CanRenameEntries => false;
+        public bool CanRenameEntries => true;
         public bool CanDeleteEntries => false;
         public bool CanSortEntries => false;
         public bool EntriesHaveSubEntries => false;
@@ -132,14 +132,32 @@ namespace text_gmd
         public bool ShowProperties(Icon icon) => false;
         public TextEntry NewEntry() => new Entry();
         public bool AddEntry(TextEntry entry) => false;
-        public bool RenameEntry(TextEntry entry, string newName) => false;
+
+        public bool RenameEntry(TextEntry entry, string newName)
+        {
+            var result = true;
+
+            try
+            {
+                var ent = (Entry)entry;
+                ent.Name = newName;
+                _gmd.RenameLabel(ent.EditedLabel.TextID, newName);
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+
+            return result;
+        }
+
         public bool DeleteEntry(TextEntry entry) => false;
         public bool ShowEntryProperties(TextEntry entry, Icon icon) => false;
 
         // Settings
         public bool SortEntries
         {
-            get { return Settings.Default.SortEntries; }
+            get => Settings.Default.SortEntries;
             set
             {
                 Settings.Default.SortEntries = value;

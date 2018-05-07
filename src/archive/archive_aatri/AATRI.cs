@@ -21,8 +21,9 @@ namespace archive_aatri.aatri
         public AATRI(Stream incInput, Stream datInput)
         {
             _stream = datInput;
-            var entryCount = 0;
-            List<Entry> entries = new List<Entry>();
+
+            int entryCount;
+            List<Entry> entries;
             using (var br = new BinaryReaderX(incInput))
             {
                 entryCount = (int)br.BaseStream.Length / 0x14;
@@ -50,16 +51,18 @@ namespace archive_aatri.aatri
 
         public void Save(Stream incOutput, Stream datOutput)
         {
-            using (var bw = new BinaryWriterX(incOutput))
             using (var bwd = new BinaryWriterX(datOutput))
             {
                 for (int i = 0; i < Files.Count; i++)
                 {
-                    Files[i].Entry.offset = (uint)bwd.BaseStream.Position;
                     Files[i].Write(bwd.BaseStream);
                     bwd.WriteAlignment(4);
-                    bw.WriteStruct(Files[i].Entry);
                 }
+            }
+            using (var bw = new BinaryWriterX(incOutput))
+            {
+                foreach (var file in Files)
+                    bw.WriteStruct(file.Entry);
             }
         }
 

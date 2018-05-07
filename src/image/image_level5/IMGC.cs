@@ -16,12 +16,12 @@ namespace image_level5.imgc
         public Bitmap Image;
         public ImageSettings settings;
 
-        public static Header header;
-        public static byte[] entryStart = null;
+        public Header header;
+        public byte[] entryStart = null;
 
-        static bool editMode = false;
-        static Level5.Method tableComp;
-        static Level5.Method picComp;
+        bool editMode = false;
+        Level5.Method tableComp;
+        Level5.Method picComp;
 
         public IMGC(Stream input)
         {
@@ -62,7 +62,7 @@ namespace image_level5.imgc
             }
         }
 
-        public static byte[] Order(MemoryStream tableStream, MemoryStream texStream)
+        public byte[] Order(MemoryStream tableStream, MemoryStream texStream)
         {
             using (var table = new BinaryReaderX(tableStream))
             using (var tex = new BinaryReaderX(texStream))
@@ -151,7 +151,7 @@ namespace image_level5.imgc
             }
         }
 
-        public static byte[] Deflate(byte[] pic, int bpp, out MemoryStream table)
+        public byte[] Deflate(byte[] pic, int bpp, out MemoryStream table)
         {
             table = new MemoryStream();
             using (var tableB = new BinaryWriterX(table, true))

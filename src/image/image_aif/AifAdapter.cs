@@ -17,7 +17,7 @@ namespace image_aif
         #region Properties
 
         public string Name => "AIF";
-        public string Description => "Whatever AIF means";
+        public string Description => "AIF Format";
         public string Extension => "*.aif";
         public string About => "This is the AIF image adapter for Kukkii.";
 

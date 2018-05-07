@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Cetera.Font;
 using game_unchained_blades_exxiv.Properties;
+using Kontract.Compression;
 using Kontract.Interface;
 
 namespace game_unchained_blades_exxiv
@@ -40,15 +41,8 @@ namespace game_unchained_blades_exxiv
             ["<1>"] = "Player",
         };
 
-        BCFNT font;
-
-        public Handler()
-        {
-            var ms = new MemoryStream();
-            new MemoryStream(Resources.MainFont).CopyTo(ms);
-            ms.Position = 0;
-            font = new BCFNT(ms);
-        }
+        static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.font_bcfnt)))));
+        BCFNT font => fontInitializer.Value;
 
         public string GetKuriimuString(string rawString)
         {

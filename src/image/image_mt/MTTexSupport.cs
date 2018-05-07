@@ -20,10 +20,15 @@ namespace image_mt
         DXT5_YCbCr = 0x2A
     }
 
-    public enum Version
+    public enum Version : short
     {
-        v154 = 154,
-        v165 = 165
+        _PS3v1 = 0xa9,
+
+        _3DSv1 = 0xa4,
+        _3DSv2 = 0xa5,
+        _3DSv3 = 0xa6,
+
+        _Switchv1 = 0xa0
     }
 
     // This particular enum is questionable as the data space for it is only 4-bits (maybe)
@@ -87,6 +92,7 @@ namespace image_mt
     // Support
     public partial class MTTEX
     {
+        #region Formats
         public static Dictionary<byte, IImageFormat> Formats = new Dictionary<byte, IImageFormat>
         {
             [1] = new RGBA(4, 4, 4, 4),
@@ -98,7 +104,7 @@ namespace image_mt
             [12] = new ETC1(true),
             [14] = new LA(0, 4),
             [15] = new LA(4, 0),
-            [16] = new LA(8, 0),
+            [16] = new LA(4, 4),
             [17] = new RGBA(8, 8, 8),
 
             [19] = new DXT(DXT.Version.DXT1),
@@ -110,6 +116,15 @@ namespace image_mt
             [42] = new DXT(DXT.Version.DXT5)
         };
 
+        public static Dictionary<byte, IImageFormat> SwitchFormats = new Dictionary<byte, IImageFormat>
+        {
+            [7] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x13] = new DXT(DXT.Version.DXT1),
+            [0x17] = new DXT(DXT.Version.DXT5)
+        };
+        #endregion
+
+        #region Pixel Shader
         // Currently trying out YCbCr:
         // https://en.wikipedia.org/wiki/YCbCr#JPEG_conversion
         private const int CbCrThreshold = 123; // usually 128, but 123 seems to work better here
@@ -136,6 +151,7 @@ namespace image_mt
                 CbCrThreshold + 0.5 * c.R - 0.418688 * c.G - 0.081312 * c.B);
             return Color.FromArgb(Common.Clamp(Y), Common.Clamp(Cr), A, Common.Clamp(Cb));
         }
+        #endregion
     }
 
     public class BlockSwizzle : IImageSwizzle
