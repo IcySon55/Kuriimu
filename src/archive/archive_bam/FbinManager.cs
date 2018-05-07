@@ -4,19 +4,19 @@ using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_atlus.BAM
+namespace archive_atlus.FBIN
 {
-    public class BamManager : IArchiveManager
+    public class FbinManager : IArchiveManager
     {
-        private BAM _bam = null;
+        private FBIN _fbin = null;
 
         #region Properties
 
         // Information
-        public string Name => "BAM";
-        public string Description => "BAM";
-        public string Extension => "*.bam";
-        public string About => "This is the BAM archive manager for Karameru.";
+        public string Name => "FBIN";
+        public string Description => "FBIN";
+        public string Extension => "*.bin";
+        public string About => "This is the FBIN archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -34,7 +34,7 @@ namespace archive_atlus.BAM
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                return br.ReadString(4) == "ATBC";
+                return br.ReadString(4) == "FBIN";
             }
         }
 
@@ -43,7 +43,7 @@ namespace archive_atlus.BAM
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _bam = new BAM(FileInfo.OpenRead());
+                _fbin = new FBIN(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -54,14 +54,14 @@ namespace archive_atlus.BAM
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _bam.Save(FileInfo.Create());
-                _bam.Close();
+                _fbin.Save(FileInfo.Create());
+                _fbin.Close();
             }
             else
             {
                 // Create the temp file
-                _bam.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _bam.Close();
+                _fbin.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _fbin.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -74,11 +74,11 @@ namespace archive_atlus.BAM
 
         public void Unload()
         {
-            _bam?.Close();
+            _fbin?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _bam.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _fbin.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

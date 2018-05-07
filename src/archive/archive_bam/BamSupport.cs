@@ -2,9 +2,9 @@
 using Kontract.Interface;
 using Kontract;
 
-namespace archive_bam
+namespace archive_atlus.BAM
 {
-    public class BAMFileInfo : ArchiveFileInfo
+    public class BamFileInfo : ArchiveFileInfo
     {
 
     }
