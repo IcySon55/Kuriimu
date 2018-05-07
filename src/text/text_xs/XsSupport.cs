@@ -88,17 +88,25 @@ namespace text_xs
     public class Header
     {
         public Magic magic;
-        public short unk1;
-        public short table1Offset;
-        public int unk2;
-        public int table2Offset;
-        public int unk3;
+        public short table0EntryCount;
+        public short table0Offset;
+        public int table1EntryCount;
+        public int table1Offset;
+        public int stringTableOffset;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class T2Entry
+    public class T0Entry
+    {
+        public short unk1;
+        public short varCount;
+        public int varOffset;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class VarStruct
     {
         public int ident;
-        public uint textOffset;
+        public uint value;
     }
 }

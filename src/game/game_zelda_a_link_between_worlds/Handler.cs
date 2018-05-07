@@ -79,6 +79,7 @@ namespace game_zelda_a_link_between_worlds
 
         static Lazy<BCFNT> fontInitializer = new Lazy<BCFNT>(() => new BCFNT(new MemoryStream(GZip.Decompress(new MemoryStream(Resources.MainFont_bcfnt)))));
         BCFNT font => fontInitializer.Value;
+
         string[] it_name = Resources.item.Split('\n');
         string[] loc_name = Resources.location.Split('\n');
         string[] npc_name = Resources.npc.Split('\n');

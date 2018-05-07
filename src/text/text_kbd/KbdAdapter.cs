@@ -22,30 +22,19 @@ namespace text_kbd
 
         // Information
         public string Name => "KBD";
-
-        public string Description => "Whatever KBD should mean";
-
+        public string Description => "KBD Format";
         public string Extension => "*.kbd";
-
         public string About => "This is the KBD text adapter for Kuriimu.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-
         public bool CanSave => true;
-
         public bool CanAddEntries => false;
-
         public bool CanRenameEntries => false;
-
         public bool CanDeleteEntries => false;
-
         public bool CanSortEntries => true;
-
         public bool EntriesHaveSubEntries => false;
-
         public bool EntriesHaveUniqueNames => true;
-
         public bool EntriesHaveExtendedProperties => false;
 
         public FileInfo FileInfo

@@ -201,6 +201,20 @@ namespace Kontract.IO
             return encoding.GetString(bytes.ToArray());
         }
 
+        public byte PeekByte()
+        {
+            var value = ReadByte();
+            BaseStream.Position--;
+            return value;
+        }
+
+        public int PeekInt32()
+        {
+            var value = ReadInt32();
+            BaseStream.Position -= 4;
+            return value;
+        }
+
         public int ReadNibble()
         {
             if (_nibble == -1)
@@ -218,8 +232,7 @@ namespace Kontract.IO
             var remainder = BaseStream.Position % alignment;
             if (remainder <= 0) return alignmentByte;
             alignmentByte = ReadByte();
-            BaseStream.Seek(-1, SeekOrigin.Current);
-            BaseStream.Seek(16 - remainder, SeekOrigin.Current);
+            BaseStream.Position += alignment - remainder - 1;
 
             return alignmentByte;
         }

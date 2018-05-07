@@ -87,9 +87,8 @@ namespace text_gmd
         {
             var bk = input.Position;
             input.Position = input.Length - 1;
-            bool result = input.ReadByte() != 0x00;
+            var result = input.ReadByte() != 0x00;
             input.Position = bk;
-
             return result;
         }
     }
@@ -101,16 +100,16 @@ namespace text_gmd
         // Interface
         public string Name
         {
-            get { return EditedLabel.Name; }
-            set { }
+            get => EditedLabel.Name;
+            set => EditedLabel.Name = value;
         }
 
         public string OriginalText => OriginalLabel.Text;
 
         public string EditedText
         {
-            get { return EditedLabel.Text; }
-            set { EditedLabel.Text = value; }
+            get => EditedLabel.Text;
+            set => EditedLabel.Text = value;
         }
 
         public int MaxLength { get; set; }

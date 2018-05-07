@@ -36,8 +36,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LZ4">
-      <HintPath>..\..\LZ4.dll</HintPath>
+    <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\LZ4.dll</HintPath>
     </Reference>
     <Reference Include="Security.Cryptography">
       <HintPath>..\Cetera\Resources\Security.Cryptography.dll</HintPath>
@@ -55,10 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AES\AesCTR.cs" />
-    <Compile Include="AES\AesEngine.cs" />
-    <Compile Include="AES\BigEndian.cs" />
-    <Compile Include="AES\CTRKeyScrambler.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\AesCTR.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\AesEngine.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\BigEndian.cs" />
+    <Compile Include="Encryption\AES\AES_CTR\CTRKeyScrambler.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Compression\Level5.cs" />
     <Compile Include="Compression\GZip.cs" />
@@ -75,22 +76,38 @@
     <Compile Include="Compression\LZSSVLE.cs" />
     <Compile Include="Compression\MIO0.cs" />
     <Compile Include="Compression\Nintendo.cs" />
+    <Compile Include="Compression\PSVSpikeChun.cs" />
     <Compile Include="Compression\RevLZ77.cs" />
     <Compile Include="Compression\RLE.cs" />
     <Compile Include="Compression\Yay0.cs" />
     <Compile Include="Compression\Yaz0.cs" />
     <Compile Include="Compression\ZLib.cs" />
+    <Compile Include="Encryption\AES\Transform.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\RandomAccessSectorStream.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\SectorStream.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\Xts.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsAes128.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsAes256.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsCryptoTransform.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsSectorStream.cs" />
+    <Compile Include="Encryption\AES\AES_XTS\XtsStream.cs" />
     <Compile Include="Encryption\BlowFish.cs" />
     <Compile Include="Encryption\MTFramework.cs" />
+    <Compile Include="Encryption\Switch.cs" />
     <Compile Include="Hash\Crc32.cs" />
+    <Compile Include="Hash\SHA256.cs" />
+    <Compile Include="Image\Format\AI.cs" />
+    <Compile Include="Image\Format\ASTC.cs" />
     <Compile Include="Image\Format\ATI.cs" />
     <Compile Include="Image\Format\DXT.cs" />
     <Compile Include="Image\Format\ETC1.cs" />
     <Compile Include="Image\Format\HL.cs" />
     <Compile Include="Image\Format\LA.cs" />
     <Compile Include="Image\Format\Palette.cs" />
+    <Compile Include="Image\Format\PVRTC.cs" />
     <Compile Include="Image\Format\RGBA.cs" />
     <Compile Include="Image\Common.cs" />
+    <Compile Include="Image\Support\ASTC.cs" />
     <Compile Include="Image\Support\ATI.cs" />
     <Compile Include="Image\Support\BCn\BC1BlockEncoder.cs" />
     <Compile Include="Image\Support\BCn\BC2ABlockEncoder.cs" />
@@ -101,11 +118,12 @@
     <Compile Include="Image\Support\BCn\Helpers.cs" />
     <Compile Include="Image\Support\BCn\ImageEncoder.cs" />
     <Compile Include="Image\Support\BCn\ImageEncodingHelper.cs" />
+    <Compile Include="Image\Support\PVRTC.cs" />
     <Compile Include="Image\Support\Support.cs" />
     <Compile Include="Image\Support\DXT.cs" />
     <Compile Include="Image\Support\ETC1.cs" />
-    <Compile Include="Image\Support\sRGB.cs" />
     <Compile Include="Image\Swizzle\CTR.cs" />
+    <Compile Include="Image\Swizzle\Switch.cs" />
     <Compile Include="Image\Swizzle\Linear.cs" />
     <Compile Include="Image\Swizzle\Master.cs" />
     <Compile Include="Image\Swizzle\Nitro.cs" />
@@ -149,10 +167,20 @@
       <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="LZ4.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PVRTexLib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PVRTexLibWrapper.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>powershell -ExecutionPolicy ByPass -File  $(SolutionDir)\get_git_info.ps1 "$(ProjectDir)"</PreBuildEvent>
+    <PreBuildEvent>powershell -ExecutionPolicy ByPass -File "$(SolutionDir)\get_git_info.ps1" "$(ProjectDir)"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

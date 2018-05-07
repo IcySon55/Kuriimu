@@ -9,7 +9,7 @@ namespace image_level5.imga
 {
     public sealed class ImgaAdapter : IImageAdapter
     {
-        private Bitmap _imga = null;
+        private IMGA _imga = null;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
@@ -42,9 +42,9 @@ namespace image_level5.imga
 
             if (FileInfo.Exists)
             {
-                _imga = IMGA.Load(FileInfo.OpenRead());
+                _imga = new IMGA(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imga } };
+                _bitmaps = new List<BitmapInfo> { new BitmapInfo { Bitmap = _imga.bmps[0] } };
             }
         }
 
@@ -53,8 +53,8 @@ namespace image_level5.imga
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _imga = _bitmaps[0].Bitmap;
-            IMGA.Save(FileInfo.FullName, _imga);
+            _imga.bmps[0] = _bitmaps[0].Bitmap;
+            _imga.Save(FileInfo.FullName);
         }
 
         // Bitmaps

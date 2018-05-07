@@ -22,6 +22,13 @@ namespace ext_director
             return configure;
         }
 
+        public Form CreateInstance(string[] args)
+        {
+            Extension configure = new Extension(args);
+            configure.StartPosition = FormStartPosition.CenterParent;
+            return configure;
+        }
+
         public override string ToString()
         {
             return Name;

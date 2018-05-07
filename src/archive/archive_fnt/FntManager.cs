@@ -14,7 +14,7 @@ namespace archive_fnt
 
         // Information
         public string Name => "FNT";
-        public string Description => "Whatever FNT should mean";
+        public string Description => "FNT Format";
         public string Extension => "*.fnt";
         public string About => "This is the FNT archive manager for Karameru.";
 

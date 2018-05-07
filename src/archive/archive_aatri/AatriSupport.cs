@@ -14,12 +14,10 @@ namespace archive_aatri.aatri
         {
             get
             {
-                var baseStream = base.FileData;
+                if (State != ArchiveFileState.Archived) return new MemoryStream(Nintendo.Compress(base.FileData, Nintendo.Method.LZ11));
 
-                if (State != ArchiveFileState.Archived) return new MemoryStream(Nintendo.Compress(baseStream, Nintendo.Method.LZ11));
-
-                if (Entry.uncompSize == 0) return baseStream;
-                return new MemoryStream(Nintendo.Decompress(baseStream));
+                if (Entry.uncompSize == 0) return base.FileData;
+                return new MemoryStream(Nintendo.Decompress(base.FileData));
             }
         }
 
@@ -30,11 +28,17 @@ namespace archive_aatri.aatri
             using (var bw = new BinaryWriterX(input, true))
             {
                 if (State == ArchiveFileState.Archived || Entry.uncompSize == 0)
+                {
+                    Entry.offset = (uint)bw.BaseStream.Position;
+
                     base.FileData.CopyTo(bw.BaseStream);
+                }
                 else
                 {
-                    var compData = new MemoryStream(LZ11.Compress(base.FileData));
+                    Entry.offset = (uint)bw.BaseStream.Position;
                     Entry.uncompSize = (uint)base.FileData.Length;
+
+                    var compData = new MemoryStream(Nintendo.Compress(base.FileData,Nintendo.Method.LZ11));
                     Entry.compSize = (uint)compData.Length;
                     compData.CopyTo(bw.BaseStream);
                 }

@@ -15,14 +15,11 @@ namespace archive_level5.B123
         Stream _stream = null;
 
         public Header header;
-        public byte[] table1;
-        public byte[] table2;
-        public byte[] nameC;
-        private List<FileEntry> entries;
-        private List<string> fileNames;
 
-        private List<string> dirStruct = new List<string>();
-        private List<int> folderCounts = new List<int>();
+        private List<T0Entry> table0;
+        private List<uint> table1;
+        private List<FileEntry> entries;
+        public byte[] nameBody;
 
         public B123(Stream input)
         {
@@ -32,81 +29,111 @@ namespace archive_level5.B123
                 //Header
                 header = br.ReadStruct<Header>();
 
-                //Table 1
-                br.BaseStream.Position = header.offset1;
-                table1 = br.ReadBytes((int)(header.offset2 - header.offset1));
+                //Table 0
+                //Internally sorted by dirNameHash
+                br.BaseStream.Position = header.table0Offset;
+                table0 = br.ReadMultiple<T0Entry>(header.table0Count);
 
-                //Table 2
-                br.BaseStream.Position = header.offset2;
-                table2 = br.ReadBytes((int)(header.fileEntriesOffset - header.offset2));
+                //Table 1
+                br.BaseStream.Position = header.table1Offset;
+                table1 = br.ReadMultiple<uint>(header.table1Count);
 
                 //File Entry Table
                 br.BaseStream.Position = header.fileEntriesOffset;
-                entries = new BinaryReaderX(new MemoryStream(br.ReadBytes((int)(header.nameOffset - header.fileEntriesOffset))))
-                  .ReadMultiple<FileEntry>(header.fileEntriesCount);
+                entries = br.ReadMultiple<FileEntry>(header.fileEntriesCount);
 
                 //NameTable
                 br.BaseStream.Position = header.nameOffset;
-                nameC = br.ReadBytes((int)(header.dataOffset - header.nameOffset));
-                fileNames = GetFileNames(nameC);
+                nameBody = br.ReadBytes((int)(header.dataOffset - header.nameOffset));
 
                 //Add Files
-                List<uint> offsets = new List<uint>();
-                foreach (var name in fileNames)
+                using (var stringTable = new BinaryReaderX(new MemoryStream(nameBody)))
                 {
-                    var crc32 = Crc32.Create(name.Split('/').Last().ToLower(), Encoding.GetEncoding("SJIS"));
-                    var entry = entries.Find(c => c.crc32 == crc32 && !offsets.Contains(c.fileOffset));
-                    offsets.Add(entry.fileOffset);
-                    Files.Add(new B123FileInfo
+                    foreach (var dir in table0)
                     {
-                        State = ArchiveFileState.Archived,
-                        FileName = name,
-                        FileData = new SubStream(br.BaseStream, header.dataOffset + entry.fileOffset, entry.fileSize),
-                        entry = entry
-                    });
-                }
-            }
-        }
+                        stringTable.BaseStream.Position = dir.dirNameOffset;
+                        var dirName = stringTable.ReadCStringSJIS();
 
-        public List<string> GetFileNames(byte[] namePart)
-        {
-            List<string> names = new List<string>();
-
-            using (var br = new BinaryReaderX(new MemoryStream(namePart)))
-            {
-                string currentDir = "";
-                br.BaseStream.Position = 1;
-
-                while (br.BaseStream.Position < br.BaseStream.Length)
-                {
-                    string tmpString = br.ReadCStringSJIS();
-                    if (tmpString[tmpString.Length - 1] == '/')
-                    {
-                        currentDir = tmpString;
-                    }
-                    else
-                    {
-                        names.Add(currentDir + tmpString);
+                        var fileCountInDir = 0;
+                        foreach (var file in entries.Where((f, i) => i >= dir.fileEntryOffset && i < dir.fileEntryOffset + dir.fileCountInDir))
+                        {
+                            stringTable.BaseStream.Position = dir.firstFileNameOffset + file.nameOffsetInFolder;
+                            var fileName = stringTable.ReadCStringSJIS();
+                            Files.Add(new B123FileInfo
+                            {
+                                State = ArchiveFileState.Archived,
+                                FileName = Path.Combine(dirName, fileName),
+                                FileData = new SubStream(br.BaseStream, header.dataOffset + file.fileOffset, file.fileSize),
+                                dirEntry = dir,
+                                fileCountInDir = fileCountInDir++,
+                                fileEntry = file
+                            });
+                        }
                     }
                 }
             }
-
-            return names;
         }
 
         public void Save(Stream output)
         {
+            //Update FileInfo
+            uint offset = 0;
+            foreach (var file in Files)
+            {
+                entries[(int)(file.dirEntry.fileEntryOffset + file.fileCountInDir)].fileOffset = offset;
+                file.fileEntry.fileOffset = offset;
+
+                entries[(int)(file.dirEntry.fileEntryOffset + file.fileCountInDir)].fileSize = (uint)file.FileSize;
+                file.fileEntry.fileSize = (uint)file.FileSize;
+
+                offset = (uint)((offset + file.FileSize + 3) & ~3);
+            }
+
             using (var bw = new BinaryWriterX(output))
             {
-                int dataOffset = ((0x48 + table1.Length + table2.Length + nameC.Length + entries.Count * 0x10 + 4) + 0x4) & ~0x4;
-
-                //Table 1 & 2
                 bw.BaseStream.Position = 0x48;
-                bw.Write(table1);
-                bw.Write(table2);
+
+                //Table 0
+                header.table0Offset = (uint)bw.BaseStream.Position;
+                header.table0Count = (short)table0.Count;
+                bw.WriteMultiple(table0);
+
+                //Table 1
+                header.table1Offset = (uint)bw.BaseStream.Position;
+                header.table1Count = (short)table1.Count;
+                bw.WriteMultiple(table1);
+
+                //FileEntries
+                header.fileEntriesOffset = (uint)bw.BaseStream.Position;
+                header.fileEntriesCount = entries.Count;
+                bw.WriteMultiple(entries);
+
+                //StringTable
+                header.nameOffset = (uint)bw.BaseStream.Position;
+                bw.Write(nameBody);
+
+                //FileData
+                var dataOffset = ((0x48 + table0.Count * 0x18 + table1.Count * 4 + ((nameBody.Length + 0x3) & ~0x3) + entries.Count * 0x10) + 0x3) & ~0x3;
+                header.dataOffset = (uint)dataOffset;
+                foreach (var file in Files)
+                {
+                    bw.BaseStream.Position = dataOffset + file.fileEntry.fileOffset;
+                    file.FileData.CopyTo(bw.BaseStream);
+                }
+
+                //Header
+                bw.BaseStream.Position = 0;
+                bw.WriteStruct(header);
+
+                /*int dataOffset = ((0x48 + table0.Count * 0x18 + table1.Count * 4 + nameBody.Length + entries.Count * 0x10 + 4) + 0x3) & ~0x3;
+
+                //Table 0 & 1
+                bw.BaseStream.Position = 0x48;
+                bw.WriteMultiple(table0);
+                bw.WriteMultiple(table1);
 
                 //FileEntries Table
-                bw.Write((entries.Count * 0x10) << 3);
+                //bw.Write((entries.Count * 0x10) << 3);
 
                 uint offset = 0;
                 List<B123FileInfo> files = new List<B123FileInfo>();
@@ -137,7 +164,7 @@ namespace archive_level5.B123
                 }
 
                 //Nametable
-                bw.Write(nameC);
+                bw.Write(nameBody);
 
                 //Files
                 bw.BaseStream.Position = dataOffset;
@@ -145,13 +172,7 @@ namespace archive_level5.B123
                 {
                     file.FileData.CopyTo(bw.BaseStream);
                     bw.BaseStream.Position = (bw.BaseStream.Position + 0x4) & ~0x4;
-                }
-
-                //Header
-                header.nameOffset = (uint)(0x48 + table1.Length + table2.Length + entries.Count * 0x10 + 4);
-                header.dataOffset = (uint)dataOffset;
-                bw.BaseStream.Position = 0;
-                bw.WriteStruct(header);
+                }*/
             }
         }
 
@@ -160,5 +181,35 @@ namespace archive_level5.B123
             _stream?.Close();
             _stream = null;
         }
+    }
+
+    public static class Extensions
+    {
+        public static void WriteMultiple<T>(this BinaryWriterX bw, IEnumerable<T> list)
+        {
+            if (list.Count() <= 0)
+            {
+                bw.Write(0);
+                return;
+            }
+
+            var ms = new MemoryStream();
+            using (var bwIntern = new BinaryWriterX(ms, true))
+                foreach (var t in list)
+                    bwIntern.WriteStruct(t);
+            bw.Write(ms.ToArray());
+        }
+
+        /*public static void WriteStringsCompressed(this BinaryWriterX bw, IEnumerable<string> list, Level5.Method comp, Encoding enc)
+        {
+            var ms = new MemoryStream();
+            using (var bwIntern = new BinaryWriterX(ms, true))
+                foreach (var t in list)
+                {
+                    bwIntern.Write(enc.GetBytes(t));
+                    bwIntern.Write((byte)0);
+                }
+            bw.Write(Level5.Compress(ms, comp));
+        }*/
     }
 }

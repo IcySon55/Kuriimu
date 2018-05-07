@@ -12,9 +12,10 @@ namespace image_level5.imga
 {
     public class IMGA
     {
-        public static Header header;
+        public List<Bitmap> bmps = new List<Bitmap>();
+        public Header header;
 
-        public static Bitmap Load(Stream input)
+        public IMGA(Stream input)
         {
             using (var br = new BinaryReaderX(input))
             {
@@ -42,11 +43,11 @@ namespace image_level5.imga
                     PadToPowerOf2 = false,
                     ZOrder = false
                 };
-                return Common.Load(pic, settings);
+                bmps.Add(Common.Load(pic, settings));
             }
         }
 
-        public static byte[] Order(MemoryStream tableStream, MemoryStream texStream)
+        public byte[] Order(MemoryStream tableStream, MemoryStream texStream)
         {
             using (var table = new BinaryReaderX(tableStream))
             using (var tex = new BinaryReaderX(texStream))
@@ -77,10 +78,10 @@ namespace image_level5.imga
             }
         }
 
-        public static void Save(string filename, Bitmap bitmap)
+        public void Save(string filename)
         {
-            int width = (bitmap.Width + 0x7) & ~0x7;
-            int height = (bitmap.Height + 0x7) & ~0x7;
+            int width = (bmps[0].Width + 0x7) & ~0x7;
+            int height = (bmps[0].Height + 0x7) & ~0x7;
 
             var settings = new ImageSettings
             {
@@ -90,7 +91,7 @@ namespace image_level5.imga
                 PadToPowerOf2 = false,
                 ZOrder = false
             };
-            byte[] pic = Common.Save(bitmap, settings);
+            byte[] pic = Common.Save(bmps[0], settings);
 
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
@@ -103,8 +104,8 @@ namespace image_level5.imga
                 List<short> table;
                 byte[] importPic = Deflate(pic, out table);
 
-                header.width = (short)bitmap.Width;
-                header.height = (short)bitmap.Height;
+                header.width = (short)bmps[0].Width;
+                header.height = (short)bmps[0].Height;
                 header.tableSize1 = table.Count * 2 + 4;
                 header.tableSize2 = (header.tableSize1 + 3) & ~3;
                 header.imgDataSize = importPic.Length + 4;
@@ -119,7 +120,7 @@ namespace image_level5.imga
             }
         }
 
-        public static byte[] Deflate(byte[] pic, out List<short> table)
+        public byte[] Deflate(byte[] pic, out List<short> table)
         {
             table = new List<short>();
             List<byte[]> parts = new List<byte[]>();

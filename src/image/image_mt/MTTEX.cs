@@ -14,6 +14,8 @@ namespace image_mt
         public List<Bitmap> Bitmaps = new List<Bitmap>();
         private const int MinHeight = 8;
 
+        int Version;
+
         private Header Header;
         public HeaderInfo HeaderInfo { get; set; }
         private int HeaderLength = 0x10;
@@ -25,7 +27,7 @@ namespace image_mt
             using (var br = new BinaryReaderX(input))
             {
                 // Set endianess
-                if (br.PeekString() == "\0XET")
+                if (br.PeekString(4) == "\0XET")
                     br.ByteOrder = ByteOrder = ByteOrder.BigEndian;
 
                 // Header
@@ -50,21 +52,37 @@ namespace image_mt
                 // @todo: Consider whether the following settings make more sense if conditioned by the ByteOrder (or Platform)
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
-                Settings.Format = Formats[HeaderInfo.Format];
+                Settings.Format = (HeaderInfo.Version == image_mt.Version._Switchv1) ? SwitchFormats[HeaderInfo.Format] : Formats[HeaderInfo.Format];
 
-                var mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
-
-                for (var i = 0; i < mipMaps.Count; i++)
+                List<int> mipMaps = null;
+                if (HeaderInfo.Version == image_mt.Version._Switchv1)
                 {
-                    var texDataSize = (i + 1 < mipMaps.Count ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
+                    var texOverallSize = br.ReadInt32();
+                    mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
+                }
+                else if (HeaderInfo.Version != image_mt.Version._3DSv1)
+                    mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
+
+                for (var i = 0; i < HeaderInfo.MipMapCount; i++)
+                {
+                    int texDataSize = 0;
+                    if (HeaderInfo.Version != image_mt.Version._3DSv1)
+                        texDataSize = (i + 1 < HeaderInfo.MipMapCount ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
+                    else
+                        texDataSize = Formats[HeaderInfo.Format].BitDepth * (HeaderInfo.Width >> i) * (HeaderInfo.Height >> i) / 8;
 
                     Settings.Width = Math.Max(HeaderInfo.Width >> i, 2);
                     Settings.Height = Math.Max(HeaderInfo.Height >> i, 2);
-                    if (Settings.Format.FormatName.Contains("DXT"))
-                        Settings.Swizzle = new BlockSwizzle(Settings.Width, Settings.Height);
-                    else
-                        Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
 
+                    //Set possible Swizzles
+                    if (HeaderInfo.Version == image_mt.Version._3DSv1 || HeaderInfo.Version == image_mt.Version._3DSv2 || HeaderInfo.Version == image_mt.Version._3DSv3)
+                        Settings.Swizzle = new CTRSwizzle(Settings.Width, Settings.Height);
+                    else if (HeaderInfo.Version == image_mt.Version._Switchv1)
+                        Settings.Swizzle = new SwitchSwizzle(Settings.Width, Settings.Height, Settings.Format.BitDepth, GetSwitchSwizzleFormat(Settings.Format.FormatName));
+                    else if (Settings.Format.FormatName.Contains("DXT"))
+                        Settings.Swizzle = new BlockSwizzle(Settings.Width, Settings.Height);
+
+                    //Set possible pixel shaders
                     if ((Format)HeaderInfo.Format == Format.DXT5_B)
                         Settings.PixelShader = ToNoAlpha;
                     else if ((Format)HeaderInfo.Format == Format.DXT5_YCbCr)
@@ -72,6 +90,21 @@ namespace image_mt
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
+            }
+        }
+
+        SwitchSwizzle.Format GetSwitchSwizzleFormat(string formatName)
+        {
+            switch (formatName)
+            {
+                case "DXT1":
+                    return SwitchSwizzle.Format.DXT1;
+                case "DXT5":
+                    return SwitchSwizzle.Format.DXT5;
+                case "RGBA8888":
+                    return SwitchSwizzle.Format.RGBA8888;
+                default:
+                    return SwitchSwizzle.Format.Empty;
             }
         }
 
@@ -85,23 +118,38 @@ namespace image_mt
                 bw.WriteStruct(Header);
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
-                Settings.Format = Formats[HeaderInfo.Format];
-
-                // @todo: add other things like PadToPowerOf2, ZOrder and TileSize
+                Settings.Format = (HeaderInfo.Version == image_mt.Version._Switchv1) ? SwitchFormats[HeaderInfo.Format] : Formats[HeaderInfo.Format];
 
                 if ((Format)HeaderInfo.Format == Format.DXT5_B)
                     Settings.PixelShader = ToNoAlpha;
                 else if ((Format)HeaderInfo.Format == Format.DXT5_YCbCr)
                     Settings.PixelShader = ToOptimisedColors;
 
-                var bitmaps = Bitmaps.Select(bmp => Common.Save(bmp, Settings)).ToList();
-
-                // Mipmaps
-                var offset = HeaderInfo.Version == Version.v154 ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
-                foreach (var bitmap in bitmaps)
+                List<byte[]> bitmaps = new List<byte[]>();
+                foreach (var bmp in Bitmaps)
                 {
-                    bw.Write(offset);
-                    offset += bitmap.Length;
+                    //Set possible Swizzles
+                    if (HeaderInfo.Version == image_mt.Version._3DSv1 || HeaderInfo.Version == image_mt.Version._3DSv2 || HeaderInfo.Version == image_mt.Version._3DSv3)
+                        Settings.Swizzle = new CTRSwizzle(bmp.Width, bmp.Height);
+                    else if (HeaderInfo.Version == image_mt.Version._Switchv1)
+                        Settings.Swizzle = new SwitchSwizzle(bmp.Width, bmp.Height, Settings.Format.BitDepth, GetSwitchSwizzleFormat(Settings.Format.FormatName));    //Switch Swizzle
+                    else if (Settings.Format.FormatName.Contains("DXT"))
+                        Settings.Swizzle = new BlockSwizzle(bmp.Width, bmp.Height);
+
+                    bitmaps.Add(Common.Save(bmp, Settings));
+                }
+
+                // Mipmaps, but not for Version 3DS v1
+                if (HeaderInfo.Version != image_mt.Version._3DSv1)
+                {
+                    if (HeaderInfo.Version == image_mt.Version._Switchv1)
+                        bw.Write(bitmaps.Sum(b => b.Length));
+                    var offset = HeaderInfo.Version == image_mt.Version._PS3v1 ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
+                    foreach (var bitmap in bitmaps)
+                    {
+                        bw.Write(offset);
+                        offset += bitmap.Length;
+                    }
                 }
 
                 // Bitmaps

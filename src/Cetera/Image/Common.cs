@@ -109,7 +109,7 @@ namespace Cetera.Image
         {
             var format = settings.Format;
 
-            using (var br = new BinaryReaderX(new MemoryStream(tex)))
+            using (var br = new BinaryReaderX(new MemoryStream(tex),settings.ByteOrder))
             {
                 var etc1decoder = new ETC1.Decoder();
 

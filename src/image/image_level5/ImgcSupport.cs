@@ -15,7 +15,7 @@ using Kontract.Image.Swizzle;
 namespace image_level5.imgc
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header
+    public class Header
     {
         public Magic magic; // IMGC
         public int const1; // 30 30 00 00
@@ -57,7 +57,8 @@ namespace image_level5.imgc
             [14] = new HL(8, 8),
             [15] = new LA(0, 8),
             [26] = new LA(4, 0),
-            [27] = new LA(0, 4),
+            //[27] = new LA(0, 4),
+            [27] = new ETC1(),
             [28] = new ETC1(),
             [29] = new ETC1(true)
         };

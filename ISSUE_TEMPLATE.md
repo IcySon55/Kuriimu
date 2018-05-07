@@ -4,7 +4,7 @@ Format extension(s):
 Type: [text | image | archive]
 Game Name: 
 
-First 8 byte of file(s):
+First 8 bytes of the file(s):
 <extension> - [bytes in hex] - [bytes in ASCII]
 
 More details:

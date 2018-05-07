@@ -18,7 +18,7 @@ namespace image_ctgd
         #region Properties
 
         public string Name => "CTGD";
-        public string Description => "Whatever CTGD means";
+        public string Description => "CTGD Format";
         public string Extension => "*.ctgd";
         public string About => "This is the CTGD image adapter for Kukkii.";
 

@@ -14,7 +14,7 @@ namespace archive_amb
 
         // Information
         public string Name => "AMB";
-        public string Description => "Whatever AMB means";
+        public string Description => "AMB Format";
         public string Extension => "*.amb";
         public string About => "This is the AMB archive manager for Karameru.";
 

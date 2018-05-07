@@ -23,7 +23,7 @@ namespace image_nintendo.CGFX
 
         public CGFX(Stream input)
         {
-            using (var br = new BinaryReaderX(input, true))
+            using (var br = new BinaryReaderX(input))
             {
                 //CGFX Header
                 var cgfxHeader = br.ReadStruct<CgfxHeader>();
@@ -66,8 +66,8 @@ namespace image_nintendo.CGFX
                 for (int i = 0; i < dictHeader.entryCount; i++)
                 {
                     br.BaseStream.Position = TxObs[i].texDataOffset;
-                    var width = TxObs[i].height;
-                    var height = TxObs[i].width;
+                    var width = TxObs[i].width;
+                    var height = TxObs[i].height;
                     for (int j = 0; j < ((TxObs[i].mipmapLvls == 0) ? 1 : TxObs[i].mipmapLvls); j++)
                     {
                         var settings = new ImageSettings
@@ -75,7 +75,7 @@ namespace image_nintendo.CGFX
                             Width = (int)width,
                             Height = (int)height,
                             Format = Support.CTRFormat[(byte)TxObs[i].format],
-                            Swizzle = new CTRSwizzle((int)width, (int)height, 4)
+                            Swizzle = new CTRSwizzle((int)width, (int)height)
                         };
 
                         _settings.Add(settings);
@@ -91,22 +91,27 @@ namespace image_nintendo.CGFX
         public void Save(string filename)
         {
             //check original sizes
-            for (int i = 0; i < TxObs.Count; i++)
+            int bmpCount = 0;
+            foreach (var txobj in TxObs)
             {
-                if (bmps[i].Width != TxObs[i].width || bmps[i].Height != TxObs[i].height)
-                    throw new Exception($"Image {i:00} has to be {TxObs[i].width}x{TxObs[i].height}px!");
+                for (int j = 0; j < ((txobj.mipmapLvls == 0) ? 1 : txobj.mipmapLvls); j++)
+                {
+                    if (bmps[bmpCount].Width != txobj.width / (1 << j) || bmps[bmpCount].Height != txobj.height / (1 << j))
+                        throw new Exception($"Image {bmpCount:00} has to be {txobj.width / (1 << j)}x{txobj.height / (1 << j)}px!");
+                    bmpCount++;
+                }
             }
 
             using (var bw = new BinaryWriterX(File.OpenWrite(filename)))
             {
                 bw.Write(list);
 
-                var bmpCount = 0;
+                bmpCount = 0;
                 for (int i = 0; i < TxObs.Count; i++)
                 {
                     bw.BaseStream.Position = TxObs[i].texDataOffset;
-                    var width = TxObs[i].height;
-                    var height = TxObs[i].width;
+                    var width = TxObs[i].width;
+                    var height = TxObs[i].height;
                     for (int j = 0; j < ((TxObs[i].mipmapLvls == 0) ? 1 : TxObs[i].mipmapLvls); j++)
                     {
                         var settings = new ImageSettings
@@ -114,7 +119,7 @@ namespace image_nintendo.CGFX
                             Width = (int)width,
                             Height = (int)height,
                             Format = Support.CTRFormat[(byte)TxObs[i].format],
-                            Swizzle = new CTRSwizzle((int)width, (int)height, 4)
+                            Swizzle = new CTRSwizzle((int)width, (int)height)
                         };
 
                         bw.Write(Common.Save(bmps[bmpCount++], settings));

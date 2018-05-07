@@ -9,7 +9,7 @@ namespace image_nintendo.BCLYT
 {
     public class BclytAdapter : IImageAdapter
     {
-        private Bitmap _bclyt = null;
+        private BCLYT _bclyt = null;
 
         #region Properties
 
@@ -39,7 +39,7 @@ namespace image_nintendo.BCLYT
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _bclyt = BCLYT.Load(FileInfo.OpenRead(), filename);
+                _bclyt = new BCLYT(FileInfo.OpenRead(), filename);
         }
 
         public void Save(string filename = "")
@@ -55,7 +55,7 @@ namespace image_nintendo.BCLYT
         }
 
         // Bitmaps
-        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _bclyt } };
+        public IList<BitmapInfo> Bitmaps => new List<BitmapInfo> { new BitmapInfo { Bitmap = _bclyt.bmps[0] } };
 
         public bool ShowProperties(Icon icon) => false;
     }

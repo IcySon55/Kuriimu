@@ -48,9 +48,7 @@ namespace image_f3xt
             {
                 _f3xt = new F3XT(FileInfo.OpenRead());
 
-                var _bmpList = new List<BitmapInfo> { new F3XTBitmapInfo { Bitmap = _f3xt.Image, Format = _f3xt.settings.Format.FormatName } };
-                var _bitmaps = new List<BitmapInfo>();
-                _bitmaps.AddRange(_bmpList);
+                _bitmaps = new List<BitmapInfo> { new F3XTBitmapInfo { Bitmap = _f3xt.Image, Format = _f3xt.settings.Format.FormatName } };
             }
         }
 

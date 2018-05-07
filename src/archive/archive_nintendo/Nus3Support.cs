@@ -1,200 +1,258 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using Kontract.Interface;
 using Kontract;
+using Kontract.Interface;
 using Kontract.IO;
 
 namespace archive_nintendo.NUS3
 {
     public class NUS3FileInfo : ArchiveFileInfo
     {
-        public TONE.ToneEntry Entry;
+
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct Header
+    public class Header
     {
-        public Magic magic;
-        public int fileSize; //without magic
+        public Magic Magic;
+        public int FileSize; // Minus header size 0x8
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct BankToc
+    public class BankTOC
     {
-        Magic8 magic;
-        public int size;
-        public int entryCount;
+        Magic8 Magic;
+        public int Size;
+        public int SectionCount;
     }
 
-    //[StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class BankTocEntry
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class SectionHeader
     {
-        public BankTocEntry(Stream input)
-        {
-            using (BinaryReaderX br = new BinaryReaderX(input, true))
-            {
-                magic = br.ReadStruct<Magic>();
-                secSize = br.ReadInt32();
-            }
-        }
-        public Magic magic;
-        public int secSize;
-        public int offset = 0;
+        public Magic Magic;
+        public int SectionSize;
     }
 
     public class PROP
     {
+        public Magic Magic;
+        public int SectionSize;
+        public int Unk1;
+        public int Unk2;
+        public int Unk3;
+        public byte PropertyNameSize;
+        public string PropertyName; // Pad to 0x4 alignment
+        public int Unk4;
+        public int Unk5;
+
         public PROP(Stream input)
         {
             using (var br = new BinaryReaderX(input, true))
             {
-                unk1 = br.ReadInt32();
-                unk2 = br.ReadInt32();
-                unk3 = br.ReadInt32();
-                projectNameSize = br.ReadByte();
-                projectName = br.ReadCStringA() + Encoding.ASCII.GetString(new byte[] { 0 });
-
-                int paddingTmp = 0;
-                br.BaseStream.Position++;
-                paddingTmp++;
-                while (br.BaseStream.Position % 4 > 0)
-                {
-                    br.BaseStream.Position++;
-                    paddingTmp++;
-                }
-                padding = new byte[paddingTmp];
-                for (int i = 0; i < paddingTmp; i++) padding[i] = 0;
-
-                unk4 = br.ReadInt32();
-                dateSize = br.ReadByte();
-                date = br.ReadCStringA() + Encoding.ASCII.GetString(new byte[] { 0 });
+                Magic = br.ReadString(4);
+                SectionSize = br.ReadInt32();
+                Unk1 = br.ReadInt32();
+                Unk2 = br.ReadInt32();
+                Unk3 = br.ReadInt32();
+                PropertyNameSize = br.ReadByte();
+                PropertyName = br.ReadCStringA();
+                br.SeekAlignment(4);
+                Unk4 = br.ReadInt32();
+                Unk5 = br.ReadInt32();
             }
         }
-        public int unk1;
-        public int unk2;
-        public int unk3;
-        public byte projectNameSize;
-        public string projectName;
-        public byte[] padding;
-        public int unk4;
-        public byte dateSize;
-        public string date;
-        public byte[] padding2 = { 0, 0, 0 };
+
+        public void Save(Stream output)
+        {
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                bw.Write(Unk1);
+                bw.Write(Unk2);
+                bw.Write(Unk3);
+                PropertyNameSize = (byte)(PropertyName.Length + 1);
+                bw.Write(PropertyNameSize);
+                bw.WriteASCII(PropertyName);
+                bw.Write((byte)0);
+                bw.WriteAlignment(4);
+                bw.Write(Unk4);
+                bw.Write(Unk5);
+            }
+        }
     }
 
     public class BINF
     {
+        public Magic Magic;
+        public int SectionSize;
+        public int Unk1;
+        public int Unk2;
+        public byte NameSize;
+        public string Name;
+        public int Unk3;
+
         public BINF(Stream input)
         {
             using (var br = new BinaryReaderX(input, true))
             {
-                unk1 = br.ReadInt32();
-                unk2 = br.ReadInt32();
-                nameSize = br.ReadByte();
-                name = br.ReadCStringA() + Encoding.ASCII.GetString(new byte[] { 0 });
-
-                int paddingTmp = 0;
-                br.BaseStream.Position++;
-                paddingTmp++;
-                while (br.BaseStream.Position % 4 > 0)
-                {
-                    br.BaseStream.Position++;
-                    paddingTmp++;
-                }
-                padding = new byte[paddingTmp];
-                for (int i = 0; i < paddingTmp; i++) padding[i] = 0;
-
-                ID = br.ReadInt32();
+                Magic = br.ReadString(4);
+                SectionSize = br.ReadInt32();
+                Unk1 = br.ReadInt32();
+                Unk2 = br.ReadInt32();
+                NameSize = br.ReadByte();
+                Name = br.ReadCStringA();
+                br.SeekAlignment(4);
+                Unk3 = br.ReadInt32();
             }
         }
-        public int unk1;
-        public int unk2;
-        public byte nameSize;
-        public string name;
-        public byte[] padding;
-        public int ID;
+
+        public void Save(Stream output)
+        {
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                bw.Write(Unk1);
+                bw.Write(Unk2);
+                NameSize = (byte)(Name.Length + 1);
+                bw.Write(NameSize);
+                bw.WriteASCII(Name);
+                bw.Write((byte)0);
+                bw.WriteAlignment(4);
+                bw.Write(Unk3);
+            }
+        }
+    }
+
+    public class GRP
+    {
+        public Magic Magic;
+        public int SectionSize;
+        public byte[] Content;
+
+        public GRP(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                Magic = br.ReadString(4);
+                SectionSize = br.ReadInt32();
+                Content = br.ReadBytes(SectionSize);
+            }
+        }
+
+        public void Save(Stream output)
+        {
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                bw.Write(Content);
+            }
+        }
+    }
+
+    public class DTON
+    {
+        public Magic Magic;
+        public int SectionSize;
+        public byte[] Content;
+
+        public DTON(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                Magic = br.ReadString(4);
+                SectionSize = br.ReadInt32();
+                Content = br.ReadBytes(SectionSize);
+            }
+        }
+
+        public void Save(Stream output)
+        {
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                bw.Write(Content);
+            }
+        }
     }
 
     public class TONE
     {
-        public TONE(Stream input, int toneOffset, int packOffset)
+        public Magic Magic;
+        public int SectionSize;
+        public int ToneCount;
+        public int MetaSize;
+        public byte[] MetaContent;
+        public int Unk1;
+        public byte NameSize;
+        public string Name;
+        public int Unk2;
+        public int Unk3;
+        public int Unk4;
+        public int PackSize;
+        public byte[] Unk5;
+
+        public TONE(Stream input)
         {
             using (var br = new BinaryReaderX(input, true))
             {
-                toneCount = br.ReadInt32();
-
-                toneEntries = new ToneEntry[toneCount];
-                for (int i = 0; i < toneCount; i++)
-                    toneEntries[i] = new ToneEntry
-                    {
-                        offset = br.ReadInt32() + toneOffset + 8,
-                        metaSize = br.ReadInt32()
-                    };
-                for (int i = 0; i < toneCount; i++)
-                {
-                    if (toneEntries[i].metaSize > 0xc)
-                    {
-                        br.BaseStream.Position = toneEntries[i].offset + 6;
-                        byte tmp = br.ReadByte();
-                        if (tmp == 0 || tmp > 9)
-                        {
-                            br.BaseStream.Position--;
-                            toneEntries[i].unk1 = br.ReadBytes(6);
-                        }
-                        else
-                        {
-                            br.BaseStream.Position--;
-                            toneEntries[i].unk1 = br.ReadBytes(1);
-                        }
-
-                        toneEntries[i].nameSize = br.ReadByte();
-                        toneEntries[i].name = br.ReadCStringA();
-
-                        int paddingTmp = 0;
-                        br.BaseStream.Position++;
-                        paddingTmp++;
-                        while (br.BaseStream.Position % 4 > 0)
-                        {
-                            br.BaseStream.Position++;
-                            paddingTmp++;
-                        }
-                        toneEntries[i].padding = new byte[paddingTmp];
-                        for (int j = 0; j < paddingTmp; j++) toneEntries[i].padding[j] = 0;
-
-                        if (br.ReadInt32() != 0)
-                        {
-                            br.BaseStream.Position -= 4;
-                        }
-                        else
-                        {
-                            toneEntries[i].zero0 = 0;
-                        }
-                        br.BaseStream.Position += 4;
-                        toneEntries[i].packOffset = packOffset + 8 + br.ReadInt32();
-                        toneEntries[i].size = br.ReadInt32();
-                        int restSize = toneEntries[i].metaSize -
-                                       ((int)br.BaseStream.Position - toneEntries[i].offset);
-                        toneEntries[i].rest = br.ReadBytes(restSize);
-                    }
-                }
+                Magic = br.ReadString(4);
+                SectionSize = br.ReadInt32();
+                var startOffset = (int)br.BaseStream.Position;
+                ToneCount = br.ReadInt32();
+                MetaSize = br.ReadInt32();
+                MetaContent = br.ReadBytes(MetaSize);
+                Unk1 = br.ReadInt32();
+                NameSize = br.ReadByte();
+                Name = br.ReadCStringA();
+                br.SeekAlignment(4);
+                Unk2 = br.ReadInt32();
+                Unk3 = br.ReadInt32();
+                Unk4 = br.ReadInt32();
+                PackSize = br.ReadInt32();
+                Unk5 = br.ReadBytes(SectionSize - ((int)br.BaseStream.Position - startOffset));
             }
         }
-        public int toneCount;
-        public ToneEntry[] toneEntries;
 
-        public class ToneEntry
+        public void Save(Stream output)
         {
-            public int offset;
-            public int metaSize;
-            public byte[] unk1;
-            public byte nameSize;
-            public string name;
-            public byte[] padding;
-            public int zero0 = -1;
-            public int packOffset;
-            public int size;
-            public byte[] rest;
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                bw.Write(ToneCount);
+                bw.Write(MetaSize);
+                bw.Write(MetaContent);
+                bw.Write(Unk1);
+                NameSize = (byte)(Name.Length + 1);
+                bw.Write(NameSize);
+                bw.WriteASCII(Name);
+                bw.Write((byte)0);
+                bw.WriteAlignment(4);
+                bw.Write(Unk2);
+                bw.Write(Unk3);
+                bw.Write(Unk4);
+                bw.Write(PackSize);
+                bw.Write(Unk5);
+            }
+        }
+    }
+
+    public class JUNK
+    {
+        public Magic Magic;
+        public int SectionSize;
+        public byte[] Content;
+
+        public JUNK(Stream input)
+        {
+            using (var br = new BinaryReaderX(input, true))
+            {
+                Magic = br.ReadString(4);
+                SectionSize = br.ReadInt32();
+                Content = br.ReadBytes(SectionSize);
+            }
+        }
+
+        public void Save(Stream output)
+        {
+            using (var bw = new BinaryWriterX(output, true))
+            {
+                bw.Write(Content);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace archive_hpi_hpb
 {
     public sealed class HPIHPB
     {
-        public List<HpiHpbAfi> Files;
+        public List<HpiHpbAfi> Files = new List<HpiHpbAfi>();
 
         const uint HashSlotCount = 0x1000;
         const uint PathHashMagic = 0x25;
@@ -29,13 +29,18 @@ namespace archive_hpi_hpb
                 br.ReadMultiple<HashEntry>(header.hashCount);
 
                 // Entry List
-                Files = br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset).Select(entry => new HpiHpbAfi
+                var exc = new List<Entry>();
+                var entryList = br.ReadMultiple<Entry>(header.entryCount).OrderBy(e => e.stringOffset);
+                foreach (var entry in entryList)
                 {
-                    Entry = entry,
-                    FileName = br.ReadCStringSJIS(), // String Table
-                    FileData = new SubStream(hpbInput, Math.Max(0, entry.fileOffset), entry.fileSize),
-                    State = ArchiveFileState.Archived
-                }).ToList();
+                    Files.Add(new HpiHpbAfi
+                    {
+                        Entry = entry,
+                        FileName = br.ReadCStringSJIS(), // String Table
+                        FileData = new SubStream(hpbInput, (entry.fileOffset >= hpbInput.Length) ? 0 : Math.Max(0, entry.fileOffset), entry.fileSize),
+                        State = ArchiveFileState.Archived
+                    });
+                }
             }
         }
 

@@ -605,10 +605,18 @@ namespace Cetera.PICA
         /// <summary>
         ///     Gets the encoded format of the texture at Texture Unit 1.
         /// </summary>
-        /*public RenderBase.OTextureFormat getTexUnit1Format()
+        public uint getTexUnit1Format()
         {
-            return (RenderBase.OTextureFormat)getParameter(PICACommand.texUnit1Type);
-        }*/
+            return getParameter(PICACommand.texUnit1Type);
+        }
+
+        /// <summary>
+        ///     Gets the Level of Detail of the texture at Texture Unit 1.
+        /// </summary>
+        public uint getTexUnit1LoD()
+        {
+            return getParameter(PICACommand.texUnit1LevelOfDetail) >> 16;
+        }
 
         /// <summary>
         ///     Gets the Address of the texture at Texture Unit 2.
