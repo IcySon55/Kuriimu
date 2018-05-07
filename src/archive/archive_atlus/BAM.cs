@@ -3,11 +3,11 @@ using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_bam
+namespace archive_atlus.BAM
 {
     public class BAM
     {
-        public List<BAMFileInfo> Files = new List<BAMFileInfo>();
+        public List<BamFileInfo> Files = new List<BamFileInfo>();
         private Stream _stream = null;
 
         public Header header;
@@ -33,7 +33,7 @@ namespace archive_bam
                 br.BaseStream.Position = (br.BaseStream.Position + 0x7f) & ~0x7f;
 
                 //File
-                Files.Add(new BAMFileInfo
+                Files.Add(new BamFileInfo
                 {
                     State = ArchiveFileState.Archived,
                     FileName = "00.bin",
