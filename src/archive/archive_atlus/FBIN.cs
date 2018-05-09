@@ -17,7 +17,20 @@ namespace archive_atlus.FBIN
             _stream = input;
             using (var br = new BinaryReaderX(input, true))
             {
-                // TODO
+                header = br.ReadStruct<Header>();
+                var offsets = br.ReadMultiple<int>(header.fileCount);
+                br.BaseStream.Position = br.BaseStream.Position + 0x0C; //0x0C is the size of the header struct
+                for (int i = 0; i < header.fileCount - 1; i++)
+                {
+                    Files.Add(new FbinFileInfo
+                    {
+                        State = ArchiveFileState.Archived,
+                        FileName = "file"+ i + ".bin",
+                        FileData = new SubStream(br.BaseStream, br.BaseStream.Position, offsets[i])
+                    });
+                    br.BaseStream.Position = (br.BaseStream.Position + offsets[i]);
+                }
+                
             }
         }
 
