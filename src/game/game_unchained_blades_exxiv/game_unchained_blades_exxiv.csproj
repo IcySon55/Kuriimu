@@ -86,14 +86,14 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\Bubble001.png" />
+    <None Include="resources\Bubble001.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Bubble002.png" />
+    <None Include="resources\Bubble002.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\font.bcfnt.gz" />
-    <None Include="Resources\icon.png" />
+    <None Include="resources\font.bcfnt.gz" />
+    <None Include="resources\icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

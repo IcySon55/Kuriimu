@@ -77,11 +77,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\blank_top.png" />
-    <None Include="Resources\ft_nrm.xf" />
+    <None Include="resources\blank_top.png" />
+    <None Include="resources\ft_nrm.xf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\icon.png" />
+    <None Include="resources\icon.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Cetera\Cetera.csproj">
@@ -98,7 +98,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\cutscene_bottom.png" />
+    <None Include="resources\cutscene_bottom.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
