@@ -118,14 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Basic_bcfnt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Basic.bcfnt.gz;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="music" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\music.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="SisterSymbol_bcfnt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SisterSymbol.bcfnt.gz;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="daigasso_box" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\daigasso_box.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -135,5 +129,11 @@
   </data>
   <data name="BasicRim_bcfnt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\BasicRim.bcfnt.gz;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Basic_bcfnt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\Basic.bcfnt.gz;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SisterSymbol_bcfnt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\SisterSymbol.bcfnt.gz;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
