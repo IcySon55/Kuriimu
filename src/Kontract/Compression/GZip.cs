@@ -22,7 +22,7 @@ namespace Kontract.Compression
         {
             var ms = new MemoryStream();
             var magic = new byte[2]; input.Read(magic, 0, 2);
-            if (magic[0] != 0x1f || magic[0] != 0x8b) input.Position += 2; else input.Position -= 2;
+            if (magic[0] != 0x1f || magic[1] != 0x8b) input.Position += 2; else input.Position -= 2;
             using (var gz = new GZipStream(input, CompressionMode.Decompress))
             {
                 gz.CopyTo(ms);
