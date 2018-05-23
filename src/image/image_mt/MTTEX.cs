@@ -65,7 +65,7 @@ namespace image_mt
 
                 for (var i = 0; i < HeaderInfo.MipMapCount; i++)
                 {
-                    int texDataSize = 0;
+                    var texDataSize = 0;
                     if (HeaderInfo.Version != image_mt.Version._3DSv1)
                         texDataSize = (i + 1 < HeaderInfo.MipMapCount ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     else
@@ -125,7 +125,7 @@ namespace image_mt
                 else if ((Format)HeaderInfo.Format == Format.DXT5_YCbCr)
                     Settings.PixelShader = ToOptimisedColors;
 
-                List<byte[]> bitmaps = new List<byte[]>();
+                var bitmaps = new List<byte[]>();
                 foreach (var bmp in Bitmaps)
                 {
                     //Set possible Swizzles

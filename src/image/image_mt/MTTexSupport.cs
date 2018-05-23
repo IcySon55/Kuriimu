@@ -22,7 +22,7 @@ namespace image_mt
 
     public enum Version : short
     {
-        _PS3v1 = 0xa9,
+        _PS3v1 = 0x9a,
 
         _3DSv1 = 0xa4,
         _3DSv2 = 0xa5,
