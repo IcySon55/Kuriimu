@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_mbm
 {
+    //Atlus
+
     public sealed class MbmAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

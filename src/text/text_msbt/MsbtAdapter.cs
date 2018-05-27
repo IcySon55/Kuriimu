@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_msbt
 {
+    //Nintendo
+
     public sealed class MsbtAdapter : ITextAdapter
     {
         private MSBT _msbt;

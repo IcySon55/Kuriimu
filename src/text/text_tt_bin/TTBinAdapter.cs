@@ -11,6 +11,8 @@ using text_ttbin.Properties;
 
 namespace tt.text_ttbin
 {
+    //Level5
+
     public sealed class TTBinAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

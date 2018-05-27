@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_xs
 {
+    //Level5
+
     public sealed class XsAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

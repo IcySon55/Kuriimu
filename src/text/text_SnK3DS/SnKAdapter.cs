@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_SnK3DS
 {
+    //Koei
+
     public sealed class SnKAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;
