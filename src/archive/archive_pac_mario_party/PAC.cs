@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
+using System.Text;
 
 namespace archive_pac_mario_party
 {
@@ -42,7 +43,7 @@ namespace archive_pac_mario_party
                     {
                         sr.BaseStream.Position = asset.stringOffset - header.stringOffset;
                         var assetName = sr.ReadCStringA();
-                        for (int i = (asset.entryOffset - header.entryOffset) / assetSize; i < ((asset.entryOffset - header.entryOffset) / assetSize) +asset.count; i++)
+                        for (int i = (asset.entryOffset - header.entryOffset) / assetSize; i < ((asset.entryOffset - header.entryOffset) / assetSize) + asset.count; i++)
                         {
                             sr.BaseStream.Position = entries[i].stringOffset - header.stringOffset;
                             var entryName = sr.ReadCStringA();
@@ -81,10 +82,91 @@ namespace archive_pac_mario_party
 
         public void Save(Stream input)
         {
+            //Sort out doubled files and connect ArchiveFileInfo by ID
+            var connectedID = 0;
+            while (Files.Count(f => f.connectedID == -1) > 0)
+            {
+                var filesToCheck = Files.Where(f => f.connectedID == -1);
+                if (filesToCheck.Count() == 1)
+                {
+                    filesToCheck.ElementAt(0).connectedID = connectedID;
+                    continue;
+                }
+
+                var file = filesToCheck.ElementAt(0);
+                foreach (var fileInList in filesToCheck.Where((f, i) => i > 0))
+                {
+                    file.Equals(fileInList, connectedID);
+                }
+
+                connectedID++;
+            }
+
+            //Files into assets
+            var assets2 = new List<(string, IEnumerable<PacFileInfo>)>();
+            foreach (var assetName in Files.Select(f => f.FileName.Split('\\').First()).Distinct())
+                assets2.Add((assetName, Files.Where(f => f.FileName == assetName)));
+
+            //Create distinct stringList + update entries
+            Dictionary<string, int> distinctStrings = new Dictionary<string, int>();
+            var offset = 0;
+            foreach (var file in Files)
+            {
+                var fileName = file.FileName.Split('\\').Last();
+                if (!distinctStrings.ContainsKey(fileName))
+                {
+                    distinctStrings.Add(fileName, offset);
+                    file.entry.stringOffset = offset;
+                    offset += Encoding.ASCII.GetByteCount(fileName) + 1;
+                }
+                else
+                {
+                    file.entry.stringOffset = distinctStrings[fileName];
+                }
+            }
+            foreach (var asset in assets2)
+            {
+                if (!distinctStrings.ContainsKey(asset.Item1))
+                {
+                    distinctStrings.Add(asset.Item1, offset);
+                    offset += Encoding.ASCII.GetByteCount(asset.Item1) + 1;
+                }
+
+                foreach (var file in asset.Item2)
+                {
+                    if (!distinctStrings.ContainsKey(Path.GetExtension(file.FileName)))
+                    {
+                        distinctStrings.Add(Path.GetExtension(file.FileName), offset);
+                        file.entry.extOffset = offset;
+                        offset += Encoding.ASCII.GetByteCount(Path.GetExtension(file.FileName)) + 1;
+                    }
+                    else
+                    {
+                        file.entry.extOffset = distinctStrings[Path.GetExtension(file.FileName)];
+                    }
+                }
+            }
+
             using (var bw = new BinaryWriterX(input))
             {
+                //Header
+                header.assetCount = assets2.Count;
+                header.entryCount = Files.Count;
+                header.fileDataCount = Files.Select(f => f.connectedID).Distinct().Count();
+                header.stringCount = Files.Select(f => f.FileName.Split('\\').Last()).Distinct().Count() + assets2.Count + Files.Select(f => Path.GetExtension(f.FileName)).Distinct().Count();
 
+                bw.BaseStream.Position = header.assetOffset;
+                foreach (var asset in assets2)
+                    bw.WriteStruct(new AssetEntry
+                    {
+                        stringOffset = distinctStrings[asset.Item1],
+
+                    });
             }
+
+            //Reset connections for further save operations
+            foreach (var file in Files)
+                file.connectedID = -1;
         }
 
         public void Close()
