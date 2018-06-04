@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_mes
 {
+    //Aksys
+
     public sealed class MesAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

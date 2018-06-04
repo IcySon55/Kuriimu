@@ -4,27 +4,27 @@ using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_nintendo.MMB
+namespace archive_pac_mario_party
 {
-    public class MmbManager : IArchiveManager
+    public class PacManager : IArchiveManager
     {
-        private MMB _mmb = null;
+        private PAC _pac = null;
 
         #region Properties
 
         // Information
-        public string Name => Properties.Settings.Default.PluginName;
-        public string Description => "Mario Maker Binary Archive";
-        public string Extension => "*.bin";
-        public string About => "This is the MMB archive manager for Karameru.";
+        public string Name => "PAC Mario Party";
+        public string Description => "PACkage";
+        public string Extension => "*.pac";
+        public string About => "This is the PAC archive manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => true;
+        public bool CanReplaceFiles => false;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
@@ -32,18 +32,11 @@ namespace archive_nintendo.MMB
 
         public bool Identify(string filename)
         {
-            var result = true;
-            try
+            using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                using (var br = new BinaryReaderX(File.OpenRead(filename)))
-                    if (br.PeekInt32() == 0 || br.PeekString(4) == "PAC\0") return false;
-                var mmb = new MMB(File.OpenRead(filename));
+                if (br.BaseStream.Length < 4) return false;
+                return br.ReadString(4) == "PAC";
             }
-            catch
-            {
-                result = false;
-            }
-            return result;
         }
 
         public void Load(string filename)
@@ -51,7 +44,7 @@ namespace archive_nintendo.MMB
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _mmb = new MMB(FileInfo.OpenRead());
+                _pac = new PAC(File.OpenRead(filename));
         }
 
         public void Save(string filename = "")
@@ -62,14 +55,14 @@ namespace archive_nintendo.MMB
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _mmb.Save(FileInfo.Create());
-                _mmb.Close();
+                _pac.Save(FileInfo.Create());
+                _pac.Close();
             }
             else
             {
                 // Create the temp file
-                _mmb.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _mmb.Close();
+                _pac.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _pac.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -82,11 +75,11 @@ namespace archive_nintendo.MMB
 
         public void Unload()
         {
-            _mmb?.Close();
+            _pac.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _mmb.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _pac.Files;
 
         public bool AddFile(ArchiveFileInfo afi) => false;
 

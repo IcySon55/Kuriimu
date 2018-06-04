@@ -11,6 +11,8 @@ using text_bmd.Properties;
 
 namespace text_bmd.msg1
 {
+    //Atlus
+
     public sealed class Msg1Adapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

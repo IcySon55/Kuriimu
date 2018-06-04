@@ -10,6 +10,8 @@ using Kontract;
 
 namespace text_tdt
 {
+    //Square Enix
+
     public sealed class TdtAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

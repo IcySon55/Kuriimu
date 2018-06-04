@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_mdt
 {
+    //Square Enix
+
     public sealed class TdtAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

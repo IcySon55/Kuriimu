@@ -11,6 +11,8 @@ using Kontract.IO;
 
 namespace text_bf
 {
+    //Atlus
+
     public class BfAdapter : ITextAdapter
     {
         private FileInfo _fileInfo = null;

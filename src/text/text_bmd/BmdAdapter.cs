@@ -11,6 +11,8 @@ using text_bmd.Properties;
 
 namespace text_bmd
 {
+    //Atlus
+
     class BmdAdapter : ITextAdapter
     {
         private BMD _bmd = null;
