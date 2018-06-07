@@ -98,28 +98,9 @@ namespace text_bmg
 
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class TypeTable
+    public class Item
     {
-        public int textSecOffset;
-        public short ttSectionsNumber;
-        public List<TableEntry> entries;
-    }
-
-    public class TableEntry
-    {
-        public short ttSectionID;
-        public int ttSectionPos;
-    }
-
-
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct BFEntry
-    {
-        public int ID;
-        public int entryID;
-        public int stringSize;
-        public int stringOffset;
-        public int padding;
+        public int strOffset;
+        public byte[] attr;
     }
 }
