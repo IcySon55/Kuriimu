@@ -5,11 +5,11 @@ using System.Linq;
 using Kontract.IO;
 using Kontract.Interface;
 
-namespace image_nintendo.VCG
+namespace image_nintendo.VCX
 {
     public sealed class BnrAdapter : IImageAdapter
     {
-        private VCG _vcg;
+        private VCX _vcx;
         private List<BitmapInfo> _bitmaps;
 
         #region Properties
@@ -37,7 +37,8 @@ namespace image_nintendo.VCG
 
             using (var br = new BinaryReaderX(File.OpenRead(vcgFilename)))
             {
-                return br.BaseStream.Length >= 4 && br.ReadString(4) == " GCV";
+                br.BaseStream.Position = 5;
+                return br.BaseStream.Length >= 9 && br.ReadString(4) == " GCV";
             }
         }
 
@@ -51,7 +52,7 @@ namespace image_nintendo.VCG
 
             if (FileInfo.Exists)
             {
-                _vcg = new VCG(File.OpenRead(vcgFilename), File.OpenRead(vclFilename), File.OpenRead(vceFilename));
+                _vcx = new VCX(File.OpenRead(vcgFilename), File.OpenRead(vclFilename), File.OpenRead(vceFilename));
 
                 //if (File.Exists(vceFilename))
                 //else if (File.Exists(ncerFilename))
@@ -59,7 +60,7 @@ namespace image_nintendo.VCG
                 //else
                 //    _vcg = new VCG(File.OpenRead(vcgFilename), File.OpenRead(vclFilename));
 
-                _bitmaps = _vcg.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
+                _bitmaps = _vcx.bmps.Select(o => new BitmapInfo { Bitmap = o }).ToList();
             }
         }
 
@@ -68,8 +69,8 @@ namespace image_nintendo.VCG
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
-            _vcg.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
-            _vcg.Save(FileInfo.FullName);
+            _vcx.bmps = _bitmaps.Select(o => o.Bitmap).ToList();
+            _vcx.Save(FileInfo.FullName);
         }
 
         // Bitmaps

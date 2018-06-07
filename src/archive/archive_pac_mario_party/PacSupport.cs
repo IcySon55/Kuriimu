@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Kontract.Interface;
 using Kontract.Compression;
 using System.IO;
+using Kontract.IO;
 
 using System.Diagnostics;
 
@@ -76,6 +77,33 @@ namespace archive_pac_mario_party
                 }
             }
         }
+
+        public void Write(Stream input)
+        {
+            using (var bw = new BinaryWriterX(input, true))
+            {
+                entry.dataOffset = (int)bw.BaseStream.Position;
+                if (State == ArchiveFileState.Archived)
+                {
+                    base.FileData.CopyTo(bw.BaseStream);
+                }
+                else
+                {
+                    var comp = ZLib.Compress(base.FileData, System.IO.Compression.CompressionLevel.Optimal, true);
+                    entry.compSize = entry.compSize2 = comp.Length;
+                    entry.decompSize = (int)base.FileData.Length;
+                    bw.Write(comp);
+                }
+            }
+        }
+
+        public void Update(Entry entry)
+        {
+            this.entry.dataOffset = entry.dataOffset;
+            this.entry.decompSize = entry.decompSize;
+            this.entry.compSize = entry.compSize;
+            this.entry.compSize2 = entry.compSize2;
+        }
     }
 
     public class Support
@@ -99,6 +127,11 @@ namespace archive_pac_mario_party
 
             return true;
         }
+
+        public static uint CreateHash(string value)
+        {
+            return 0;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -109,7 +142,7 @@ namespace archive_pac_mario_party
         public int unk2;
         public int dataOffset;
 
-        public Magic magic2 = "\x1A$€";
+        public Magic magic2 = "\u0001A$€";
         public int assetCount;
         public int entryCount;
         public int stringCount;
