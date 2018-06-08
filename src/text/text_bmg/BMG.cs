@@ -275,6 +275,33 @@ namespace text_bmg
                         }
                         bw.Write((short)0);
                         break;
+                    case Enc.SJIS:
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i] == '{')
+                            {
+                                i++;
+                                var paraStr = "";
+                                while (input[i] != '}')
+                                {
+                                    paraStr += input[i];
+                                    i++;
+                                }
+                                var paras = paraStr.Split(',');
+
+                                bw.Write((byte)0x1a);
+                                bw.Write((byte)(1 + 1 + 1 + (paras.Count() - 1)));
+                                bw.Write(Convert.ToByte(paras[0]));
+                                for (int j = 1; j < paras.Count(); j++)
+                                    bw.Write(Convert.ToByte(paras[j]));
+                            }
+                            else
+                            {
+                                bw.Write(Encoding.GetEncoding("SJIS").GetBytes(input[i].ToString()));
+                            }
+                        }
+                        bw.Write((byte)0);
+                        break;
                 }
 
             return ms.ToArray();
