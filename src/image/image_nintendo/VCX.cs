@@ -66,42 +66,56 @@ namespace image_nintendo.VCX
 
                 // Temporary
                 brVCG.BaseStream.Position = 0x10;
-                bmps.Add(Common.Load(brVCG.ReadBytes(vcgHeader.dataSize), settings));
-            }
+                //bmps.Add(Common.Load(brVCG.ReadBytes(vcgHeader.dataSize), settings));
 
-            // Tile Map
-            using (var brVCE = new BinaryReaderX(new MemoryStream(Nintendo.Decompress(inputVCE))))
-            {
-                vceHeader = brVCE.ReadStruct<VCEHeader>();
+                // Tile Map
+                using (var brVCE = new BinaryReaderX(new MemoryStream(Nintendo.Decompress(inputVCE))))
+                {
+                    vceHeader = brVCE.ReadStruct<VCEHeader>();
 
-                brVCE.BaseStream.Position = vceHeader.offset0;
-                var l0 = brVCE.ReadMultiple<VCEEntry0>(vceHeader.count0);
-                brVCE.BaseStream.Position = vceHeader.offset1;
-                var l1 = brVCE.ReadMultiple<VCEEntry1>(vceHeader.count1);
-                brVCE.BaseStream.Position = vceHeader.offset2;
-                var l2 = brVCE.ReadMultiple<VCEEntry2>(vceHeader.count2);
-                brVCE.BaseStream.Position = vceHeader.offset3;
-                var l3 = brVCE.ReadMultiple<VCEEntry3>(vceHeader.count3);
+                    brVCE.BaseStream.Position = vceHeader.offset0;
+                    var l0 = brVCE.ReadMultiple<VCEEntry0>(vceHeader.count0);
+                    brVCE.BaseStream.Position = vceHeader.offset1;
+                    var l1 = brVCE.ReadMultiple<VCEEntry1>(vceHeader.count1);
+                    brVCE.BaseStream.Position = vceHeader.offset2;
+                    var l2 = brVCE.ReadMultiple<VCEEntry2>(vceHeader.count2);
+                    brVCE.BaseStream.Position = vceHeader.offset3;
+                    var l3 = brVCE.ReadMultiple<VCEEntry3>(vceHeader.count3);
 
-                //Merge Entries
-                var merge = new List<MergedEntry>();
-                foreach (var l in l0)
-                    merge.Add(new MergedEntry
-                    {
-                        unk1 = l.unk1,
-                        t1Entries = l1.GetRange(l.t1Index, l.count).Select(e => new MergedEntry.MergeT1
+                    //Merge Entries
+                    var merge = new List<MergedEntry>();
+                    foreach (var l in l0)
+                        merge.Add(new MergedEntry
                         {
-                            unk1 = e.unk1,
-                            t2Entry = new MergedEntry.MergeT1.MergeT2
+                            unk1 = l.unk1,
+                            t1Entries = l1.GetRange(l.t1Index, l.count).Select(e => new MergedEntry.MergeT1
                             {
-                                unk1 = l2[e.t2Index].unk1,
-                                t3Entry = l3[l2[e.t2Index].t3Index]
-                            }
-                        }).ToList()
-                    });
-                //bmps.Add(Common.Load(brVCG.ReadBytes((int)(brVCG.BaseStream.Length - brVCG.BaseStream.Position)), settings, pal));
-            }
+                                unk1 = e.unk1,
+                                t2Entry = new MergedEntry.MergeT1.MergeT2
+                                {
+                                    t3Entries = l3.GetRange(l2[e.t2Index].t3Index, l2[e.t2Index].t3Count)
+                                }
+                            }).ToList()
+                        });
 
+                    foreach (var i in merge)
+                        foreach (var ip in i.t1Entries)
+                        {
+                            foreach (var t in ip.t2Entry.t3Entries)
+                            {
+                                var intSet = new ImageSettings
+                                {
+                                    Width = 16,
+                                    Height = t.unk5 * 8,
+                                    Format = new Palette(pal, 4),
+                                    Swizzle = new NitroSwizzle(16, t.unk5 * 8)
+                                };
+                                brVCG.BaseStream.Position = 0x10 + t.tileIndex * 0x80;
+                                bmps.Add(Common.Load(brVCG.ReadBytes(t.unk5 * 0x80), intSet));
+                            }
+                        }
+                }
+            }
         }
 
         public void Save(string filename)

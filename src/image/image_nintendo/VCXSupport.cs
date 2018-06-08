@@ -56,11 +56,10 @@ namespace image_nintendo.VCX
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    [DebuggerDisplay("{unk1}")]
     public class VCEEntry2
     {
         public short t3Index;
-        public short unk1;
+        public short t3Count;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -68,8 +67,9 @@ namespace image_nintendo.VCX
     {
         public short unk1;
         public short unk2;
-        public short unk3;
+        public byte tileIndex;
         public short unk4;
+        public byte unk5;
     }
 
     [DebuggerDisplay("{unk1}")]
@@ -84,11 +84,11 @@ namespace image_nintendo.VCX
             public short unk1;
             public MergeT2 t2Entry;
 
-            [DebuggerDisplay("{unk1}")]
+            //[DebuggerDisplay("{unk1}")]
             public class MergeT2
             {
-                public short unk1;
-                public VCEEntry3 t3Entry;
+                //public short unk1;
+                public List<VCEEntry3> t3Entries;
             }
         }
     }
