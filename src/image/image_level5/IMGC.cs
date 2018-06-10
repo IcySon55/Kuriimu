@@ -20,6 +20,7 @@ namespace image_level5.imgc
         public byte[] entryStart = null;
 
         bool editMode = false;
+        bool editMode2 = false;
         Level5.Method tableComp;
         Level5.Method picComp;
 
@@ -34,6 +35,11 @@ namespace image_level5.imgc
                     editMode = true;
                     header.imageFormat = 29;
                 }
+                if (header.imageFormat == 0xb && header.bitDepth == 8)
+                {
+                    editMode2 = true;
+                    header.imageFormat = 12;
+                }
 
                 //get tile table
                 br.BaseStream.Position = header.tableDataOffset;
@@ -46,6 +52,8 @@ namespace image_level5.imgc
                 var texC = br.ReadBytes(header.imgDataSize);
                 picComp = (Level5.Method)(texC[0] & 0x7);
                 byte[] tex = Level5.Decompress(new MemoryStream(texC));
+
+                File.WriteAllBytes(@"C:\Users\Kirito\Desktop\tex.bin", tex);
 
                 //order pic blocks by table
                 byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
@@ -139,7 +147,7 @@ namespace image_level5.imgc
 
                 //Image
                 bw.BaseStream.Position = 0x48 + header.tableSize2;
-                header.imageFormat = (editMode) ? (byte)28 : header.imageFormat;
+                header.imageFormat = (editMode) ? (byte)28 : (editMode2) ? (byte)0xb : header.imageFormat;
                 comp = Level5.Compress(new MemoryStream(importPic), picComp);
                 bw.Write(comp);
                 bw.WriteAlignment(4);

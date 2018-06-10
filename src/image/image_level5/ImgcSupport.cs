@@ -51,6 +51,7 @@ namespace image_level5.imgc
             [2] = new RGBA(5, 5, 5, 1),
             [3] = new RGBA(8, 8, 8),
             [4] = new RGBA(5, 6, 5),
+            [10] = new HL(8, 8),
             [11] = new LA(8, 8),
             [12] = new LA(4, 4),
             [13] = new LA(8, 0),
