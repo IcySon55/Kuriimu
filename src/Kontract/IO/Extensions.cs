@@ -80,5 +80,18 @@ namespace Kontract.IO
                 }
             }
         }
+
+        //Get Bytes in range from byte array
+        public static byte[] GetBytes(this byte[] input, int offset, int count)
+        {
+            offset = Math.Max(0, offset);
+            count = (offset + count >= input.Length) ? input.Length - offset : count;
+
+            var ret = new byte[count];
+            for (int i = offset; i < offset + count; i++)
+                ret[i - offset] = input[i];
+
+            return ret;
+        }
     }
 }
