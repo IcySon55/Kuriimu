@@ -102,299 +102,247 @@ namespace Kontract.Compression
             }
         }
 
-        private static int window_size = 0x1FFF;
+        const int window_size = 0x1FFF;
         public static byte[] Compress(Stream input)
         {
-            using (var br = new BinaryReaderX(input))
+            var uncompBuffer = new List<byte>();
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms, true))
+            using (var br = new BinaryReaderX(input, true))
             {
-                var inputArr = br.ReadAllBytes();
+                bw.BaseStream.Position = 0xc;
+                uncompBuffer.AddRange(br.ReadBytes(4));
 
-                (var rleScan, var lzScan) = Prescan(inputArr);
-                ProcessPrescans(ref rleScan, lzScan);
-
-                //Replace compression areas
-                List<(int rangeStart, int count, int compressedSize, int method)> merge = rleScan.Select(e => (e.rangeStart, e.count, e.compressedSize, 0)).ToList();
-                merge.AddRange(lzScan.Select(e => (e.rangeStart, e.count, e.compressedSize, 1)));
-                merge = merge.OrderBy(e => e.rangeStart).ToList();
-
-                var ms = new MemoryStream();
-                ms.Position = 0xc;
-                using (var bw = new BinaryWriterX(ms, true))
+                while (br.BaseStream.Position < br.BaseStream.Length)
                 {
-                    foreach (var m in merge)
+                    (int windowOffset, int inputOffset, int count) = GetMaxOccurence(br.BaseStream);
+
+                    if (count >= 4)
                     {
-                        WriteUncompressedData(bw.BaseStream, br.ReadBytes(m.rangeStart - (int)br.BaseStream.Position));
-                        if (m.method == 0)
+                        uncompBuffer.AddRange(br.ReadBytes(inputOffset));
+                        if (uncompBuffer.Count > 0)
                         {
-                            WriteRLEData(bw.BaseStream, m.count, br.ReadByte());
-                            br.BaseStream.Position += m.count - 1;
+                            bw.Write(CompressRepetitiveBytes(new MemoryStream(uncompBuffer.ToArray())));
+                            uncompBuffer = new List<byte>();
                         }
-                        else
-                        {
-                            WriteLZData(bw.BaseStream, GetMaxOccurence(inputArr, m.rangeStart));
-                            br.BaseStream.Position += m.count;
-                        }
-                    }
-                    WriteUncompressedData(bw.BaseStream, br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)));
 
-                    bw.BaseStream.Position = 0;
-                    bw.Write(0xa755aafc);
-                    bw.Write((int)br.BaseStream.Length);
-                    bw.Write((int)bw.BaseStream.Length);
-                }
-
-                return ms.ToArray();
-            }
-        }
-
-        private static void WriteLZData(Stream input, (int windowOffset, int inputOffset, int count) maxOcc)
-        {
-            using (var bw = new BinaryWriterX(input, true))
-            {
-                bw.Write((byte)(0x80 | ((maxOcc.count - 4 < 3) ? (maxOcc.count - 4) << 5 : 0x60) | (maxOcc.windowOffset >> 8)));
-                bw.Write((byte)(maxOcc.windowOffset & 0xFF));
-                maxOcc.count -= 0x7;
-
-                while (maxOcc.count > 0)
-                {
-                    if (maxOcc.count > 0x1F)
-                    {
-                        bw.Write((byte)(0x7F));
-                        maxOcc.count -= 0x1F;
+                        WriteLZData(bw.BaseStream, windowOffset, count);
+                        br.BaseStream.Position += count;
                     }
                     else
                     {
-                        bw.Write((byte)(0x60 | maxOcc.count));
-                        maxOcc.count = 0;
+                        uncompBuffer.AddRange(br.ReadBytes(Math.Min(window_size, (int)input.Position)));
+                    }
+                }
+
+                if (uncompBuffer.Count > 0)
+                    bw.Write(CompressRepetitiveBytes(new MemoryStream(uncompBuffer.ToArray())));
+
+                //Writing Header
+                bw.BaseStream.Position = 0;
+                bw.Write(0xa755aafc);
+                bw.Write((int)br.BaseStream.Length);
+                bw.Write((int)bw.BaseStream.Length);
+
+                //Pad compressed Data to 0x10
+                bw.BaseStream.Position = bw.BaseStream.Length;
+                bw.WriteAlignment();
+            }
+
+            return ms.ToArray();
+        }
+
+        //(offset to get encoded, offset in uncompressed data, bytes to be copied)
+        static (int, int, int) GetMaxOccurence(Stream input)
+        {
+            int inputPos = (int)input.Position;
+            int startOffset = Math.Max(0, inputPos - window_size);
+            int windowSize = Math.Min(window_size, inputPos);
+            int uncompSize = Math.Min(windowSize, (int)input.Length - inputPos);
+
+            //Get Window Data
+            var window = new byte[windowSize];
+            input.Position = startOffset;
+            input.Read(window, 0, windowSize);
+            int windowOffset = 0;
+
+            //Get uncompressedData
+            var uncompBuf = new byte[uncompSize];
+            input.Position = inputPos;
+            input.Read(uncompBuf, 0, uncompSize);
+            var uncompOffset = 0;
+
+            int maxLength = 0;
+            int maxOffset = 0;
+            int maxUncompOff = 0;
+            while (windowOffset < windowSize && uncompOffset < uncompSize)
+            {
+                int occ = 0;
+                while (window[windowOffset++] == uncompBuf[uncompOffset++])
+                {
+                    occ++;
+                    if (windowOffset >= window.Length || uncompOffset >= uncompBuf.Length)
+                        break;
+                }
+                if (occ > maxLength)
+                {
+                    maxLength = occ;
+                    if ((windowOffset >= window.Length || uncompOffset >= uncompBuf.Length) && window[windowOffset - 1] == uncompBuf[uncompOffset - 1])
+                    {
+                        maxOffset = windowOffset - occ;
+                        maxUncompOff = uncompOffset - occ;
+                    }
+                    else
+                    {
+                        maxOffset = windowOffset - occ - 1;
+                        maxUncompOff = uncompOffset - occ - 1;
                     }
                 }
             }
+
+            input.Position = inputPos;
+            return (windowSize - maxOffset + maxUncompOff, maxUncompOff, maxLength);
         }
 
-        private static void WriteRLEData(Stream input, int count, byte repByte)
+        #region Compress only repetitive single bytes
+        public static byte[] CompressRepetitiveBytes(Stream input)
+        {
+            //First approach - Creating "compressed" data by only using the flag for uncompressed data and repetitive bytes
+            var ms = new MemoryStream();
+            using (var bw = new BinaryWriterX(ms, true))
+            using (var br = new BinaryReaderX(input, true))
+            {
+                var uncompBuffer = new List<byte>();
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    if (br.BaseStream.Length - br.BaseStream.Position < 2)
+                    {
+                        uncompBuffer.AddRange(br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position)));
+                        break;
+                    }
+
+                    var rep = 1;
+                    var b = br.ReadByte();
+                    var b2 = br.ReadByte();
+                    while (b2 == b)
+                    {
+                        rep++;
+                        if (br.BaseStream.Position < br.BaseStream.Length)
+                            b2 = br.ReadByte();
+                        else
+                            break;
+                    }
+                    if (br.BaseStream.Position < br.BaseStream.Length || b2 != b)
+                        br.BaseStream.Position--;
+
+                    //if repeats too much
+                    if (rep >= 4)
+                    {
+                        //check uncompressed buffer, which data to write first
+                        if (uncompBuffer.Count > 0)
+                        {
+                            WriteUncompData(bw.BaseStream, uncompBuffer);
+                            uncompBuffer = new List<byte>();
+                        }
+
+                        //write repetitive byte
+                        WriteRLEData(bw.BaseStream, b, rep);
+                    }
+                    //Filling uncompressed Buffer
+                    else
+                    {
+                        for (int i = 0; i < rep; i++)
+                            uncompBuffer.Add(b);
+                    }
+                }
+
+                //check uncompressed buffer, which data to write first
+                if (uncompBuffer.Count > 0)
+                {
+                    WriteUncompData(bw.BaseStream, uncompBuffer);
+                }
+            }
+
+            return ms.ToArray();
+        }
+
+        static void WriteRLEData(Stream input, byte repByte, int rep)
         {
             using (var bw = new BinaryWriterX(input, true))
-                while (count >= 4)
+                while (rep >= 4)
                 {
-                    if (count - 4 > 0xFFF)
+                    if (rep - 4 > 0xFFF)
                     {
-                        count -= 0x1003;
+                        rep -= 0x1003;
                         bw.Write((byte)0x5F);
                         bw.Write((byte)0xFF);
                     }
-                    else if (count - 4 > 0xF)
+                    else if (rep - 4 > 0xF)
                     {
-                        bw.Write((byte)(0x50 | ((count - 4) >> 8)));
-                        bw.Write((byte)((count - 4) & 0xFF));
-                        count = 0;
+                        bw.Write((byte)(0x50 | ((rep - 4) >> 8)));
+                        bw.Write((byte)((rep - 4) & 0xFF));
+                        rep = 0;
                     }
                     else
                     {
-                        bw.Write((byte)(0x40 | (count - 4)));
-                        count = 0;
+                        bw.Write((byte)(0x40 | (rep - 4)));
+                        rep = 0;
                     }
                     bw.Write(repByte);
                 }
         }
 
-        private static void WriteUncompressedData(Stream write, byte[] uncomp)
+        static void WriteUncompData(Stream input, List<byte> uncompBuffer)
         {
-            if (uncomp.Count() <= 0)
-                return;
-
-            using (var bw = new BinaryWriterX(write, true, ByteOrder.BigEndian))
-            {
-                var pos = 0;
-                while (pos < uncomp.Length)
+            using (var bw = new BinaryWriterX(input, true))
+                while (uncompBuffer.Count > 0)
                 {
-                    if (uncomp.Length - pos > 0x1F)
+                    if (uncompBuffer.Count > 0x1FFF)
                     {
-                        bw.Write((ushort)(0x2000 | Math.Min(0x1FFF, uncomp.Length - pos)));
-                        bw.Write(uncomp.GetBytes(pos, Math.Min(0x1FFF, uncomp.Length - pos)));
-                        pos += Math.Min(0x1FFF, uncomp.Length - pos);
+                        bw.Write((byte)0x3F);
+                        bw.Write((byte)0xFF);
+                        bw.Write(uncompBuffer.Take(0x1FFF).ToArray());
+                        uncompBuffer.RemoveRange(0, 0x1FFF);
+                    }
+                    else if (uncompBuffer.Count > 0x1F)
+                    {
+                        bw.Write((byte)(0x20 | (uncompBuffer.Count >> 8)));
+                        bw.Write((byte)(uncompBuffer.Count & 0xFF));
+                        bw.Write(uncompBuffer.ToArray());
+                        uncompBuffer = new List<byte>();
                     }
                     else
                     {
-                        bw.Write((byte)(0 | uncomp.Length - pos));
-                        bw.Write(uncomp.GetBytes(pos, uncomp.Length - pos));
-                        pos += uncomp.Length - pos;
+                        bw.Write((byte)(0x00 | uncompBuffer.Count));
+                        bw.Write(uncompBuffer.ToArray());
+                        uncompBuffer = new List<byte>();
                     }
                 }
-            }
         }
+        #endregion
 
-        private static void ProcessPrescans(ref List<(int rangeStart, int count, int compressedSize)> rleScan, List<(int rangeStart, int count, int compressedSize)> lzScan)
+        static void WriteLZData(Stream input, int windowOffset, int count)
         {
-            int lzIndex = 0;
-            while (AreScansOverlapping(rleScan, lzScan))
+            using (var bw = new BinaryWriterX(input, true))
             {
-                var lzElement = lzScan[lzIndex];
+                bw.Write((byte)(0x80 | ((count - 4 < 3) ? (count - 4) << 5 : 0x60) | (windowOffset >> 8)));
+                bw.Write((byte)(windowOffset & 0xFF));
+                count -= 0x7;
 
-                var lzRangeEnd = lzElement.rangeStart + lzElement.count - 1;
-                var overlapRle = rleScan.Where(rle =>
-                      (rle.rangeStart >= lzElement.rangeStart && rle.rangeStart <= lzRangeEnd) ||
-                      (rle.rangeStart + rle.count - 1 >= lzElement.rangeStart && rle.rangeStart + rle.count - 1 <= lzRangeEnd) ||
-                      rle.rangeStart < lzElement.rangeStart && rle.rangeStart + rle.count - 1 > lzRangeEnd
-                      );
-
-                if (overlapRle.Count() <= 0)
+                while (count > 0)
                 {
-                    lzIndex++;
-                    continue;
-                }
-
-                var lzRange = lzElement.count;
-                var lzCompCount = lzElement.compressedSize;
-
-                var rleRange = overlapRle.Aggregate(0, (o, i) => o += i.count);
-                var rleCompCount = overlapRle.Aggregate(0, (o, i) => o += i.compressedSize);
-
-                if (lzRange < rleRange)
-                    lzCompCount = (int)((double)rleRange / lzRange * lzCompCount);
-                else
-                    rleCompCount = (int)((double)lzRange / rleRange * rleCompCount);
-
-                if (lzCompCount < rleCompCount)
-                {
-                    //Check if out-of-range RLE can still be used
-                    var overlap0 = overlapRle.ElementAt(0);
-                    if (overlap0.rangeStart < lzElement.rangeStart &&
-                        overlap0.rangeStart + overlap0.count - 1 <= lzRangeEnd)
+                    if (count > 0x1F)
                     {
-                        if (lzElement.rangeStart - overlap0.rangeStart >= 4)
-                        {
-                            overlapRle = overlapRle.Except(new List<(int, int, int)> { overlap0 });
-                            rleScan[rleScan.IndexOf(overlap0)] =
-                                (rleScan[rleScan.IndexOf(overlap0)].rangeStart,
-                                lzElement.rangeStart - overlap0.rangeStart,
-                                (lzElement.rangeStart - overlap0.rangeStart - 4 <= 0xF) ? 2 : 3);
-                        }
+                        bw.Write((byte)(0x7F));
+                        count -= 0x1F;
                     }
-
-                    if (overlapRle.Count() > 0)
+                    else
                     {
-                        var overlapL = overlapRle.Last();
-                        if (overlapL.rangeStart >= lzElement.rangeStart &&
-                            overlapL.rangeStart + overlapL.count - 1 > lzRangeEnd)
-                        {
-                            if (overlapL.rangeStart + overlapL.count - lzRangeEnd >= 4)
-                            {
-                                overlapRle = overlapRle.Except(new List<(int, int, int)> { overlapL });
-                                rleScan[rleScan.IndexOf(overlapL)] =
-                                    (lzRangeEnd + 1,
-                                    overlapL.rangeStart + overlapL.count - lzRangeEnd,
-                                    (overlapL.rangeStart + overlapL.count - lzRangeEnd - 4 <= 0xF) ? 2 : 3);
-                            }
-                        }
+                        bw.Write((byte)(0x60 | count));
+                        count = 0;
                     }
-
-                    lzIndex++;
-                    rleScan = rleScan.Except(overlapRle).ToList();
-                }
-                else
-                {
-                    lzScan.Remove(lzElement);
-                    if (lzIndex >= lzScan.Count)
-                        lzIndex = lzScan.Count - 1;
                 }
             }
-        }
-
-        private static bool AreScansOverlapping(List<(int rangeStart, int count, int compressedSize)> rleScan, List<(int rangeStart, int count, int compressedSize)> lzScan)
-        {
-            if (rleScan.Count <= 0 || lzScan.Count <= 0)
-                return false;
-
-            //take LZ as base for ranges, since it can range over larger areas
-            foreach (var lz in lzScan)
-            {
-                var lzRangeEnd = lz.rangeStart + lz.count - 1;
-                if (rleScan.Count(rle =>
-                    (rle.rangeStart >= lz.rangeStart && rle.rangeStart <= lzRangeEnd) ||
-                    (rle.rangeStart + rle.count - 1 >= lz.rangeStart && rle.rangeStart + rle.count - 1 <= lzRangeEnd) ||
-                    rle.rangeStart < lz.rangeStart && rle.rangeStart + rle.count - 1 > lzRangeEnd
-                    ) > 0)
-                    return true;
-            }
-            return false;
-        }
-
-        private static (List<(int rangeStart, int count, int compressedSize)>, List<(int rangeStart, int count, int compressedSize)>) Prescan(byte[] scan)
-        {
-            var rle = new List<(int, int, int)>();
-            var lz = new List<(int, int, int)>();
-
-            //Scan for RLE relevant compression
-            for (int i = 0; i < scan.Length; i++)
-            {
-                var check = scan[i];
-                var rep = 1;
-                while (++i < scan.Length && scan[i] == check && rep < 0xFFF + 4)
-                    rep++;
-                if (rep >= 4)
-                {
-                    rle.Add((i - rep, rep, (rep - 4 <= 0xF) ? 2 : 3));
-                }
-                --i;
-            }
-
-            //Scan for LZ relevant compression
-            var pos = 4;
-            while (pos < scan.Length)
-            {
-                var maxOcc = GetMaxOccurence(scan, pos);
-
-                if (maxOcc.count >= 4)
-                {
-                    lz.Add((pos, maxOcc.count, GetCompressedLZCount(maxOcc.count)));
-                    pos += maxOcc.count;
-                }
-                else
-                {
-                    pos++;
-                }
-            }
-
-            return (rle, lz);
-        }
-
-        static int GetCompressedLZCount(int count)
-        {
-            count = Math.Max(0, count - 4);
-
-            var byteCount = 1;
-            while (count > 3)
-            {
-                count -= Math.Min(count - 3, 0x1F);
-                byteCount++;
-            }
-
-            return byteCount;
-        }
-
-        //(offset to get encoded, offset in uncompressed data, bytes to be copied)
-        static (int windowOffset, int inputOffset, int count) GetMaxOccurence(byte[] input, int inputPos)
-        {
-            int windowSize = Math.Min(window_size, inputPos);
-            int windowStart = inputPos - windowSize;
-
-            int checkOffset = inputPos - 1;
-            (int windowOffset, int inputOffset, int count) maxOcc = (0, inputPos, 0);
-            while (checkOffset >= windowStart)
-            {
-                int occ = 0;
-                while (inputPos + occ < input.Length && input[checkOffset + occ] == input[inputPos + occ])
-                    occ++;
-                if (maxOcc.count < occ)
-                {
-                    maxOcc.windowOffset = inputPos - checkOffset;
-                    maxOcc.inputOffset = checkOffset;
-                    maxOcc.count = occ;
-                }
-                checkOffset--;
-            }
-
-            return maxOcc;
         }
     }
 }

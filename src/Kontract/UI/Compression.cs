@@ -187,6 +187,13 @@ namespace Kontract.UI
             tsb3.DropDownItems[0].Tag = Compression.PSVSpikeChun;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.PSVSpikeChun;
+            //    PSVSpikeChunNew
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("PSVita SpikeChun New", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[3];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.PSVSpikeChunNew;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.PSVSpikeChunNew;
         }
 
         public static void Decompress(object sender, EventArgs e)
@@ -251,6 +258,9 @@ namespace Kontract.UI
                             break;
                         case Compression.PSVSpikeChun:
                             outFs.Write(PSVSpikeChun.Decompress(openFile));
+                            break;
+                        case Compression.PSVSpikeChunNew:
+                            outFs.Write(PSVSpikeChunNew.Decompress(openFile));
                             break;
                     }
             }
@@ -347,6 +357,9 @@ namespace Kontract.UI
                         case Compression.PSVSpikeChun:
                             outFs.Write(PSVSpikeChun.Compress(openFile));
                             break;
+                        case Compression.PSVSpikeChunNew:
+                            outFs.Write(PSVSpikeChunNew.Compress(openFile));
+                            break;
                     }
             }
             catch (Exception ex)
@@ -394,7 +407,8 @@ namespace Kontract.UI
             Yay0LE,
             Yay0BE,
 
-            PSVSpikeChun
+            PSVSpikeChun,
+            PSVSpikeChunNew
         }
     }
 }
