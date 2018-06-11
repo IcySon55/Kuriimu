@@ -282,12 +282,12 @@ namespace Kontract.Compression
                         if (overlapL.rangeStart >= lzElement.rangeStart &&
                             overlapL.rangeStart + overlapL.count - 1 > lzRangeEnd)
                         {
-                            if (overlapL.rangeStart + overlapL.count - lzRangeEnd >= 4)
+                            if (overlapL.rangeStart + overlapL.count - 1 - lzRangeEnd >= 4)
                             {
                                 overlapRle = overlapRle.Except(new List<(int, int, int)> { overlapL });
                                 rleScan[rleScan.IndexOf(overlapL)] =
                                     (lzRangeEnd + 1,
-                                    overlapL.rangeStart + overlapL.count - lzRangeEnd,
+                                    overlapL.rangeStart + overlapL.count - 1 - lzRangeEnd,
                                     (overlapL.rangeStart + overlapL.count - lzRangeEnd - 4 <= 0xF) ? 2 : 3);
                             }
                         }
