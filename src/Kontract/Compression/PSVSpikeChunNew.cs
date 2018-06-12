@@ -238,7 +238,7 @@ namespace Kontract.Compression
                       rle.rangeStart < lzElement.rangeStart && rle.rangeStart + rle.count - 1 > lzRangeEnd
                       ).ToList();
 
-                if (overlapRle.Count() <= 0)
+                if (overlapRle.Count <= 0)
                 {
                     lzIndex++;
                     continue;
@@ -261,7 +261,7 @@ namespace Kontract.Compression
                 if (lzCompCount < rleCompCount + rleUncompBytesInRange)
                 {
                     //Check if out-of-range RLE can still be used
-                    var overlap0 = overlapRle.ElementAt(0);
+                    var overlap0 = overlapRle[0];
                     if (overlap0.rangeStart < lzElement.rangeStart &&
                         overlap0.rangeStart + overlap0.count - 1 <= lzRangeEnd)
                     {
@@ -275,7 +275,7 @@ namespace Kontract.Compression
                         }
                     }
 
-                    if (overlapRle.Count() > 0)
+                    if (overlapRle.Count > 0)
                     {
                         var overlapL = overlapRle.Last();
                         if (overlapL.rangeStart >= lzElement.rangeStart &&
