@@ -402,5 +402,45 @@ namespace Kontract.Compression
 
             return maxOcc;
         }
+
+        /*static List<(int windowOffset, int inputOffset, int count, int method)> GetOptimalOccurence(byte[] input, int inputPos)
+        {
+            List<(int windowOffset, int inputOffset, int count, int method)> ret = new List<(int windowOffset, int inputOffset, int count, int method)>();
+            ret.Add((0, inputPos, 0, 1));
+            ret.Add((0, inputPos, 0, 0));
+
+            int windowSize = Math.Min(window_size, inputPos);
+            int windowStart = inputPos - windowSize;
+
+            int checkOffset = inputPos - 1;
+            while (checkOffset >= windowStart)
+            {
+                int occ = 0;
+                int lastScannedByte = -1;
+                int bytescanCount = 0;
+                while (inputPos + occ < input.Length && input[checkOffset + occ] == input[inputPos + occ])
+                {
+                    if (input[checkOffset + occ] == lastScannedByte)
+                        bytescanCount++;
+                    else
+                        lastScannedByte = input[checkOffset + occ];
+
+                    if (bytescanCount > 0x1F)
+                    {
+                    //stuff to store current LZ and correct following RLE here
+                        break;
+                    }
+
+                    occ++;
+                }
+                if (ret[0].count < occ)
+                {
+                    ret[0] = (inputPos - checkOffset, checkOffset, occ, ret[0].method);
+                }
+                checkOffset--;
+            }
+
+            return ret;
+        }*/
     }
 }
