@@ -249,15 +249,15 @@ namespace Kontract.Compression
                 }
 
                 var lzRange = lzElement.count;
-                var lzCompCount = lzElement.compressedSize;
+                var lzCompCount = (double)lzElement.compressedSize;
 
                 var rleRange = overlapRle.Aggregate(0, (o, i) => o += i.count);
-                var rleCompCount = overlapRle.Aggregate(0, (o, i) => o += i.compressedSize);
+                var rleCompCount = overlapRle.Aggregate(0d, (o, i) => o += i.compressedSize);
 
                 if (lzRange < rleRange)
-                    lzCompCount = (int)((double)rleRange / lzRange * lzCompCount);
+                    lzCompCount = (double)rleRange / lzRange * lzCompCount;
                 else
-                    rleCompCount = (int)((double)lzRange / rleRange * rleCompCount);
+                    rleCompCount = (double)lzRange / rleRange * rleCompCount;
 
                 if (lzCompCount < rleCompCount)
                 {
