@@ -228,10 +228,6 @@ namespace Kontract.Compression
             int lzIndex = 0;
             while (AreScansOverlapping(rleScan, lzScan))
             {
-                if (lzIndex == lzScan.Count / 2)
-                    ;
-                if (lzIndex == lzScan.Count - 1)
-                    ;
 
                 var lzElement = lzScan[lzIndex];
 
@@ -240,7 +236,7 @@ namespace Kontract.Compression
                       (rle.rangeStart >= lzElement.rangeStart && rle.rangeStart <= lzRangeEnd) ||
                       (rle.rangeStart + rle.count - 1 >= lzElement.rangeStart && rle.rangeStart + rle.count - 1 <= lzRangeEnd) ||
                       rle.rangeStart < lzElement.rangeStart && rle.rangeStart + rle.count - 1 > lzRangeEnd
-                      );
+                      ).ToList();
 
                 if (overlapRle.Count() <= 0)
                 {
@@ -252,14 +248,17 @@ namespace Kontract.Compression
                 var lzCompCount = (double)lzElement.compressedSize;
 
                 var rleRange = overlapRle.Aggregate(0, (o, i) => o += i.count);
+                var rleUncompBytesInRange = lzRange;
+                for (int i = 0; i < overlapRle.Count; i++)
+                    rleUncompBytesInRange -= Math.Min(lzElement.rangeStart + lzElement.count, overlapRle[i].rangeStart + overlapRle[i].count) - Math.Max(overlapRle[i].rangeStart, lzElement.rangeStart);
                 var rleCompCount = overlapRle.Aggregate(0d, (o, i) => o += i.compressedSize);
 
-                if (lzRange < rleRange)
+                /*if (lzRange < rleRange)
                     lzCompCount = (double)rleRange / lzRange * lzCompCount;
                 else
-                    rleCompCount = (double)lzRange / rleRange * rleCompCount;
+                    rleCompCount = (double)lzRange / rleRange * rleCompCount;*/
 
-                if (lzCompCount < rleCompCount)
+                if (lzCompCount < rleCompCount + rleUncompBytesInRange)
                 {
                     //Check if out-of-range RLE can still be used
                     var overlap0 = overlapRle.ElementAt(0);
@@ -268,7 +267,7 @@ namespace Kontract.Compression
                     {
                         if (lzElement.rangeStart - overlap0.rangeStart >= 4)
                         {
-                            overlapRle = overlapRle.Except(new List<(int, int, int)> { overlap0 });
+                            overlapRle.Remove(overlap0);
                             rleScan[rleScan.IndexOf(overlap0)] =
                                 (rleScan[rleScan.IndexOf(overlap0)].rangeStart,
                                 lzElement.rangeStart - overlap0.rangeStart,
@@ -284,7 +283,7 @@ namespace Kontract.Compression
                         {
                             if (overlapL.rangeStart + overlapL.count - 1 - lzRangeEnd >= 4)
                             {
-                                overlapRle = overlapRle.Except(new List<(int, int, int)> { overlapL });
+                                overlapRle.Remove(overlapL);
                                 rleScan[rleScan.IndexOf(overlapL)] =
                                     (lzRangeEnd + 1,
                                     overlapL.rangeStart + overlapL.count - 1 - lzRangeEnd,
@@ -320,11 +319,6 @@ namespace Kontract.Compression
                     rle.rangeStart < lz.rangeStart && rle.rangeStart + rle.count - 1 > lzRangeEnd
                     ) > 0)
                 {
-                    var t = rleScan.Where(rle =>
-                      (rle.rangeStart >= lz.rangeStart && rle.rangeStart <= lzRangeEnd) ||
-                      (rle.rangeStart + rle.count - 1 >= lz.rangeStart && rle.rangeStart + rle.count - 1 <= lzRangeEnd) ||
-                      rle.rangeStart < lz.rangeStart && rle.rangeStart + rle.count - 1 > lzRangeEnd
-                    );
                     return true;
                 }
             }
