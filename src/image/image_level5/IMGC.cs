@@ -53,8 +53,6 @@ namespace image_level5.imgc
                 picComp = (Level5.Method)(texC[0] & 0x7);
                 byte[] tex = Level5.Decompress(new MemoryStream(texC));
 
-                File.WriteAllBytes(@"C:\Users\Kirito\Desktop\tex.bin", tex);
-
                 //order pic blocks by table
                 byte[] pic = Order(new MemoryStream(table), new MemoryStream(tex));
 
