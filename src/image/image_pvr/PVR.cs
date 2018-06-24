@@ -81,7 +81,13 @@ namespace image_pvr
         {
             using (var bw = new BinaryWriterX(File.Create(filename)))
             {
-
+                Header.metaSize = 0;
+                bw.WriteStruct(Header);
+                for (int i = 0; i < bmps.Count; i++)
+                {
+                    var saved = Common.Save(bmps[i], settings[i]);
+                    bw.Write(saved);
+                }
             }
         }
     }
