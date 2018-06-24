@@ -106,6 +106,7 @@
     <Compile Include="Image\Format\ATI.cs" />
     <Compile Include="Image\Format\DXT.cs" />
     <Compile Include="Image\Format\ETC1.cs" />
+    <Compile Include="Image\Format\ETC2.cs" />
     <Compile Include="Image\Format\HL.cs" />
     <Compile Include="Image\Format\LA.cs" />
     <Compile Include="Image\Format\Palette.cs" />

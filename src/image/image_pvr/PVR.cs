@@ -55,6 +55,11 @@ namespace image_pvr
                                     (format as PVRTC)._width = width;
                                     (format as PVRTC)._height = height;
                                 }
+                                if (format.FormatName.Contains("ETC2"))
+                                {
+                                    (format as ETC2)._width = width;
+                                    (format as ETC2)._height = height;
+                                }
 
                                 var setting = new ImageSettings
                                 {

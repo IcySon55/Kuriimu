@@ -60,16 +60,16 @@ namespace image_pvr
             //[19]=RGBE9995
             //[20]=RGBG8888
             //[21]=GRGB8888
-            [22] = new ETC1(false, false), //ETC2
-            //[23]=ETC2A
-            //[24]=ETC2A1
+            [22] = new ETC2(ETC2.Format.ETC2),
+            [23] = new ETC2(ETC2.Format.ETC2A),
+            [24] = new ETC2(ETC2.Format.ETC2A1),
             //[25]=EAC R11
             //[26]=EAC RG11
             //[27-50]=ASTC
         };
 
         public static List<int> formatToSwizzle = new List<int> {
-            0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,22
+            0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
         };
 
         public class BlockSwizzle : IImageSwizzle
