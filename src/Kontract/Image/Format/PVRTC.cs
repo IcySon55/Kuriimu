@@ -51,7 +51,7 @@ namespace Kontract.Image.Format
             if (_width < 0 || _height < 0)
                 throw new InvalidDataException("Height and Width has to be set for PVRTC.");
 
-            var pvrtcTex = PVRTexture.CreateTexture(tex, (uint)_width, (uint)_height, 1, (PixelFormat)_format, false, VariableType.UnsignedByteNorm, ColourSpace.lRGB);
+            var pvrtcTex = PVRTexture.CreateTexture(tex, (uint)_width, (uint)_height, 1, (PixelFormat)_format, false, VariableType.UnsignedByte, ColourSpace.lRGB);
 
             pvrtcTex.Transcode(PixelFormat.RGBA8888, VariableType.UnsignedByteNorm, ColourSpace.lRGB);
 
@@ -88,7 +88,7 @@ namespace Kontract.Image.Format
 
             var pvrtcTex = PVRTexture.CreateTexture(ms.ToArray(), (uint)_width, (uint)_height, 1, PixelFormat.RGBA8888, false, VariableType.UnsignedByteNorm, ColourSpace.lRGB);
 
-            pvrtcTex.Transcode((PixelFormat)_format, VariableType.UnsignedByteNorm, ColourSpace.lRGB);
+            pvrtcTex.Transcode((PixelFormat)_format, VariableType.UnsignedByteNorm, ColourSpace.lRGB, CompressorQuality.PVRTCHigh);
 
             byte[] encodedTex = new byte[pvrtcTex.GetTextureDataSize()];
             pvrtcTex.GetTextureData(encodedTex, pvrtcTex.GetTextureDataSize());

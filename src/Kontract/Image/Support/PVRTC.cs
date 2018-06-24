@@ -56,7 +56,7 @@ namespace Kontract.Image.Support
             Cubic,
         }
 
-        public enum VariableType
+        public enum VariableType : int
         {
             UnsignedByteNorm,
             SignedByteNorm,
@@ -73,7 +73,7 @@ namespace Kontract.Image.Support
             Float,
         }
 
-        public enum ColourSpace
+        public enum ColourSpace : int
         {
             lRGB,
             sRGB
