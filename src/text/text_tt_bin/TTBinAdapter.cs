@@ -122,7 +122,7 @@ namespace tt.text_ttbin
             {
                 _ttbin.Save(_fileInfo.FullName);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 result = SaveResult.Failure;
             }
