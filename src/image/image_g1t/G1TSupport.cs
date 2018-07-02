@@ -13,7 +13,13 @@ namespace image_g1t
     {
         public static Dictionary<byte, IImageFormat> Format = new Dictionary<byte, IImageFormat>
         {
-            [0x12] = new DXT(DXT.Version.DXT5)
+            [0] = new RGBA(8, 8, 8, 8),
+            [1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.LittleEndian, true),
+            [6] = new DXT(DXT.Version.DXT1),
+            [8] = new DXT(DXT.Version.DXT5),
+            [0x12] = new DXT(DXT.Version.DXT5),
+            [0x59] = new DXT(DXT.Version.DXT1),
+            [0x5b] = new DXT(DXT.Version.DXT5)
         };
     }
 
@@ -34,21 +40,23 @@ namespace image_g1t
         public byte format;
         public byte dimension;
         public byte zero0;
-        public long unk2;
-        public long unk3;
+        public byte unk2;
+        public byte unk3;
+        public byte unk4;
+        public byte extHeader;
 
         public int height => (int)Math.Pow(2, dimension / 16);
         public int width => (int)Math.Pow(2, dimension % 16);
     }
 
-    public class G1TSwizzle : IImageSwizzle
+    public class VitaSwizzle : IImageSwizzle
     {
         private MasterSwizzle _swizzle;
 
         public int Width { get; }
         public int Height { get; }
 
-        public G1TSwizzle(int width, int height, bool block = false)
+        public VitaSwizzle(int width, int height, bool block = false)
         {
             Width = (width + 3) & ~3;
             Height = (height + 3) & ~3;
@@ -61,6 +69,24 @@ namespace image_g1t
                 bitField.AddRange(new List<(int, int)> { (0, i), (i, 0) });
 
             _swizzle = new MasterSwizzle(Width, new Point(0, 0), bitField);
+        }
+
+        public Point Get(Point point) => _swizzle.Get(point.Y * Width + point.X);
+    }
+
+    public class BlockSwizzle : IImageSwizzle
+    {
+        private MasterSwizzle _swizzle;
+
+        public int Width { get; }
+        public int Height { get; }
+
+        public BlockSwizzle(int width, int height)
+        {
+            Width = (width + 3) & ~3;
+            Height = (height + 3) & ~3;
+
+            _swizzle = new MasterSwizzle(Width, new Point(0, 0), new[] { (1, 0), (2, 0), (0, 1), (0, 2) });
         }
 
         public Point Get(Point point) => _swizzle.Get(point.Y * Width + point.X);

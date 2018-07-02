@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Kontract.Image;
 using Kontract.Image.Swizzle;
+using Kontract.Interface;
 using Kontract.IO;
 using System;
 
@@ -13,13 +14,24 @@ namespace image_g1t
         public List<Bitmap> bmps = new List<Bitmap>();
         public List<ImageSettings> settings = new List<ImageSettings>();
 
+        private ByteOrder ByteOrder;
         private Header header;
         private List<Meta> meta = new List<Meta>();
+        private List<byte[]> metaExt = new List<byte[]>();
 
-        public G1T(Stream input)
+        private bool vita = false;
+
+        public G1T(Stream input, bool vita = false)
         {
+            this.vita = vita;
+
             using (BinaryReaderX br = new BinaryReaderX(input))
             {
+                //Deciding on Endianess
+                var magic1 = br.ReadString(4);
+                br.ByteOrder = ByteOrder = (magic1 == "GT1G") ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+                br.BaseStream.Position = 0;
+
                 //Header
                 header = br.ReadStruct<Header>();
 
@@ -34,16 +46,27 @@ namespace image_g1t
                     br.BaseStream.Position = header.dataOffset + offsetList[i];
                     var metainfo = br.ReadStruct<Meta>();
                     meta.Add(metainfo);
+                    byte[] ext = null;
+                    if (metainfo.extHeader > 0)
+                    {
+                        var extSize = br.ReadInt32();
+                        ext = br.ReadBytes(extSize - 4);
+                    }
+                    metaExt.Add(ext);
 
                     //Check if format exists
                     if (!Support.Format.ContainsKey(metainfo.format))
-                        throw new Exception($"Unsupported image format {metainfo.format}.");
+                        throw new Exception($"Unsupported image format 0x{metainfo.format:X2}.");
+
+                    IImageSwizzle swizzle = null;
+                    if (vita) swizzle = new VitaSwizzle(metainfo.width, metainfo.height, Support.Format[metainfo.format].FormatName.Contains("DXT"));
+                    else if (Support.Format[metainfo.format].FormatName.Contains("DXT")) swizzle = new BlockSwizzle(metainfo.width, metainfo.height);
 
                     var setting = new ImageSettings
                     {
                         Width = metainfo.width,
                         Height = metainfo.height,
-                        Swizzle = new G1TSwizzle(metainfo.width, metainfo.height, Support.Format[metainfo.format].FormatName.Contains("DXT") || Support.Format[metainfo.format].FormatName.Contains("PVR")),
+                        Swizzle = swizzle,
                         Format = Support.Format[metainfo.format]
                     };
                     settings.Add(setting);
@@ -64,7 +87,7 @@ namespace image_g1t
                     throw new Exception($"Image {i} has to be smaller than {Math.Pow(2, 15)}x{Math.Pow(2, 15)}");
             }
 
-            using (BinaryWriterX bw = new BinaryWriterX(input))
+            using (BinaryWriterX bw = new BinaryWriterX(input, ByteOrder))
             {
                 //Create offsetlist
                 var offsetList = new List<int>();
@@ -78,16 +101,28 @@ namespace image_g1t
                 //Write updated data
                 bw.BaseStream.Position = 0x20;
                 foreach (var off in offsetList) bw.Write(off);
-                foreach (var m in meta) bw.WriteStruct(m);
+                for (int i = 0; i < meta.Count; i++)
+                {
+                    bw.WriteStruct(meta[i]);
+                    if (metaExt[i] != null)
+                    {
+                        bw.Write(metaExt[i].Length + 4);
+                        bw.Write(metaExt[i]);
+                    }
+                }
 
                 //Write images
                 for (int i = 0; i < bmps.Count; i++)
                 {
+                    IImageSwizzle swizzle = null;
+                    if (vita) swizzle = new VitaSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2), Support.Format[meta[i].format].FormatName.Contains("DXT"));
+                    else if (Support.Format[meta[i].format].FormatName.Contains("DXT")) swizzle = new BlockSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2));
+
                     var setting = new ImageSettings
                     {
                         Width = 2 << (int)Math.Log(bmps[i].Width - 1, 2),
                         Height = 2 << (int)Math.Log(bmps[i].Height - 1, 2),
-                        Swizzle = new G1TSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2), Support.Format[meta[i].format].FormatName.Contains("DXT") || Support.Format[meta[i].format].FormatName.Contains("PVR")),
+                        Swizzle = swizzle,
                         Format = Support.Format[meta[i].format]
                     };
                     bw.Write(Common.Save(bmps[i], setting));

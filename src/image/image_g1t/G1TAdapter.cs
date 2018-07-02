@@ -36,7 +36,9 @@ namespace image_g1t
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 if (br.BaseStream.Length < 4) return false;
-                return br.ReadString(8) == "GT1G0600";
+                var magic1 = br.ReadString(4);
+                var magic2 = br.ReadString(4);
+                return (magic1 == "GT1G" || magic1 == "G1TG") && (magic2 == "0600" || magic2 == "0500");
             }
         }
 
@@ -46,7 +48,7 @@ namespace image_g1t
 
             if (FileInfo.Exists)
             {
-                _g1t = new G1T(FileInfo.OpenRead());
+                _g1t = new G1T(FileInfo.OpenRead(), Path.GetFileName(filename).ToLower().Contains("vita"));
 
                 _bitmaps = _g1t.bmps.Select((b, i) => new G1TBitmapInfo { Bitmap = b, Format = _g1t.settings[i].Format.FormatName }).ToList<BitmapInfo>();
             }
