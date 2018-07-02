@@ -41,6 +41,13 @@ namespace Kontract.UI
             tsb3.DropDownItems[0].Tag = Compression.LZ4;
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
             tsb3.DropDownItems[1].Tag = Compression.LZ4;
+            //  LZ4 Preceding Size
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("LZ4 Preceding Size", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[3];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Compress", null, Compress));
+            tsb3.DropDownItems[0].Tag = Compression.LZ4Prec;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Decompress", null, Decompress));
+            tsb3.DropDownItems[1].Tag = Compression.LZ4Prec;
 
             //-------Nintendo---------
             tsb.DropDownItems.Add(new ToolStripMenuItem("Nintendo", null));
@@ -226,6 +233,9 @@ namespace Kontract.UI
                         case Compression.LZ4:
                             outFs.Write(Kontract.Compression.LZ4.Decompress(openFile));
                             break;
+                        case Compression.LZ4Prec:
+                            outFs.Write(Kontract.Compression.LZ4.Decompress(openFile, true));
+                            break;
                         case Compression.MIO0LE:
                             outFs.Write(MIO0.Decompress(openFile, ByteOrder.LittleEndian));
                             break;
@@ -327,6 +337,9 @@ namespace Kontract.UI
                         case Compression.LZ4:
                             outFs.Write(Kontract.Compression.LZ4.Compress(openFile));
                             break;
+                        case Compression.LZ4Prec:
+                            outFs.Write(Kontract.Compression.LZ4.Compress(openFile, true));
+                            break;
                         case Compression.MIO0LE:
                             outFs.Write(MIO0.Compress(openFile, ByteOrder.LittleEndian));
                             break;
@@ -396,6 +409,7 @@ namespace Kontract.UI
             RevLZ77,
             LZOvl,
             LZ4,
+            LZ4Prec,
             LZ10VLE,
             LZECD,
 
