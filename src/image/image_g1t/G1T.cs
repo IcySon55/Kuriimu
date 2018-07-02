@@ -91,17 +91,24 @@ namespace image_g1t
             {
                 //Create offsetlist
                 var offsetList = new List<int>();
+                var off = header.texCount * 4;
                 for (int i = 0; i < header.texCount; i++)
-                    offsetList.Add(header.texCount * 4 + i * 0x10);
+                {
+                    offsetList.Add(off);
+                    off += 0x8 + ((metaExt[i] != null) ? metaExt[i].Length + 4 : 0);
+                    off += bmps[i].Width * bmps[i].Height * Support.Format[meta[i].format].BitDepth / 8;
+                }
 
                 //Update meta
                 for (int i = 0; i < header.texCount; i++)
                     meta[i].dimension = (byte)((int)(Math.Log(bmps[i].Width - 1, 2) + 1) | ((int)(Math.Log(bmps[i].Height - 1, 2) + 1) * 16));
 
                 //Write updated data
-                bw.BaseStream.Position = 0x20;
-                foreach (var off in offsetList) bw.Write(off);
-                for (int i = 0; i < meta.Count; i++)
+                bw.BaseStream.Position = header.dataOffset;
+                foreach (var offInt in offsetList) bw.Write(offInt);
+
+                //Write images
+                for (int i = 0; i < bmps.Count; i++)
                 {
                     bw.WriteStruct(meta[i]);
                     if (metaExt[i] != null)
@@ -109,11 +116,7 @@ namespace image_g1t
                         bw.Write(metaExt[i].Length + 4);
                         bw.Write(metaExt[i]);
                     }
-                }
 
-                //Write images
-                for (int i = 0; i < bmps.Count; i++)
-                {
                     IImageSwizzle swizzle = null;
                     if (vita) swizzle = new VitaSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2), Support.Format[meta[i].format].FormatName.Contains("DXT"));
                     else if (Support.Format[meta[i].format].FormatName.Contains("DXT")) swizzle = new BlockSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2));
