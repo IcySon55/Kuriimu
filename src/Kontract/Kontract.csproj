@@ -100,6 +100,7 @@
     <Compile Include="Encryption\Switch.cs" />
     <Compile Include="Hash\Crc32.cs" />
     <Compile Include="Hash\SHA256.cs" />
+    <Compile Include="Hash\XXH32.cs" />
     <Compile Include="Image\Format\AI.cs" />
     <Compile Include="Image\Format\ASTC.cs" />
     <Compile Include="Image\Format\ATC.cs" />
