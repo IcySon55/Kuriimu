@@ -95,7 +95,7 @@ namespace archive_hpi_hpb
                     {
                         bw.WriteStruct(new AcmpHeader
                         {
-                            compressedSize = Entry.fileSize,
+                            compressedSize = compData.Length,
                             uncompressedSize = Entry.uncompressedSize
                         });
                         bw.Write(compData);
