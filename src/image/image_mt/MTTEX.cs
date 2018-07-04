@@ -101,6 +101,8 @@ namespace image_mt
                     return SwitchSwizzle.Format.DXT1;
                 case "DXT5":
                     return SwitchSwizzle.Format.DXT5;
+                case "ATI2":
+                    return SwitchSwizzle.Format.ATI2;
                 case "RGBA8888":
                     return SwitchSwizzle.Format.RGBA8888;
                 default:
