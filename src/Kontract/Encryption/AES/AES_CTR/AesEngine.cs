@@ -1300,6 +1300,112 @@ namespace Kontract.Encryption.AES.CTR
             public ulong size;
         }
 
+        public void DecryptCIA2(Stream ciaInStream, Stream ciaOutStream)
+        {
+            //CIA contents are encrypted with AES-128 CBC
+            //the included NCCH'S are again encrypted with their crypto
+            byte[] archiveHeaderSize = new byte[4];
+            byte[] certChainSize = new byte[4];
+            byte[] ticketSize = new byte[4];
+            byte[] tmdSize = new byte[4];
+            byte[] metaSize = new byte[4];
+            byte[] contSize = new byte[8];
+            ciaInStream.Read(archiveHeaderSize, 0, 4);
+            ciaInStream.Seek(0x8, SeekOrigin.Begin);
+            ciaInStream.Read(certChainSize, 0, 4);
+            ciaInStream.Read(ticketSize, 0, 4);
+            ciaInStream.Read(tmdSize, 0, 4);
+            ciaInStream.Read(metaSize, 0, 4);
+            ciaInStream.Read(contSize, 0, 8);
+
+            //Get to the ticket ~ get to the choppaaa
+            ciaInStream.Seek((BitConverter.ToInt32(archiveHeaderSize.Reverse().ToArray(), 0) + 0x3f) & ~0x3f, SeekOrigin.Begin);
+            ciaInStream.Seek((BitConverter.ToInt32(certChainSize.Reverse().ToArray(), 0) + 0x3f) & ~0x3f, SeekOrigin.Current);
+
+            //Jump to ticket data
+            byte[] sigType = new byte[4];
+            ciaInStream.Read(sigType, 0, 4);
+            var (sigSize, padSize) = GetSignatureSizes(BitConverter.ToInt32(sigType, 0));
+            ciaInStream.Seek(sigSize + padSize, SeekOrigin.Current);
+
+            //Get decTitleKey
+            var decTitleKey = GetDecryptedTitleKey(ciaInStream);
+
+            //Get content chunk record offset
+            byte[] contentCount = new byte[2];
+            var contChunkRecOffset = ciaInStream.Position;
+            ciaInStream.Read(sigType, 0, 4);
+            (sigSize, padSize) = GetSignatureSizes(BitConverter.ToInt32(sigType.Reverse().ToArray(), 0));
+            ciaInStream.Seek(sigSize + padSize, SeekOrigin.Current);
+            ciaInStream.Seek(0x9E, SeekOrigin.Current);
+            ciaInStream.Read(contentCount, 0, 2);
+            ciaInStream.Seek(0xC4 - 0xA0, SeekOrigin.Current);
+            ciaInStream.Seek(0x24 * 0x40, SeekOrigin.Current);
+
+            //Decrypt CIA body with decTitleKey
+            LoadContentLockSeeds();
+            SetMode(AesMode.CBC);
+            SetNormalKey(decTitleKey);
+            var iv = new byte[0x10];
+            SetIV(iv);
+
+            ciaInStream.Seek((BitConverter.ToInt64(tmdSize.Reverse().ToArray(), 0) + 0x3F) & ~0x3F, SeekOrigin.Current);
+            ciaInStream.Seek((BitConverter.ToInt64(metaSize.Reverse().ToArray(), 0) + 0x3F) & ~0x3F, SeekOrigin.Current);
+            ciaOutStream.Position = ciaInStream.Position;
+            Decrypt(ciaInStream, ciaOutStream, BitConverter.ToInt64(contSize.Reverse().ToArray(), 0));
+
+            //TODO: Decrypt NCCH partitions
+        }
+
+        (int, int) GetSignatureSizes(int sigType)
+        {
+            int sigSize = 0;
+            int padSize = 0;
+            switch (sigType)
+            {
+                case 0x010003:
+                    sigSize = 0x200;
+                    padSize = 0x3C;
+                    break;
+                case 0x010004:
+                    sigSize = 0x100;
+                    padSize = 0x3C;
+                    break;
+                case 0x010005:
+                    sigSize = 0x3c;
+                    padSize = 0x40;
+                    break;
+            }
+
+            return (sigSize, padSize);
+        }
+
+        byte[] GetDecryptedTitleKey(Stream ciaInStream)
+        {
+            byte[] titleKey = new byte[0x10];
+            byte[] titleID = new byte[0x8];
+            byte[] keyYIndex = new byte[1];
+            ciaInStream.Seek(0x7F, SeekOrigin.Current);
+            ciaInStream.Read(titleKey, 0, 0x10);
+            ciaInStream.Seek(0x9C - 0x8F, SeekOrigin.Current);
+            ciaInStream.Read(titleID, 0, 0x8);
+            ciaInStream.Seek(0xB1 - 0xA4, SeekOrigin.Current);
+            ciaInStream.Read(keyYIndex, 0, 1);
+
+            ciaInStream.Seek(0x210 - 0xB2, SeekOrigin.Current);
+            ciaInStream.Seek((ciaInStream.Position + 0x3F) & ~0x3F, SeekOrigin.Begin);
+
+            SetMode(AesMode.CBC);
+            SelectKeyslot(0x3D);    //0x3D is the ticket common-key keyslot
+            SetNormalKey(KeyScrambler.GetNormalKey(GetKeyX(0x3D), cia_common_keyYs[BitConverter.ToInt32(keyYIndex, 0)]));
+            var iv = new byte[0x10];
+            titleID.CopyTo(iv, 0);
+            SetIV(iv);
+            var decTitleKey = Decrypt(titleKey);
+
+            return decTitleKey;
+        }
+
         //CIA decryption algo by onepiecefreak
         public void DecryptCIA(Stream ciaInStream, Stream ciaOutstream)
         {

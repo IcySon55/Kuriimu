@@ -42,8 +42,8 @@ namespace Kontract.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
             tsb3.DropDownItems[0].Tag = Types.Normal;
-            tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
-            tsb3.DropDownItems[1].Tag = Types.CIA;
+            /*tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
+            tsb3.DropDownItems[1].Tag = Types.CIA;*/
             /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
             tsb3.DropDownItems[2].Tag = Types.BOSS;*/
 
