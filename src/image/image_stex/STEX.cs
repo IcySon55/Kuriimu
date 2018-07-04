@@ -15,6 +15,7 @@ namespace image_stex
         public Header header;
         public TexInfo texInfo;
 
+        public uint format;
         public Bitmap bmp;
         public ImageSettings settings;
 
@@ -25,6 +26,7 @@ namespace image_stex
                 header = br.ReadStruct<Header>();
                 texInfo = new TexInfo(br.BaseStream);
 
+                format = (uint)((header.type << 16) | header.imageFormat);
                 settings = new ImageSettings
                 {
                     Width = header.width,
@@ -45,6 +47,8 @@ namespace image_stex
 
                 header.width = bitmap.Width;
                 header.height = bitmap.Height;
+                header.type = format >> 16;
+                header.imageFormat = format & 0xFFFF;
                 header.dataSize = pic.Length;
                 bw.WriteStruct(header);
 

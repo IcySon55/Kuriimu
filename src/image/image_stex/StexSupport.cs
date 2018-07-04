@@ -27,12 +27,29 @@ namespace image_stex
             [0x67616756] = new LA(0, 4),
             [0x14016757] = new LA(8, 0),
             [0x67616757] = new LA(4, 0),
-            [0x14016757] = new LA(8, 8),
+            [0x14016758] = new LA(8, 8),
             [0x67606758] = new LA(4, 4),
             [0x0000675A] = new ETC1(),
             [0x0000675B] = new ETC1(true),
             [0x1401675A] = new ETC1(),
             [0x1401675B] = new ETC1(true)
+        };
+
+        public enum FormatSwitcher : uint
+        {
+            RGBA8888 = 0x14016752,
+            RGBA4444 = 0x80336752,
+            RGBA5551 = 0x80346752,
+            RGB888 = 0x14016754,
+            RGB565 = 0x83636754,
+            A8 = 0x14016756,
+            A4 = 0x67616756,
+            L8 = 0x14016757,
+            L4 = 0x67616757,
+            LA88 = 0x14016758,
+            LA44 = 0x67606758,
+            ETC1 = 0x1401675A,
+            ETC1A4 = 0x1401675B
         };
     }
 

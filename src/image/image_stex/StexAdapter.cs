@@ -45,7 +45,7 @@ namespace image_stex
             {
                 _stex = new STEX(FileInfo.OpenRead());
 
-                _bitmaps = new List<BitmapInfo> { new StexBitmapInfo { Bitmap = _stex.bmp, Format = _stex.settings.Format.FormatName } };
+                _bitmaps = new List<BitmapInfo> { new StexBitmapInfo { Bitmap = _stex.bmp, Format = (Support.FormatSwitcher)Enum.Parse(typeof(Support.FormatSwitcher), _stex.settings.Format.FormatName) } };
             }
         }
 
@@ -54,6 +54,8 @@ namespace image_stex
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
 
+            _stex.format = (uint)(_bitmaps[0] as StexBitmapInfo).Format;
+            _stex.settings.Format = Support.Format[(uint)(_bitmaps[0] as StexBitmapInfo).Format];
             _stex.bmp = _bitmaps[0].Bitmap;
             _stex.Save(FileInfo.FullName, _stex.bmp);
         }
@@ -66,8 +68,7 @@ namespace image_stex
         public sealed class StexBitmapInfo : BitmapInfo
         {
             [Category("Properties")]
-            [ReadOnly(true)]
-            public string Format { get; set; }
+            public Support.FormatSwitcher Format { get; set; }
         }
     }
 }
