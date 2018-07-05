@@ -121,6 +121,7 @@ namespace image_mt
             [0x07] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
             [0x13] = new DXT(DXT.Version.DXT1),
             [0x17] = new DXT(DXT.Version.DXT5),
+            [0x19] = new ATI(ATI.Format.ATI1A),
             [0x1F] = new ATI(ATI.Format.ATI2)
         };
         #endregion
