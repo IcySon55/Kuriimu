@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CIA.cs" />
+    <Compile Include="CiaManager.cs" />
+    <Compile Include="CiaSupport.cs" />
     <Compile Include="MMB.cs" />
     <Compile Include="MmbManager.cs" />
     <Compile Include="MmbSupport.cs" />
