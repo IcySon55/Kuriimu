@@ -1300,7 +1300,7 @@ namespace Kontract.Encryption.AES.CTR
             public ulong size;
         }
 
-        public void DecryptCIA2(Stream ciaInStream, Stream ciaOutStream)
+        public void DecryptCIA(Stream ciaInStream, Stream ciaOutStream, bool shallow = true)
         {
             //CIA contents are encrypted with AES-128 CBC
             //the included NCCH'S are again encrypted with their crypto
@@ -1319,42 +1319,169 @@ namespace Kontract.Encryption.AES.CTR
             ciaInStream.Read(contSize, 0, 8);
 
             //Get to the ticket ~ get to the choppaaa
-            ciaInStream.Seek((BitConverter.ToInt32(archiveHeaderSize.Reverse().ToArray(), 0) + 0x3f) & ~0x3f, SeekOrigin.Begin);
-            ciaInStream.Seek((BitConverter.ToInt32(certChainSize.Reverse().ToArray(), 0) + 0x3f) & ~0x3f, SeekOrigin.Current);
+            ciaInStream.Seek(BitConverter.ToInt32(archiveHeaderSize, 0), SeekOrigin.Begin);
+            SeekAlignment(ciaInStream, 0x40);
+            ciaInStream.Seek(BitConverter.ToInt32(certChainSize, 0), SeekOrigin.Current);
+            SeekAlignment(ciaInStream, 0x40);
+
+            var ticketOffset = ciaInStream.Position;
 
             //Jump to ticket data
             byte[] sigType = new byte[4];
             ciaInStream.Read(sigType, 0, 4);
-            var (sigSize, padSize) = GetSignatureSizes(BitConverter.ToInt32(sigType, 0));
+            var (sigSize, padSize) = GetSignatureSizes(BitConverter.ToInt32(sigType.Reverse().ToArray(), 0));
             ciaInStream.Seek(sigSize + padSize, SeekOrigin.Current);
+
+            //Get titleID
+            byte[] titleID = new byte[8];
+            ciaInStream.Seek(0x9C, SeekOrigin.Current);
+            ciaInStream.Read(titleID, 0, 8);
+            ciaInStream.Seek(-(0x9C + 8), SeekOrigin.Current);
 
             //Get decTitleKey
             var decTitleKey = GetDecryptedTitleKey(ciaInStream);
 
+            //already padded to TMD
             //Get content chunk record offset
             byte[] contentCount = new byte[2];
-            var contChunkRecOffset = ciaInStream.Position;
             ciaInStream.Read(sigType, 0, 4);
             (sigSize, padSize) = GetSignatureSizes(BitConverter.ToInt32(sigType.Reverse().ToArray(), 0));
             ciaInStream.Seek(sigSize + padSize, SeekOrigin.Current);
             ciaInStream.Seek(0x9E, SeekOrigin.Current);
             ciaInStream.Read(contentCount, 0, 2);
             ciaInStream.Seek(0xC4 - 0xA0, SeekOrigin.Current);
-            ciaInStream.Seek(0x24 * 0x40, SeekOrigin.Current);
+            var contChunkInfoOffset = ciaInStream.Position;
 
-            //Decrypt CIA body with decTitleKey
-            LoadContentLockSeeds();
-            SetMode(AesMode.CBC);
-            SetNormalKey(decTitleKey);
-            var iv = new byte[0x10];
-            SetIV(iv);
+            ciaInStream.Seek(0x40 * 0x24, SeekOrigin.Current);
+            var contChunkRecOffset = ciaInStream.Position;
 
-            ciaInStream.Seek((BitConverter.ToInt64(tmdSize.Reverse().ToArray(), 0) + 0x3F) & ~0x3F, SeekOrigin.Current);
-            ciaInStream.Seek((BitConverter.ToInt64(metaSize.Reverse().ToArray(), 0) + 0x3F) & ~0x3F, SeekOrigin.Current);
+            ciaInStream.Seek(ticketOffset, SeekOrigin.Begin);
+            ciaInStream.Seek(BitConverter.ToInt32(ticketSize, 0), SeekOrigin.Current);
+            SeekAlignment(ciaInStream, 0x40);
+            ciaInStream.Seek(BitConverter.ToInt32(tmdSize, 0), SeekOrigin.Current);
+            SeekAlignment(ciaInStream, 0x40);
+            ciaInStream.Seek(BitConverter.ToInt32(metaSize, 0), SeekOrigin.Current);
+            SeekAlignment(ciaInStream, 0x40);
             ciaOutStream.Position = ciaInStream.Position;
-            Decrypt(ciaInStream, ciaOutStream, BitConverter.ToInt64(contSize.Reverse().ToArray(), 0));
+            var contOffset = ciaInStream.Position;
 
-            //TODO: Decrypt NCCH partitions
+            ciaInStream.Position = ciaOutStream.Position = contOffset;
+
+            LoadContentLockSeeds();
+            var seed = (contLockSeeds.ContainsKey(BitConverter.ToUInt64(titleID.Reverse().ToArray(), 0))) ? contLockSeeds[BitConverter.ToUInt64(titleID.Reverse().ToArray(), 0)] : null;
+            var cia_tmp = File.Create("cia_dec.tmp");
+            for (int i = 0; i < BitConverter.ToInt16(contentCount.Reverse().ToArray(), 0); i++)
+            {
+                var ncchOffset = ciaInStream.Position;
+
+                ciaInStream.Seek(contChunkRecOffset + i * 0x30, SeekOrigin.Begin);
+                ciaInStream.Seek(4, SeekOrigin.Current);
+                byte[] contentIndex = new byte[0x10];
+                ciaInStream.Read(contentIndex, 0, 2);
+                byte[] contentFlags = new byte[2];
+                ciaInStream.Read(contentFlags, 0, 2);
+                bool encrypted = (contentFlags[1] & 0x01) == 1;
+                contentFlags[1] &= 0xFE;
+                ciaOutStream.Position = ciaInStream.Position - 2;
+                ciaOutStream.Write(contentFlags, 0, 2);
+                byte[] contentSize = new byte[8];
+                ciaInStream.Read(contentSize, 0, 8);
+
+                ciaInStream.Seek(ncchOffset, SeekOrigin.Begin);
+                ciaOutStream.Position = cia_tmp.Position = ciaInStream.Position;
+
+                if (encrypted)
+                {
+                    //Decrypt as CIA Body
+                    SetMode(AesMode.CBC);
+                    SetNormalKey(decTitleKey);
+                    SetIV(contentIndex);
+                    Decrypt(ciaInStream, cia_tmp, BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0));
+
+                    if (shallow)
+                    {
+                        //Recalculate hash, if shallow decryption is activated
+                        var newHash = Kontract.Hash.SHA256.Create(cia_tmp, ncchOffset, BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0));
+                        ciaOutStream.Seek(contChunkRecOffset + i * 0x30, SeekOrigin.Begin);
+                        ciaOutStream.Seek(0x10, SeekOrigin.Current);
+                        ciaOutStream.Write(newHash, 0, 0x20);
+                    }
+                }
+                else
+                {
+                    BufferedCopy(ciaInStream, cia_tmp, (int)BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0), 0x10000);
+                }
+
+                if (shallow)
+                {
+                    cia_tmp.Position = ciaOutStream.Position = ncchOffset;
+                    BufferedCopy(cia_tmp, ciaOutStream, (int)BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0), 0x10000);
+                }
+                else
+                {
+                    //Decrypt NCCH itself
+                    cia_tmp.Position = ciaOutStream.Position = ncchOffset;
+                    BufferedCopy(cia_tmp, ciaOutStream, (int)BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0), 0x10000);
+
+                    cia_tmp.Position = ciaOutStream.Position = ncchOffset;
+                    DecryptNCCH(cia_tmp, ciaOutStream, seed);
+
+                    //Recalculate hash
+                    var newHash2 = Kontract.Hash.SHA256.Create(ciaOutStream, ncchOffset, BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0));
+                    ciaOutStream.Seek(contChunkRecOffset + i * 0x30, SeekOrigin.Begin);
+                    ciaOutStream.Seek(0x10, SeekOrigin.Current);
+                    ciaOutStream.Write(newHash2, 0, 0x20);
+                }
+
+                //Sync streams to next NCCH
+                ciaOutStream.Position = ciaInStream.Position = cia_tmp.Position = ncchOffset + BitConverter.ToInt64(contentSize.Reverse().ToArray(), 0);
+                SeekAlignment(ciaInStream, 0x40);
+                SeekAlignment(ciaOutStream, 0x40);
+                SeekAlignment(cia_tmp, 0x40);
+            }
+
+            //Recalculate content info records
+            for (int i = 0; i < 0x40; i++)
+            {
+                ciaOutStream.Position = contChunkInfoOffset + i * 0x24;
+
+                var recOffset = new byte[2];
+                var recCount = new byte[2];
+                ciaOutStream.Read(recOffset, 0, 2);
+                ciaOutStream.Read(recCount, 0, 2);
+
+                if (BitConverter.ToInt16(recOffset.Reverse().ToArray(), 0) == 0 && BitConverter.ToInt16(recCount.Reverse().ToArray(), 0) == 0)
+                    break;
+
+                var newHash3 = Kontract.Hash.SHA256.Create(ciaOutStream,
+                    contChunkRecOffset + BitConverter.ToInt16(recOffset.Reverse().ToArray(), 0) * 0x30,
+                    BitConverter.ToInt16(recCount.Reverse().ToArray(), 0) * 0x30);
+                ciaOutStream.Position = contChunkInfoOffset + i * 0x24 + 4;
+                ciaOutStream.Write(newHash3, 0, 0x20);
+            }
+
+            //Recalculate TMD Chunk Info Hash
+            var newHash4 = Kontract.Hash.SHA256.Create(ciaOutStream, contChunkInfoOffset, 0x40 * 0x24);
+            ciaOutStream.Position = contChunkInfoOffset - 0x20;
+            ciaOutStream.Write(newHash4, 0, 0x20);
+
+            cia_tmp.Close();
+            File.Delete("cia_dec.tmp");
+        }
+
+        private void BufferedCopy(Stream instream, Stream outstream, int count, int bufferSize)
+        {
+            for (int j = 0; j < count; j += bufferSize)
+            {
+                var buffer = new byte[(count - j < bufferSize) ? count - j : bufferSize];
+                instream.Read(buffer, 0, buffer.Length);
+                outstream.Write(buffer, 0, buffer.Length);
+            }
+        }
+
+        private void SeekAlignment(Stream input, int alignment)
+        {
+            input.Position = (input.Position + (alignment - 1)) & ~(alignment - 1);
         }
 
         (int, int) GetSignatureSizes(int sigType)
@@ -1393,180 +1520,17 @@ namespace Kontract.Encryption.AES.CTR
             ciaInStream.Read(keyYIndex, 0, 1);
 
             ciaInStream.Seek(0x210 - 0xB2, SeekOrigin.Current);
-            ciaInStream.Seek((ciaInStream.Position + 0x3F) & ~0x3F, SeekOrigin.Begin);
+            SeekAlignment(ciaInStream, 0x40);
 
             SetMode(AesMode.CBC);
             SelectKeyslot(0x3D);    //0x3D is the ticket common-key keyslot
-            SetNormalKey(KeyScrambler.GetNormalKey(GetKeyX(0x3D), cia_common_keyYs[BitConverter.ToInt32(keyYIndex, 0)]));
+            SetNormalKey(KeyScrambler.GetNormalKey(GetKeyX(0x3D), cia_common_keyYs[keyYIndex[0]]));
             var iv = new byte[0x10];
             titleID.CopyTo(iv, 0);
             SetIV(iv);
             var decTitleKey = Decrypt(titleKey);
 
             return decTitleKey;
-        }
-
-        //CIA decryption algo by onepiecefreak
-        public void DecryptCIA(Stream ciaInStream, Stream ciaOutstream)
-        {
-            List<chunkRecord> chunkRecords = new List<chunkRecord>();
-
-            using (var br = new BinaryReaderX(ciaInStream, true))
-            {
-                //get Header Information
-                var archiveHeaderSize = br.ReadUInt32();
-                br.ReadInt32();
-                var certChainSize = br.ReadUInt32();
-                var ticketSize = br.ReadUInt32();
-                var tmdSize = br.ReadUInt32();
-                var metaSize = br.ReadUInt32();
-                var contSize = br.ReadUInt64();
-                byte[] contentIndex = br.ReadBytes(0x2000);
-
-                //get Ticket
-                var ticketOffset = ((archiveHeaderSize + 0x3f & ~0x3f) + certChainSize) + 0x3f & ~0x3f;
-                br.BaseStream.Position = ticketOffset;
-                byte[] ticket = br.ReadBytes((int)ticketSize);
-
-                //get encrypted TitleKey
-                byte[] encTitleKey;
-                byte[] titleID;
-                ulong titleIDI;
-                byte keyYIndex = 0;
-                using (var tk = new BinaryReaderX(new MemoryStream(ticket), ByteOrder.BigEndian))
-                {
-                    var sigType = tk.ReadUInt32();
-                    int sigSize = 0;
-                    int padSize = 0;
-                    switch (sigType)
-                    {
-                        case 0x010003:
-                            sigSize = 0x200;
-                            padSize = 0x3c;
-                            break;
-                        case 0x010004:
-                            sigSize = 0x100;
-                            padSize = 0x3c;
-                            break;
-                        case 0x010005:
-                            sigSize = 0x3c;
-                            padSize = 0x40;
-                            break;
-                    }
-                    tk.BaseStream.Position += sigSize + padSize + 0x7f;
-                    encTitleKey = tk.ReadBytes(0x10);
-                    tk.BaseStream.Position += 0x0D;
-                    titleID = tk.ReadBytes(0x8);
-                    titleIDI = titleID.BytesToStruct<ulong>();
-                    tk.BaseStream.Position += 0xd;
-                    keyYIndex = tk.ReadByte();
-                }
-
-                //decrypt TitleKey
-                SetMode(AesMode.CBC);
-                SelectKeyslot(0x3D);
-                SetNormalKey(KeyScrambler.GetNormalKey(GetKeyX(0x3D), cia_common_keyYs[keyYIndex]));
-                var iv = new byte[0x10];
-                titleID.CopyTo(iv, 0);
-                SetIV(iv);
-                var decTitleKey = Decrypt(encTitleKey);
-
-                //get TMD
-                br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
-                var tmdOffset = br.BaseStream.Position;
-                byte[] TMD = br.ReadBytes((int)tmdSize);
-
-                //get TMD contentIndeces
-                uint contChunkOffset = 0;
-                using (var tmd = new BinaryReaderX(new MemoryStream(TMD), ByteOrder.BigEndian))
-                {
-                    var sigType = tmd.ReadUInt32();
-                    int sigSize = 0;
-                    int padSize = 0;
-                    switch (sigType)
-                    {
-                        case 0x010003:
-                            sigSize = 0x200;
-                            padSize = 0x3c;
-                            break;
-                        case 0x010004:
-                            sigSize = 0x100;
-                            padSize = 0x3c;
-                            break;
-                        case 0x010005:
-                            sigSize = 0x3c;
-                            padSize = 0x40;
-                            break;
-                    }
-                    //Header
-                    tmd.BaseStream.Position += sigSize + padSize;
-                    tmd.BaseStream.Position += 0x9e;
-                    var contCount = tmd.ReadUInt16();
-                    tmd.BaseStream.Position += 0x24;
-
-                    tmd.BaseStream.Position += 64 * 0x24;   //Content Info Records
-
-                    contChunkOffset = (uint)tmd.BaseStream.Position + (uint)tmdOffset;
-                    for (int i = 0; i < contCount; i++)
-                    {
-                        tmd.BaseStream.Position += 4;
-                        chunkRecords.Add(new chunkRecord
-                        {
-                            index = tmd.ReadBytes(2),
-                            type = tmd.ReadUInt16(),
-                            size = tmd.ReadUInt64()
-                        });
-                        tmd.BaseStream.Position += 0x20;
-                    }
-                }
-
-                //Ignore MetaData
-                br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
-                if (metaSize != 0) br.BaseStream.Position += metaSize;
-                br.BaseStream.Position = br.BaseStream.Position + 0x3f & ~0x3f;
-
-                //Decrypt CIA Contents with decrypted TitleKey
-                LoadContentLockSeeds();
-                SetMode(AesMode.CBC);
-                SetNormalKey(decTitleKey);
-                iv = new byte[0x10];
-                SetIV(iv);
-                var contOffset = br.BaseStream.Position;
-                var decContent = Decrypt(br.ReadBytes((int)contSize));
-
-                for (int i = 0; i < chunkRecords.Count; i++)
-                {
-                    using (var br2 = new BinaryReaderX(new MemoryStream(decContent), true))
-                    {
-                        //Decrypt NCCH
-                        var ncchContent = new MemoryStream(br2.ReadBytes((int)chunkRecords[i].size));
-                        var decNcchContent = new MemoryStream();
-                        ncchContent.CopyTo(decNcchContent);
-                        decNcchContent.Position = ncchContent.Position = 0;
-                        var seed = (contLockSeeds.ContainsKey(titleIDI)) ? contLockSeeds[titleIDI] : null;
-                        DecryptNCCH(ncchContent, decNcchContent, seed);
-
-                        //Write decrypted NCCH
-                        using (var bw = new BinaryWriterX(ciaOutstream, true, ByteOrder.BigEndian))
-                        {
-                            //Set contentType to Encrypted=0
-                            chunkRecords[i].type &= 0xfffe;
-                            bw.BaseStream.Position = contChunkOffset + i * 0x30 + 6;
-                            bw.Write(chunkRecords[i].type);
-
-                            //Write decrypted Content
-                            bw.BaseStream.Position = contOffset;
-                            decNcchContent.CopyTo(bw.BaseStream);
-                            contOffset += (int)chunkRecords[i].size;
-                            contOffset = contOffset + 0x3f & ~0x3f;
-                        }
-
-                        br2.BaseStream.Position = br2.BaseStream.Position + 0x3f & ~0x3f;
-                    }
-                }
-
-                decContent = null;
-            }
         }
 
         public void DecryptNAND(Stream nandInStream, Stream nandOutStream, bool isNew3DS)

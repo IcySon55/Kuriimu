@@ -42,8 +42,14 @@ namespace Kontract.UI
             tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[0];
             tsb3.DropDownItems.Add(new ToolStripMenuItem(".3ds", null, Decrypt));
             tsb3.DropDownItems[0].Tag = Types.Normal;
-            /*tsb3.DropDownItems.Add(new ToolStripMenuItem(".cia", null, Decrypt));
-            tsb3.DropDownItems[1].Tag = Types.CIA;*/
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("CIA", null));
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[1];
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Shallow", null, Decrypt));
+            tsb4.DropDownItems[0].Tag = Types.CIA_shallow;
+            tsb4.DropDownItems.Add(new ToolStripMenuItem("Deep", null, Decrypt));
+            tsb4.DropDownItems[1].Tag = Types.CIA_deep;
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("NCCH", null, Decrypt));
+            tsb3.DropDownItems[2].Tag = Types.NCCH;
             /*tsb3.DropDownItems.Add(new ToolStripMenuItem("BOSS", null, Decrypt));
             tsb3.DropDownItems[2].Tag = Types.BOSS;*/
 
@@ -140,14 +146,34 @@ namespace Kontract.UI
                                 engine.DecryptGameNCSD(openBr.BaseStream, outFs.BaseStream);
                             }
                             break;
-                        case Types.CIA:
+                        case Types.CIA_shallow:
                             using (var outFs = new BinaryWriterX(saveFile))
                             {
                                 var engine = new AesEngine();
                                 openBr.BaseStream.CopyTo(outFs.BaseStream);
                                 openBr.BaseStream.Position = 0;
                                 outFs.BaseStream.Position = 0;
-                                engine.DecryptCIA(openBr.BaseStream, outFs.BaseStream);
+                                engine.DecryptCIA(openBr.BaseStream, outFs.BaseStream, true);
+                            }
+                            break;
+                        case Types.CIA_deep:
+                            using (var outFs = new BinaryWriterX(saveFile))
+                            {
+                                var engine = new AesEngine();
+                                openBr.BaseStream.CopyTo(outFs.BaseStream);
+                                openBr.BaseStream.Position = 0;
+                                outFs.BaseStream.Position = 0;
+                                engine.DecryptCIA(openBr.BaseStream, outFs.BaseStream, false);
+                            }
+                            break;
+                        case Types.NCCH:
+                            using (var outFs = new BinaryWriterX(saveFile))
+                            {
+                                var engine = new AesEngine();
+                                openBr.BaseStream.CopyTo(outFs.BaseStream);
+                                openBr.BaseStream.Position = 0;
+                                outFs.BaseStream.Position = 0;
+                                engine.DecryptNCCH(openBr.BaseStream, outFs.BaseStream);
                             }
                             break;
                         /*case Types.BOSS:
@@ -232,7 +258,9 @@ namespace Kontract.UI
         {
             //3DS
             Normal,
-            CIA,
+            CIA_shallow,
+            CIA_deep,
+            NCCH,
             BOSS,
 
             //Mobile
