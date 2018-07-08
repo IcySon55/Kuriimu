@@ -60,12 +60,20 @@ namespace archive_nintendo.CIA
 
                 int partCount = 0;
                 foreach (var sub in partitions)
+                {
+                    sub.Position = 0x188;
+                    byte[] flags = new byte[8];
+                    sub.Read(flags, 0, 8);
+                    string ext = (((flags[5] >> 1) & 0x1) == 1) ? ".cxi" : ".cfa";
+                    sub.Position = 0;
+
                     Files.Add(new ArchiveFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = "Partition " + partCount++,
+                        FileName = "Partition" + partCount++ + ext,
                         FileData = sub
                     });
+                }
             }
         }
 
