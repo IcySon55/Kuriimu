@@ -13,10 +13,10 @@ namespace archive_nintendo.NCCH
         #region Properties
 
         // Information
-        public string Name => "CTPK";
-        public string Description => "CTR Texture PacKage";
-        public string Extension => "*.ctpk";
-        public string About => "This is the CTPK archive manager for Karameru.";
+        public string Name => "NCCH";
+        public string Description => "Nintendo Content Container Header";
+        public string Extension => "*.bin;*.ncch;*.cxi;*.cfa";
+        public string About => "This is the NCCH manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
@@ -24,7 +24,7 @@ namespace archive_nintendo.NCCH
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
         public bool CanDeleteFiles => false;
-        public bool CanSave => true;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
