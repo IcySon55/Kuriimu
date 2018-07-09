@@ -57,24 +57,41 @@ namespace archive_nintendo.CIA
                     partitions.Add(new SubStream(br.BaseStream, partitionOffset, tmd.contentChunkRecord[i].contentSize));
                     partitionOffset += tmd.contentChunkRecord[i].contentSize;
                 }
-
-                int partCount = 0;
+                
                 foreach (var sub in partitions)
                 {
                     sub.Position = 0x188;
                     byte[] flags = new byte[8];
                     sub.Read(flags, 0, 8);
-                    string ext = (((flags[5] >> 1) & 0x1) == 1) ? ".cxi" : ".cfa";
                     sub.Position = 0;
 
                     Files.Add(new ArchiveFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = "Partition" + partCount++ + ext,
+                        FileName = GetPartitionName(flags[5]),
                         FileData = sub
                     });
                 }
             }
+        }
+
+        private string GetPartitionName(byte typeFlag)
+        {
+            string ext = ((typeFlag & 0x1) == 1 && ((typeFlag >> 1) & 0x1) == 1) ? ".cxi" : ".cfa";
+
+            string fileName = "";
+            if ((typeFlag & 0x1) == 1 && ((typeFlag >> 1) & 0x1) == 1)
+                fileName = "GameData";
+            else if ((typeFlag & 0x1) == 1 && ((typeFlag >> 2) & 0x1) == 1 && ((typeFlag >> 3) & 0x1) == 1)
+                fileName = "DownloadPlay";
+            else if ((typeFlag & 0x1) == 1 && ((typeFlag >> 2) & 0x1) == 1)
+                fileName = "3DSUpdate";
+            else if ((typeFlag & 0x1) == 1 && ((typeFlag >> 3) & 0x1) == 1)
+                fileName = "Manual";
+            else if ((typeFlag & 0x1) == 1 && ((typeFlag >> 4) & 0x1) == 1)
+                fileName = "Trial";
+            
+            return fileName + ext;
         }
 
         public void Save(Stream output)

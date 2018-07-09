@@ -73,6 +73,9 @@
     <Compile Include="NARC.cs" />
     <Compile Include="NarcManager.cs" />
     <Compile Include="NarcSupport.cs" />
+    <Compile Include="NCCH.cs" />
+    <Compile Include="NcchManager.cs" />
+    <Compile Include="NcchSupport.cs" />
     <Compile Include="NDSFS.cs" />
     <Compile Include="NdsfsManager.cs" />
     <Compile Include="NdsfsSupport.cs" />
