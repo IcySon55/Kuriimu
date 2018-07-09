@@ -18,6 +18,7 @@ namespace archive_nintendo.NCCH
         byte[] plainRegion;
         byte[] logoRegion;
         ExeFS exeFS;
+        RomFS romFS;
 
         public NCCH(Stream input)
         {
@@ -93,7 +94,17 @@ namespace archive_nintendo.NCCH
                 //RomFS
                 if (ncchHeader.romFSOffset != 0 && ncchHeader.romFSSize != 0)
                 {
-
+                    br.BaseStream.Position = ncchHeader.romFSOffset * mediaUnitSize;
+                    romFS = new RomFS(br.BaseStream);
+                    foreach (var romFSFile in romFS.files)
+                    {
+                        Files.Add(new ArchiveFileInfo
+                        {
+                            State = ArchiveFileState.Archived,
+                            FileName = "RomFS" + romFSFile.fileName,
+                            FileData = new SubStream(br.BaseStream, romFSFile.fileOffset, romFSFile.fileSize)
+                        });
+                    }
                 }
             }
         }

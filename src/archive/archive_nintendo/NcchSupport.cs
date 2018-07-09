@@ -1,8 +1,10 @@
 ﻿using System.Runtime.InteropServices;
+using System.Diagnostics;
 using System.Collections.Generic;
 using Kontract.Interface;
 using Kontract.IO;
 using System.IO;
+using System.Text;
 using Kontract;
 using Kontract.Compression;
 
@@ -173,7 +175,7 @@ namespace archive_nintendo.NCCH
             }
         }
     }
-    
+
     public class ExeFS
     {
         public ExeFS(Stream instream)
@@ -199,6 +201,166 @@ namespace archive_nintendo.NCCH
             public string name;
             public int offset;
             public int size;
+        }
+    }
+
+    public class RomFS
+    {
+        public RomFS(Stream instream)
+        {
+            using (var br = new BinaryReaderX(instream, true))
+            {
+                header = br.ReadStruct<Header>();
+                br.SeekAlignment(0x10);
+                masterHash = br.ReadBytes(header.masterHashSize);
+
+                //Level 3
+                br.SeekAlignment(1 << header.lv3BlockSize);
+                lv3Offset = br.BaseStream.Position;
+                lv3Header = br.ReadStruct<HashLevelHeader>();
+
+                br.BaseStream.Position = lv3Offset + lv3Header.dirMetaTableOffset;
+                files = new List<FileInfo>();
+                ResolveDirectories(br);
+            }
+        }
+
+        public Header header;
+        HashLevelHeader lv3Header;
+        long lv3Offset;
+        public byte[] masterHash;
+
+        public List<FileInfo> files;
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public class Header
+        {
+            public Magic magic;
+            public int magicNumber;
+            public int masterHashSize;
+            public long lv1LogicalOffset;
+            public long lv1HashDataSize;
+            public int lv1BlockSize;
+            public int reserved1;
+            public long lv2LogicalOffset;
+            public long lv2HashDataSize;
+            public int lv2BlockSize;
+            public int reserved2;
+            public long lv3LogicalOffset;
+            public long lv3HashDataSize;
+            public int lv3BlockSize;
+            public int reserved3;
+            public int reserved4;
+            public int infoSize;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public class HashLevelHeader
+        {
+            public int headerLength;
+            public int dirHashTableOffset;
+            public int dirHashTableSize;
+            public int dirMetaTableOffset;
+            public int dirMetaTableSize;
+            public int fileHashTableOffset;
+            public int fileHashTableSize;
+            public int fileMetaTableOffset;
+            public int fileMetaTableSize;
+            public int fileDataOffset;
+        }
+
+        public class DirectoryMetaData
+        {
+            public int parentDirOffset;
+            public int nextSiblingDirOffset;
+            public int firstChildDirOffset;
+            public int firstFileOffset;
+            public int nextDirInSameBucketOffset;
+            public int nameLength;
+            public string name;
+        }
+
+        public class FileMetaData
+        {
+            public int containingDirOffset;
+            public int nextSiblingFileOffset;
+            public long fileOffset;
+            public long fileSize;
+            public int nextFileInSameBucketOffset;
+            public int nameLength;
+            public string name;
+        }
+
+        [DebuggerDisplay("{fileName}")]
+        public class FileInfo
+        {
+            public string fileName;
+            public long fileOffset;
+            public long fileSize;
+        }
+
+        void ResolveDirectories(BinaryReaderX br, string currentPath = "")
+        {
+            var currentDirEntry = new DirectoryMetaData
+            {
+                parentDirOffset = br.ReadInt32(),
+                nextSiblingDirOffset = br.ReadInt32(),
+                firstChildDirOffset = br.ReadInt32(),
+                firstFileOffset = br.ReadInt32(),
+                nextDirInSameBucketOffset = br.ReadInt32(),
+                nameLength = br.ReadInt32()
+            };
+            currentDirEntry.name = Encoding.Unicode.GetString(br.ReadBytes(currentDirEntry.nameLength));
+
+            //first go through all sub dirs
+            if (currentDirEntry.firstChildDirOffset != -1)
+            {
+                br.BaseStream.Position = lv3Offset + lv3Header.dirMetaTableOffset + currentDirEntry.firstChildDirOffset;
+                ResolveDirectories(br, currentPath + currentDirEntry.name + "/");
+            }
+
+            //then get all files of current dir
+            if (currentDirEntry.firstFileOffset != -1)
+            {
+                br.BaseStream.Position = lv3Offset + lv3Header.fileMetaTableOffset + currentDirEntry.firstFileOffset;
+                ResolveFiles(br, currentPath + currentDirEntry.name + "/");
+            }
+
+            //finally move to next sibling dir
+            if (currentDirEntry.nextSiblingDirOffset != -1)
+            {
+                br.BaseStream.Position = lv3Offset + lv3Header.dirMetaTableOffset + currentDirEntry.nextSiblingDirOffset;
+                ResolveDirectories(br, currentPath);
+            }
+        }
+
+        void ResolveFiles(BinaryReaderX br, string currentPath = "")
+        {
+            var currentFileEntry = new FileMetaData
+            {
+                containingDirOffset = br.ReadInt32(),
+                nextSiblingFileOffset = br.ReadInt32(),
+                fileOffset = br.ReadInt64(),
+                fileSize = br.ReadInt64(),
+                nextFileInSameBucketOffset = br.ReadInt32(),
+                nameLength = br.ReadInt32()
+            };
+            currentFileEntry.name = Encoding.Unicode.GetString(br.ReadBytes(currentFileEntry.nameLength));
+
+            //Add current file
+            files.Add(new FileInfo
+            {
+                fileName = currentPath + currentFileEntry.name,
+                fileOffset = lv3Offset + lv3Header.fileDataOffset + currentFileEntry.fileOffset,
+                fileSize = currentFileEntry.fileSize
+            });
+
+            //Move to next sibling
+            if (currentFileEntry.nextSiblingFileOffset != -1)
+            {
+                br.BaseStream.Position = lv3Offset + lv3Header.fileMetaTableOffset + currentFileEntry.nextSiblingFileOffset;
+                ResolveFiles(br, currentPath);
+            }
         }
     }
 }
