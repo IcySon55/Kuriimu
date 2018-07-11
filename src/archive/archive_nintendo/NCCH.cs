@@ -118,6 +118,8 @@ namespace archive_nintendo.NCCH
 
             output.Seek(ncchHeaderSize, SeekOrigin.Begin);
 
+            ncchHeader.rsa2048 = new byte[0x100];
+
             if (exHeader != null)
             {
                 var exHFile = Files.Where(f => f.FileName == "ExHeader.bin").First();

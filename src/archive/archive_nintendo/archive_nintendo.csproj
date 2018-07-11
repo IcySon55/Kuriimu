@@ -58,9 +58,9 @@
     <Compile Include="CwarSupport.cs" />
     <Compile Include="DARC.cs" />
     <Compile Include="DarcManager.cs" />
-    <Compile Include="DDSFS.cs" />
-    <Compile Include="DdsfsManager.cs" />
-    <Compile Include="DdsfsSupport.cs" />
+    <Compile Include="NCSD.cs" />
+    <Compile Include="NcsdManager.cs" />
+    <Compile Include="NcsdSupport.cs" />
     <Compile Include="GAR.cs" />
     <Compile Include="GARC2.cs" />
     <Compile Include="Garc2Manager.cs" />
