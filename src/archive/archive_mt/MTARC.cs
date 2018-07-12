@@ -49,30 +49,66 @@ namespace archive_mt
                 Header = br.ReadStruct<Header>();
                 switch (Header.Version)
                 {
+                    case 0x9:
+                        System = Platform.Switch;
+                        HeaderLength = 8;
+                        break;
                     case 0x7:
                         HeaderLength = 8;
                         break;
                 }
-                if (ByteOrder == ByteOrder.LittleEndian && Header.Version != 7) br.ReadInt32();
+                if (ByteOrder == ByteOrder.LittleEndian && Header.Version != 7 && Header.Version != 9) br.ReadInt32();
 
                 // Files
-                var entries = br.ReadMultiple<FileMetadata>(Header.EntryCount);
-                Files.AddRange(entries.Select(metadata =>
+                if (Header.Version == 9)
                 {
-                    br.BaseStream.Position = metadata.Offset + HFSHeaderLength;
-                    var level = (System == Platform.CTR ? metadata.CompressedSize != (metadata.UncompressedSize & 0x00FFFFFF) : metadata.CompressedSize != (metadata.UncompressedSize >> 3)) ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
-                    br.BaseStream.Position += metadata.CompressedSize;
-
-                    return new MTArcFileInfo
+                    var entries = br.ReadMultiple<FileMetadataSwitch>(Header.EntryCount);
+                    Files.AddRange(entries.Select(metadata =>
                     {
-                        Metadata = metadata,
-                        CompressionLevel = level,
-                        System = System,
-                        FileData = new SubStream(br.BaseStream, metadata.Offset + HFSHeaderLength, metadata.CompressedSize),
-                        FileName = metadata.FileName + (ArcShared.ExtensionMap.ContainsKey(metadata.ExtensionHash) ? ArcShared.ExtensionMap[metadata.ExtensionHash] : "." + metadata.ExtensionHash.ToString("X8")),
-                        State = ArchiveFileState.Archived
-                    };
-                }));
+                        //it seems every file is compressed with ZLib on Switch
+                        //example file game.arc contains of at least one file "om120a" where compressed and uncompressed size are equal but the file is still compressed
+                        //the decompressed file is really the same size; comparing with other entries no clear differences were found, that would indicate a
+                        //compression flag
+
+                        br.BaseStream.Position = metadata.Offset;
+                        var level = CompressionLevel.Optimal;
+                        br.BaseStream.Position += metadata.CompressedSize;
+
+                        return new MTArcFileInfo
+                        {
+                            SwitchMetadata = metadata,
+                            CompressionLevel = level,
+                            System = System,
+                            FileData = new SubStream(br.BaseStream, metadata.Offset, metadata.CompressedSize),
+                            FileName = metadata.FileName + (ArcShared.ExtensionMap.ContainsKey(metadata.ExtensionHash) ? ArcShared.ExtensionMap[metadata.ExtensionHash] : "." + metadata.ExtensionHash.ToString("X8")),
+                            State = ArchiveFileState.Archived
+                        };
+                    }));
+                }
+                else
+                {
+                    var entries = br.ReadMultiple<FileMetadata>(Header.EntryCount);
+                    Files.AddRange(entries.Select(metadata =>
+                    {
+                        br.BaseStream.Position = metadata.Offset + HFSHeaderLength;
+                        var level = (System == Platform.CTR
+                            ? metadata.CompressedSize != (metadata.UncompressedSize & 0x00FFFFFF)
+                            : System == Platform.Switch ? metadata.CompressedSize != metadata.UncompressedSize
+                            : metadata.CompressedSize != (metadata.UncompressedSize >> 3))
+                        ? CompressionLevel.Optimal : CompressionLevel.NoCompression;
+                        br.BaseStream.Position += metadata.CompressedSize;
+
+                        return new MTArcFileInfo
+                        {
+                            Metadata = metadata,
+                            CompressionLevel = level,
+                            System = System,
+                            FileData = new SubStream(br.BaseStream, metadata.Offset + HFSHeaderLength, metadata.CompressedSize),
+                            FileName = metadata.FileName + (ArcShared.ExtensionMap.ContainsKey(metadata.ExtensionHash) ? ArcShared.ExtensionMap[metadata.ExtensionHash] : "." + metadata.ExtensionHash.ToString("X8")),
+                            State = ArchiveFileState.Archived
+                        };
+                    }));
+                }
 
                 // HFSFooter
                 if (HFSHeader != null)
@@ -102,6 +138,9 @@ namespace archive_mt
                 // Files
                 switch (Header.Version)
                 {
+                    case 0x9:
+                        bw.BaseStream.Position = (HeaderLength + Header.EntryCount * 0x54 + 0x7FFF) & ~0x7FFF;
+                        break;
                     case 0x7:
                     case 0x10:
                         bw.BaseStream.Position = ByteOrder == ByteOrder.LittleEndian ? Math.Max(HeaderLength + Header.EntryCount * EntryLength, 0x8000) : HeaderLength + Header.EntryCount * EntryLength;
@@ -126,7 +165,10 @@ namespace archive_mt
                 // Metadata
                 bw.BaseStream.Position = HeaderLength;
                 foreach (var afi in Files)
-                    bw.WriteStruct(afi.Metadata);
+                    if (Header.Version == 9)
+                        bw.WriteStruct(afi.SwitchMetadata);
+                    else
+                        bw.WriteStruct(afi.Metadata);
             }
         }
 

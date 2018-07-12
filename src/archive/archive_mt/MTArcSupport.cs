@@ -14,6 +14,7 @@ namespace archive_mt
     public class MTArcFileInfo : ArchiveFileInfo
     {
         public FileMetadata Metadata { get; set; }
+        public FileMetadataSwitch SwitchMetadata { get; set; }
         public CompressionLevel CompressionLevel { get; set; }
         public Platform System { get; set; }
 
@@ -26,13 +27,16 @@ namespace archive_mt
             }
         }
 
-        public override long? FileSize => System == Platform.CTR ? Metadata.UncompressedSize & 0x00FFFFFF : Metadata.UncompressedSize >> 3;
+        public override long? FileSize => System == Platform.CTR ? Metadata.UncompressedSize & 0x00FFFFFF : System == Platform.Switch ? SwitchMetadata.UncompressedSize : Metadata.UncompressedSize >> 3;
 
         public void Write(Stream output, long offset, ByteOrder byteOrder)
         {
             using (var bw = new BinaryWriterX(output, true, byteOrder))
             {
-                Metadata.Offset = (int)offset;
+                if (System == Platform.Switch)
+                    SwitchMetadata.Offset = (int)offset;
+                else
+                    Metadata.Offset = (int)offset;
 
                 if (State == ArchiveFileState.Archived)
                     base.FileData.CopyTo(bw.BaseStream);
@@ -42,15 +46,21 @@ namespace archive_mt
                     {
                         var bytes = ZLib.Compress(FileData, CompressionLevel, true);
                         bw.Write(bytes);
-                        Metadata.CompressedSize = bytes.Length;
+                        if (System == Platform.Switch)
+                            SwitchMetadata.CompressedSize = bytes.Length;
+                        else
+                            Metadata.CompressedSize = bytes.Length;
                     }
                     else
                     {
                         FileData.CopyTo(bw.BaseStream);
-                        Metadata.CompressedSize = (int)FileData.Length;
+                        if (System == Platform.Switch)
+                            SwitchMetadata.CompressedSize = (int)FileData.Length;
+                        else
+                            Metadata.CompressedSize = (int)FileData.Length;
                     }
 
-                    Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0x00FFFFFF) : (int)(FileData.Length << 3);
+                    Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0x00FFFFFF) : System == Platform.Switch ? (int)FileData.Length : (int)(FileData.Length << 3);
                 }
             }
         }
@@ -59,7 +69,8 @@ namespace archive_mt
     public enum Platform
     {
         CTR,
-        PS3
+        PS3,
+        Switch
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -95,6 +106,18 @@ namespace archive_mt
         public uint ExtensionHash;
         public int CompressedSize;
         public int UncompressedSize;
+        public int Offset;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class FileMetadataSwitch
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+        public string FileName;
+        public uint ExtensionHash;
+        public int CompressedSize;
+        public int UncompressedSize;
+        public int Unknown1;
         public int Offset;
     }
 }
