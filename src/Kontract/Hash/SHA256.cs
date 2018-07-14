@@ -14,7 +14,12 @@ namespace Kontract.Hash
 
         public static byte[] Create(string to_hash) => System.Security.Cryptography.SHA256.Create().ComputeHash(to_hash.Hexlify());
 
-        public static byte[] Create(Stream instream, long offset = 0, long length = -1) =>
-            System.Security.Cryptography.SHA256.Create().ComputeHash(new SubStream(instream, offset, (length <= 0) ? instream.Length : length));
+        public static byte[] Create(Stream instream, long offset = 0, long length = -1)
+        {
+            var bkOffset = instream.Position;
+            var hash = System.Security.Cryptography.SHA256.Create().ComputeHash(new SubStream(instream, offset, (length <= 0) ? instream.Length : length));
+            instream.Position = bkOffset;
+            return hash;
+        }
     }
 }

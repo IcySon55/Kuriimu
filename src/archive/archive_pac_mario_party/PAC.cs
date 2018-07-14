@@ -5,7 +5,6 @@ using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
 using System.Text;
-using Cetera.Hash;
 
 namespace archive_pac_mario_party
 {
@@ -113,7 +112,7 @@ namespace archive_pac_mario_party
             foreach (var file in Files)
             {
                 var fileName = file.FileName.Split('\\').Last();
-                file.entry.unk1 = Support.CreateHash(fileName);
+                file.entry.unk1 = Kontract.Hash.FNV.FNV132.Create(fileName);
                 if (!distinctStrings.ContainsKey(fileName))
                 {
                     distinctStrings.Add(fileName, offset);
@@ -170,8 +169,8 @@ namespace archive_pac_mario_party
                 {
                     bw.WriteStruct(new AssetEntry
                     {
-                        stringOffset = distinctStrings[asset.Item1]+ header.stringOffset,
-                        unk1 = Support.CreateHash(asset.Item1),
+                        stringOffset = distinctStrings[asset.Item1] + header.stringOffset,
+                        unk1 = Kontract.Hash.FNV.FNV132.Create(asset.Item1),
                         count = asset.Item2.Count(),
                         entryOffset = entryOffset
                     });

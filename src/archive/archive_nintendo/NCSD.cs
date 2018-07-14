@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
+using System;
+using System.Linq;
 
 namespace archive_nintendo.DDSFS
 {
