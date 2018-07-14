@@ -60,7 +60,10 @@ namespace archive_mt
                             Metadata.CompressedSize = (int)FileData.Length;
                     }
 
-                    Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0x00FFFFFF) : System == Platform.Switch ? (int)FileData.Length : (int)(FileData.Length << 3);
+                    if (System == Platform.Switch)
+                        SwitchMetadata.UncompressedSize = (int)FileData.Length;
+                    else
+                        Metadata.UncompressedSize = System == Platform.CTR ? (int)(FileData.Length & 0x00FFFFFF) : (int)(FileData.Length << 3);
                 }
             }
         }
