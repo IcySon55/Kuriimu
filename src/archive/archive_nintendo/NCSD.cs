@@ -15,6 +15,8 @@ namespace archive_nintendo.DDSFS
         NCSDHeader ncsdHeader;
         CardInfoHeader cardInfoHeader;
 
+        const int mediaUnitSize = 0x200;
+
         public DDSFS(Stream input)
         {
             _stream = input;
@@ -65,9 +67,27 @@ namespace archive_nintendo.DDSFS
 
         public void Save(Stream output)
         {
+            ncsdHeader.rsa = new byte[0x100];
+            ncsdHeader.shaHash = (Files.Count(f => f.PartitionID == 0) > 0) ? Kontract.Hash.SHA256.Create(Files.Where(f => f.PartitionID == 0).First().FileData, 0x200, 0x800) : new byte[0x20];
+            ncsdHeader.cardInfoHeader.copyFirstNCCHHeader = new BinaryReaderX(new SubStream(Files.First().FileData, 0x100, 0x100), true).ReadAllBytes();
+
             using (var bw = new BinaryWriterX(output))
             {
+                bw.BaseStream.Position = 0x4000;
+                foreach (var file in Files)
+                {
+                    ncsdHeader.partEntries[file.PartitionID].offset = (uint)(bw.BaseStream.Position / mediaUnitSize);
+                    ncsdHeader.partEntries[file.PartitionID].size = (uint)(file.FileSize / mediaUnitSize);
 
+                    file.FileData.CopyTo(bw.BaseStream);
+                    bw.WriteAlignment(mediaUnitSize);
+                }
+
+                ncsdHeader.ncsdSize = (uint)(bw.BaseStream.Length / mediaUnitSize);
+
+                bw.BaseStream.Position = 0;
+                ncsdHeader.Write(bw.BaseStream);
+                bw.WriteAlignment(0x4000, 0xFF);
             }
         }
 

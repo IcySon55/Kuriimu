@@ -43,6 +43,40 @@ namespace archive_nintendo.DDSFS
                 reserved = br.ReadBytes(0x2E);
                 ncsdVerification = br.ReadByte();
                 saveCrypto = br.ReadByte();
+
+                cardInfoHeader = br.ReadStruct<CardInfoHeader>();
+            }
+        }
+
+        public void Write(Stream instream)
+        {
+            using (var bw = new BinaryWriterX(instream, true))
+            {
+                bw.Write(rsa);
+                bw.WriteStruct(magic);
+                bw.Write(ncsdSize);
+                bw.Write(mediaID);
+                bw.Write(partFSType);
+                bw.Write(partCryptType);
+
+                foreach (var part in partEntries)
+                {
+                    bw.Write(part.offset);
+                    bw.Write(part.size);
+                }
+
+                bw.Write(shaHash);
+                bw.Write(addHeaderSize);
+                bw.Write(secZeroOffset);
+                bw.Write(partFlags);
+                foreach (var id in partIDTable)
+                    bw.Write(id);
+
+                bw.Write(reserved);
+                bw.Write(ncsdVerification);
+                bw.Write(saveCrypto);
+
+                bw.WriteStruct(cardInfoHeader);
             }
         }
 
@@ -63,18 +97,7 @@ namespace archive_nintendo.DDSFS
         public byte ncsdVerification;
         public byte saveCrypto;
 
-        public uint card2WAddr;
-        public uint cardInfoBitmask;
-        public byte[] res1;
-        public ushort titleVersion;
-        public ushort cardRev;
-        public byte[] res2;
-        public byte[] cardSeedKeyY;
-        public byte[] encCardSeed;
-        public byte[] cardSeedAESMAC;
-        public byte[] cardSeedNonce;
-        public byte[] res3;
-        public byte[] copyFirstNCCHHeader; //without rsa sigature
+        public CardInfoHeader cardInfoHeader;
 
         public class PartEntry
         {
@@ -98,7 +121,7 @@ namespace archive_nintendo.DDSFS
         public byte[] reserved1;
         public short titleVersion;
         public short cardRev;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xCEE)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xCEC)]
         public byte[] reserved2;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
         public byte[] cardSeedKeyY;
@@ -110,7 +133,7 @@ namespace archive_nintendo.DDSFS
         public byte[] cardSeedNonce;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0xC4)]
         public byte[] reserved3;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
         public byte[] copyFirstNCCHHeader;
     }
 }
