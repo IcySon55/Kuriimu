@@ -22,6 +22,13 @@ namespace image_mt
         public ImageSettings Settings = new ImageSettings();
         private ByteOrder ByteOrder = ByteOrder.LittleEndian;
 
+        //There are variants of Switch versions with a strange block of unidentified data between header and mipmap sizes
+        //Additionally there is also way too much overflowing data after the "last" mipmap, decoding that are seemingly copies of the same textures
+        //Those 2 variables are to store these unknown and overflowing data to ensure a 1:1 saving at first
+        //This behaviour is subject to change at a later point
+        private byte[] SwitchUnknownData = null;
+        private byte[] SwitchOverflowingData = null;
+
         public MTTEX(Stream input)
         {
             using (var br = new BinaryReaderX(input))
@@ -58,15 +65,27 @@ namespace image_mt
                 if (HeaderInfo.Version == image_mt.Version._Switchv1)
                 {
                     var texOverallSize = br.ReadInt32();
+                    if (texOverallSize > br.BaseStream.Length)
+                    {
+                        br.BaseStream.Position -= 4;
+                        SwitchUnknownData = br.ReadBytes(0x6C);
+                        texOverallSize = br.ReadInt32();
+                        HeaderInfo.MipMapCount++;
+                    }
                     mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
                 }
                 else if (HeaderInfo.Version != image_mt.Version._3DSv1)
                     mipMaps = br.ReadMultiple<int>(HeaderInfo.MipMapCount);
 
-                for (var i = 0; i < HeaderInfo.MipMapCount; i++)
+                for (var i = 0; i < mipMaps.Count; i++)
                 {
                     var texDataSize = 0;
-                    if (HeaderInfo.Version != image_mt.Version._3DSv1)
+                    if (SwitchUnknownData != null)
+                    {
+                        if (i + 1 == HeaderInfo.MipMapCount) continue;
+                        texDataSize = mipMaps[i + 1] - mipMaps[i];
+                    }
+                    else if (HeaderInfo.Version != image_mt.Version._3DSv1)
                         texDataSize = (i + 1 < HeaderInfo.MipMapCount ? mipMaps[i + 1] : (int)br.BaseStream.Length) - mipMaps[i];
                     else
                         texDataSize = Formats[HeaderInfo.Format].BitDepth * (HeaderInfo.Width >> i) * (HeaderInfo.Height >> i) / 8;
@@ -90,6 +109,9 @@ namespace image_mt
 
                     Bitmaps.Add(Common.Load(br.ReadBytes(texDataSize), Settings));
                 }
+
+                if (SwitchUnknownData != null)
+                    SwitchOverflowingData = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position));
             }
         }
 
@@ -117,10 +139,14 @@ namespace image_mt
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
             {
+                if (SwitchUnknownData != null)
+                    HeaderInfo.MipMapCount--;
                 Header.Block1 = (uint)((int)HeaderInfo.Version | (HeaderInfo.Unknown1 << 12) | (HeaderInfo.Unused1 << 24) | ((int)HeaderInfo.AlphaChannelFlags << 28));
                 Header.Block2 = (uint)(HeaderInfo.MipMapCount | (HeaderInfo.Width << 6) | (HeaderInfo.Height << 19));
                 Header.Block3 = (uint)(HeaderInfo.Unknown2 | ((int)HeaderInfo.Format << 8) | (HeaderInfo.Unknown3 << 16));
                 bw.WriteStruct(Header);
+                if (HeaderInfo.Version == image_mt.Version._Switchv1 && SwitchUnknownData != null)
+                    bw.Write(SwitchUnknownData);
 
                 //var format = HeaderInfo.Format.ToString().StartsWith("DXT1") ? Format.DXT1 : HeaderInfo.Format.ToString().StartsWith("DXT5") ? Format.DXT5 : HeaderInfo.Format;
                 Settings.Format = (HeaderInfo.Version == image_mt.Version._Switchv1) ? SwitchFormats[HeaderInfo.Format] : Formats[HeaderInfo.Format];
@@ -144,11 +170,60 @@ namespace image_mt
                     bitmaps.Add(Common.Save(bmp, Settings));
                 }
 
+                if (HeaderInfo.Version == image_mt.Version._Switchv1)
+                {
+                    if (SwitchUnknownData != null)
+                    {
+                        var listOffset = bw.BaseStream.Position;
+                        bw.BaseStream.Position += 8 + HeaderInfo.MipMapCount * sizeof(int);
+
+                        var offsets = new List<int>();
+                        var relOffset = bw.BaseStream.Position;
+                        foreach (var bitmap in bitmaps)
+                        {
+                            var data = new byte[(bitmap.Length + 0x1FF) & ~0x1FF];
+                            Array.Copy(bitmap, data, bitmap.Length);
+                            bw.Write(data);
+                            offsets.Add((int)(bw.BaseStream.Position - relOffset));
+                        }
+                        offsets[offsets.Count - 1] = (offsets.Last() + 0x7FF) & ~0x7FF;
+                        bw.BaseStream.Position = relOffset + offsets.Last();
+
+                        bw.Write(SwitchOverflowingData);
+
+                        var totalSize = bw.BaseStream.Position - 0x84 - HeaderInfo.MipMapCount * sizeof(int);
+
+                        bw.BaseStream.Position = listOffset;
+                        bw.Write((int)totalSize);
+                        bw.BaseStream.Position += 4;
+                        foreach (var offset in offsets)
+                            bw.Write(offset);
+                    }
+                    else
+                    {
+                        bw.BaseStream.Position += 0x4 + HeaderInfo.MipMapCount * sizeof(int);
+
+                        var offsets = new List<int>();
+                        var relOffset = bw.BaseStream.Position;
+                        foreach (var bitmap in bitmaps)
+                        {
+                            offsets.Add((int)(bw.BaseStream.Position - relOffset));
+                            var data = new byte[(bitmap.Length + 0x1FF) & ~0x1FF];
+                            Array.Copy(bitmap, data, bitmap.Length);
+                            bw.Write(data);
+                        }
+                        var totalSize = bw.BaseStream.Position - (0x10 + 0x4 + HeaderInfo.MipMapCount * sizeof(int));
+
+                        bw.BaseStream.Position = 0x10;
+                        bw.Write((int)totalSize);
+                        foreach (var offset in offsets)
+                            bw.Write(offset);
+                    }
+                }
+                else
                 // Mipmaps, but not for Version 3DS v1
                 if (HeaderInfo.Version != image_mt.Version._3DSv1)
                 {
-                    if (HeaderInfo.Version == image_mt.Version._Switchv1)
-                        bw.Write(bitmaps.Sum(b => b.Length));
                     var offset = HeaderInfo.Version == image_mt.Version._PS3v1 ? HeaderInfo.MipMapCount * sizeof(int) + HeaderLength : 0;
                     foreach (var bitmap in bitmaps)
                     {
@@ -158,8 +233,9 @@ namespace image_mt
                 }
 
                 // Bitmaps
-                foreach (var bitmap in bitmaps)
-                    bw.Write(bitmap);
+                if (SwitchUnknownData == null)
+                    foreach (var bitmap in bitmaps)
+                        bw.Write(bitmap);
             }
         }
     }
