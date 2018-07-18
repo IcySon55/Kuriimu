@@ -43,7 +43,7 @@ namespace Knit
     }
 
     /// <summary>
-    /// The ReportProgressEventArgs class passes completion percentages to the UI.
+    /// The ProgressReport class passes completion percentages to the UI.
     /// </summary>
     public class ProgressReport
     {
