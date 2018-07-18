@@ -58,6 +58,7 @@ namespace image_mt
             //    _tex.HeaderInfo.Format = ((MTTexBitmapInfo)_bitmaps[0]).Format;
             _tex.Bitmaps = _bitmaps.Select(b => b.Bitmap).ToList();
             _tex.Save(FileInfo.Create());
+            _bitmaps = _tex.Bitmaps.Select(b => new MTTexBitmapInfo { Bitmap = b, Format = _tex.Settings.Format.FormatName }).ToList<BitmapInfo>();
         }
 
         // Bitmaps

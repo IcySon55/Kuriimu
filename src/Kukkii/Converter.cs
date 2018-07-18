@@ -259,6 +259,7 @@ namespace Kukkii
                 _imageAdapter.Save(saveAs ? _imageAdapter.FileInfo?.FullName : string.Empty);
                 _hasChanges = false;
                 UpdatePreview();
+                UpdateImageList();
                 UpdateForm();
             }
             catch (Exception ex)

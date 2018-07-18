@@ -156,6 +156,26 @@ namespace image_mt
                 else if ((Format)HeaderInfo.Format == Format.DXT5_YCbCr)
                     Settings.PixelShader = ToOptimisedColors;
 
+                // Mipmap Downsampling
+                if (Bitmaps.Count > 1 && HeaderInfo.MipMapCount > 1)
+                {
+                    var firstBitmap = Bitmaps[0];
+                    var width = firstBitmap.Width;
+                    var height = firstBitmap.Height;
+                    for (var i = 1; i < HeaderInfo.MipMapCount; i++)
+                    {
+                        var bmp = new Bitmap(width / 2, height / 2);
+                        var gfx = Graphics.FromImage(bmp);
+                        gfx.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        gfx.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        gfx.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                        gfx.DrawImage(firstBitmap, new Rectangle(0, 0, bmp.Width, bmp.Height));
+                        Bitmaps[i] = bmp;
+                        width = bmp.Width;
+                        height = bmp.Height;
+                    }
+                }
+
                 var bitmaps = new List<byte[]>();
                 foreach (var bmp in Bitmaps)
                 {
