@@ -57,7 +57,8 @@ namespace archive_nintendo.CIA
                     partitions.Add(new SubStream(br.BaseStream, partitionOffset, tmd.contentChunkRecord[i].contentSize));
                     partitionOffset += tmd.contentChunkRecord[i].contentSize;
                 }
-                
+
+                var index = 0;
                 foreach (var sub in partitions)
                 {
                     sub.Position = 0x188;
@@ -68,14 +69,14 @@ namespace archive_nintendo.CIA
                     Files.Add(new ArchiveFileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = GetPartitionName(flags[5]),
+                        FileName = GetPartitionName(flags[5], index++),
                         FileData = sub
                     });
                 }
             }
         }
 
-        private string GetPartitionName(byte typeFlag)
+        private string GetPartitionName(byte typeFlag, int index)
         {
             string ext = ((typeFlag & 0x1) == 1 && ((typeFlag >> 1) & 0x1) == 1) ? ".cxi" : ".cfa";
 
@@ -90,15 +91,79 @@ namespace archive_nintendo.CIA
                 fileName = "Manual";
             else if ((typeFlag & 0x1) == 1 && ((typeFlag >> 4) & 0x1) == 1)
                 fileName = "Trial";
-            
+            else if (typeFlag == 1)
+                fileName = $"Data{index:000}";
+
             return fileName + ext;
         }
 
         public void Save(Stream output)
         {
+            //Changes to be made:
+            /* V tmdSize in cia Header
+             * V contentIndex in cia Header
+             * V contentSize in cia Header
+             * V contentCount in tmd Header
+             * V sha256 in tmd Header
+             * V update contentRecords in tmd
+             * V update content info chunk sha256
+             */
+
+            var files = Files.Where(f => f.State != ArchiveFileState.Deleted).ToList();
+
+            //Update content Indeces
+            ciaHeader.contentIndex = new byte[0x2000];
+            for (int i = 0; i < files.Count / 8; i++)
+                ciaHeader.contentIndex[i] = 0xFF;
+            if (files.Count % 8 > 0)
+            {
+                var ind = files.Count / 8;
+                for (int i = 0; i < files.Count % 8; i++)
+                    ciaHeader.contentIndex[ind] = (byte)((ciaHeader.contentIndex[ind] >> 1) | 0x80);
+            }
+
+            //update contentCount in TMD
+            tmd.header.contentCount = tmd.contentInfoRecord[0].contentChunkCount = (short)files.Count;
+
+            //Update contentRecords
+            var index = 0;
+            tmd.contentChunkRecord = new List<TMD.ContentChunkRecord>();
+            foreach (var f in files)
+                tmd.contentChunkRecord.Add(new TMD.ContentChunkRecord
+                {
+                    contentID = index,
+                    contentIndex = (short)index++,
+                    contentType = (short)((index == 1) ? 0 : 0x4000),
+                    contentSize = (long)f.FileSize,
+                    sha256 = Kontract.Hash.SHA256.Create(f.FileData)
+                });
+
             using (var bw = new BinaryWriterX(output))
             {
+                bw.BaseStream.Position = ciaHeader.headerSize;
+                bw.WriteAlignment(alignement);
 
+                //CertChain
+                certChain.Write(bw.BaseStream);
+                bw.WriteAlignment(alignement);
+
+                //Ticket
+                ticket.Write(bw.BaseStream);
+                bw.WriteAlignment(alignement);
+
+                //TMD
+                ciaHeader.tmdSize = tmd.Write(bw.BaseStream);
+                bw.WriteAlignment(alignement);
+
+                //Actual data
+                var dataOffset = bw.BaseStream.Position;
+                foreach (var f in files)
+                    f.FileData.CopyTo(bw.BaseStream);
+
+                //CIA Header
+                bw.BaseStream.Position = 0;
+                ciaHeader.contentSize = bw.BaseStream.Length - dataOffset;
+                bw.WriteStruct(ciaHeader);
             }
         }
 

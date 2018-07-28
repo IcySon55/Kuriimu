@@ -31,6 +31,13 @@ namespace archive_nintendo.CIA
             TicketVerifier = new Certificate(instream);
         }
 
+        public void Write(Stream input)
+        {
+            CA.Write(input);
+            TMDVerfier.Write(input);
+            TicketVerifier.Write(input);
+        }
+
         public Certificate CA;
         public Certificate TMDVerfier;
         public Certificate TicketVerifier;
@@ -48,12 +55,39 @@ namespace archive_nintendo.CIA
                     issuer = br.ReadString(0x40);
                     keyType = br.ReadInt32();
                     name = br.ReadString(0x40);
-                    unk1 = br.ReadInt32();
 
                     var (pubKeySize, keyPadSize) = Support.GetPublicKeySizes(keyType);
                     publicKey = br.ReadBytes(pubKeySize);
+                    unk1 = br.ReadInt32();
                     br.BaseStream.Position += keyPadSize;
                 }
+            }
+
+            public void Write(Stream input)
+            {
+                using (var bw = new BinaryWriterX(input, true, ByteOrder.BigEndian))
+                {
+                    bw.Write(sigType);
+                    bw.Write(signature);
+                    bw.WritePadding(Support.GetSignatureSizes(sigType).Item2);
+
+                    bw.Write(GetFixedStringBA(issuer, 0x40));
+
+                    bw.Write(keyType);
+                    bw.Write(GetFixedStringBA(name, 0x40));
+
+                    bw.Write(new byte[publicKey.Length]);
+                    bw.Write(unk1);
+                    bw.WritePadding(Support.GetPublicKeySizes(keyType).Item2);
+                }
+            }
+
+            private byte[] GetFixedStringBA(string input, int fixedLength)
+            {
+                var inputBA = System.Text.Encoding.ASCII.GetBytes(input);
+                var final = new byte[0x40];
+                inputBA.CopyTo(final, 0);
+                return final;
             }
 
             public int sigType;
@@ -78,6 +112,18 @@ namespace archive_nintendo.CIA
                 br.BaseStream.Position += padSize;
 
                 ticketData = br.ReadStruct<TicketData>();
+            }
+        }
+
+        public void Write(Stream input)
+        {
+            using (var bw = new BinaryWriterX(input, true, ByteOrder.BigEndian))
+            {
+                bw.Write(sigType);
+                bw.Write(new byte[signature.Length]);
+                bw.WritePadding(Support.GetSignatureSizes(sigType).Item2);
+
+                bw.WriteStruct(ticketData);
             }
         }
 
@@ -126,7 +172,7 @@ namespace archive_nintendo.CIA
         {
             using (var br = new BinaryReaderX(instream, true, ByteOrder.BigEndian))
             {
-                var sigType = br.ReadInt32();
+                sigType = br.ReadInt32();
                 var (sigSize, padSize) = Support.GetSignatureSizes(sigType);
                 signature = br.ReadBytes(sigSize);
                 br.BaseStream.Position += padSize;
@@ -134,6 +180,41 @@ namespace archive_nintendo.CIA
                 header = br.ReadStruct<TMDHeader>();
                 contentInfoRecord = br.ReadMultiple<ContentInfoRecord>(0x40);
                 contentChunkRecord = br.ReadMultiple<ContentChunkRecord>(header.contentCount);
+            }
+        }
+
+        public int Write(Stream input)
+        {
+            using (var bw = new BinaryWriterX(input, true, ByteOrder.BigEndian))
+            {
+                var inputOffset = bw.BaseStream.Position;
+
+                bw.Write(sigType);
+                bw.Write(new byte[signature.Length]);
+                bw.WritePadding(Support.GetSignatureSizes(sigType).Item2);
+                var TMDHeaderOffset = bw.BaseStream.Position;
+
+                bw.BaseStream.Position += 0xC4;
+                var CIROffset = bw.BaseStream.Position;
+
+                bw.BaseStream.Position += 0x40 * 0x24;
+                var startOffset = bw.BaseStream.Position;
+                foreach (var ccr in contentChunkRecord)
+                    bw.WriteStruct(ccr);
+                var endOffset = bw.BaseStream.Position;
+
+                contentChunkRecord[0].sha256 = Kontract.Hash.SHA256.Create(bw.BaseStream, startOffset, endOffset - startOffset);
+                bw.BaseStream.Position = CIROffset;
+                foreach (var cir in contentInfoRecord)
+                    bw.WriteStruct(cir);
+
+                bw.BaseStream.Position = TMDHeaderOffset;
+                header.sha256 = Kontract.Hash.SHA256.Create(bw.BaseStream, CIROffset, 0x40 * 0x24);
+                bw.WriteStruct(header);
+
+                bw.BaseStream.Position = endOffset;
+
+                return (int)(endOffset - inputOffset);
             }
         }
 
