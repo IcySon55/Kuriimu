@@ -216,30 +216,55 @@ namespace Karameru
             p.Start();
         }
 
-        private void addFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //if (treEntries.Focused)
-            //{
-            //	IEntry entry = _archiveManager.NewEntry();
+            if (!treDirectories.Focused)
+                return;
 
-            //	frmName name = new frmName(entry, _archiveManager.EntriesHaveUniqueNames, _archiveManager.NameList, _archiveManager.NameFilter, _archiveManager.NameMaxLength, true);
+            AddFiles();
 
-            //	if (name.ShowDialog() == DialogResult.OK && name.NameChanged)
-            //	{
-            //		entry.Name = name.NewName;
-            //		if (_archiveManager.AddEntry(entry))
-            //		{
-            //			_hasChanges = true;
-            //			LoadFiles();
-            //			treEntries.SelectNodeByIEntry(entry);
-            //			UpdateForm();
-            //		}
-            //	}
-            //}
+            LoadDirectories();
+            UpdateForm();
         }
-        private void tsbAddFile_Click(object sender, EventArgs e)
+
+        private void AddFiles()
         {
-            addFileToolStripMenuItem_Click(sender, e);
+            var dlg = new FolderBrowserDialog
+            {
+                Description = $"Choose where you want to add from to {treDirectories.SelectedNode.FullPath}:"
+            };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                void AddRecursive(string root, string currentPath = "")
+                {
+                    foreach (var dir in Directory.GetDirectories(Path.Combine(root, currentPath)))
+                        AddRecursive(root, dir.Replace(root + "\\", ""));
+
+                    foreach (var file in Directory.GetFiles(Path.Combine(root, currentPath)))
+                        AddFile(root, file.Replace(root + "\\", ""));
+                }
+                void AddFile(string root, string currentPath)
+                {
+                    _archiveManager?.AddFile(new ArchiveFileInfo
+                    {
+                        State = ArchiveFileState.Added,
+                        FileName = Path.Combine(GetFilePath(treDirectories.SelectedNode, treDirectories.TopNode.Name), currentPath),
+                        FileData = File.OpenRead(Path.Combine(root, currentPath))
+                    });
+                }
+                string GetFilePath(TreeNode node, string limit)
+                {
+                    var res = "";
+                    if (node.Name != limit)
+                        res = GetFilePath(node.Parent, limit);
+                    else
+                        return String.Empty;
+
+                    return Path.Combine(res, node.Name);
+                }
+
+                AddRecursive(dlg.SelectedPath);
+            }
         }
 
         //private void renameEntryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -625,7 +650,6 @@ namespace Karameru
             tsbProperties.Enabled = _fileOpen && _archiveManager.FileHasExtendedProperties;
 
             // Toolbar
-            tsbFileAdd.Enabled = _canAddFiles;
             tsbFileExtract.Enabled = _canExtractFiles;
             tsbFileReplace.Enabled = _canReplaceFiles;
             tsbFileRename.Enabled = _canRenameFiles;
@@ -711,6 +735,12 @@ namespace Karameru
 
             replaceDirectoryToolStripMenuItem.Enabled = _canReplaceDirectories;
             replaceDirectoryToolStripMenuItem.Text = _canReplaceDirectories ? $"&Replace {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Replace is not supported";
+
+            addToolStripMenuItem.Enabled = _canAddFiles;
+            addToolStripMenuItem.Text = _canAddFiles ? $"&Add to {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Add is not supported";
+
+            deleteDirectoryToolStripMenuItem.Enabled = _canAddFiles;
+            deleteDirectoryToolStripMenuItem.Text = _canAddFiles ? $"&Delete {Path.GetFileName(treDirectories.SelectedNode.Text).Replace('.', '_')}..." : "Delete is not supported";
         }
 
         private void extractDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1175,6 +1205,74 @@ namespace Karameru
             _hasChanges = true;
             UpdateForm();
             LoadFiles();
+        }
+
+        private void treDirectories_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            UpdateForm();
+        }
+
+        private void deleteDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (treDirectories.SelectedNode?.Tag is IEnumerable<ArchiveFileInfo>)
+                DeleteFiles(treDirectories.SelectedNode?.Tag as IEnumerable<ArchiveFileInfo>);
+
+            LoadDirectories();
+            UpdateForm();
+        }
+
+        private void tsbFileDelete_Click(object sender, EventArgs e)
+        {
+            if (lstFiles.SelectedItems.Count > 0)
+            {
+                int[] selInd = new int[lstFiles.SelectedIndices.Count];
+                lstFiles.SelectedIndices.CopyTo(selInd, 0);
+
+                DeleteFiles(new List<ArchiveFileInfo> { lstFiles.SelectedItems[0]?.Tag as ArchiveFileInfo });
+
+                LoadFiles();
+                foreach (int ind in selInd)
+                    lstFiles.Items[ind].Selected = true;
+                UpdateForm();
+            }
+        }
+
+        private void DeleteFiles(IEnumerable<ArchiveFileInfo> toDelete)
+        {
+            if (toDelete?.Count() > 0)
+                foreach (var d in toDelete)
+                    _archiveManager.DeleteFile(d);
+        }
+
+        private void lstFiles_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                tsbFileDelete_Click(sender, e);
+
+                if (lstFiles.SelectedItems.Count > 0)
+                {
+                    var index = lstFiles.SelectedIndices[0];
+                    if (index + 1 < lstFiles.Items.Count)
+                    {
+                        lstFiles.Items[index].Selected = false;
+                        lstFiles.Items[index + 1].Selected = true;
+                        lstFiles.EnsureVisible(index + 1);
+                    }
+                    else
+                    {
+                        lstFiles.EnsureVisible(index);
+                    }
+                }
+            }
+        }
+
+        private void treDirectories_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteDirectoryToolStripMenuItem_Click(sender, e);
+            }
         }
     }
 }

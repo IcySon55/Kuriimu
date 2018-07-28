@@ -72,6 +72,8 @@
             this.mnuDirectories = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tlsFiles = new System.Windows.Forms.ToolStrip();
             this.tslDirectories = new System.Windows.Forms.ToolStripLabel();
             this.lstFiles = new System.Windows.Forms.ListView();
@@ -90,7 +92,6 @@
             this.tlsFileDetails = new System.Windows.Forms.ToolStrip();
             this.tslFileCount = new System.Windows.Forms.ToolStripLabel();
             this.tlsPreview = new System.Windows.Forms.ToolStrip();
-            this.tsbFileAdd = new System.Windows.Forms.ToolStripButton();
             this.tsbFileExtract = new System.Windows.Forms.ToolStripButton();
             this.tsbFileReplace = new System.Windows.Forms.ToolStripButton();
             this.tsbFileRename = new System.Windows.Forms.ToolStripButton();
@@ -151,7 +152,7 @@
             this.newToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_new;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.newToolStripMenuItem.Text = "&New";
             // 
             // openToolStripMenuItem
@@ -159,7 +160,7 @@
             this.openToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_open;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -169,7 +170,7 @@
             this.saveToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_save;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -179,7 +180,7 @@
             this.saveAsToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_save_as;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.saveAsToolStripMenuItem.Text = "S&ave As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
@@ -188,21 +189,21 @@
             this.closeToolStripMenuItem.Enabled = false;
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
             this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.W)));
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.closeToolStripMenuItem.Text = "&Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(145, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(147, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_exit;
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -248,7 +249,7 @@
             this.encryptionToolStripMenuItem,
             this.hashToolStripMenuItem});
             this.tolsToolStripMenuItem.Name = "tolsToolStripMenuItem";
-            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.tolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.tolsToolStripMenuItem.Text = "&Tools";
             // 
             // compressionToolStripMenuItem
@@ -285,7 +286,7 @@
             // 
             this.gBATempToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_gbatemp;
             this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.gBATempToolStripMenuItem.Text = "GBATemp";
             this.gBATempToolStripMenuItem.Click += new System.EventHandler(this.gBATempToolStripMenuItem_Click);
             // 
@@ -293,21 +294,21 @@
             // 
             this.gitHubToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_git;
             this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.gitHubToolStripMenuItem.Text = "GitHub";
             this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(125, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(123, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Image = global::Karameru.Properties.Resources.menu_about;
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
             this.aboutToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(128, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(126, 22);
             this.aboutToolStripMenuItem1.Text = "&About";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
@@ -505,14 +506,18 @@
             this.treDirectories.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.treDirectories_AfterCollapse);
             this.treDirectories.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.treDirectories_AfterExpand);
             this.treDirectories.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treDirectories_AfterSelect);
+            this.treDirectories.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treDirectories_NodeMouseClick);
+            this.treDirectories.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treDirectories_KeyDown);
             // 
             // mnuDirectories
             // 
             this.mnuDirectories.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.extractDirectoryToolStripMenuItem,
-            this.replaceDirectoryToolStripMenuItem});
+            this.replaceDirectoryToolStripMenuItem,
+            this.addToolStripMenuItem,
+            this.deleteDirectoryToolStripMenuItem});
             this.mnuDirectories.Name = "mnuEntries";
-            this.mnuDirectories.Size = new System.Drawing.Size(125, 48);
+            this.mnuDirectories.Size = new System.Drawing.Size(125, 92);
             this.mnuDirectories.Opening += new System.ComponentModel.CancelEventHandler(this.mnuDirectories_Opening);
             // 
             // extractDirectoryToolStripMenuItem
@@ -531,6 +536,22 @@
             this.replaceDirectoryToolStripMenuItem.Text = "&Replace...";
             this.replaceDirectoryToolStripMenuItem.Click += new System.EventHandler(this.replaceDirectoryToolStripMenuItem_Click);
             // 
+            // addToolStripMenuItem
+            // 
+            this.addToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_add;
+            this.addToolStripMenuItem.Name = "addToolStripMenuItem";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.addToolStripMenuItem.Text = "&Add...";
+            this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
+            // 
+            // deleteDirectoryToolStripMenuItem
+            // 
+            this.deleteDirectoryToolStripMenuItem.Image = global::Karameru.Properties.Resources.menu_delete;
+            this.deleteDirectoryToolStripMenuItem.Name = "deleteDirectoryToolStripMenuItem";
+            this.deleteDirectoryToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.deleteDirectoryToolStripMenuItem.Text = "Delete";
+            this.deleteDirectoryToolStripMenuItem.Click += new System.EventHandler(this.deleteDirectoryToolStripMenuItem_Click);
+            // 
             // tlsFiles
             // 
             this.tlsFiles.AutoSize = false;
@@ -547,7 +568,7 @@
             // tslDirectories
             // 
             this.tslDirectories.Name = "tslDirectories";
-            this.tslDirectories.Size = new System.Drawing.Size(84, 22);
+            this.tslDirectories.Size = new System.Drawing.Size(83, 22);
             this.tslDirectories.Text = "Directory Tree:";
             // 
             // lstFiles
@@ -571,6 +592,7 @@
             this.lstFiles.UseCompatibleStateImageBehavior = false;
             this.lstFiles.View = System.Windows.Forms.View.Details;
             this.lstFiles.SelectedIndexChanged += new System.EventHandler(this.lstFiles_SelectedIndexChanged);
+            this.lstFiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstFiles_KeyDown);
             // 
             // clmName
             // 
@@ -688,7 +710,6 @@
             this.tlsPreview.BackColor = System.Drawing.Color.Transparent;
             this.tlsPreview.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tlsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbFileAdd,
             this.tsbFileExtract,
             this.tsbFileReplace,
             this.tsbFileRename,
@@ -700,17 +721,6 @@
             this.tlsPreview.Padding = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.tlsPreview.Size = new System.Drawing.Size(611, 27);
             this.tlsPreview.TabIndex = 4;
-            // 
-            // tsbFileAdd
-            // 
-            this.tsbFileAdd.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbFileAdd.Enabled = false;
-            this.tsbFileAdd.Image = global::Karameru.Properties.Resources.menu_add;
-            this.tsbFileAdd.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbFileAdd.Name = "tsbFileAdd";
-            this.tsbFileAdd.Size = new System.Drawing.Size(23, 22);
-            this.tsbFileAdd.Text = "Add File";
-            this.tsbFileAdd.Click += new System.EventHandler(this.tsbAddFile_Click);
             // 
             // tsbFileExtract
             // 
@@ -753,6 +763,7 @@
             this.tsbFileDelete.Name = "tsbFileDelete";
             this.tsbFileDelete.Size = new System.Drawing.Size(23, 22);
             this.tsbFileDelete.Text = "Delete File";
+            this.tsbFileDelete.Click += new System.EventHandler(this.tsbFileDelete_Click);
             // 
             // tsbFileProperties
             // 
@@ -917,7 +928,6 @@
         private System.Windows.Forms.ToolStripMenuItem extractDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem replaceDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tsbFileExtract;
-        private System.Windows.Forms.ToolStripButton tsbFileAdd;
         private System.Windows.Forms.ToolStripButton tsbFileRename;
         private System.Windows.Forms.ToolStripButton tsbFileReplace;
         private System.Windows.Forms.ToolStripButton tsbFileDelete;
@@ -945,6 +955,8 @@
         private System.Windows.Forms.ToolStripButton tsbBatchArchive;
         private System.Windows.Forms.ToolStripMenuItem hashToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteDirectoryToolStripMenuItem;
     }
 }
 
