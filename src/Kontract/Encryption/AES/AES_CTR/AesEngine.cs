@@ -10,6 +10,12 @@ using System.Collections.Generic;
 
 using Security.Cryptography;
 
+/* According to GPL 3.0 license, the source of this software is completely disclosed and uses the same GPL 3.0 license
+ * Things that were modified in this implementation of the code were:
+ * - Adding a complete CIA decryption, both shallow and deep, after providing needed key material
+ * - Added the possibility to use just the keyblob of boot9 or a full-fledged dump of boot9
+ */
+
 namespace Kontract.Encryption.AES.CTR
 {
     public enum AesMode
