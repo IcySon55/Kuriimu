@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using Kontract.Interface;
 using Kontract.IO;
+using System.Linq;
 
 namespace archive_nintendo.NCCH
 {
@@ -20,10 +21,10 @@ namespace archive_nintendo.NCCH
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanAddFiles => false;
+        public bool CanAddFiles => true;
         public bool CanRenameFiles => false;
         public bool CanReplaceFiles => true;
-        public bool CanDeleteFiles => false;
+        public bool CanDeleteFiles => true;
         public bool CanSave => true;
 
         public FileInfo FileInfo { get; set; }
@@ -88,9 +89,20 @@ namespace archive_nintendo.NCCH
         // Files
         public IEnumerable<ArchiveFileInfo> Files => _ncch.Files;
 
-        public bool AddFile(ArchiveFileInfo afi) => false;
+        public bool AddFile(ArchiveFileInfo afi)
+        {
+            _ncch.Files.Add(afi);
+            return true;
+        }
 
-        public bool DeleteFile(ArchiveFileInfo afi) => false;
+        public bool DeleteFile(ArchiveFileInfo afi)
+        {
+            var toDelete = _ncch.Files.Where(f => f == afi);
+            foreach (var d in toDelete)
+                d.State = ArchiveFileState.Deleted;
+
+            return true;
+        }
 
         // Features
         public bool ShowProperties(Icon icon) => false;

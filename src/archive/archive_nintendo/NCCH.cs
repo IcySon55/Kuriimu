@@ -116,13 +116,15 @@ namespace archive_nintendo.NCCH
             void Align(Stream input) => input.Position = (input.Position + (mediaUnitSize - 1)) & ~(mediaUnitSize - 1);
             void RomFSAlign(Stream input) => input.Position = (input.Position + (0x1000 - 1)) & ~(0x1000 - 1);
 
+            var files = Files.Where(f => f.State != ArchiveFileState.Deleted).ToList();
+
             output.Seek(ncchHeaderSize, SeekOrigin.Begin);
 
             ncchHeader.rsa2048 = new byte[0x100];
 
             if (exHeader != null)
             {
-                var exHFile = Files.Where(f => f.FileName == "ExHeader.bin").First();
+                var exHFile = files.Where(f => f.FileName == "ExHeader.bin").First();
                 ncchHeader.exHeaderSize = (int)exHFile.FileSize;
                 ncchHeader.exHeaderHash = Kontract.Hash.SHA256.Create(exHFile.FileData);
 
@@ -132,7 +134,7 @@ namespace archive_nintendo.NCCH
 
             if (plainRegion != null)
             {
-                var plRFile = Files.Where(f => f.FileName == "PlainRegion.bin").First();
+                var plRFile = files.Where(f => f.FileName == "PlainRegion.bin").First();
                 ncchHeader.plainRegionOffset = (int)Math.Ceiling((double)output.Position / mediaUnitSize);
                 ncchHeader.plainRegionSize = (int)Math.Ceiling((double)plRFile.FileSize / mediaUnitSize);
 
@@ -142,7 +144,7 @@ namespace archive_nintendo.NCCH
 
             if (logoRegion != null)
             {
-                var loRFile = Files.Where(f => f.FileName == "Logo.icn").First();
+                var loRFile = files.Where(f => f.FileName == "Logo.icn").First();
                 ncchHeader.plainRegionOffset = (int)Math.Ceiling((double)output.Position / mediaUnitSize);
                 ncchHeader.plainRegionSize = (int)Math.Ceiling((double)loRFile.FileSize / mediaUnitSize);
 
@@ -153,7 +155,7 @@ namespace archive_nintendo.NCCH
             if (exeFS != null)
             {
                 var exeFSOffset = output.Position;
-                var exeFSSize = ExeFSBuilder.Rebuild(output, Files.Where(f => f.FileName.StartsWith("ExeFS\\")).Select(f => (ExeFSFileInfo)f).ToList(), "ExeFS\\");
+                var exeFSSize = ExeFSBuilder.Rebuild(output, files.Where(f => f.FileName.StartsWith("ExeFS\\")).Select(f => (ExeFSFileInfo)f).ToList(), "ExeFS\\");
 
                 ncchHeader.exeFSOffset = (int)Math.Ceiling((double)exeFSOffset / mediaUnitSize);
                 ncchHeader.exeFSSize = (int)Math.Ceiling((double)exeFSSize / mediaUnitSize);
@@ -165,7 +167,7 @@ namespace archive_nintendo.NCCH
             if (romFS != null)
             {
                 var romFSOffset = output.Position;
-                var romFSSize = RomFSBuilder.Rebuild(output, romFSOffset, Files.Where(f => f.FileName.StartsWith("RomFS\\")).ToList(), "RomFS\\");
+                var romFSSize = RomFSBuilder.Rebuild(output, romFSOffset, files.Where(f => f.FileName.StartsWith("RomFS\\")).ToList(), "RomFS\\");
 
                 ncchHeader.romFSOffset = (int)Math.Ceiling((double)romFSOffset / mediaUnitSize);
                 ncchHeader.romFSSize = (int)Math.Ceiling((double)romFSSize / mediaUnitSize);
