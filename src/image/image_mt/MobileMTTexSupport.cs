@@ -19,6 +19,7 @@ namespace image_mt.Mobile
         public static Dictionary<int, IImageFormat> Format = new Dictionary<int, IImageFormat>
         {
             [0x1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian),
+            [0x7] = new RGBA(4, 4, 4, 4, Kontract.IO.ByteOrder.BigEndian),
             [0xa] = new ETC1(false, false, Kontract.IO.ByteOrder.BigEndian)
         };
     }
@@ -47,17 +48,24 @@ namespace image_mt.Mobile
     public class HeaderInfo
     {
         //Block 1
-        public short unk1;
-        public byte unk2;
-        public byte unk3;
+        public byte unk1;
+        public byte format;
+        public Version version;
 
         //Block 2
-        public int r1;
+        public byte r1;
+        public byte unk2;
 
         //Block3
-        public byte unk4;
-        public byte width;
-        public byte height;
+        public int mipMapCount;
+        public short width;
+        public short height;
+    }
+
+    public class TexMeta
+    {
+        public int offset;
+        public int size;
     }
 
     public sealed class MobileMTTexBitmapInfo : BitmapInfo
