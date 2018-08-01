@@ -102,9 +102,9 @@ namespace Kontract.Image.Swizzle
                 case Format.ASTC10x10:
                 case Format.ASTC12x10:
                 case Format.ASTC12x12:
-                    return (
-                        (Width + astcBlk[format].Item1 - 1) / astcBlk[format].Item1,
-                        (Height + astcBlk[format].Item2 - 1) / astcBlk[format].Item2);
+                /*return (
+                    (Width + astcBlk[format].Item1 - 1) / astcBlk[format].Item1,
+                    (Height + astcBlk[format].Item2 - 1) / astcBlk[format].Item2);*/
                 default:
                     return (Width, Height);
             }
@@ -152,7 +152,5 @@ namespace Kontract.Image.Swizzle
             int pointCount = point.Y * Width + point.X;
             return _swizzle.Get(pointCount);
         }
-
-
     }
 }

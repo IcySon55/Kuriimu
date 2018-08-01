@@ -46,7 +46,7 @@ namespace Kontract.Image.Format
                 Enum.TryParse<Support.ATI.Format>(format.ToString(), false, out var atiformat);
                 var atidecoder = new Support.ATI.Decoder(atiformat);
 
-                while (br.BaseStream.Position < br.BaseStream.Length)
+                while (true)
                 {
                     yield return atidecoder.Get(() =>
                     {
