@@ -179,6 +179,7 @@ namespace archive_nintendo.NCCH
             }
 
             //Header
+            ncchHeader.ncchSize = (int)output.Length / mediaUnitSize;
             output.Seek(0, SeekOrigin.Begin);
             using (var bw = new BinaryWriterX(output))
                 bw.WriteStruct(ncchHeader);

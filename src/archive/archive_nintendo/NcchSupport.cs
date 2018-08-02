@@ -54,7 +54,7 @@ namespace archive_nintendo.NCCH
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x100)]
         public byte[] rsa2048;
         public Magic magic;
-        public int mediaUnits;
+        public int ncchSize;
         public ulong partitionID;
         public short makerCode;
         public short version;
