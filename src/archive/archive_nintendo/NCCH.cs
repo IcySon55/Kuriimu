@@ -30,6 +30,9 @@ namespace archive_nintendo.NCCH
                 //NCCH Header
                 ncchHeader = br.ReadStruct<Header>();
 
+                if (ncchHeader.ncchSize != input.Length / mediaUnitSize)
+                    throw new Exception("Size in header is not the same as the file.");
+
                 //ExtHeader
                 if (ncchHeader.exHeaderSize != 0)
                 {
