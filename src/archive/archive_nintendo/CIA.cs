@@ -99,16 +99,6 @@ namespace archive_nintendo.CIA
 
         public void Save(Stream output)
         {
-            //Changes to be made:
-            /* V tmdSize in cia Header
-             * V contentIndex in cia Header
-             * V contentSize in cia Header
-             * V contentCount in tmd Header
-             * V sha256 in tmd Header
-             * V update contentRecords in tmd
-             * V update content info chunk sha256
-             */
-
             var files = Files.Where(f => f.State != ArchiveFileState.Deleted).ToList();
 
             //Update content Indeces

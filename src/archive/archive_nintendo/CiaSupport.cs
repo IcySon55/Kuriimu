@@ -76,7 +76,7 @@ namespace archive_nintendo.CIA
                     bw.Write(keyType);
                     bw.Write(GetFixedStringBA(name, 0x40));
 
-                    bw.Write(new byte[publicKey.Length]);
+                    bw.Write(publicKey);
                     bw.Write(unk1);
                     bw.WritePadding(Support.GetPublicKeySizes(keyType).Item2);
                 }
@@ -120,7 +120,7 @@ namespace archive_nintendo.CIA
             using (var bw = new BinaryWriterX(input, true, ByteOrder.BigEndian))
             {
                 bw.Write(sigType);
-                bw.Write(new byte[signature.Length]);
+                bw.Write(signature);
                 bw.WritePadding(Support.GetSignatureSizes(sigType).Item2);
 
                 bw.WriteStruct(ticketData);
@@ -190,7 +190,7 @@ namespace archive_nintendo.CIA
                 var inputOffset = bw.BaseStream.Position;
 
                 bw.Write(sigType);
-                bw.Write(new byte[signature.Length]);
+                bw.Write(signature);
                 bw.WritePadding(Support.GetSignatureSizes(sigType).Item2);
                 var TMDHeaderOffset = bw.BaseStream.Position;
 
