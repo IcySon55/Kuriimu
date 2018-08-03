@@ -134,6 +134,11 @@ namespace archive_nintendo.NCCH
                 exHFile.FileData.CopyTo(output);
                 Align(output);
             }
+            else
+            {
+                ncchHeader.exHeaderHash = new byte[0x20];
+                ncchHeader.exHeaderSize = 0;
+            }
 
             if (plainRegion != null)
             {
@@ -144,15 +149,27 @@ namespace archive_nintendo.NCCH
                 plRFile.FileData.CopyTo(output);
                 Align(output);
             }
+            else
+            {
+                ncchHeader.plainRegionOffset = 0;
+                ncchHeader.plainRegionSize = 0;
+            }
 
             if (logoRegion != null)
             {
                 var loRFile = files.Where(f => f.FileName == "Logo.icn").First();
-                ncchHeader.plainRegionOffset = (int)Math.Ceiling((double)output.Position / mediaUnitSize);
-                ncchHeader.plainRegionSize = (int)Math.Ceiling((double)loRFile.FileSize / mediaUnitSize);
+                ncchHeader.logoRegionOffset = (int)Math.Ceiling((double)output.Position / mediaUnitSize);
+                ncchHeader.logoRegionSize = (int)Math.Ceiling((double)loRFile.FileSize / mediaUnitSize);
+                ncchHeader.logoRegionHash = Kontract.Hash.SHA256.Create(loRFile.FileData);
 
                 loRFile.FileData.CopyTo(output);
                 Align(output);
+            }
+            else
+            {
+                ncchHeader.logoRegionOffset = 0;
+                ncchHeader.logoRegionSize = 0;
+                ncchHeader.logoRegionHash = new byte[0x20];
             }
 
             if (exeFS != null)
@@ -163,9 +180,15 @@ namespace archive_nintendo.NCCH
                 ncchHeader.exeFSOffset = (int)Math.Ceiling((double)exeFSOffset / mediaUnitSize);
                 ncchHeader.exeFSSize = (int)Math.Ceiling((double)exeFSSize / mediaUnitSize);
                 ncchHeader.exeFSSuperBlockHash = Kontract.Hash.SHA256.Create(output, exeFSOffset, ExeFS.exeFSHeaderSize);
-
-                RomFSAlign(output);
             }
+            else
+            {
+                ncchHeader.exeFSOffset = 0;
+                ncchHeader.exeFSSize = 0;
+                ncchHeader.exeFSSuperBlockHash = new byte[0x20];
+                ncchHeader.exeFSHashRegSize = 0;
+            }
+            RomFSAlign(output);
 
             if (romFS != null)
             {
@@ -179,6 +202,13 @@ namespace archive_nintendo.NCCH
 
                 output.Position = romFSOffset + romFSSize;
                 Align(output);
+            }
+            else
+            {
+                ncchHeader.romFSOffset = 0;
+                ncchHeader.romFSSize = 0;
+                ncchHeader.romFSSuperBlockHash = new byte[0x20];
+                ncchHeader.romFSHashRegSize = 0;
             }
 
             //Header
