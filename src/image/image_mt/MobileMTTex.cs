@@ -128,9 +128,16 @@ namespace image_mt.Mobile
                 var newMipMapCount = headerInfo.mipMapCount;
                 if (headerInfo.mipMapCount > 1)
                 {
-                    newHeight = 2 << (int)Math.Log(Math.Max(bmps[0].Width, bmps[0].Height) - 1, 2);
-                    newWidth = newHeight;
-                    newMipMapCount = ((int)Math.Log(newHeight, 2) + 1);
+                    if (bmps[0].Width >= bmps[0].Height)
+                    {
+                        newWidth = 2 << (int)Math.Log(bmps[0].Width - 1, 2);
+                        newHeight = (int)(newWidth / (bmps[0].Width / bmps[0].Height));
+
+                    } else {
+                        newHeight = 2 << (int)Math.Log(bmps[0].Height - 1, 2);
+                        newWidth = (int)(newHeight * (bmps[0].Width / bmps[0].Height));
+                    }
+                    newMipMapCount = ((int)Math.Log(Math.Max(newWidth, newHeight), 2) + 1);
                 }
 
                 header.Block1 = (uint)((ushort)headerInfo.version | (headerInfo.format << 16) | (headerInfo.unk1 << 24));
@@ -195,13 +202,13 @@ namespace image_mt.Mobile
                     bw.BaseStream.Position = 0x28;
                     for (int i = 0; i < newMipMapCount; i++)
                     {
-                        settings.Width = newWidth >> i;
-                        settings.Height = newHeight >> i;
+                        settings.Width = Math.Max(newWidth >> i, 1);
+                        settings.Height = Math.Max(newHeight >> i, 1);
 
                         if (Support.Format[headerInfo.format].FormatName.Contains("DXT") || settings.Format.FormatName.Contains("ETC"))
                             settings.Swizzle = new BlockSwizzle(newWidth >> i, newHeight >> i);
 
-                        bw.Write(Common.Save(bmps[0].Resize(newWidth >> i, newHeight >> i), settings));
+                        bw.Write(Common.Save(bmps[0].Resize(settings.Width, settings.Height), settings));
                     }
 
                     bw.BaseStream.Position = 0x10;
