@@ -135,7 +135,7 @@ namespace image_mt.Mobile
 
                     } else {
                         newHeight = 2 << (int)Math.Log(bmps[0].Height - 1, 2);
-                        newWidth = (int)(newHeight * (bmps[0].Width / bmps[0].Height));
+                        newWidth = (int)(newHeight / (bmps[0].Height / bmps[0].Width));
                     }
                     newMipMapCount = ((int)Math.Log(Math.Max(newWidth, newHeight), 2) + 1);
                 }
