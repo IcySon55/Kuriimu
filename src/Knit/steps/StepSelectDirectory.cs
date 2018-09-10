@@ -6,14 +6,11 @@ using System.Xml.Serialization;
 
 namespace Knit.steps
 {
-    public class StepSelectFile : Step
+    public class StepSelectDirectory : Step
     {
         // Properties
-        [XmlAttribute("openFileTitle")]
-        public string OpenFileTitle { get; set; } = "Select a file...";
-
-        [XmlAttribute("openFileFilter")]
-        public string OpenFileFilter { get; set; } = "All files (*.*)|*.*";
+        [XmlAttribute("selectDirectoryDescription")]
+        public string SelectDirectoryDescription { get; set; } = string.Empty;
 
         // Methods
         public override async Task<StepResults> Perform(Dictionary<string, object> variableCache, IProgress<ProgressReport> progress)
@@ -24,28 +21,27 @@ namespace Knit.steps
             if (Variable == string.Empty)
             {
                 stepResults.Status = StepStatus.Error;
-                stepResults.Message = $"{nameof(StepSelectFile)} requires a variable but none was provided.";
+                stepResults.Message = $"{nameof(StepSelectDirectory)} requires a variable but none was provided.";
             }
 
             if (stepResults.Status == StepStatus.Success)
                 try
                 {
-                    var ofd = new OpenFileDialog
+                    var ofd = new FolderBrowserDialog
                     {
-                        Title = Common.ProcessVariableTokens(OpenFileTitle, variableCache),
-                        Filter = OpenFileFilter
+                        Description = SelectDirectoryDescription
                     };
-
+                    
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        variableCache[Variable] = ofd.FileName;
+                        variableCache[Variable] = ofd.SelectedPath + "\\";
                         progressReport.Percentage = 100;
-                        stepResults.Message = $"File selected: \"{ofd.FileName}\".";
+                        stepResults.Message = $"Directory selected: \"{ofd.SelectedPath}\".";
                     }
                     else
                     {
                         stepResults.Status = StepStatus.Cancel;
-                        stepResults.Message = "File selection cancelled.";
+                        stepResults.Message = "Directory selection cancelled.";
                     }
                 }
                 catch (Exception ex)

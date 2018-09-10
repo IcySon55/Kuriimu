@@ -30,6 +30,12 @@ namespace Knit
         public int Weight { get; set; }
 
         /// <summary>
+        /// Points to a valueCahce variable that determines whether this step will run or not.
+        /// </summary>
+        [XmlAttribute("run")]
+        public string Run { get; set; } = string.Empty;
+
+        /// <summary>
         /// Allows the UI to pass the working directory to every step.
         /// </summary>
         [XmlIgnore]
@@ -61,6 +67,11 @@ namespace Knit
         /// Simple check for whether or not there is a message.
         /// </summary>
         public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
+
+        /// <summary>
+        /// Determines whether or not a new line is appended to messages received through a ProgressReport.
+        /// </summary>
+        public bool NewLine { get; set; } = true;
     }
 
     /// <summary>

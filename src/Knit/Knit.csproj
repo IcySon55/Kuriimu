@@ -59,7 +59,8 @@
       <DependentUpon>Knit.cs</DependentUpon>
     </Compile>
     <Compile Include="steps\StepDebugShowVariable.cs" />
-    <Compile Include="steps\StepVerifyHash.cs" />
+    <Compile Include="steps\StepSelectDirectory.cs" />
+    <Compile Include="steps\StepVerifyFileHash.cs" />
     <Compile Include="steps\StepExecuteProgram.cs" />
     <Compile Include="TransparentTextBox.cs">
       <SubType>Component</SubType>

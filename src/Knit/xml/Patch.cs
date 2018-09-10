@@ -19,11 +19,12 @@ namespace Knit
         [XmlArray("steps")]
         [XmlArrayItem("step-delay", typeof(StepDelay))]
         [XmlArrayItem("step-select-file", typeof(StepSelectFile))]
-        [XmlArrayItem("step-execute-program", typeof(StepExecuteProgram))]
+        [XmlArrayItem("step-select-directory", typeof(StepSelectDirectory))]
         [XmlArrayItem("step-verify-file-hash", typeof(StepVerifyFileHash))]
+        [XmlArrayItem("step-execute-program", typeof(StepExecuteProgram))]
         // DEBUG
         [XmlArrayItem("step-debug-show-variable", typeof(StepDebugShowVariable))]
-        public List<Step> Steps { get; set; }
+        public List<Step> Steps { get; set; } = new List<Step>();
 
         [XmlAttribute("debug")]
         public bool Debug { get; set; } = false;
@@ -33,10 +34,7 @@ namespace Knit
         /// <summary>
         /// Initializes a new instance of the Patch class that is empty.
         /// </summary>
-        public Patch()
-        {
-            Steps = new List<Step>();
-        }
+        public Patch() { }
 
         /// <summary>
         /// Loads a patch.xml document from disk.

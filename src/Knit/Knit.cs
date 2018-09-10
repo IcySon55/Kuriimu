@@ -13,7 +13,7 @@ namespace Knit
     {
         private bool Patching { get; set; }
         private bool Cancelled { get; set; }
-        private string BaseDiriectory { get; set; }
+        private string BaseDirectory { get; set; }
         private string MetaDirectory { get; set; }
         private string ExitButtonText { get; set; }
 
@@ -21,7 +21,7 @@ namespace Knit
         private string MusicPath { get; set; }
         private Image MusicOnIcon { get; set; }
         private Image MusicOffIcon { get; set; }
-        WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
+        WMPLib.WindowsMediaPlayer MediaPlayer = new WMPLib.WindowsMediaPlayer();
 
         private Meta Meta { get; set; } = new Meta();
 
@@ -33,8 +33,8 @@ namespace Knit
         private void frmMain_Load(object sender, EventArgs e)
         {
             // Initialize
-            BaseDiriectory = "patch";
-            MetaDirectory = Path.Combine(BaseDiriectory, "meta");
+            BaseDirectory = "patch";
+            MetaDirectory = Path.Combine(BaseDirectory, "meta");
 
             LoadMeta();
             UpdateForm();
@@ -43,7 +43,7 @@ namespace Knit
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            wplayer.controls.stop();
+            MediaPlayer.controls.stop();
         }
 
         private void LoadMeta()
@@ -134,16 +134,16 @@ namespace Knit
             new ToolTip().SetToolTip(btnMusic, MusicOn ? "Music Off" : "Music On");
 
             if (!File.Exists(MusicPath)) return;
-            wplayer.URL = MusicPath;
-            wplayer.settings.volume = Math.Min(Math.Max(0, Meta.Volume), 100);
-            wplayer.settings.setMode("loop", true);
+            MediaPlayer.URL = MusicPath;
+            MediaPlayer.settings.volume = Math.Min(Math.Max(0, Meta.Volume), 100);
+            MediaPlayer.settings.setMode("loop", true);
 
             try
             {
                 if (MusicOn)
-                    wplayer.controls.play();
+                    MediaPlayer.controls.play();
                 else if (!MusicOn)
-                    wplayer.controls.stop();
+                    MediaPlayer.controls.stop();
             }
             catch (Exception) { }
         }
@@ -170,13 +170,29 @@ namespace Knit
             {
                 if (!patch.Debug && step is IIsDebugStep) continue;
 
-                step.WorkingDirectory = Path.Combine(Environment.CurrentDirectory, BaseDiriectory);
+                if (step.Run != string.Empty)
+                {
+                    if (!variableCache.ContainsKey(step.Run))
+                    {
+                        prgProgress.Value = Math.Min(percentage + step.Weight, prgProgress.Maximum);
+                        continue;
+                    }
+
+                    if (bool.TryParse(variableCache[step.Run].ToString().ToLower(), out bool run))
+                        if (!run)
+                        {
+                            prgProgress.Value = Math.Min(percentage + step.Weight, prgProgress.Maximum);
+                            continue;
+                        }
+                }
+
+                step.WorkingDirectory = Path.Combine(Environment.CurrentDirectory, BaseDirectory);
 
                 var progress = new Progress<ProgressReport>(p =>
                 {
                     prgProgress.Value = Math.Min(percentage + (int)(p.Percentage / 100 * step.Weight), prgProgress.Maximum);
                     if (p.HasMessage)
-                        txtStatus.AppendText(p.Message.Trim() + "\r\n");
+                        txtStatus.AppendText(p.Message.Trim() + (p.NewLine ? "\r\n" : ""));
                 });
 
                 try
@@ -197,7 +213,18 @@ namespace Knit
                     }
 
                     if (results.HasMessage)
-                        txtStatus.AppendText(results.Message.Trim() + (error ? "" : "\r\n"));
+                        txtStatus.AppendText(results.Message.Trim() + "\r\n");
+
+                    switch (results.Status)
+                    {
+                        case StepStatus.Failure:
+                        case StepStatus.Error:
+                            txtStatus.AppendText("Patching failed.");
+                            break;
+                        case StepStatus.Cancel:
+                            txtStatus.AppendText("Patching cancelled.");
+                            break;
+                    }
                 }
                 catch (Exception ex)
                 {
