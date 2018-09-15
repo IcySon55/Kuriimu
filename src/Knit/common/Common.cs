@@ -21,10 +21,8 @@ namespace Knit
             // Handle variable modifiers
             foreach (var key in variableCache.Keys)
             {
-                var pathKey = string.Empty;
-
                 // DIRECTORY_NAME - Perform Path.GetDirectoryName on the value
-                pathKey = "{" + key + ":DIRECTORY_NAME}";
+                var pathKey = "{" + key + ":DIRECTORY_NAME}";
                 if (result.Contains(pathKey))
                     result = Regex.Replace(result, pathKey + @"\\?", Path.GetDirectoryName(variableCache[key].ToString()) + "\\");
 

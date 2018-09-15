@@ -58,8 +58,16 @@
     <Compile Include="Knit.Designer.cs">
       <DependentUpon>Knit.cs</DependentUpon>
     </Compile>
+    <Compile Include="steps\StepDebugShowVariables.cs" />
     <Compile Include="steps\StepDebugShowVariable.cs" />
+    <Compile Include="steps\StepOptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="steps\StepOptionsForm.Designer.cs">
+      <DependentUpon>StepOptionsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="steps\StepSelectDirectory.cs" />
+    <Compile Include="steps\StepOptions.cs" />
     <Compile Include="steps\StepVerifyFileHash.cs" />
     <Compile Include="steps\StepExecuteProgram.cs" />
     <Compile Include="TransparentTextBox.cs">
@@ -88,6 +96,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="steps\StepOptionsForm.resx">
+      <DependentUpon>StepOptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

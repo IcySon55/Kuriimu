@@ -28,32 +28,60 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlMain = new System.Windows.Forms.Panel();
+            this.btnWebsite = new System.Windows.Forms.Button();
+            this.btnAbout = new System.Windows.Forms.Button();
             this.btnMusic = new System.Windows.Forms.Button();
             this.txtStatus = new System.Windows.Forms.TextBox();
             this.prgProgress = new System.Windows.Forms.ProgressBar();
             this.btnExit = new System.Windows.Forms.Button();
             this.btnPatch = new System.Windows.Forms.Button();
-            this.btnAbout = new System.Windows.Forms.Button();
-            this.btnWebsite = new System.Windows.Forms.Button();
-            this.panel1.SuspendLayout();
+            this.pnlMain.SuspendLayout();
             this.SuspendLayout();
             // 
-            // panel1
+            // pnlMain
             // 
-            this.panel1.BackColor = System.Drawing.Color.Transparent;
-            this.panel1.Controls.Add(this.btnWebsite);
-            this.panel1.Controls.Add(this.btnAbout);
-            this.panel1.Controls.Add(this.btnMusic);
-            this.panel1.Controls.Add(this.txtStatus);
-            this.panel1.Controls.Add(this.prgProgress);
-            this.panel1.Controls.Add(this.btnExit);
-            this.panel1.Controls.Add(this.btnPatch);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(584, 312);
-            this.panel1.TabIndex = 0;
+            this.pnlMain.BackColor = System.Drawing.Color.Transparent;
+            this.pnlMain.Controls.Add(this.btnWebsite);
+            this.pnlMain.Controls.Add(this.btnAbout);
+            this.pnlMain.Controls.Add(this.btnMusic);
+            this.pnlMain.Controls.Add(this.txtStatus);
+            this.pnlMain.Controls.Add(this.prgProgress);
+            this.pnlMain.Controls.Add(this.btnExit);
+            this.pnlMain.Controls.Add(this.btnPatch);
+            this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlMain.Location = new System.Drawing.Point(0, 0);
+            this.pnlMain.Name = "pnlMain";
+            this.pnlMain.Size = new System.Drawing.Size(584, 312);
+            this.pnlMain.TabIndex = 0;
+            // 
+            // btnWebsite
+            // 
+            this.btnWebsite.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnWebsite.BackColor = System.Drawing.Color.Transparent;
+            this.btnWebsite.Location = new System.Drawing.Point(52, 230);
+            this.btnWebsite.Margin = new System.Windows.Forms.Padding(0);
+            this.btnWebsite.Name = "btnWebsite";
+            this.btnWebsite.Size = new System.Drawing.Size(23, 23);
+            this.btnWebsite.TabIndex = 11;
+            this.btnWebsite.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnWebsite.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnWebsite.UseVisualStyleBackColor = false;
+            this.btnWebsite.Click += new System.EventHandler(this.btnWebsite_Click);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.btnAbout.BackColor = System.Drawing.Color.Transparent;
+            this.btnAbout.Location = new System.Drawing.Point(29, 230);
+            this.btnAbout.Margin = new System.Windows.Forms.Padding(0);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(23, 23);
+            this.btnAbout.TabIndex = 10;
+            this.btnAbout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnAbout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnAbout.UseVisualStyleBackColor = false;
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // btnMusic
             // 
@@ -117,55 +145,27 @@
             this.btnPatch.UseVisualStyleBackColor = false;
             this.btnPatch.Click += new System.EventHandler(this.btnPatch_Click);
             // 
-            // btnAbout
-            // 
-            this.btnAbout.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnAbout.BackColor = System.Drawing.Color.Transparent;
-            this.btnAbout.Location = new System.Drawing.Point(29, 230);
-            this.btnAbout.Margin = new System.Windows.Forms.Padding(0);
-            this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(23, 23);
-            this.btnAbout.TabIndex = 10;
-            this.btnAbout.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnAbout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnAbout.UseVisualStyleBackColor = false;
-            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
-            // 
-            // btnWebsite
-            // 
-            this.btnWebsite.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnWebsite.BackColor = System.Drawing.Color.Transparent;
-            this.btnWebsite.Location = new System.Drawing.Point(52, 230);
-            this.btnWebsite.Margin = new System.Windows.Forms.Padding(0);
-            this.btnWebsite.Name = "btnWebsite";
-            this.btnWebsite.Size = new System.Drawing.Size(23, 23);
-            this.btnWebsite.TabIndex = 11;
-            this.btnWebsite.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnWebsite.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnWebsite.UseVisualStyleBackColor = false;
-            this.btnWebsite.Click += new System.EventHandler(this.btnWebsite_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 312);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlMain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "frmMain";
             this.Text = "Knit";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.pnlMain.ResumeLayout(false);
+            this.pnlMain.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlMain;
         private System.Windows.Forms.ProgressBar prgProgress;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.Button btnPatch;
