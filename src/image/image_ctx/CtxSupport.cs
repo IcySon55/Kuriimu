@@ -74,6 +74,7 @@ namespace image_ctx
         public uint unk1;
         public ushort format;
         public ushort type;
+        public uint unk2;
         public uint dataSize;
     }
 }
