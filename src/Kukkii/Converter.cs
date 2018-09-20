@@ -295,7 +295,7 @@ namespace Kukkii
             {
                 Title = "Export PNG...",
                 InitialDirectory = Settings.Default.LastDirectory,
-                FileName = _imageAdapter.FileInfo.Name + (_imageAdapter.Bitmaps.Count > 1 ? "." + _selectedImageIndex.ToString("00") : string.Empty) + ".png",
+                FileName = _imageAdapter.FileInfo.Name + "." + _selectedImageIndex.ToString("00") + ".png",
                 Filter = "Portable Network Graphics (*.png)|*.png",
                 AddExtension = true
             };
