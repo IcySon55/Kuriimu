@@ -43,6 +43,7 @@ namespace ext_fenceposts
 
             // Load Plugins
             _gameHandlers = Tools.LoadGameHandlers(Settings.Default.PluginDirectory, tsbGameSelect, Resources.game_none, tsbGameSelect_SelectedIndexChanged);
+            _gameHandler = _gameHandlers.FirstOrDefault();
 
             // Configure workers
             _workerDumper.DoWork += new DoWorkEventHandler(workerDumper_DoWork);
@@ -405,7 +406,7 @@ namespace ext_fenceposts
                     br.BaseStream.Seek(stringBound.StartLong, SeekOrigin.Begin);
                     while (br.BaseStream.Position < stringBound.EndLong)
                     {
-                        byte[] unichar = br.ReadBytes(2);
+                        byte[] unichar = br.ReadBytes(_kup.Encoding.IsSingleByte ? 1 : 2);
                         result.AddRange(unichar);
 
                         if (stringBound.Injectable)
@@ -413,12 +414,13 @@ namespace ext_fenceposts
                             if (jumpBack == 0 && (_pointers.Values.Contains(br.BaseStream.Position) || br.BaseStream.Position == stringBound.EndLong))
                                 jumpBack = br.BaseStream.Position;
 
-                            if ((_pointers.Values.Contains(br.BaseStream.Position) || br.BaseStream.Position == stringBound.EndLong) && (result[result.Count - 1] == 0x00 && result[result.Count - 2] == 0x00))
+                            if ((_pointers.Values.Contains(br.BaseStream.Position) || br.BaseStream.Position == stringBound.EndLong) && (result[result.Count - 1] == 0x00 && (_kup.Encoding.IsSingleByte || result[result.Count - 2] == 0x00)))
                             {
-                                if (result[result.Count - 1] == 0x00 && result[result.Count - 2] == 0x00)
+                                if (result[result.Count - 1] == 0x00 && (_kup.Encoding.IsSingleByte || result[result.Count - 2] == 0x00))
                                 {
                                     result.RemoveAt(result.Count - 1);
-                                    result.RemoveAt(result.Count - 1);
+                                    if (!_kup.Encoding.IsSingleByte)
+                                        result.RemoveAt(result.Count - 1);
                                 }
 
                                 Entry entry = new Entry();
@@ -450,6 +452,8 @@ namespace ext_fenceposts
                                             entry.AddPointer(key);
                                     entry.Relocatable = stringBound.Injectable;
                                     entry.Name = Regex.Match(entry.OriginalText, @"\w+", RegexOptions.IgnoreCase).Value;
+                                    entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
+                                    entry.EditedText = _kup.Encoding.GetString(result.ToArray());
                                     _kup.Entries.Add(entry);
                                 }
 
@@ -472,12 +476,13 @@ namespace ext_fenceposts
                         {
                             if (br.BaseStream.Position == stringBound.EndLong)
                             {
-                                if (result.Count >= 2)
+                                if (result.Count >= (_kup.Encoding.IsSingleByte ? 1 : 2))
                                 {
-                                    if (result[result.Count - 1] == 0x00 && result[result.Count - 2] == 0x00)
+                                    if (result[result.Count - 1] == 0x00 && (_kup.Encoding.IsSingleByte || result[result.Count - 2] == 0x00))
                                     {
                                         result.RemoveAt(result.Count - 1);
-                                        result.RemoveAt(result.Count - 1);
+                                        if (!_kup.Encoding.IsSingleByte)
+                                            result.RemoveAt(result.Count - 1);
                                     }
 
                                     Entry entry = new Entry();
