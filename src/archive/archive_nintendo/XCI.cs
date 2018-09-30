@@ -43,7 +43,7 @@ namespace archive_nintendo.XCI
         private static List<HFS0NamedEntry> ParseHFS0Partition(Stream input, long hfs0_offset, string prePath = "")
         {
             var namedEntries = new List<HFS0NamedEntry>();
-            long hfs0_header_size = 0;
+            long hfs0_header_size = 0x200;
 
             using (var br = new BinaryReaderX(input, true))
             {
@@ -52,13 +52,12 @@ namespace archive_nintendo.XCI
                 var entries = br.ReadMultiple<HFS0Entry>(header.fileCount);
                 var stringTable = br.ReadBytes(header.stringTableSize);
 
-                hfs0_header_size = 0x10 + header.fileCount * 0x40 + header.stringTableSize;
-
                 using (var nameBr = new BinaryReaderX(new MemoryStream(stringTable)))
                     foreach (var entry in entries)
                     {
                         nameBr.BaseStream.Position = entry.nameOffset;
-                        namedEntries.Add(new HFS0NamedEntry { name = Path.Combine(prePath, nameBr.ReadCStringA()), entry = entry });
+                        var name = Path.Combine(prePath, nameBr.ReadCStringA());
+                        namedEntries.Add(new HFS0NamedEntry { name = name, entry = entry });
                     }
             }
 

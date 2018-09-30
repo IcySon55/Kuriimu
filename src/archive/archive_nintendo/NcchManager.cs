@@ -91,7 +91,12 @@ namespace archive_nintendo.NCCH
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            _ncch.Files.Add(afi);
+            var exist = _ncch.Files.Where(f => f.FileName.Replace('\\', '/') == afi.FileName.Replace('\\', '/')).Any();
+            if (!exist)
+                _ncch.Files.Add(afi);
+            else
+                return false;
+
             return true;
         }
 
