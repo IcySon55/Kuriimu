@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ext_fenceposts.Properties;
@@ -399,14 +400,14 @@ namespace ext_fenceposts
 
                 if (stringBound.Dumpable)
                 {
-                    List<byte> result = new List<byte>();
-                    long offset = stringBound.StartLong;
+                    var result = new List<byte>();
+                    var offset = stringBound.StartLong;
                     long jumpBack = 0;
 
                     br.BaseStream.Seek(stringBound.StartLong, SeekOrigin.Begin);
                     while (br.BaseStream.Position < stringBound.EndLong)
                     {
-                        byte[] unichar = br.ReadBytes(_kup.Encoding.IsSingleByte ? 1 : 2);
+                        var unichar = br.ReadBytes(_kup.Encoding.IsSingleByte ? 1 : 2);
                         result.AddRange(unichar);
 
                         if (stringBound.Injectable)
@@ -423,12 +424,11 @@ namespace ext_fenceposts
                                         result.RemoveAt(result.Count - 1);
                                 }
 
-                                Entry entry = new Entry();
-                                entry.OffsetLong = offset;
+                                var entry = new Entry { OffsetLong = offset };
 
                                 // Merging
-                                bool matched = false;
-                                foreach (Entry ent in _kup.Entries)
+                                var matched = false;
+                                foreach (var ent in _kup.Entries)
                                     if (ent.Offset == entry.Offset)
                                     {
                                         entry = ent;
@@ -436,30 +436,32 @@ namespace ext_fenceposts
                                         break;
                                     }
 
-                                if (matched)
+                                // Pointers
+                                foreach (var key in _pointers.Keys)
+                                    if (_pointers[key] == offset)
+                                        entry.AddPointer(key);
+
+                                // Text
+                                if (Equals(_kup.Encoding, Encoding.ASCII))
                                 {
-                                    foreach (long key in _pointers.Keys)
-                                        if (_pointers[key] == offset)
-                                            entry.AddPointer(key);
-                                    entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
-                                    if (entry.EditedText == entry.OriginalText)
-                                        entry.EditedText = _kup.Encoding.GetString(result.ToArray());
+                                    var parsed = new StringBuilder();
+                                    foreach (var b in result)
+                                        parsed.Append((char)b);
+                                    entry.OriginalText = _gameHandler.GetKuriimuString(parsed.ToString()).Replace("\0", "<null>").Replace("\n", "\r\n"); ;
                                 }
                                 else
+                                    entry.OriginalText = _gameHandler.GetKuriimuString(_kup.Encoding.GetString(result.ToArray())).Replace("\0", "<null>").Replace("\n", "\r\n");
+
+                                // Not Matched
+                                if (!matched)
                                 {
-                                    foreach (long key in _pointers.Keys)
-                                        if (_pointers[key] == offset)
-                                            entry.AddPointer(key);
                                     entry.Relocatable = stringBound.Injectable;
                                     entry.Name = Regex.Match(entry.OriginalText, @"\w+", RegexOptions.IgnoreCase).Value;
-                                    entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
-                                    entry.EditedText = _kup.Encoding.GetString(result.ToArray());
+                                    entry.EditedText = entry.OriginalText;
                                     _kup.Entries.Add(entry);
                                 }
 
-                                string str = _gameHandler.GetKuriimuString(entry.OriginalText).Replace("\0", "<null>").Replace("\n", "\r\n");
-
-                                if (Regex.Matches(str, "<null>").Count > 0)
+                                if (entry.OriginalText.Contains("<null>"))
                                     _workerDumper.ReportProgress(0, "STATUS|Found a potentially broken string at " + entry.Offset + ": " + entry.Name + "|" + entry.Offset);
 
                                 if (jumpBack > 0)
@@ -485,12 +487,11 @@ namespace ext_fenceposts
                                             result.RemoveAt(result.Count - 1);
                                     }
 
-                                    Entry entry = new Entry();
-                                    entry.OffsetLong = stringBound.StartLong;
+                                    var entry = new Entry { OffsetLong = stringBound.StartLong };
 
                                     // Merging
-                                    bool matched = false;
-                                    foreach (Entry ent in _kup.Entries)
+                                    var matched = false;
+                                    foreach (var ent in _kup.Entries)
                                         if (ent.Offset == entry.Offset)
                                         {
                                             entry = ent;
@@ -498,18 +499,23 @@ namespace ext_fenceposts
                                             break;
                                         }
 
-                                    if (matched)
+                                    // Text
+                                    if (Equals(_kup.Encoding, Encoding.ASCII))
                                     {
-                                        entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
-                                        if (entry.EditedText == entry.OriginalText)
-                                            entry.EditedText = _kup.Encoding.GetString(result.ToArray());
+                                        var parsed = new StringBuilder();
+                                        foreach (var b in result)
+                                            parsed.Append((char)b);
+                                        entry.OriginalText = _gameHandler.GetKuriimuString(parsed.ToString()).Replace("\0", "<null>").Replace("\n", "\r\n"); ;
                                     }
                                     else
+                                        entry.OriginalText = _gameHandler.GetKuriimuString(_kup.Encoding.GetString(result.ToArray())).Replace("\0", "<null>").Replace("\n", "\r\n");
+
+                                    // Not Matched
+                                    if (!matched)
                                     {
-                                        entry.OriginalText = _kup.Encoding.GetString(result.ToArray());
-                                        entry.EditedText = _kup.Encoding.GetString(result.ToArray());
                                         entry.Relocatable = stringBound.Injectable;
                                         entry.Name = Regex.Match(entry.OriginalText, @"\w+", RegexOptions.IgnoreCase).Value;
+                                        entry.EditedText = entry.OriginalText;
                                         entry.MaxLength = entry.EditedText.Length;
                                         _kup.Entries.Add(entry);
                                     }
