@@ -130,7 +130,7 @@ namespace Kuriimu
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var find = new Find {Entries = _entries};
+            var find = new Find {Entries = _entries, Handler = _gameHandler};
             find.ShowDialog();
 
             if (find.Replaced)
