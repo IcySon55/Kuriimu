@@ -58,6 +58,9 @@
     <Compile Include="CwarSupport.cs" />
     <Compile Include="DARC.cs" />
     <Compile Include="DarcManager.cs" />
+    <Compile Include="NCA.cs" />
+    <Compile Include="NcaManager.cs" />
+    <Compile Include="NcaSupport.cs" />
     <Compile Include="NCSD.cs" />
     <Compile Include="NcsdManager.cs" />
     <Compile Include="NcsdSupport.cs" />

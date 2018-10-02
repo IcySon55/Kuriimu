@@ -5,27 +5,27 @@ using Kontract.Interface;
 using Kontract.IO;
 using System.Linq;
 
-namespace archive_nintendo.CIA
+namespace archive_nintendo.NCA
 {
-    public class CiaManager : IArchiveManager
+    public class NcaManager : IArchiveManager
     {
-        private CIA _cia = null;
+        private NCA _nca = null;
 
         #region Properties
 
         // Information
-        public string Name => "CIA";
-        public string Description => "CTR Importable Archive";
-        public string Extension => "*.cia";
-        public string About => "This is the CIA archive manager for Karameru.";
+        public string Name => "NCA";
+        public string Description => "Nintendo Content Archive";
+        public string Extension => "*.nca";
+        public string About => "This is the NCA manager for Karameru.";
 
         // Feature Support
         public bool FileHasExtendedProperties => false;
-        public bool CanAddFiles => true;
+        public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
-        public bool CanReplaceFiles => true;
-        public bool CanDeleteFiles => true;
-        public bool CanSave => true;
+        public bool CanReplaceFiles => false;
+        public bool CanDeleteFiles => false;
+        public bool CanSave => false;
 
         public FileInfo FileInfo { get; set; }
 
@@ -35,8 +35,16 @@ namespace archive_nintendo.CIA
         {
             using (var br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                if (br.BaseStream.Length < 4) return false;
-                return br.ReadInt32() == 0x2020;
+                try
+                {
+                    br.BaseStream.Position = 0x200;
+                    var magic = br.ReadString(4);
+                    return magic == "NCA2" || magic == "NCA3";
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
 
@@ -45,7 +53,7 @@ namespace archive_nintendo.CIA
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _cia = new CIA(FileInfo.OpenRead());
+                _nca = new NCA(FileInfo.OpenRead());
         }
 
         public void Save(string filename = "")
@@ -56,14 +64,14 @@ namespace archive_nintendo.CIA
             // Save As...
             if (!string.IsNullOrEmpty(filename))
             {
-                _cia.Save(FileInfo.Create());
-                _cia.Close();
+                _nca.Save(FileInfo.Create());
+                _nca.Close();
             }
             else
             {
                 // Create the temp file
-                _cia.Save(File.Create(FileInfo.FullName + ".tmp"));
-                _cia.Close();
+                _nca.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _nca.Close();
                 // Delete the original
                 FileInfo.Delete();
                 // Rename the temporary file
@@ -76,29 +84,20 @@ namespace archive_nintendo.CIA
 
         public void Unload()
         {
-            _cia?.Close();
+            _nca?.Close();
         }
 
         // Files
-        public IEnumerable<ArchiveFileInfo> Files => _cia.Files;
+        public IEnumerable<ArchiveFileInfo> Files => _nca.Files;
 
         public bool AddFile(ArchiveFileInfo afi)
         {
-            var exist = _cia.Files.Where(f => f.FileName.Replace('\\', '/') == afi.FileName.Replace('\\', '/')).Any();
-            if (!exist)
-                _cia.Files.Add(afi);
-            else
-                return false;
-
-            return true;
+            return false;
         }
 
         public bool DeleteFile(ArchiveFileInfo afi)
         {
-            var toRemove = _cia.Files.Where(f => f.FileName.Replace('\\', '/') == afi.FileName.Replace('\\', '/'));
-            foreach (var r in toRemove)
-                r.State = ArchiveFileState.Deleted;
-            return true;
+            return false;
         }
 
         // Features

@@ -182,9 +182,8 @@ namespace Kontract.UI
 
                         case Types.NSW_XCI:
                             openBr.BaseStream.Position = 0;
-
-                            var xci_header_key = InputBox.Show("Input XCI Header Key:", "Decrypt XCI").Hexlify();
-                            Switch.DecryptXCI(openBr.BaseStream, xci_header_key);
+                            
+                            Switch.DecryptXCI(openBr.BaseStream);
 
                             MessageBox.Show("XCI Header and all NCA's were decrypted successfully!", "Decryption Success", MessageBoxButtons.OK);
                             show = false;

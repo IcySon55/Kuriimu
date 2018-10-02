@@ -32,12 +32,12 @@ namespace archive_nintendo.XCI
         public byte[] rsa;  //RSA-2048 PKCS#1 over 0x100-0x200
         public Magic magic;
         public int secureOffsetUnits;
-        public int const1;
-        public byte unk1;
+        public int backupOffsetUnits;   //Always 0xFFFFFFFF
+        public byte kekIndex;   //high nibble: title key index / low nibble: kek index
         public CartridgeSize cartSize;
-        public byte unk2;
-        public byte unk3;
-        public long unk4;
+        public byte cartHeaderVerison;
+        public byte cartFlags;      //bit0: Autoboot / bit1: HistoryErase
+        public long packageId;      //used for authentication
         public long cartSizeUnits;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
         public byte[] reversedIV;
@@ -47,12 +47,29 @@ namespace archive_nintendo.XCI
         public byte[] sha256hfs0Header;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
         public byte[] sha256cryptoHeader;
-        public int const2;
-        public int const3;
-        public int const4;
+        public int secureModeFlag;      //1 means secure mode is used
+        public int titleKeyFlag;        //always 2
+        public int keyFlag;             //always 0
         public int secureOffsetUnits2;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x70)]
-        public byte[] encryptedHeader;
+        public GameCardInfo gameCardInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public class GameCardInfo
+    {
+        public long firmwareVersion;        //0x1: old games / 0x2: new games with logo partition
+        public int accessControlFlags;
+        public int readWaitTime;
+        public int readWaitTime2;
+        public int writeWaitTime;
+        public int writeWaitTime2;
+        public int firmwareMode;
+        public int cupVersion;
+        public int zero1;
+        public long updatePartitionHash;
+        public long cupId;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x38)]
+        public byte[] zero2;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
