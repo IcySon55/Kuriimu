@@ -1191,7 +1191,7 @@
             this.tsbFindReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbFindReplace.Name = "tsbFindReplace";
             this.tsbFindReplace.Size = new System.Drawing.Size(23, 22);
-            this.tsbFindReplace.Text = "Find";
+            this.tsbFindReplace.Text = "Replace";
             this.tsbFindReplace.Click += new System.EventHandler(this.tsbFindReplace_Click);
             // 
             // tsbSearchDirectory

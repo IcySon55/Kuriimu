@@ -11,6 +11,7 @@ namespace Kuriimu
     public partial class Find : Form
     {
         public IEnumerable<TextEntry> Entries { get; set; }
+        public IGameHandler Handler { get; set; }
         public TextEntry Selected { get; private set; }
         public TextEntry Current { get; set; }
         public bool Replace { get; set; }
@@ -67,8 +68,8 @@ namespace Kuriimu
         {
             if (txtFindText.Focused)
                 DoFind();
-            else
-                lstResults_DoubleClick(lstResults, EventArgs.Empty);
+            //else
+            //    lstResults_DoubleClick(lstResults, EventArgs.Empty);
 
             if (lstResults.Items.Count == 0)
                 MessageBox.Show("Could not find \"" + txtFindText.Text + "\".", "Find", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -83,27 +84,33 @@ namespace Kuriimu
             {
                 foreach (var entry in Entries)
                 {
+                    var edited = Handler.GetKuriimuString(entry.EditedText);
+                    var original = Handler.GetKuriimuString(entry.OriginalText);
+
                     if (chkMatchCase.Checked)
                     {
-                        if (entry.EditedText.Contains(txtFindText.Text) || entry.OriginalText.Contains(txtFindText.Text) || entry.Name.Contains(txtFindText.Text))
+                        if (edited.Contains(txtFindText.Text) || original.Contains(txtFindText.Text) || entry.Name.Contains(txtFindText.Text))
                             lstResults.Items.Add(new ListItem(entry.ToString(), entry));
                     }
                     else
                     {
-                        if (entry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || entry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()) || entry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
+                        if (edited.ToLower().Contains(txtFindText.Text.ToLower()) || original.ToLower().Contains(txtFindText.Text.ToLower()) || entry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
                             lstResults.Items.Add(new ListItem(entry.ToString(), entry));
                     }
 
                     foreach (var subEntry in entry.SubEntries)
                     {
+                        var subEdited = Handler.GetKuriimuString(subEntry.EditedText);
+                        var subOriginal = Handler.GetKuriimuString(subEntry.OriginalText);
+
                         if (chkMatchCase.Checked)
                         {
-                            if (subEntry.EditedText.Contains(txtFindText.Text) || subEntry.OriginalText.Contains(txtFindText.Text) || subEntry.Name.Contains(txtFindText.Text))
+                            if (subEdited.Contains(txtFindText.Text) || subOriginal.Contains(txtFindText.Text) || subEntry.Name.Contains(txtFindText.Text))
                                 lstResults.Items.Add(new ListItem(entry + "/" + subEntry, subEntry));
                         }
                         else
                         {
-                            if (subEntry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.OriginalText.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
+                            if (subEdited.ToLower().Contains(txtFindText.Text.ToLower()) || subOriginal.ToLower().Contains(txtFindText.Text.ToLower()) || subEntry.Name.ToLower().Contains(txtFindText.Text.ToLower()))
                                 lstResults.Items.Add(new ListItem(entry + "/" + subEntry, subEntry));
                         }
                     }
@@ -111,7 +118,7 @@ namespace Kuriimu
             }
             lstResults.EndUpdate();
 
-            tslResultCount.Text = lstResults.Items.Count > 0 ? "Found " + lstResults.Items.Count + " matches." : string.Empty;
+            tslResultCount.Text = lstResults.Items.Count > 0 ? "Found " + lstResults.Items.Count + " matche(s)." : string.Empty;
         }
 
         private void btnReplaceText_Click(object sender, EventArgs e)
@@ -133,38 +140,42 @@ namespace Kuriimu
                 {
                     foreach (var entry in Entries)
                     {
+                        var edited = Handler.GetKuriimuString(entry.EditedText);
+
                         if (chkMatchCaseReplace.Checked)
                         {
-                            if (entry.EditedText.Contains(txtFindTextReplace.Text))
+                            if (edited.Contains(txtFindTextReplace.Text))
                             {
-                                entry.EditedText = Regex.Replace(entry.EditedText, txtFindTextReplace.Text, txtReplaceText.Text);
+                                entry.EditedText = Handler.GetRawString(Regex.Replace(edited, txtFindTextReplace.Text, txtReplaceText.Text));
                                 lstResultsReplace.Items.Add(new ListItem(entry.ToString(), entry));
                             }
                         }
                         else
                         {
-                            if (entry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()))
+                            if (edited.ToLower().Contains(txtFindText.Text.ToLower()))
                             {
-                                entry.EditedText = Regex.Replace(entry.EditedText, txtFindTextReplace.Text, txtReplaceText.Text, RegexOptions.IgnoreCase);
+                                entry.EditedText = Handler.GetRawString(Regex.Replace(edited, txtFindTextReplace.Text, txtReplaceText.Text, RegexOptions.IgnoreCase));
                                 lstResultsReplace.Items.Add(new ListItem(entry.ToString(), entry));
                             }
                         }
 
                         foreach (var subEntry in entry.SubEntries)
                         {
+                            var subEdited = Handler.GetKuriimuString(subEntry.EditedText);
+
                             if (chkMatchCaseReplace.Checked)
                             {
-                                if (subEntry.EditedText.Contains(txtFindTextReplace.Text))
+                                if (subEdited.Contains(txtFindTextReplace.Text))
                                 {
-                                    subEntry.EditedText = Regex.Replace(subEntry.EditedText, txtFindTextReplace.Text, txtReplaceText.Text);
+                                    subEntry.EditedText = Handler.GetRawString(Regex.Replace(subEdited, txtFindTextReplace.Text, txtReplaceText.Text));
                                     lstResultsReplace.Items.Add(new ListItem(entry + "/" + subEntry, subEntry));
                                 }
                             }
                             else
                             {
-                                if (subEntry.EditedText.ToLower().Contains(txtFindText.Text.ToLower()))
+                                if (subEdited.ToLower().Contains(txtFindText.Text.ToLower()))
                                 {
-                                    subEntry.EditedText = Regex.Replace(subEntry.EditedText, txtFindTextReplace.Text, txtReplaceText.Text, RegexOptions.IgnoreCase);
+                                    subEntry.EditedText = Handler.GetRawString(Regex.Replace(subEdited, txtFindTextReplace.Text, txtReplaceText.Text, RegexOptions.IgnoreCase));
                                     lstResultsReplace.Items.Add(new ListItem(entry + "/" + subEntry, subEntry));
                                 }
                             }
@@ -173,19 +184,21 @@ namespace Kuriimu
                 }
                 else if (!Settings.Default.ReplaceAll && Current != null)
                 {
+                    var current = Handler.GetKuriimuString(Current.EditedText);
+
                     if (chkMatchCaseReplace.Checked)
                     {
-                        if (Current.EditedText.Contains(txtFindTextReplace.Text))
+                        if (current.Contains(txtFindTextReplace.Text))
                         {
-                            Current.EditedText = Regex.Replace(Current.EditedText, txtFindTextReplace.Text, txtReplaceText.Text);
+                            Current.EditedText = Handler.GetRawString(Regex.Replace(current, txtFindTextReplace.Text, txtReplaceText.Text));
                             lstResultsReplace.Items.Add(new ListItem(Current.ToString(), Current));
                         }
                     }
                     else
                     {
-                        if (Current.EditedText.ToLower().Contains(txtFindText.Text.ToLower()))
+                        if (current.ToLower().Contains(txtFindText.Text.ToLower()))
                         {
-                            Current.EditedText = Regex.Replace(Current.EditedText, txtFindTextReplace.Text, txtReplaceText.Text, RegexOptions.IgnoreCase);
+                            Current.EditedText = Handler.GetRawString(Regex.Replace(current, txtFindTextReplace.Text, txtReplaceText.Text, RegexOptions.IgnoreCase));
                             lstResultsReplace.Items.Add(new ListItem(Current.ToString(), Current));
                         }
                     }
