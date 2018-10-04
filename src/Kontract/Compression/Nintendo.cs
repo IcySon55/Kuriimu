@@ -40,8 +40,7 @@ namespace Kontract.Compression
                         case Method.RLE:
                             return RLE.Decompress(brB.BaseStream, size);
                         case Method.LZ60:
-                            throw new Exception("LZ60 isn't implemented yet");
-                        //return LZ60.Decompress(brB.BaseStream);
+                            return LZ60.Decompress(brB.BaseStream, size);
                         default:
                             br.BaseStream.Position -= 4;
                             return br.BaseStream.StructToBytes();
