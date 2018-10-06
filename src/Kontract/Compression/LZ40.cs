@@ -1,47 +1,47 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Kontract.IO;
 
 namespace Kontract.Compression
 {
-    public class LZ11
+    public class LZ40
     {
-        public static byte[] Decompress(Stream stream, int decompSize)
+        public static byte[] Decompress(Stream instream, long decompressedLength)
         {
-            using (BinaryReaderX br = new BinaryReaderX(stream, true))
+            using (BinaryReaderX br = new BinaryReaderX(instream, true))
             {
-                byte[] result = new byte[decompSize];
+                byte[] result = new byte[decompressedLength];
                 int dstoffset = 0;
 
                 while (true)
                 {
-                    byte header = br.ReadByte();
+                    byte header = (byte)-br.ReadByte();
                     for (int i = 0; i < 8; i++)
                     {
+                        if (dstoffset >= 0x1105)
+                            ;
+
                         if ((header & 0x80) == 0) result[dstoffset++] = br.ReadByte();
                         else
                         {
                             byte a = br.ReadByte();
                             byte b = br.ReadByte();
-                            int offset;
-                            int length2;
-                            if ((a >> 4) == 0)
+
+                            int offset = (b << 4) | ((a & 0xF0) >> 4);
+                            int length2 = a & 0xF;
+
+                            if ((a & 0xF) == 0)
                             {
                                 byte c = br.ReadByte();
-                                length2 = (((a & 0xF) << 4) | (b >> 4)) + 0x11;
-                                offset = (((b & 0xF) << 8) | c) + 1;
+                                length2 = c + 0x10;
                             }
-                            else if ((a >> 4) == 1)
+                            else if ((a & 0xF) == 1)
                             {
                                 byte c = br.ReadByte();
                                 byte d = br.ReadByte();
-                                length2 = (((a & 0xF) << 12) | (b << 4) | (c >> 4)) + 0x111;
-                                offset = (((c & 0xF) << 8) | d) + 1;
-                            }
-                            else
-                            {
-                                length2 = (a >> 4) + 1;
-                                offset = (((a & 0xF) << 8) | b) + 1;
+                                length2 = ((d << 8) | c) + 0x110;
                             }
 
                             for (int j = 0; j < length2; j++)
@@ -51,7 +51,7 @@ namespace Kontract.Compression
                             }
                         }
 
-                        if (dstoffset >= decompSize) return result;
+                        if (dstoffset >= decompressedLength) return result;
                         header <<= 1;
                     }
                 }
@@ -89,9 +89,11 @@ namespace Kontract.Compression
                     // we can only buffer 8 blocks at a time.
                     if (bufferedBlocks == 8)
                     {
+                        outbuffer[0] = (byte)-outbuffer[0];
                         outstream.Write(outbuffer, 0, bufferlength);
                         compressedLength += bufferlength;
                         // reset the buffer
+                        outbuffer = new byte[8 * 4 + 1];
                         outbuffer[0] = 0;
                         bufferlength = 1;
                         bufferedBlocks = 0;
@@ -102,9 +104,15 @@ namespace Kontract.Compression
                     // it is a compressed block when the next 3 or more bytes can be copied from
                     // somewhere in the set of already compressed bytes.
                     int disp;
-                    int oldLength = Math.Min(readBytes, 0x1000);
-                    int length = GetOccurrenceLength(instart + readBytes, (int)Math.Min(inLength - readBytes, 0x10110),
-                                                          instart + readBytes - oldLength, oldLength, out disp);
+                    int oldLength = Math.Min(readBytes, 0xFFF);
+                    if (readBytes >= 0x1105)
+                        ;
+                    int length = GetOccurrenceLength(
+                        instart + readBytes,
+                        (int)Math.Min(inLength - readBytes, 0x1010F),
+                        instart + readBytes - oldLength,
+                        oldLength,
+                        out disp);
 
                     // length not 3 or more? next byte is raw data
                     if (length < 3)
@@ -119,33 +127,31 @@ namespace Kontract.Compression
                         // mark the next block as compressed
                         outbuffer[0] |= (byte)(1 << (7 - bufferedBlocks));
 
-                        if (length > 0x110)
+                        // the last 1.5 bytes are always the disp
+                        outbuffer[bufferlength] = (byte)((disp & 0x0F) << 4);
+                        outbuffer[bufferlength + 1] = (byte)((disp >> 4) & 0xFF);
+
+                        if (length > 0x10F)
                         {
-                            // case 1: 1(B CD E)(F GH) + (0x111)(0x1) = (LEN)(DISP)
-                            outbuffer[bufferlength] = 0x10;
-                            outbuffer[bufferlength] |= (byte)(((length - 0x111) >> 12) & 0x0F);
+                            outbuffer[bufferlength] |= 0x01;
                             bufferlength++;
-                            outbuffer[bufferlength] = (byte)(((length - 0x111) >> 4) & 0xFF);
                             bufferlength++;
-                            outbuffer[bufferlength] = (byte)(((length - 0x111) << 4) & 0xF0);
+                            outbuffer[bufferlength] = (byte)((length - 0x110) & 0xFF);
+                            bufferlength++;
+                            outbuffer[bufferlength] = (byte)(((length - 0x110) >> 8) & 0xFF);
                         }
-                        else if (length > 0x10)
+                        else if (length > 0xF)
                         {
-                            // case 0; 0(B C)(D EF) + (0x11)(0x1) = (LEN)(DISP)
-                            outbuffer[bufferlength] = 0x00;
-                            outbuffer[bufferlength] |= (byte)(((length - 0x11) >> 4) & 0x0F);
+                            outbuffer[bufferlength] |= 0x00;
                             bufferlength++;
-                            outbuffer[bufferlength] = (byte)(((length - 0x11) << 4) & 0xF0);
+                            bufferlength++;
+                            outbuffer[bufferlength] = (byte)((length - 0x10) & 0xFF);
                         }
                         else
                         {
-                            // case > 1: (A)(B CD) + (0x1)(0x1) = (LEN)(DISP)
-                            outbuffer[bufferlength] = (byte)(((length - 1) << 4) & 0xF0);
+                            outbuffer[bufferlength] |= (byte)(length & 0x0F);
+                            bufferlength++;
                         }
-                        // the last 1.5 bytes are always the disp
-                        outbuffer[bufferlength] |= (byte)(((disp - 1) >> 8) & 0x0F);
-                        bufferlength++;
-                        outbuffer[bufferlength] = (byte)((disp - 1) & 0xFF);
                         bufferlength++;
                     }
                     bufferedBlocks++;
@@ -154,6 +160,7 @@ namespace Kontract.Compression
                 // copy the remaining blocks to the output
                 if (bufferedBlocks > 0)
                 {
+                    outbuffer[0] = (byte)-outbuffer[0];
                     outstream.Write(outbuffer, 0, bufferlength);
                     compressedLength += bufferlength;
                     /*/ make the compressed file 4-byte aligned.
@@ -204,6 +211,7 @@ namespace Kontract.Compression
                         break;
                 }
             }
+
             return maxLength;
         }
     }

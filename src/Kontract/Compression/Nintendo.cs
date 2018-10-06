@@ -15,6 +15,7 @@ namespace Kontract.Compression
             Huff4 = 0x24,
             Huff8 = 0x28,
             RLE = 0x30,
+            LZ40 = 0x40,
             LZ60 = 0x60
         }
 
@@ -39,8 +40,10 @@ namespace Kontract.Compression
                             return Huffman.Decompress(brB.BaseStream, 8, size);
                         case Method.RLE:
                             return RLE.Decompress(brB.BaseStream, size);
-                        case Method.LZ60:
-                            return LZ60.Decompress(brB.BaseStream, size);
+                        case Method.LZ40:
+                            return LZ40.Decompress(brB.BaseStream, size);
+                        case Method.LZ60:   //yes, LZ60 does indeed seem to be the exact same as LZ40
+                            return LZ40.Decompress(brB.BaseStream, size);
                         default:
                             br.BaseStream.Position -= 4;
                             return br.BaseStream.StructToBytes();
@@ -73,9 +76,12 @@ namespace Kontract.Compression
                 case Method.RLE:
                     res.AddRange(RLE.Compress(input));
                     return res.ToArray();
-                case Method.LZ60:
-                    throw new Exception("LZ60 isn't implemented yet");
-                //return LZ60.Compress(input);
+                case Method.LZ40:
+                    res.AddRange(LZ40.Compress(input));
+                    return res.ToArray();
+                case Method.LZ60:      //yes, LZ60 does indeed seem to be the exact same as LZ40
+                    res.AddRange(LZ40.Compress(input));
+                    return res.ToArray();
                 default:
                     return input.StructToBytes();
             }

@@ -62,45 +62,48 @@ namespace Kontract.UI
             //    LZ11
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ11", null, Compress));
             tsb3.DropDownItems[1].Tag = Compression.NLZ11;
+            //    LZ40
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ40", null, Compress));
+            tsb3.DropDownItems[2].Tag = Compression.NLZ40;
             //    LZ60
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ60", null, Compress));
-            tsb3.DropDownItems[2].Tag = Compression.NLZ60;
+            tsb3.DropDownItems[3].Tag = Compression.NLZ60;
             //    Huffman
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Huffman", null));
-            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[3];
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[4];
             tsb4.DropDownItems.Add(new ToolStripMenuItem("4Bit", null, Compress));
             tsb4.DropDownItems[0].Tag = Compression.NHuff4;
             tsb4.DropDownItems.Add(new ToolStripMenuItem("8Bit", null, Compress));
             tsb4.DropDownItems[1].Tag = Compression.NHuff8;
             //    RLE
             tsb3.DropDownItems.Add(new ToolStripMenuItem("RLE", null, Compress));
-            tsb3.DropDownItems[4].Tag = Compression.NRLE;
+            tsb3.DropDownItems[5].Tag = Compression.NRLE;
             //    LZ77
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZ77", null, Compress));
-            tsb3.DropDownItems[5].Tag = Compression.LZ77;
+            tsb3.DropDownItems[6].Tag = Compression.LZ77;
             //    RevLZ77
             tsb3.DropDownItems.Add(new ToolStripMenuItem("RevLZ77", null, Compress));
-            tsb3.DropDownItems[6].Tag = Compression.RevLZ77;
+            tsb3.DropDownItems[7].Tag = Compression.RevLZ77;
             //    LZOvl
             tsb3.DropDownItems.Add(new ToolStripMenuItem("LZOvl", null, Compress));
-            tsb3.DropDownItems[7].Tag = Compression.LZOvl;
+            tsb3.DropDownItems[8].Tag = Compression.LZOvl;
             //    MIO0
             tsb3.DropDownItems.Add(new ToolStripMenuItem("MIO0", null));
-            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[8];
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[9];
             tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Compress));
             tsb4.DropDownItems[0].Tag = Compression.MIO0LE;
             tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Compress));
             tsb4.DropDownItems[1].Tag = Compression.MIO0BE;
             //    Yay0
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Yay0", null));
-            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[9];
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[10];
             tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Compress));
             tsb4.DropDownItems[0].Tag = Compression.Yay0LE;
             tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Compress));
             tsb4.DropDownItems[1].Tag = Compression.Yay0BE;
             //    Yaz0
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Yaz0", null));
-            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[10];
+            tsb4 = (ToolStripMenuItem)tsb3.DropDownItems[11];
             tsb4.DropDownItems.Add(new ToolStripMenuItem("LE", null, Compress));
             tsb4.DropDownItems[0].Tag = Compression.Yaz0LE;
             tsb4.DropDownItems.Add(new ToolStripMenuItem("BE", null, Compress));
@@ -313,6 +316,9 @@ namespace Kontract.UI
                         case Compression.NLZ11:
                             outFs.Write(Nintendo.Compress(openFile, Nintendo.Method.LZ11));
                             break;
+                        case Compression.NLZ40:
+                            outFs.Write(Nintendo.Compress(openFile, Nintendo.Method.LZ40));
+                            break;
                         case Compression.NLZ60:
                             outFs.Write(Nintendo.Compress(openFile, Nintendo.Method.LZ60));
                             break;
@@ -400,6 +406,7 @@ namespace Kontract.UI
 
             NLZ10,
             NLZ11,
+            NLZ40,
             NLZ60,
             NHuff4,
             NHuff8,
