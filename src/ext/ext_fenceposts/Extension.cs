@@ -576,7 +576,7 @@ namespace ext_fenceposts
 
             // Sort Entries
             if (_kup.OptimizeStrings)
-                _kup.Entries = _kup.Entries.Select(o => o).OrderByDescending(o => _kup.Encoding.GetByteCount(o.EditedText)).ThenBy(o => o.EditedText).ToList();
+                _kup.Entries = _kup.Entries.Select(o => o).OrderByDescending(o => _kup.Encoding.GetByteCount(_gameHandler.GetRawString(o.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"))).ThenBy(o => _gameHandler.GetRawString(o.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n")).ToList();
 
             // Bound Setup
             foreach (Bound bound in _kup.StringBounds)
@@ -596,7 +596,7 @@ namespace ext_fenceposts
             int count = 0, optimizedCount = 0;
             foreach (Entry entry in _kup.Entries)
             {
-                byte[] editedText = _kup.Encoding.GetBytes(entry.EditedText);
+                byte[] editedText = _kup.Encoding.GetBytes(_gameHandler.GetRawString(entry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"));
                 count++;
 
                 if (entry.Relocatable)
@@ -608,9 +608,9 @@ namespace ext_fenceposts
                     {
                         foreach (Entry injectedEntry in injectedEntries)
                         {
-                            if (injectedEntry.EditedText.EndsWith(entry.EditedText))
+                            if (_gameHandler.GetRawString(injectedEntry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n").EndsWith(_gameHandler.GetRawString(entry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n")))
                             {
-                                byte[] injectedText = _kup.Encoding.GetBytes(injectedEntry.EditedText);
+                                byte[] injectedText = _kup.Encoding.GetBytes(_gameHandler.GetRawString(injectedEntry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"));
                                 // Update the pointer
                                 foreach (Pointer pointer in entry.Pointers)
                                 {
