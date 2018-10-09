@@ -12,7 +12,7 @@ namespace KuriimuTests
     {
         enum Method : byte
         {
-            LZ10, LZ11, LZ60, LZ77, RevLZ77, LZ4, LZECD, LZOvl, MIO0
+            LZ10, LZ11, LZ40, LZ77, RevLZ77, LZ4, LZECD, LZOvl, MIO0
         }
 
         static void Test(byte[] bytes, Method method)
@@ -29,8 +29,8 @@ namespace KuriimuTests
                     bytes2 = LZ11.Decompress(new MemoryStream(LZ11.Compress(new MemoryStream(bytes))), bytes.Length);
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
-                case Method.LZ60:
-                    bytes2 = LZ60.Decompress(new MemoryStream(LZ60.Compress(new MemoryStream(bytes))), bytes.Length);
+                case Method.LZ40:
+                    bytes2 = LZ40.Decompress(new MemoryStream(LZ40.Compress(new MemoryStream(bytes))), bytes.Length);
                     Assert.IsTrue(bytes.SequenceEqual(bytes2));
                     break;
                 case Method.LZ77:
@@ -88,16 +88,16 @@ namespace KuriimuTests
 
         //LZ60
         [TestMethod]
-        public void AsciiHelloWorldLZ60Test() => Test(Encoding.ASCII.GetBytes("hello world"), Method.LZ60);
+        public void AsciiHelloWorldLZ60Test() => Test(Encoding.ASCII.GetBytes("hello world"), Method.LZ40);
 
         [TestMethod]
-        public void UnicodeHelloWorldLZ60Test() => Test(Encoding.Unicode.GetBytes("hello world"), Method.LZ60);
+        public void UnicodeHelloWorldLZ60Test() => Test(Encoding.Unicode.GetBytes("hello world"), Method.LZ40);
 
         [TestMethod]
-        public void HundredZeroesLZ60Test() => Test(new byte[100], Method.LZ60);
+        public void HundredZeroesLZ60Test() => Test(new byte[100], Method.LZ40);
 
         [TestMethod]
-        public void AllBytesLZ60Test() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.LZ60);
+        public void AllBytesLZ60Test() => Test(Enumerable.Range(0, 256).Select(n => (byte)(n / 0x10)).ToArray(), Method.LZ40);
 
         //LZ4
         [TestMethod]
