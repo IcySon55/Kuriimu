@@ -596,7 +596,17 @@ namespace ext_fenceposts
             int count = 0, optimizedCount = 0;
             foreach (Entry entry in _kup.Entries)
             {
-                byte[] editedText = _kup.Encoding.GetBytes(_gameHandler.GetRawString(entry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"));
+                byte[] editedText = new byte[] { };
+                if (Equals(_kup.Encoding, Encoding.ASCII))
+                {
+                    var parsed = new List<byte>();
+                    foreach (var b in _gameHandler.GetRawString(entry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"))
+                        parsed.Add((byte)b);
+                    editedText = parsed.ToArray();
+                }
+                else
+                    editedText = _kup.Encoding.GetBytes(_gameHandler.GetRawString(entry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"));
+
                 count++;
 
                 if (entry.Relocatable)
@@ -610,7 +620,17 @@ namespace ext_fenceposts
                         {
                             if (_gameHandler.GetRawString(injectedEntry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n").EndsWith(_gameHandler.GetRawString(entry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n")))
                             {
-                                byte[] injectedText = _kup.Encoding.GetBytes(_gameHandler.GetRawString(injectedEntry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"));
+                                byte[] injectedText = new byte[] { };
+                                if (Equals(_kup.Encoding, Encoding.ASCII))
+                                {
+                                    var parsed = new List<byte>();
+                                    foreach (var b in _gameHandler.GetRawString(injectedEntry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"))
+                                        parsed.Add((byte)b);
+                                    injectedText = parsed.ToArray();
+                                }
+                                else
+                                    injectedText = _kup.Encoding.GetBytes(_gameHandler.GetRawString(injectedEntry.EditedText).Replace("<null>", "\0").Replace("\r\n", "\n"));
+
                                 // Update the pointer
                                 foreach (Pointer pointer in entry.Pointers)
                                 {
