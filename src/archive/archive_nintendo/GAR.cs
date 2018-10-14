@@ -11,12 +11,17 @@ namespace archive_nintendo.GAR
         public List<GARFileInfo> Files = new List<GARFileInfo>();
         Stream _stream = null;
 
-        public Header header;
+        public Header _header;
+
         public List<ChunkEntry> entries = new List<ChunkEntry>();
         public List<List<int>> chunkFileIDs = new List<List<int>>();
         public List<string> chunkNames = new List<string>();
         public List<ChunkInfo> chunkInfos = new List<ChunkInfo>();
         public List<uint> offsets = new List<uint>();
+
+        public List<SystemChunkEntry> sysEntries = new List<SystemChunkEntry>();
+        public byte[] sysEntriesSubTable;
+        public List<SystemChunkInfo> sysChunkInfos = new List<SystemChunkInfo>();
 
         public GAR(Stream input)
         {
@@ -24,45 +29,94 @@ namespace archive_nintendo.GAR
             using (var br = new BinaryReaderX(input, true))
             {
                 //Header
-                header = br.ReadStruct<Header>();
+                _header = br.ReadStruct<Header>();
 
-                //FileEntries
-                entries = br.ReadMultiple<ChunkEntry>(header.fileChunks);
-
-                //chunkIDs
-                foreach (var chunk in entries)
+                switch (_header.hold0)
                 {
-                    chunkFileIDs.Add(new List<int>());
-                    chunkFileIDs.Last().AddRange(br.ReadMultiple<int>(chunk.fileCount));
-                    chunkNames.Add(br.ReadCStringA());
-                }
+                    case "JENKINS\0":
+                        ParseZeldaGar(br);
+                        break;
 
-                //chunkInfos
-                br.BaseStream.Position = header.chunkInfOffset;
-                foreach (var chunk in entries)
-                {
-                    for (int i = 0; i < chunk.fileCount; i++)
-                        chunkInfos.Add(new ChunkInfo(br.BaseStream));
-                }
-
-                //fileData
-                br.BaseStream.Position = header.offsetList;
-                offsets.Add(br.ReadUInt32());
-                while (br.BaseStream.Position < offsets[0])
-                    offsets.Add(br.ReadUInt32());
-
-                int offsetID = 0;
-                foreach (var chunkInfo in chunkInfos)
-                {
-                    Files.Add(new GARFileInfo
-                    {
-                        State = ArchiveFileState.Archived,
-                        FileName = chunkInfo.fileName,
-                        FileData = new SubStream(br.BaseStream, offsets[offsetID++], chunkInfo.fileSize),
-                        ext = Path.GetExtension(chunkInfo.fileName)
-                    });
+                    case "SYSTEM\0\0":
+                        ParseSystemGar(br);
+                        break;
                 }
             }
+        }
+
+        private void ParseZeldaGar(BinaryReaderX br)
+        {
+            //FileEntries
+            entries = br.ReadMultiple<ChunkEntry>(_header.fileChunks);
+
+            //chunkIDs
+            foreach (var chunk in entries)
+            {
+                chunkFileIDs.Add(new List<int>());
+                chunkFileIDs.Last().AddRange(br.ReadMultiple<int>(chunk.fileCount));
+                chunkNames.Add(br.ReadCStringA());
+            }
+
+            //chunkInfos
+            br.BaseStream.Position = _header.chunkInfOffset;
+            foreach (var chunk in entries)
+            {
+                for (int i = 0; i < chunk.fileCount; i++)
+                    chunkInfos.Add(new ChunkInfo(br.BaseStream));
+            }
+
+            //fileData
+            br.BaseStream.Position = _header.offset3;
+            offsets.Add(br.ReadUInt32());
+            while (br.BaseStream.Position < offsets[0])
+                offsets.Add(br.ReadUInt32());
+
+            int offsetID = 0;
+            foreach (var chunkInfo in chunkInfos)
+            {
+                Files.Add(new GARFileInfo
+                {
+                    State = ArchiveFileState.Archived,
+                    FileName = chunkInfo.fileName,
+                    FileData = new SubStream(br.BaseStream, offsets[offsetID++], chunkInfo.fileSize),
+                    ext = Path.GetExtension(chunkInfo.fileName)
+                });
+            }
+        }
+
+        private void ParseSystemGar(BinaryReaderX br)
+        {
+            //Chunk Entries
+            for (int i = 0; i < _header.fileChunks; i++)
+            {
+                sysEntries.Add(new SystemChunkEntry(_stream));
+                br.SeekAlignment(0x20);
+            }
+
+            //SubTable - unknown
+            br.BaseStream.Position = sysEntries.Min(x => x.subTableOffset);
+            sysEntriesSubTable = br.ReadBytes(_header.chunkInfOffset - (int)br.BaseStream.Position);
+
+            //chunk Infos
+            br.BaseStream.Position = _header.chunkInfOffset;
+            foreach (var chunk in sysEntries)
+            {
+                for (int i = 0; i < chunk.fileCount; i++)
+                {
+                    sysChunkInfos.Add(new SystemChunkInfo(br.BaseStream));
+                    sysChunkInfos.Last().ext = chunk.name;
+                }
+            }
+
+            //File Data
+            br.BaseStream.Position = _header.offset3;
+            Files = sysChunkInfos.Select(x =>
+                new GARFileInfo
+                {
+                    State = ArchiveFileState.Archived,
+                    FileName = x.name + "." + x.ext,
+                    FileData = new SubStream(_stream, x.fileOffset, x.fileSize)
+                }).ToList();
         }
 
         public void Save(Stream output)
@@ -71,7 +125,7 @@ namespace archive_nintendo.GAR
             {
                 var files = Files.OrderBy(x => x.ext.Length).ToList();
 
-                //get Extension and there count
+                //get Extension and their count
                 List<string> exts = new List<string>();
                 List<int> extsCount = new List<int>();
                 foreach (var file in files)
@@ -185,12 +239,12 @@ namespace archive_nintendo.GAR
 
                 //Header
                 bw.BaseStream.Position = 0;
-                header.fileSize = (uint)bw.BaseStream.Length;
-                header.fileChunks = (short)(exts.Count + 1);
-                header.fileCount = (short)files.Count;
-                header.chunkInfOffset = chunkInfOffset;
-                header.offsetList = offListOffset;
-                bw.WriteStruct(header);
+                _header.fileSize = (uint)bw.BaseStream.Length;
+                _header.fileChunks = (short)(exts.Count + 1);
+                _header.fileCount = (short)files.Count;
+                _header.chunkInfOffset = chunkInfOffset;
+                _header.offset3 = offListOffset;
+                bw.WriteStruct(_header);
             }
         }
 
