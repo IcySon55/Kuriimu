@@ -5,9 +5,44 @@ using System.Runtime.InteropServices;
 using Kontract;
 using Kontract.Interface;
 using System.Linq;
+using Kontract.IO;
 
 namespace text_gmd
 {
+    public interface IGMD
+    {
+        GMDContent GMDContent { get; set; }
+
+        void Load(string filename);
+        void Save(string filename, Platform platform, Game game);
+        void RenameLabel(int labelId, string labelName);
+    }
+    public enum Platform : byte
+    {
+        CTR,
+        WiiU,
+        Mobile,
+        Switch
+    }
+    public enum Game : byte
+    {
+        DD,
+        SoJ,
+        DGS1,
+        DGS2,
+        MegamanXI
+    }
+    public class GMDContent
+    {
+        public ByteOrder ByteOrder;
+        public string Name;
+        public List<Label> Content = new List<Label>();
+    }
+    //public class Content
+    //{
+    //    public string Label;
+    //    public string SectionText;
+    //}
     public enum Language : int
     {
         JAPANESE,
@@ -16,6 +51,37 @@ namespace text_gmd
         SPANISH,
         GERMAN,
         ITALIAN
+    }
+    public enum Ident : int
+    {
+        NotFound,
+        NotSupported,
+        v1 = 0x00010201,
+        v2 = 0x00010302
+    }
+
+    public class Support
+    {
+        public static Ident Identify(string file)
+        {
+            if (!File.Exists(file))
+                return Ident.NotFound;
+
+            using (var br = new BinaryReaderX(File.OpenRead(file)))
+            {
+                var mag = br.ReadString(4);
+                var version = br.ReadUInt32();
+
+                if (mag != "GMD" && mag != "\0DMG")
+                    return Ident.NotSupported;
+
+                var existVers = new List<int> { 0x00010201, 0x00010302 };
+                if (!existVers.Exists(ev => ev == version))
+                    return Ident.NotSupported;
+
+                return (Ident)version;
+            }
+        }
     }
 
     public enum Versions : uint
@@ -55,43 +121,43 @@ namespace text_gmd
         public uint Zero1;
     }
 
-    public class XOR
-    {
-        private static string XOR1;
-        private static string XOR2;
+    //public class XOR
+    //{
+    //    private static string XOR1;
+    //    private static string XOR2;
 
-        public XOR(Versions version)
-        {
-            switch (version)
-            {
-                case Versions.Version1:
-                    XOR1 = "fjfajfahajra;tira9tgujagjjgajgoa";
-                    XOR2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
-                    break;
-                case Versions.Version2:
-                    XOR1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
-                    XOR2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
-                    break;
-                default:
-                    XOR1 = string.Empty;
-                    XOR2 = string.Empty;
-                    break;
-            }
-        }
+    //    public XOR(Versions version)
+    //    {
+    //        switch (version)
+    //        {
+    //            case Versions.Version1:
+    //                XOR1 = "fjfajfahajra;tira9tgujagjjgajgoa";
+    //                XOR2 = "mva;eignhpe/dfkfjgp295jtugkpejfu";
+    //                break;
+    //            case Versions.Version2:
+    //                XOR1 = "e43bcc7fcab+a6c4ed22fcd433/9d2e6cb053fa462-463f3a446b19";
+    //                XOR2 = "861f1dca05a0;9ddd5261e5dcc@6b438e6c.8ba7d71c*4fd11f3af1";
+    //                break;
+    //            default:
+    //                XOR1 = string.Empty;
+    //                XOR2 = string.Empty;
+    //                break;
+    //        }
+    //    }
 
-        public byte[] Deobfuscate(byte[] data) => data.Select((b, i) => (byte)(b ^ XOR1[i % XOR1.Length] ^ XOR2[i % XOR2.Length])).ToArray();
+    //    public byte[] Deobfuscate(byte[] data) => data.Select((b, i) => (byte)(b ^ XOR1[i % XOR1.Length] ^ XOR2[i % XOR2.Length])).ToArray();
 
-        public byte[] Obfuscate(byte[] data) => Deobfuscate(data);
+    //    public byte[] Obfuscate(byte[] data) => Deobfuscate(data);
 
-        public static bool IsXORed(Stream input)
-        {
-            var bk = input.Position;
-            input.Position = input.Length - 1;
-            var result = input.ReadByte() != 0x00;
-            input.Position = bk;
-            return result;
-        }
-    }
+    //    public static bool IsXORed(Stream input)
+    //    {
+    //        var bk = input.Position;
+    //        input.Position = input.Length - 1;
+    //        var result = input.ReadByte() != 0x00;
+    //        input.Position = bk;
+    //        return result;
+    //    }
+    //}
 
     #region Entry_Definition
 

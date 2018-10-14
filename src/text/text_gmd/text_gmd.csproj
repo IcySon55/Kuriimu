@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GMDv2.cs" />
+    <Compile Include="GMDv1.cs" />
     <Compile Include="GmdAdapter.cs" />
     <Compile Include="GMD.cs" />
     <Compile Include="GmdSupport.cs" />
@@ -51,6 +53,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="XOR.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Kontract\Kontract.csproj">

@@ -8,5 +8,11 @@
     <Setting Name="SortEntries" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="Platform" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Switch</Value>
+    </Setting>
+    <Setting Name="Game" Type="System.String" Scope="User">
+      <Value Profile="(Default)">MegamanXI</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

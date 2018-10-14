@@ -13,8 +13,9 @@ namespace text_gmd
 {
     public class GmdAdapter : ITextAdapter
     {
-        private GMD _gmd;
-        private GMD _gmdBackup;
+        private IGMD _gmd;
+        private IGMD _gmdBackup;
+        private Ident _ident;
         private List<Entry> _entries;
 
         #region Properties
@@ -44,12 +45,9 @@ namespace text_gmd
 
         public bool Identify(string filename)
         {
-            using (var br = new BinaryReaderX(File.OpenRead(filename)))
-            {
-                if (br.BaseStream.Length < 4) return false;
-                var magic = br.ReadString(4);
-                return magic == "GMD" || magic == "\0DMG";
-            }
+            _ident = Support.Identify(filename);
+
+            return _ident != Ident.NotFound && _ident != Ident.NotSupported;
         }
 
         public LoadResult Load(string filename, bool autoBackup = false)
@@ -61,23 +59,43 @@ namespace text_gmd
 
             if (FileInfo.Exists)
             {
-                _gmd = new GMD(FileInfo.OpenRead());
-
-                var backupFilePath = FileInfo.FullName + ".bak";
-                if (File.Exists(backupFilePath))
-                    _gmdBackup = new GMD(File.OpenRead(backupFilePath));
-                else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                var ident = Support.Identify(filename);
+                switch (ident)
                 {
-                    File.Copy(FileInfo.FullName, backupFilePath);
-                    _gmdBackup = new GMD(File.OpenRead(backupFilePath));
+                    case Ident.v1:
+                        _gmd = new GMDv1();
+                        _gmdBackup = new GMDv1();
+                        break;
+
+                    case Ident.v2:
+                        _gmd = new GMDv2();
+                        _gmdBackup = new GMDv2();
+                        break;
                 }
-                else
-                    _gmdBackup = null;
+                _gmd.Load(filename);
+
+                OpenOrCreateBackup(autoBackup);
             }
             else
                 result = LoadResult.FileNotFound;
 
             return result;
+        }
+
+        private void OpenOrCreateBackup(bool autoBackup)
+        {
+            var backupFilePath = FileInfo.FullName + ".bak";
+            if (File.Exists(backupFilePath))
+            {
+                _gmdBackup.Load(backupFilePath);
+            }
+            else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                File.Copy(FileInfo.FullName, backupFilePath);
+                _gmdBackup.Load(backupFilePath);
+            }
+            else
+                _gmdBackup = null;
         }
 
         public SaveResult Save(string filename = "")
@@ -89,7 +107,7 @@ namespace text_gmd
 
             try
             {
-                _gmd.Save(FileInfo.Create());
+                _gmd.Save(FileInfo.FullName, (Platform)Enum.Parse(typeof(Platform), Settings.Default.Platform), (Game)Enum.Parse(typeof(Game), Settings.Default.Game));
             }
             catch (Exception)
             {
@@ -108,12 +126,12 @@ namespace text_gmd
                 {
                     _entries = new List<Entry>();
 
-                    foreach (Label label in _gmd.Labels)
+                    foreach (Label label in _gmd.GMDContent.Content)
                     {
                         if (_gmdBackup == null)
                             _entries.Add(new Entry(label));
                         else
-                            _entries.Add(new Entry(label, _gmdBackup.Labels.FirstOrDefault(o => o.TextID == label.TextID)));
+                            _entries.Add(new Entry(label, _gmdBackup.GMDContent.Content.FirstOrDefault(o => o.TextID == label.TextID)));
                     }
                 }
 
