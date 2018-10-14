@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Kontract.Interface;
 using Kontract.IO;
 
@@ -33,7 +34,7 @@ namespace archive_nintendo.GAR
 
                 switch (_header.hold0)
                 {
-                    case "JENKINS\0":
+                    case "jenkins\0":
                         ParseZeldaGar(br);
                         break;
 
@@ -115,13 +116,28 @@ namespace archive_nintendo.GAR
                 {
                     State = ArchiveFileState.Archived,
                     FileName = x.name + "." + x.ext,
-                    FileData = new SubStream(_stream, x.fileOffset, x.fileSize)
+                    FileData = new SubStream(_stream, x.fileOffset, x.fileSize),
+                    ext = x.ext
                 }).ToList();
         }
 
         public void Save(Stream output)
         {
-            using (var bw = new BinaryWriterX(output))
+            switch (_header.hold0)
+            {
+                case "jenkins\0":
+                    SaveZeldaGar(output);
+                    break;
+
+                case "SYSTEM\0\0":
+                    SaveSystemGar(output);
+                    break;
+            }
+        }
+
+        private void SaveZeldaGar(Stream input)
+        {
+            using (var bw = new BinaryWriterX(input))
             {
                 var files = Files.OrderBy(x => x.ext.Length).ToList();
 
@@ -244,6 +260,109 @@ namespace archive_nintendo.GAR
                 _header.fileCount = (short)files.Count;
                 _header.chunkInfOffset = chunkInfOffset;
                 _header.offset3 = offListOffset;
+                bw.WriteStruct(_header);
+            }
+        }
+
+        private void SaveSystemGar(Stream input)
+        {
+            int Align(int value, int align) => value + (align - 1) & ~(align - 1);
+
+            using (var bw = new BinaryWriterX(input))
+            {
+                var files = Files.OrderBy(x => x.ext.Length).ToList();
+
+                //get Extension and their count
+                Dictionary<string, int> exts = new Dictionary<string, int>();
+                foreach (var file in files)
+                {
+                    var ext = Path.GetExtension(file.FileName).Replace(".", "");
+                    if (!exts.ContainsKey(ext))
+                        exts.Add(ext, 1);
+                    else
+                        exts[ext]++;
+                }
+
+                //get offsets
+                int chunkExtNameOffset = _header.chunkEntryOffset + (exts.Count + 1) * 0x20;
+                int chunkSubTableOffset = Align(chunkExtNameOffset + Encoding.ASCII.GetByteCount("unknown\0") + exts.Aggregate(0, (a, b) => a + Encoding.ASCII.GetByteCount(b.Key) + 1), 4);
+                int chunkInfoOffset = chunkSubTableOffset + sysEntriesSubTable.Length;
+                int chunkInfoNameOffset = chunkInfoOffset + Files.Count * 0x10;
+                int dataOffset = Align(chunkInfoNameOffset + Files.Aggregate(0, (a, b) => a + Encoding.ASCII.GetByteCount(Path.GetFileName(b.FileName)) + 1), 0x80);
+
+                bw.BaseStream.Position = 0x20;
+
+                //Write chunkEntries
+                int localChunkNameOffset = chunkExtNameOffset;
+
+                //Add "unknown" chunk Entry
+                bw.Write(0);
+                bw.Write(0x4);
+                bw.Write(0xFFFFFFFF);
+                bw.Write(localChunkNameOffset);
+                bw.Write(0xFFFFFFFF);
+                bw.BaseStream.Position += 0xC;
+
+                localChunkNameOffset += Encoding.ASCII.GetByteCount("unknown\0");
+
+                //Add all other chunk entries
+                int filesAdded = 0;
+                foreach (var ext in exts)
+                {
+                    bw.Write(ext.Value);
+                    bw.Write(sysEntries.FirstOrDefault(x => x.name == ext.Key)?.unk1 ?? 0x4);
+                    bw.Write(filesAdded);
+                    bw.Write(localChunkNameOffset);
+                    bw.Write(sysEntries.FirstOrDefault(x => x.name == ext.Key)?.subTableOffset ?? 0x0);
+                    bw.BaseStream.Position += 0xC;
+
+                    filesAdded += ext.Value;
+                    localChunkNameOffset += Encoding.ASCII.GetByteCount(ext.Key) + 1;
+                }
+
+                //Add chunk Extensions
+                bw.WriteASCII("unknown\0");
+                foreach (var ext in exts)
+                    bw.WriteASCII(ext.Key + "\0");
+                bw.WriteAlignment(4);
+
+                //Add subtable
+                bw.Write(sysEntriesSubTable);
+
+                //Write chunkInfos and Files
+                var localChunkInfoOffset = chunkInfoOffset;
+                var localChunkInfoNameOffset = chunkInfoNameOffset;
+                var localDataOffset = dataOffset;
+                foreach (var ext in exts)
+                {
+                    var filesToAdd = Files.Where(x => x.ext == ext.Key);
+                    foreach (var toAdd in filesToAdd)
+                    {
+                        bw.BaseStream.Position = localChunkInfoOffset;
+                        bw.Write((int)toAdd.FileSize);
+                        bw.Write(localDataOffset);
+                        bw.Write(localChunkInfoNameOffset);
+                        bw.Write(0xFFFFFFFF);
+
+                        bw.BaseStream.Position = localChunkInfoNameOffset;
+                        bw.WriteASCII(Path.GetFileNameWithoutExtension(toAdd.FileName) + "\0");
+
+                        bw.BaseStream.Position = localDataOffset;
+                        toAdd.FileData.CopyTo(bw.BaseStream);
+
+                        localDataOffset += (int)toAdd.FileSize;
+                        localChunkInfoNameOffset += Encoding.ASCII.GetByteCount(Path.GetFileNameWithoutExtension(toAdd.FileName)) + 1;
+                        localChunkInfoOffset += 0x10;
+                    }
+                }
+
+                //Header
+                bw.BaseStream.Position = 0;
+                _header.fileSize = (uint)bw.BaseStream.Length;
+                _header.fileChunks = (short)(exts.Count + 1);
+                _header.fileCount = (short)files.Count;
+                _header.chunkInfOffset = chunkInfoOffset;
+                _header.offset3 = dataOffset;
                 bw.WriteStruct(_header);
             }
         }
