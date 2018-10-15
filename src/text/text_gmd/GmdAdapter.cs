@@ -66,7 +66,6 @@ namespace text_gmd
                         _gmd = new GMDv1();
                         _gmdBackup = new GMDv1();
                         break;
-
                     case Ident.v2:
                         _gmd = new GMDv2();
                         _gmdBackup = new GMDv2();

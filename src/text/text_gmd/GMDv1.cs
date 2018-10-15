@@ -87,7 +87,7 @@ namespace text_gmd
 
                         GMDContent.Content.Add(new Label
                         {
-                            Name = label == "" ? "no_name_" + counter++.ToString("000") : label,
+                            Name = label == "" ? "no_name_" + counter++.ToString() : label,
                             Text = brt.ReadString((int)textSize, Encoding.UTF8).Replace("\r\n", "\xa").Replace("\xa", "\r\n"),
                             TextID = i
                         });

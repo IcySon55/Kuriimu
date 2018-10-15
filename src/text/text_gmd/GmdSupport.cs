@@ -70,10 +70,14 @@ namespace text_gmd
             using (var br = new BinaryReaderX(File.OpenRead(file)))
             {
                 var mag = br.ReadString(4);
-                var version = br.ReadUInt32();
 
                 if (mag != "GMD" && mag != "\0DMG")
                     return Ident.NotSupported;
+
+                if (mag == "\0DMG")
+                    br.ByteOrder = ByteOrder.BigEndian;
+
+                var version = br.ReadUInt32();
 
                 var existVers = new List<int> { 0x00010201, 0x00010302 };
                 if (!existVers.Exists(ev => ev == version))
