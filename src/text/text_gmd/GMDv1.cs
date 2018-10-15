@@ -50,6 +50,7 @@ namespace text_gmd
                 // Header
                 var Header = br.ReadStruct<Header>();
                 var Name = br.ReadCStringA();
+                var HeaderLength = (int)br.BaseStream.Position;
                 GMDContent.Name = Name;
 
                 // Label Entries
@@ -80,7 +81,7 @@ namespace text_gmd
                         if (LabelEntries.Find(l => l.SectionID == i) != null)
                         {
                             bk = br.BaseStream.Position;
-                            br.BaseStream.Position = LabelDataOffset + (LabelEntries.Find(l => l.SectionID == i).LabelOffset - (0x29080170 + Header.LabelCount * 0x80));
+                            br.BaseStream.Position = LabelEntries.Find(l => l.SectionID == i).LabelOffset - LabelEntries.First().LabelOffset + (HeaderLength + Header.LabelCount * 0x8);
                             label = br.ReadCStringA();
                             br.BaseStream.Position = bk;
                         }
