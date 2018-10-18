@@ -24,7 +24,7 @@ namespace Knit
         private Image MusicOnIcon { get; set; }
         private Image MusicOffIcon { get; set; }
 
-        private PictureBox ProgressAnimation { get; set; } = new PictureBox();
+        private PictureBox picProgressAnimation { get; set; } = new PictureBox();
         WMPLib.WindowsMediaPlayer MediaPlayer = new WMPLib.WindowsMediaPlayer();
 
         private Meta Meta { get; set; } = new Meta();
@@ -32,7 +32,9 @@ namespace Knit
         public frmMain()
         {
             InitializeComponent();
+            DoubleBuffer(this, true);
             DoubleBuffer(pnlMain, true);
+            DoubleBuffer(picProgressAnimation, true);
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -78,9 +80,9 @@ namespace Knit
             // Progress Animation
             if (Meta.Layout.ProgressAnimation.Image != string.Empty && File.Exists(animPath))
             {
-                pnlMain.Controls.Add(ProgressAnimation);
-                ProgressAnimation.Image = Image.FromFile(animPath);
-                ProgressAnimation.SetBounds(Meta.Layout.ProgressAnimation.X, Meta.Layout.ProgressAnimation.Y, ProgressAnimation.Image.Width, ProgressAnimation.Image.Height);
+                pnlMain.Controls.Add(picProgressAnimation);
+                picProgressAnimation.Image = Image.FromFile(animPath);
+                picProgressAnimation.SetBounds(Meta.Layout.ProgressAnimation.X, Meta.Layout.ProgressAnimation.Y, picProgressAnimation.Image.Width, picProgressAnimation.Image.Height);
             }
 
             // Patch Button
@@ -168,7 +170,7 @@ namespace Knit
             var nx = Meta.Layout.ProgressAnimation.X + (Meta.Layout.ProgressAnimation.DX - Meta.Layout.ProgressAnimation.X) * ratio;
             var ny = Meta.Layout.ProgressAnimation.Y + (Meta.Layout.ProgressAnimation.DY - Meta.Layout.ProgressAnimation.Y) * ratio;
 
-            ProgressAnimation.SetBounds((int)nx, (int)ny, ProgressAnimation.Width, ProgressAnimation.Height);
+            picProgressAnimation.SetBounds((int)nx, (int)ny, picProgressAnimation.Width, picProgressAnimation.Height);
         }
 
         private async void btnPatch_Click(object sender, EventArgs e)
