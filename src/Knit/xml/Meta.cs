@@ -109,6 +109,9 @@ namespace Knit
         [XmlElement("progressBar")]
         public Appearance ProgressBar { get; set; }
 
+        [XmlElement("progressAnimation")]
+        public AppearanceAnimation ProgressAnimation { get; set; }
+
         [XmlElement("patchButton")]
         public Appearance PatchButton { get; set; }
 
@@ -133,6 +136,11 @@ namespace Knit
             {
                 Width = 600,
                 Height = 23
+            };
+            ProgressAnimation = new AppearanceAnimation
+            {
+                Width =  32,
+                Height = 32
             };
             PatchButton = new Appearance("&Patch..")
             {
@@ -246,5 +254,17 @@ namespace Knit
             get => ColorTranslator.ToHtml(BackColor);
             set => BackColor = ColorTranslator.FromHtml(value);
         }
+    }
+
+    public class AppearanceAnimation : Appearance
+    {
+        [XmlElement("image")]
+        public string Image { get; set; } = "";
+
+        [XmlAttribute("dx")]
+        public int DX { get; set; }
+
+        [XmlAttribute("dy")]
+        public int DY { get; set; }
     }
 }

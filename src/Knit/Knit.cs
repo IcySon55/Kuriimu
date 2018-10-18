@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,10 +18,13 @@ namespace Knit
         private string MetaDirectory { get; set; }
         private string ExitButtonText { get; set; }
 
+        private Image ProgressIcon { get; set; }
         private bool MusicOn { get; set; }
         private string MusicPath { get; set; }
         private Image MusicOnIcon { get; set; }
         private Image MusicOffIcon { get; set; }
+
+        private PictureBox ProgressAnimation { get; set; } = new PictureBox();
         WMPLib.WindowsMediaPlayer MediaPlayer = new WMPLib.WindowsMediaPlayer();
 
         private Meta Meta { get; set; } = new Meta();
@@ -28,6 +32,7 @@ namespace Knit
         public frmMain()
         {
             InitializeComponent();
+            DoubleBuffer(pnlMain, true);
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -52,6 +57,7 @@ namespace Knit
             Meta = Meta.Load(Path.Combine(MetaDirectory, "meta.xml"));
             var background = new Bitmap(Path.Combine(MetaDirectory, Meta.Background));
             var icon = new Icon(Path.Combine(MetaDirectory, Meta.Icon));
+            var animPath = Path.Combine(MetaDirectory, Meta.Layout.ProgressAnimation.Image);
             var tt = new ToolTip();
 
             // Title
@@ -68,6 +74,14 @@ namespace Knit
             // Progress Bar
             prgProgress.Location = Meta.Layout.ProgressBar.Location;
             prgProgress.Size = Meta.Layout.ProgressBar.Size;
+
+            // Progress Animation
+            if (Meta.Layout.ProgressAnimation.Image != string.Empty && File.Exists(animPath))
+            {
+                pnlMain.Controls.Add(ProgressAnimation);
+                ProgressAnimation.Image = Image.FromFile(animPath);
+                ProgressAnimation.SetBounds(Meta.Layout.ProgressAnimation.X, Meta.Layout.ProgressAnimation.Y, ProgressAnimation.Image.Width, ProgressAnimation.Image.Height);
+            }
 
             // Patch Button
             btnPatch.Text = Meta.Layout.PatchButton.Text;
@@ -148,6 +162,15 @@ namespace Knit
             catch (Exception) { }
         }
 
+        private void UpdateProgressAnimation()
+        {
+            var ratio = (double)prgProgress.Value / Math.Max(prgProgress.Maximum, 1);
+            var nx = Meta.Layout.ProgressAnimation.X + (Meta.Layout.ProgressAnimation.DX - Meta.Layout.ProgressAnimation.X) * ratio;
+            var ny = Meta.Layout.ProgressAnimation.Y + (Meta.Layout.ProgressAnimation.DY - Meta.Layout.ProgressAnimation.Y) * ratio;
+
+            ProgressAnimation.SetBounds((int)nx, (int)ny, ProgressAnimation.Width, ProgressAnimation.Height);
+        }
+
         private async void btnPatch_Click(object sender, EventArgs e)
         {
             // Startup
@@ -175,13 +198,15 @@ namespace Knit
                     if (!variableCache.ContainsKey(step.Run))
                     {
                         prgProgress.Value = Math.Min(percentage + step.Weight, prgProgress.Maximum);
+                        UpdateProgressAnimation();
                         continue;
                     }
 
-                    if (bool.TryParse(variableCache[step.Run].ToString().ToLower(), out bool run))
+                    if (bool.TryParse(variableCache[step.Run].ToString().ToLower(), out var run))
                         if (!run)
                         {
                             prgProgress.Value = Math.Min(percentage + step.Weight, prgProgress.Maximum);
+                            UpdateProgressAnimation();
                             continue;
                         }
                 }
@@ -191,6 +216,7 @@ namespace Knit
                 var progress = new Progress<ProgressReport>(p =>
                 {
                     prgProgress.Value = Math.Min(percentage + (int)(p.Percentage / 100 * step.Weight), prgProgress.Maximum);
+                    UpdateProgressAnimation();
                     if (p.HasMessage)
                         txtStatus.AppendText(p.Message.Trim() + (p.NewLine ? "\r\n" : ""));
                 });
@@ -286,6 +312,11 @@ namespace Knit
         private void btnWebsite_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(Meta.Website);
+        }
+        
+        private void DoubleBuffer(Control ctrl, bool doubleBuffered)
+        {
+            ctrl.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, doubleBuffered, null);
         }
     }
 }
