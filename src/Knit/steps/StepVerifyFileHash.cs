@@ -37,7 +37,7 @@ namespace Knit.steps
             progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache), Percentage = 0, NewLine = false });
             await Task.Delay(10);
 
-            if ((Variable == string.Empty && Path == string.Empty) || (Variable != string.Empty && variableCache.ContainsKey(Variable)))
+            if ((Variable == string.Empty && Path == string.Empty) || (Variable != string.Empty && !variableCache.ContainsKey(Variable)))
             {
                 stepResults.Message = $": A file was not provided.";
                 stepResults.Status = StepStatus.Failure;
@@ -75,7 +75,7 @@ namespace Knit.steps
                         result = await SHA1Hash.ComputeHashAsync(File.OpenRead(file), progress);
                         if (Hash.ToUpper() != result)
                         {
-                            stepResults.Message = $"\r\nExpected {Hash} but got {result} instead.\r\n" + Common.ProcessVariableTokens(InvalidMessage, variableCache);
+                            stepResults.Message = $"\r\nExpected {Hash.ToUpper()} but got {result.ToUpper()} instead.\r\n" + Common.ProcessVariableTokens(InvalidMessage, variableCache);
                             stepResults.Status = StepStatus.Failure;
                         }
                         break;
@@ -83,7 +83,7 @@ namespace Knit.steps
                         result = await SHA256Hash.ComputeHashAsync(File.OpenRead(file), progress);
                         if (Hash.ToUpper() != result)
                         {
-                            stepResults.Message = $"\r\nExpected {Hash} but got {result} instead.\r\n" + Common.ProcessVariableTokens(InvalidMessage, variableCache);
+                            stepResults.Message = $"\r\nExpected {Hash.ToUpper()} but got {result.ToUpper()} instead.\r\n" + Common.ProcessVariableTokens(InvalidMessage, variableCache);
                             stepResults.Status = StepStatus.Failure;
                         }
                         break;
