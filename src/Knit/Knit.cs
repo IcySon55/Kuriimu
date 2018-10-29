@@ -32,6 +32,7 @@ namespace Knit
         public frmMain()
         {
             InitializeComponent();
+
             DoubleBuffer(this, true);
             DoubleBuffer(pnlMain, true);
             DoubleBuffer(picProgressAnimation, true);
@@ -315,7 +316,7 @@ namespace Knit
         {
             System.Diagnostics.Process.Start(Meta.Website);
         }
-        
+
         private void DoubleBuffer(Control ctrl, bool doubleBuffered)
         {
             ctrl.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, doubleBuffered, null);
