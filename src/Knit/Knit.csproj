@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="steps\StepSelectDirectory.cs" />
     <Compile Include="steps\StepOptions.cs" />
+    <Compile Include="steps\StepMessage.cs" />
     <Compile Include="steps\StepVerifyFileHash.cs" />
     <Compile Include="steps\StepExecuteProgram.cs" />
     <Compile Include="TransparentTextBox.cs">
