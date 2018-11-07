@@ -35,16 +35,11 @@
     <ApplicationIcon>knit.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.JScript" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -68,6 +63,7 @@
     </Compile>
     <Compile Include="steps\StepSelectDirectory.cs" />
     <Compile Include="steps\StepOptions.cs" />
+    <Compile Include="steps\StepMessage.cs" />
     <Compile Include="steps\StepVerifyFileHash.cs" />
     <Compile Include="steps\StepExecuteProgram.cs" />
     <Compile Include="TransparentTextBox.cs">

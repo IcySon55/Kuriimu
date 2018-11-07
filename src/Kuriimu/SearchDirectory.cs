@@ -57,8 +57,7 @@ namespace Kuriimu
 
                     var files = new List<string>();
                     foreach (var type in types)
-                        if (type != "*.kup")
-                            files.AddRange(Directory.GetFiles(txtSearchDirectory.Text.Trim(), type, chkSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
+                        files.AddRange(Directory.GetFiles(txtSearchDirectory.Text.Trim(), type, chkSearchSubfolders.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 
                     var results = new List<SearchDirectoryResult>();
 

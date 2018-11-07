@@ -22,6 +22,7 @@ namespace Knit
         [XmlArrayItem("step-select-directory", typeof(StepSelectDirectory))]
         [XmlArrayItem("step-verify-file-hash", typeof(StepVerifyFileHash))]
         [XmlArrayItem("step-execute-program", typeof(StepExecuteProgram))]
+        [XmlArrayItem("step-message", typeof(StepMessage))]
         [XmlArrayItem("step-options", typeof(StepOptions))]
         // DEBUG
         [XmlArrayItem("step-debug-show-variable", typeof(StepDebugShowVariable))]

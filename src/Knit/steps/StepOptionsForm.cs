@@ -6,8 +6,8 @@ namespace Knit.steps
 {
     public sealed partial class StepOptionsForm : Form
     {
-        private Dictionary<string, object> _variableCache;
-        private int _fieldCount = 0;
+        private readonly Dictionary<string, object> _variableCache;
+        private readonly int _fieldCount;
 
         public StepOptionsForm()
         {
@@ -41,7 +41,7 @@ namespace Knit.steps
                 // Description
                 if (option.Description.Trim() == string.Empty) continue;
 
-                var lblDescription = new Label { AutoSize = true, Text = option.Description, Location = new Point(margin, nextY - padding), MaximumSize = new Size(300, 0) };
+                var lblDescription = new Label { Text = option.Description, Location = new Point(margin, nextY - padding), MaximumSize = new Size(300, 0), AutoSize = true };
                 splMain.Panel1.Controls.Add(lblDescription);
                 nextY += lblDescription.Height + padding;
                 width = margin * 2 + lblDescription.Width;

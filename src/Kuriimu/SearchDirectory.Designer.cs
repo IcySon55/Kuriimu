@@ -115,7 +115,6 @@
             this.txtSearchDirectory.Location = new System.Drawing.Point(74, 10);
             this.txtSearchDirectory.Margin = new System.Windows.Forms.Padding(4);
             this.txtSearchDirectory.Name = "txtSearchDirectory";
-            this.txtSearchDirectory.ReadOnly = true;
             this.txtSearchDirectory.Size = new System.Drawing.Size(320, 20);
             this.txtSearchDirectory.TabIndex = 0;
             this.txtSearchDirectory.TabStop = false;
