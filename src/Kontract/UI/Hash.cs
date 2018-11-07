@@ -26,6 +26,15 @@ namespace Kontract.UI
             tsb3.DropDownItems.Add(new ToolStripMenuItem("Create", null, Create));
             tsb3.DropDownItems[0].Tag = Hash.XXH32;
 
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("FNV1a 32bit", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[2];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Create", null, Create));
+            tsb3.DropDownItems[0].Tag = Hash.FNV1a32;
+            tsb2.DropDownItems.Add(new ToolStripMenuItem("FNV1 32bit", null));
+            tsb3 = (ToolStripMenuItem)tsb2.DropDownItems[3];
+            tsb3.DropDownItems.Add(new ToolStripMenuItem("Create", null, Create));
+            tsb3.DropDownItems[0].Tag = Hash.FNV132;
+
             //3DS
             tsb.DropDownItems.Add(new ToolStripMenuItem("3DS", null));
             tsb2 = (ToolStripMenuItem)tsb.DropDownItems[1];
@@ -43,7 +52,6 @@ namespace Kontract.UI
             switch (tsi.Tag)
             {
                 case Hash.CRC32:
-                    ;
                     var ofd = new OpenFileDialog
                     {
                         Title = Hash.CRC32.ToString(),
@@ -79,6 +87,32 @@ namespace Kontract.UI
                     MessageBox.Show($"0x{XXH32.Create(new BinaryReaderX(openFile).ReadBytes((int)openFile.Length)):X8}", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     openFile.Close();
                     break;
+
+                case Hash.FNV1a32:
+                    ofd = new OpenFileDialog
+                    {
+                        Title = Hash.FNV132.ToString(),
+                        Filter = "All Files (*.*)|*.*"
+                    };
+
+                    if (ofd.ShowDialog() != DialogResult.OK) break;
+                    openFile = File.OpenRead(ofd.FileName);
+                    MessageBox.Show($"0x{FNV.FNV1a32.Create(new BinaryReaderX(openFile).ReadBytes((int)openFile.Length)):X8}", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    openFile.Close();
+                    break;
+
+                case Hash.FNV132:
+                    ofd = new OpenFileDialog
+                    {
+                        Title = Hash.FNV132.ToString(),
+                        Filter = "All Files (*.*)|*.*"
+                    };
+
+                    if (ofd.ShowDialog() != DialogResult.OK) break;
+                    openFile = File.OpenRead(ofd.FileName);
+                    MessageBox.Show($"0x{FNV.FNV132.Create(new BinaryReaderX(openFile).ReadBytes((int)openFile.Length)):X8}", tsi?.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    openFile.Close();
+                    break;
             }
         }
 
@@ -86,7 +120,9 @@ namespace Kontract.UI
         {
             CRC32,
             SHA256,
-            XXH32
+            XXH32,
+            FNV132,
+            FNV1a32
         }
     }
 }
