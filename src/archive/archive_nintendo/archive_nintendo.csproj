@@ -88,6 +88,9 @@
     <Compile Include="PC.cs" />
     <Compile Include="PcManager.cs" />
     <Compile Include="PcSupport.cs" />
+    <Compile Include="PFS0.cs" />
+    <Compile Include="PFS0Manager.cs" />
+    <Compile Include="PFS0Support.cs" />
     <Compile Include="PlainUMSBT.cs" />
     <Compile Include="PlainUmsbtManager.cs" />
     <Compile Include="PlainUmsbtSupport.cs" />
