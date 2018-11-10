@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ARC0.cs" />
+    <Compile Include="X3Manager.cs" />
     <Compile Include="Arc0Manager.cs" />
     <Compile Include="Arc0Support.cs" />
     <Compile Include="ARCV.cs" />
@@ -64,6 +65,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="X3.cs" />
+    <Compile Include="X3Support.cs" />
     <Compile Include="XFSA.cs" />
     <Compile Include="XfsaManager.cs" />
     <Compile Include="XfsaSupport.cs" />
