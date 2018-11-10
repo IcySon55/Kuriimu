@@ -44,11 +44,7 @@ namespace archive_level5
                         br.BaseStream.Position = 0;
                         var uncompressedSize = br.ReadInt32();
                         while (bw.BaseStream.Length < uncompressedSize)
-                        {
-                            var compressedSize = br.ReadInt32();
-                            bw.Write(ZLib.Decompress(new SubStream(br.BaseStream, br.BaseStream.Position, compressedSize)));
-                            br.BaseStream.Position += 0x4; // Skip ZLib footer
-                        }
+                            bw.Write(ZLib.Decompress(new MemoryStream(br.ReadBytes(br.ReadInt32()))));
                     }
 
                 ms.Position = 0;
