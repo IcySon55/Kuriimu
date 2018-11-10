@@ -47,7 +47,7 @@ namespace archive_level5
                         {
                             var compressedSize = br.ReadInt32();
                             bw.Write(ZLib.Decompress(new SubStream(br.BaseStream, br.BaseStream.Position, compressedSize)));
-                            br.BaseStream.Position += 4; // Skip ZLib footer
+                            br.BaseStream.Position += 0x4; // Skip ZLib footer
                         }
                     }
 
@@ -56,7 +56,7 @@ namespace archive_level5
             }
         }
 
-        public override long? FileSize => Entry.UncompressedSize;
+        public override long? FileSize => Entry.UncompressedSize > 0 ? Entry.UncompressedSize : Entry.CompressedSize;
 
     }
 }

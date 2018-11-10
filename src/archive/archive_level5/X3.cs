@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using Kontract.Compression;
 using Kontract.Interface;
 using Kontract.IO;
 
@@ -10,10 +14,10 @@ namespace archive_level5.X3
     public sealed class X3 : IDisposable
     {
         public List<X3FileInfo> Files = new List<X3FileInfo>();
-        Stream _stream = null;
 
         #region Instance Members
 
+        private Stream _stream;
         private FileHeader _header;
         private List<FileEntry> _fileEntries;
 
@@ -31,13 +35,32 @@ namespace archive_level5.X3
 
                 foreach (var entry in _fileEntries)
                 {
+                    var compressed = entry.UncompressedSize != entry.CompressedSize && entry.UncompressedSize > 0;
+                    br.BaseStream.Position = entry.Offset * _header.Alignment + (compressed ? 0x4 : 0);
+
+                    byte[] firstBlock;
+                    if (compressed)
+                    {
+                        var firstBlockLength = br.ReadInt32();
+                        firstBlock = ZLib.Decompress(new MemoryStream(br.ReadBytes(firstBlockLength)));
+                    }
+                    else
+                        firstBlock = br.ReadBytes(4);
+                    var magic = Encoding.ASCII.GetString(firstBlock.Take(4).ToArray());
+                    var extension = ".bin";
+
+                    if (magic == "GT1G")
+                        extension = ".g1t";
+                    else if (magic == "SMDH")
+                        extension = ".icn";
+
                     Files.Add(new X3FileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = Files.Count.ToString("000000") + ".bin",
+                        FileName = (entry.Offset * _header.Alignment).ToString("X8") + extension,
                         FileData = new SubStream(br.BaseStream, entry.Offset * _header.Alignment, entry.CompressedSize),
                         Entry = entry,
-                        CompressionLevel = entry.CompressedSize == entry.UncompressedSize ? CompressionLevel.NoCompression : CompressionLevel.Optimal
+                        CompressionLevel = compressed ? CompressionLevel.Optimal : CompressionLevel.NoCompression
                     });
                 }
             }
