@@ -29,15 +29,22 @@ namespace archive_nintendo.NCA
                     switch (section.fsType)
                     {
                         case 2:     //PFS0
-                            var pfs0Block = new BinaryReaderX(new MemoryStream(section.superBlock)).ReadStruct<PFS0SuperBlock>();
-                            var pfs0 = new PFS0(input, pfs0Block, ncaHeader.sectionEntries[index].mediaStartOffset * 0x200L);
-                            foreach (var file in pfs0.files)
-                                Files.Add(new ArchiveFileInfo
-                                {
-                                    State = ArchiveFileState.Archived,
-                                    FileName = Path.Combine($"PFS0 (Section {index})", file.name),
-                                    FileData = new SubStream(_stream, file.fileEntry.offset, file.fileEntry.size)
-                                });
+                            try
+                            {
+                                var pfs0Block = new BinaryReaderX(new MemoryStream(section.superBlock)).ReadStruct<PFS0SuperBlock>();
+                                var pfs0 = new PFS0(input, pfs0Block, ncaHeader.sectionEntries[index].mediaStartOffset * 0x200L);
+                                foreach (var file in pfs0.files)
+                                    Files.Add(new ArchiveFileInfo
+                                    {
+                                        State = ArchiveFileState.Archived,
+                                        FileName = Path.Combine($"PFS0 (Section {index})", file.name),
+                                        FileData = new SubStream(_stream, file.fileEntry.offset, file.fileEntry.size)
+                                    });
+                            }
+                            catch
+                            {
+
+                            }
                             break;
                         case 3:     //RomFS
                             var romFSBlock = new BinaryReaderX(new MemoryStream(section.superBlock)).ReadStruct<RomFSSuperBlock>();
