@@ -308,13 +308,13 @@ namespace Kontract.Encryption
                 {
                     if (sectionList[i].mediaOffset != 0 && sectionList[i].endMediaOffset != 0)
                     {
-                        br.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
+                        br.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200L;
 
                         if (hasRightsID)
                         {
-                            var enc_buffer = br.ReadBytes(sectionList[i].endMediaOffset * 0x200 - sectionList[i].mediaOffset * 0x200);
-                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200));
-                            bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200;
+                            var enc_buffer = br.ReadBytes((int)(sectionList[i].endMediaOffset * 0x200L - sectionList[i].mediaOffset * 0x200L));
+                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200L));
+                            bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200L;
                             bw.Write(dec_buffer);
                         }
                         else
