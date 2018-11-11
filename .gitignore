@@ -7,6 +7,7 @@ obj
 /Publish.bat
 /Publish.ps1
 /Beta.ps1
+/Build.ps1
 /*Release Notes.md
 /Kuriimu-EX.sln
 /.vs
@@ -16,11 +17,6 @@ obj
 /src/game/game_coropata
 /src/game/game_e.x._troopers
 /src/text/text_coropata
-/src/Kuriimu/Properties/AssemblyInfo.cs
-/src/Karameru/Properties/AssemblyInfo.cs
-/src/Kukkii/Properties/AssemblyInfo.cs
-/src/Kontract/Properties/AssemblyInfo.cs
-/src/runext/Properties/AssemblyInfo.cs
 /src/sample_files/test_files/tmp
 /src/sample_files/test_files/tmp
 /src/sample_files/image_files

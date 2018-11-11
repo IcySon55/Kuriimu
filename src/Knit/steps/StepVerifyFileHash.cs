@@ -31,20 +31,22 @@ namespace Knit.steps
         // Methods
         public override async Task<StepResults> Perform(Dictionary<string, object> variableCache, IProgress<ProgressReport> progress)
         {
+            var column = StartMessage.Trim().Length > 0 ? ": " : "";
+
             var progressReport = new ProgressReport();
-            var stepResults = new StepResults { Message = ": " + Common.ProcessVariableTokens(ValidMessage, variableCache), Status = StepStatus.Success };
+            var stepResults = new StepResults { Message = column + Common.ProcessVariableTokens(ValidMessage, variableCache), Status = StepStatus.Success };
 
             progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache), Percentage = 0, NewLine = false });
             await Task.Delay(10);
 
             if ((Variable == string.Empty && Path == string.Empty) || (Variable != string.Empty && !variableCache.ContainsKey(Variable)))
             {
-                stepResults.Message = $": A file was not provided.";
+                stepResults.Message = $"{column}A file was not provided.";
                 stepResults.Status = StepStatus.Failure;
             }
             else if (Hash == string.Empty)
             {
-                stepResults.Message = $": A hash was not provided.";
+                stepResults.Message = $"{column}A hash was not provided.";
                 stepResults.Status = StepStatus.Failure;
             }
 
@@ -58,7 +60,7 @@ namespace Knit.steps
 
                 if (!File.Exists(file))
                 {
-                    stepResults.Message = $": The file provided does not exist.";
+                    stepResults.Message = $"{column}The file provided does not exist.";
                     stepResults.Status = StepStatus.Failure;
                 }
             }
@@ -68,7 +70,7 @@ namespace Knit.steps
                 switch (Type)
                 {
                     case HashTypes.None:
-                        stepResults.Message = $": A hash type was not selected.";
+                        stepResults.Message = $"{column}A hash type was not selected.";
                         stepResults.Status = StepStatus.Failure;
                         break;
                     case HashTypes.SHA1:
