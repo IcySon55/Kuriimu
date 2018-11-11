@@ -4,13 +4,15 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using Kontract.Compression;
 using Kontract.Interface;
 using Kontract.IO;
 
 namespace archive_level5.X3
 {
+    /// <summary>
+    /// Koei-Tecmo X2 Archive Format
+    /// </summary>
     public sealed class X3 : IDisposable
     {
         public List<X3FileInfo> Files = new List<X3FileInfo>();

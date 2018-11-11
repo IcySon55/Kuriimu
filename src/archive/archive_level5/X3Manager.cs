@@ -14,7 +14,7 @@ namespace archive_level5.X3
 
         // Information
         public string Name => "X3";
-        public string Description => "Level 5 X3 Archive";
+        public string Description => "Koei-Tecmo X3 Archive";
         public string Extension => "*.bin";
         public string About => "This is the X3 archive manager for Karameru.";
 

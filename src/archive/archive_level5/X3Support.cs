@@ -6,7 +6,7 @@ using Kontract.Compression;
 using Kontract.Interface;
 using Kontract.IO;
 
-namespace archive_level5
+namespace archive_level5.X3
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class FileHeader
@@ -53,6 +53,5 @@ namespace archive_level5
         }
 
         public override long? FileSize => Entry.UncompressedSize > 0 ? Entry.UncompressedSize : Entry.CompressedSize;
-
     }
 }
