@@ -9,15 +9,31 @@ using System.Drawing;
 
 namespace image_g1t
 {
+    public enum Platform
+    {
+        PS,
+        Vita,
+        N3DS
+    }
+
     public class Support
     {
-        public static Dictionary<byte, IImageFormat> Format = new Dictionary<byte, IImageFormat>
+        public static Dictionary<byte, IImageFormat> N3DSFormat = new Dictionary<byte, IImageFormat>
+        {
+            [9] = new RGBA(8, 8, 8, 8)
+        };
+
+        public static Dictionary<byte, IImageFormat> VitaFormat = new Dictionary<byte, IImageFormat>
         {
             [0] = new RGBA(8, 8, 8, 8),
             [1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.LittleEndian, true),
             [6] = new DXT(DXT.Version.DXT1),
             [8] = new DXT(DXT.Version.DXT5),
             [0x12] = new DXT(DXT.Version.DXT5),
+        };
+
+        public static Dictionary<byte, IImageFormat> PSFormat = new Dictionary<byte, IImageFormat>
+        {
             [0x59] = new DXT(DXT.Version.DXT1),
             [0x5b] = new DXT(DXT.Version.DXT5)
         };
@@ -62,7 +78,7 @@ namespace image_g1t
             Height = (height + 3) & ~3;
 
             var bitField = new List<(int, int)>();
-            var bitStart = (block) ? 4 : 1;
+            var bitStart = block ? 4 : 1;
             if (block)
                 bitField.AddRange(new List<(int, int)> { (1, 0), (2, 0), (0, 1), (0, 2) });
             for (int i = bitStart; i < Math.Min(width, height); i *= 2)

@@ -48,9 +48,12 @@ namespace image_g1t
 
             if (FileInfo.Exists)
             {
-                _g1t = new G1T(FileInfo.OpenRead(), Path.GetFileName(filename).ToLower().Contains("vita"));
+                var platform = Platform.PS;
+                if (Path.GetFileName(filename).ToLower().Contains("vita")) platform = Platform.Vita;
+                if (Path.GetFileName(filename).ToLower().Contains("3ds")) platform = Platform.N3DS;
+                _g1t = new G1T(FileInfo.OpenRead(), platform);
 
-                _bitmaps = _g1t.bmps.Select((b, i) => new G1TBitmapInfo { Bitmap = b, Format = _g1t.settings[i].Format.FormatName }).ToList<BitmapInfo>();
+                _bitmaps = _g1t.bmps.Select((b, i) => new G1TBitmapInfo { Bitmap = b, Format = _g1t.settings[i].Format.FormatName, Platform = platform }).ToList<BitmapInfo>();
             }
         }
 
@@ -74,6 +77,9 @@ namespace image_g1t
             [Category("Properties")]
             [ReadOnly(true)]
             public string Format { get; set; }
+            [Category("Properties")]
+            [ReadOnly(true)]
+            public Platform Platform { get; set; }
         }
     }
 }

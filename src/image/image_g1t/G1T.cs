@@ -19,11 +19,11 @@ namespace image_g1t
         private List<Meta> meta = new List<Meta>();
         private List<byte[]> metaExt = new List<byte[]>();
 
-        private bool vita = false;
+        private Platform _platform;
 
-        public G1T(Stream input, bool vita = false)
+        public G1T(Stream input, Platform platform)
         {
-            this.vita = vita;
+            _platform = platform;
 
             using (BinaryReaderX br = new BinaryReaderX(input))
             {
@@ -54,24 +54,40 @@ namespace image_g1t
                     }
                     metaExt.Add(ext);
 
+                    var format = (_platform == Platform.Vita) ? Support.VitaFormat[meta[i].format] : (_platform == Platform.N3DS) ? Support.N3DSFormat[meta[i].format] : Support.PSFormat[meta[i].format];
+
                     //Check if format exists
-                    if (!Support.Format.ContainsKey(metainfo.format))
-                        throw new Exception($"Unsupported image format 0x{metainfo.format:X2}.");
+                    switch (_platform)
+                    {
+                        case Platform.N3DS:
+                            if (!Support.N3DSFormat.ContainsKey(metainfo.format))
+                                throw new Exception($"Unsupported image format 0x{metainfo.format:X2}.");
+                            break;
+                        case Platform.PS:
+                            if (!Support.PSFormat.ContainsKey(metainfo.format))
+                                throw new Exception($"Unsupported image format 0x{metainfo.format:X2}.");
+                            break;
+                        case Platform.Vita:
+                            if (!Support.VitaFormat.ContainsKey(metainfo.format))
+                                throw new Exception($"Unsupported image format 0x{metainfo.format:X2}.");
+                            break;
+                    }
 
                     IImageSwizzle swizzle = null;
-                    if (vita) swizzle = new VitaSwizzle(metainfo.width, metainfo.height, Support.Format[metainfo.format].FormatName.Contains("DXT"));
-                    else if (Support.Format[metainfo.format].FormatName.Contains("DXT")) swizzle = new BlockSwizzle(metainfo.width, metainfo.height);
+                    if (_platform == Platform.Vita) swizzle = new VitaSwizzle(metainfo.width, metainfo.height, format.FormatName.Contains("DXT"));
+                    else if (_platform == Platform.N3DS) swizzle = new CTRSwizzle(metainfo.width, metainfo.height, 2);
+                    else if (format.FormatName.Contains("DXT")) swizzle = new BlockSwizzle(metainfo.width, metainfo.height);
 
                     var setting = new ImageSettings
                     {
                         Width = metainfo.width,
                         Height = metainfo.height,
                         Swizzle = swizzle,
-                        Format = Support.Format[metainfo.format]
+                        Format = format
                     };
                     settings.Add(setting);
 
-                    bmps.Add(Common.Load(br.ReadBytes(metainfo.width * metainfo.height * Support.Format[metainfo.format].BitDepth / 8), setting));
+                    bmps.Add(Common.Load(br.ReadBytes(metainfo.width * metainfo.height * format.BitDepth / 8), setting));
                 }
             }
         }
@@ -94,9 +110,11 @@ namespace image_g1t
                 var off = header.texCount * 4;
                 for (int i = 0; i < header.texCount; i++)
                 {
+                    var format = (_platform == Platform.Vita) ? Support.VitaFormat[meta[i].format] : (_platform == Platform.N3DS) ? Support.N3DSFormat[meta[i].format] : Support.PSFormat[meta[i].format];
+
                     offsetList.Add(off);
                     off += 0x8 + ((metaExt[i] != null) ? metaExt[i].Length + 4 : 0);
-                    off += bmps[i].Width * bmps[i].Height * Support.Format[meta[i].format].BitDepth / 8;
+                    off += bmps[i].Width * bmps[i].Height * format.BitDepth / 8;
                 }
 
                 //Update meta
@@ -110,6 +128,8 @@ namespace image_g1t
                 //Write images
                 for (int i = 0; i < bmps.Count; i++)
                 {
+                    var format = (_platform == Platform.Vita) ? Support.VitaFormat[meta[i].format] : (_platform == Platform.N3DS) ? Support.N3DSFormat[meta[i].format] : Support.PSFormat[meta[i].format];
+
                     bw.WriteStruct(meta[i]);
                     if (metaExt[i] != null)
                     {
@@ -118,15 +138,16 @@ namespace image_g1t
                     }
 
                     IImageSwizzle swizzle = null;
-                    if (vita) swizzle = new VitaSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2), Support.Format[meta[i].format].FormatName.Contains("DXT"));
-                    else if (Support.Format[meta[i].format].FormatName.Contains("DXT")) swizzle = new BlockSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2));
+                    if (_platform == Platform.Vita) swizzle = new VitaSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2), format.FormatName.Contains("DXT"));
+                    else if (_platform == Platform.N3DS) swizzle = new CTRSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2), 2);
+                    else if (format.FormatName.Contains("DXT")) swizzle = new BlockSwizzle(2 << (int)Math.Log(bmps[i].Width - 1, 2), 2 << (int)Math.Log(bmps[i].Height - 1, 2));
 
                     var setting = new ImageSettings
                     {
                         Width = 2 << (int)Math.Log(bmps[i].Width - 1, 2),
                         Height = 2 << (int)Math.Log(bmps[i].Height - 1, 2),
                         Swizzle = swizzle,
-                        Format = Support.Format[meta[i].format]
+                        Format = format
                     };
                     bw.Write(Common.Save(bmps[i], setting));
                 }

@@ -34,8 +34,10 @@ namespace Kontract.Image.Swizzle
             {
                 //Transpose
                 case 8: return new Point(newPoint.Y, newPoint.X);
-                //Rotate90
+                //Rotate90 (anti-clockwise)
                 case 4: return new Point(newPoint.Y, Height - 1 - newPoint.X);
+                //Y Flip (named by Neo :P)
+                case 2: return new Point(newPoint.X, Height - 1 - newPoint.Y);
                 default: return newPoint;
             }
         }
