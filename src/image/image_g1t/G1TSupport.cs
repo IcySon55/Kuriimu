@@ -20,7 +20,10 @@ namespace image_g1t
     {
         public static Dictionary<byte, IImageFormat> N3DSFormat = new Dictionary<byte, IImageFormat>
         {
-            [9] = new RGBA(8, 8, 8, 8)
+            [9] = new RGBA(8, 8, 8, 8),
+            [0x3D] = new RGBA(4, 4, 4, 4),
+            [0x44] = new LA(0, 4),
+            [0x48] = new ETC1(true)
         };
 
         public static Dictionary<byte, IImageFormat> VitaFormat = new Dictionary<byte, IImageFormat>

@@ -54,8 +54,6 @@ namespace image_g1t
                     }
                     metaExt.Add(ext);
 
-                    var format = (_platform == Platform.Vita) ? Support.VitaFormat[meta[i].format] : (_platform == Platform.N3DS) ? Support.N3DSFormat[meta[i].format] : Support.PSFormat[meta[i].format];
-
                     //Check if format exists
                     switch (_platform)
                     {
@@ -73,6 +71,8 @@ namespace image_g1t
                             break;
                     }
 
+                    var format = (_platform == Platform.Vita) ? Support.VitaFormat[meta[i].format] : (_platform == Platform.N3DS) ? Support.N3DSFormat[meta[i].format] : Support.PSFormat[meta[i].format];
+
                     IImageSwizzle swizzle = null;
                     if (_platform == Platform.Vita) swizzle = new VitaSwizzle(metainfo.width, metainfo.height, format.FormatName.Contains("DXT"));
                     else if (_platform == Platform.N3DS) swizzle = new CTRSwizzle(metainfo.width, metainfo.height, 2);
@@ -87,7 +87,8 @@ namespace image_g1t
                     };
                     settings.Add(setting);
 
-                    bmps.Add(Common.Load(br.ReadBytes(metainfo.width * metainfo.height * format.BitDepth / 8), setting));
+                    var length = metainfo.width * metainfo.height * format.BitDepth / 8;
+                    bmps.Add(Common.Load(br.ReadBytes(length), setting));
                 }
             }
         }
