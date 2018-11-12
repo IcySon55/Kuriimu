@@ -11,7 +11,7 @@ using Kontract.IO;
 namespace archive_level5.X3
 {
     /// <summary>
-    /// Koei-Tecmo X2 Archive Format
+    /// Koei-Tecmo X3 Archive Format
     /// </summary>
     public sealed class X3 : IDisposable
     {
@@ -59,7 +59,7 @@ namespace archive_level5.X3
                     Files.Add(new X3FileInfo
                     {
                         State = ArchiveFileState.Archived,
-                        FileName = (entry.Offset * _header.Alignment).ToString("X8") + extension,
+                        FileName = Files.Count.ToString("000000") + extension,
                         FileData = new SubStream(br.BaseStream, entry.Offset * _header.Alignment, entry.CompressedSize),
                         Entry = entry,
                         CompressionLevel = compressed ? CompressionLevel.Optimal : CompressionLevel.NoCompression
