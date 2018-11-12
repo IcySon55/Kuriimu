@@ -52,7 +52,7 @@ namespace archive_level5.X3
                     var extension = ".bin";
 
                     if (magic == "GT1G")
-                        extension = ".g1t";
+                        extension = ".3ds.g1t";
                     else if (magic == "SMDH")
                         extension = ".icn";
 
