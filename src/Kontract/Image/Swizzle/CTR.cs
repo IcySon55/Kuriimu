@@ -23,7 +23,7 @@ namespace Kontract.Image.Swizzle
 
             _orientation = orientation;
             //the orientation check was "orientation == 0 ? Width : Height"; based on commit 8c5e0bed for G1Ts newest changes it seems to be only Width as a stride
-            _zorder = new MasterSwizzle(orientation == 0 ? Width : Width, new Point(0, 0), new[] { (1, 0), (0, 1), (2, 0), (0, 2), (4, 0), (0, 4) });
+            _zorder = new MasterSwizzle(orientation == 0 || orientation == 2 ? Width : Height, new Point(0, 0), new[] { (1, 0), (0, 1), (2, 0), (0, 2), (4, 0), (0, 4) });
         }
 
         public Point Get(Point point)
