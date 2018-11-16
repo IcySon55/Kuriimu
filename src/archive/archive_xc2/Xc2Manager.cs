@@ -7,7 +7,7 @@ using System.Text;
 
 namespace archive_xc2
 {
-    public class archive_xbbManager : IArchiveManager
+    public class archive_xc2Manager : IArchiveManager
     {
         private XC2 _xc2 = null;
 
@@ -42,14 +42,14 @@ namespace archive_xc2
 
         public void Load(string filename)
         {
-            var ardFile = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".ard";
-            if (!File.Exists(ardFile))
-                throw new FileNotFoundException(ardFile);
+            //var ardFile = Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename)) + ".ard";
+            //if (!File.Exists(ardFile))
+            //    throw new FileNotFoundException(ardFile);
 
             FileInfo = new FileInfo(filename);
 
             if (FileInfo.Exists)
-                _xc2 = new XC2(FileInfo.OpenRead(), File.OpenRead(ardFile));
+                _xc2 = new XC2(FileInfo.OpenRead(), null/*File.OpenRead(ardFile)*/);
         }
 
         public void Save(string filename = "")
