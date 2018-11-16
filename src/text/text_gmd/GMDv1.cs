@@ -129,7 +129,7 @@ namespace text_gmd
             //Header
             var Header = new Header
             {
-                Magic = "GMD\0",
+                Magic = GMDContent.ByteOrder == ByteOrder.BigEndian ? "\0DMG" : "GMD\0",
                 Version = 0x00010201,
                 Language = Language.ENGLISH,
                 Zero1 = 0,
@@ -141,7 +141,7 @@ namespace text_gmd
             };
 
             //Write stuff
-            using (var bw = new BinaryWriterX(File.Create(filename)))
+            using (var bw = new BinaryWriterX(File.Create(filename), GMDContent.ByteOrder))
             {
                 //Header
                 bw.WriteStruct(Header);
