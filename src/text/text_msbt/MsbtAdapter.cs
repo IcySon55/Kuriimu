@@ -108,9 +108,25 @@ namespace text_msbt
                 if (_entries == null)
                 {
                     if (_msbtBackup == null)
-                        _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o)).ToList();
+                    {
+                        if (_msbt.HasLabels)
+                            _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o)).ToList();
+                        else
+                            _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label {Index = o.Index, String = o})).ToList();
+                    }
                     else
-                        _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
+                    {
+                        if (_msbt.HasLabels)
+                            _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
+                        else
+                        {
+                            _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o =>
+                            {
+                                var originalString = _msbtBackup.TXT2.Strings.FirstOrDefault(b => b.Index == o.Index);
+                                return new MsbtEntry(new Label {Index = o.Index, String = o}, new Label {Index = originalString?.Index ?? 0, String = originalString});
+                            }).ToList();
+                        }
+                    }
                 }
 
                 if (SortEntries)
