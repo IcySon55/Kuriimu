@@ -87,20 +87,27 @@ namespace text_bmg
     }
     #endregion
 
+    public enum BmgEncoding : byte
+    {
+        Unknown = 0,
+        ASCII = 1,
+        UTF16 = 2,
+        ShiftJIS = 3
+    }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public class MESGHeader
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 32)]
+    public struct MESGHeader
     {
         public Magic8 magic;
         public int fileSize;
         public int sectionCount;
-        public int unk1;
-
+        public BmgEncoding encoding;
     }
 
     public class Item
     {
         public int strOffset;
+        public int size;
         public byte[] attr;
     }
 }

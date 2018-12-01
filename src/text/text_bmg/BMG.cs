@@ -9,85 +9,129 @@ using System;
 
 namespace text_bmg
 {
-    public enum Enc : byte
-    {
-        SJIS,
-        UTF16
-    }
-
     public sealed class BMG
     {
         public List<Label> Labels = new List<Label>();
 
         MESGHeader header;
         List<Item> items = new List<Item>();
-        bool midUsed = false;
-        short midUnk1;
-        const int align = 0x20;
+        private readonly bool midUsed = false;
+        private readonly short midUnk1;
 
-        ByteOrder byteOrder;
-        Enc usedEncoding;
+        // Constants
+        private const int align = 0x1F;
+        private static readonly int headerSize = Marshal.SizeOf<MESGHeader>();
+
+        private readonly ByteOrder byteOrder;
+
+        private Encoding encoding;
 
         public BMG(string filename)
         {
             using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
             {
-                br.BaseStream.Position = 8;
-                if (br.ReadInt32() == br.BaseStream.Length)
+                header = br.ReadStruct<MESGHeader>();
+                if (header.fileSize == br.BaseStream.Length)
                     br.ByteOrder = byteOrder = ByteOrder.LittleEndian;
                 else
+                {
                     br.ByteOrder = byteOrder = ByteOrder.BigEndian;
-                br.BaseStream.Position = 0;
+                    br.BaseStream.Position = 0;
+                    header = br.ReadStruct<MESGHeader>(); // Reload the header now that the byte order is set.
+                }
 
-                header = br.ReadStruct<MESGHeader>();
-                br.BaseStream.Position = 0x20;
+                br.BaseStream.Position = headerSize;
+
+                switch (header.encoding)
+                {
+                    case BmgEncoding.ASCII:
+                        encoding = Encoding.ASCII;
+                        break;
+
+                    case BmgEncoding.ShiftJIS:
+                        encoding = Encoding.GetEncoding("shift-jis");
+                        break;
+
+                    case BmgEncoding.UTF16:
+                        encoding = byteOrder == ByteOrder.BigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode;
+                        break;
+
+                    default:
+                        encoding = Encoding.Unicode;
+                        break;
+                }
+
+                // INF1 (Info) section must be loaded first to properly calculate the size of each DAT1 (data) entry.
+                // I'm fairly certain the specification guarantees that the INF1 section will immediately follow the BMG header,
+                // but better safe than sorry. It won't cause performance issues for files that follow the specification.
+
+                do
+                {
+                    // Since sections are 32-byte aligned, we can just search in 32 byte increments.
+                    if (br.ReadString(4) != "INF1")
+                    {
+                        br.BaseStream.Position += 0x1C;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (br.BaseStream.Position < br.BaseStream.Length);
+
+                // Parse the INF1 items.
+                var infSectionSize = br.ReadUInt32();
+                var itemCount = br.ReadUInt16();
+                var itemSize = br.ReadUInt16();
+                br.BaseStream.Position += 4;
+
+                for (var i = 0; i < itemCount; i++)
+                {
+                    items.Add(new Item { strOffset = br.ReadInt32(), attr = br.ReadBytes(itemSize - 4) });
+                }
+
 
                 var strs = new List<string>();
-                for (int i = 0; i < header.sectionCount; i++)
+                for (var i = 0; i < header.sectionCount - 1; i++)
                 {
-                    br.BaseStream.Position = (br.BaseStream.Position + align - 1) & ~(align - 1);
+                    br.BaseStream.Position = (br.BaseStream.Position + align) & ~align;
 
                     var magic = br.ReadString(4);
                     var secSize = br.ReadInt32();
                     switch (magic)
                     {
-                        //Text Index Table
-                        case "INF1":
-                            var itemCount = br.ReadInt16();
-                            var itemLength = br.ReadInt16();
-                            br.BaseStream.Position += 4;
-
-                            for (int j = 0; j < itemCount; j++)
-                            {
-                                items.Add(new Item { strOffset = br.ReadInt32(), attr = br.ReadBytes(itemLength - 4) });
-                            }
-                            break;
                         case "DAT1":
-                            if (items[0].strOffset == 2)
-                                usedEncoding = Enc.UTF16;
-                            else if (items[0].strOffset == 1)
-                                usedEncoding = Enc.SJIS;
-
                             using (var br2 = new BinaryReaderX(new MemoryStream(br.ReadBytes(secSize - 8))))
                             {
-                                for (int j = 0; j < items.Count; j++)
+                                for (var j = 0; j < items.Count; j++)
                                 {
                                     br2.BaseStream.Position = items[j].strOffset;
-                                    var str = GetString(br2.ReadBytes((j == items.Count - 1) ?
-                                        (int)(br2.BaseStream.Length - br2.BaseStream.Position) :
-                                        (int)(items[j + 1].strOffset - br2.BaseStream.Position)));
+                                    var currentItem = items[j];
+                                    Item nextItem = null;
 
-                                    strs.Add(str);
+                                    // Skip any 0 offset entries.
+                                    var idx = j + 1;
+                                    while (idx++ < items.Count)
+                                    {
+                                        nextItem = items[j + 1];
+
+                                        if (nextItem.strOffset != 0) break;
+                                        nextItem = null;
+                                    }
+
+                                    var size = (nextItem?.strOffset ?? (int) br.BaseStream.Length) - currentItem.strOffset;
+                                    strs.Add(GetString(br2.ReadBytes(size)));
                                 }
-                                break;
                             }
+
+                            break;
+
                         case "MID1":
                             midUsed = true;
                             var idCount = br.ReadInt16();
                             midUnk1 = br.ReadInt16();
                             br.BaseStream.Position += 4;
 
-                            for (int j = 0; j < idCount; j++)
+                            for (var j = 0; j < idCount; j++)
                             {
                                 var id = br.ReadInt32();
                                 Labels.Add(new Label
@@ -97,32 +141,45 @@ namespace text_bmg
                                     TextID = id
                                 });
                             }
+
                             break;
                     }
                 }
 
                 if (Labels.Count <= 0)
+                {
                     for (int i = 0; i < strs.Count; i++)
+                    {
                         Labels.Add(new Label
                         {
                             Name = "Entry" + i,
                             Text = strs[i],
                             TextID = i
                         });
+                    }
+                }
             }
         }
+
+        // TODO: Not all games use a standard encoding scheme. Example: Doubutsu no Mori e+.
+        // TODO: It also uses custom binary data characters (0x7F for ControlCodes & 0x80 for MessageTags.)
+        // TODO: Should this be supported somehow? I'm pretty certain those formats are unique to those game(s).
+        // In the meantime I'll be disabling command parsing all together until a solution is determined.
+
+        // It's also worth mentioning that not all BMG files have a 0x00 string-end character.
+        // How should that be handled?
 
         private string GetString(byte[] input)
         {
             using (var br = new BinaryReaderX(new MemoryStream(input)))
             {
                 string res = "";
-                switch (usedEncoding)
+                switch (header.encoding)
                 {
-                    case Enc.SJIS:
+                    case BmgEncoding.ASCII:
                         while (br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            var peek = br.PeekByte();
+                            /*var peek = br.PeekByte();
                             if (peek == 0x1a)
                             {
                                 br.BaseStream.Position++;
@@ -140,17 +197,55 @@ namespace text_bmg
                                     br.ReadByte();
                                     break;
                                 }
-                                else if (peek < 0x80)
-                                    res += Encoding.GetEncoding("SJIS").GetString(new[] { br.ReadByte() });
-                                else
-                                    res += Encoding.GetEncoding("SJIS").GetString(br.ReadBytes(2));
-                            }
+
+                                res += encoding.GetString(new[] { br.ReadByte() });
+                            }*/
+
+                            res += encoding.GetString(new[] { br.ReadByte() });
                         }
+
                         break;
-                    case Enc.UTF16:
+
+                    case BmgEncoding.ShiftJIS:
                         while (br.BaseStream.Position < br.BaseStream.Length)
                         {
-                            var peek = br.ReadInt16();
+                            var peek = br.PeekByte();
+                            /*if (peek == 0x1a)
+                            {
+                                br.BaseStream.Position++;
+                                var size = br.ReadByte();
+                                res += "{";
+                                res += br.ReadByte() + ",";
+                                for (int i = 0; i < size - 3; i++)
+                                    res += br.ReadByte() + ((i + 1 == size - 3) ? "" : ",");
+                                res += "}";
+                            }
+                            else
+                            {
+                                if (peek == 0x00)
+                                {
+                                    br.ReadByte();
+                                    break;
+                                }
+
+                                if (peek < 0x80)
+                                    res += encoding.GetString(new[] { br.ReadByte() });
+                                else
+                                    res += encoding.GetString(br.ReadBytes(2));
+                            }*/
+
+                            if (peek < 0x80)
+                                res += encoding.GetString(new[] { br.ReadByte() });
+                            else
+                                res += encoding.GetString(br.ReadBytes(2));
+                        }
+
+                        break;
+
+                    case BmgEncoding.UTF16:
+                        while (br.BaseStream.Position < br.BaseStream.Length)
+                        {
+                            /*var peek = br.ReadInt16();
                             br.BaseStream.Position -= 2;
                             if (peek == 0x1a)
                             {
@@ -169,14 +264,18 @@ namespace text_bmg
                                 break;
                             }
                             else
-                                res += Encoding.GetEncoding("UTF-16").GetString(br.ReadBytes(2));
+                                res += encoding.GetString(br.ReadBytes(2));*/
+
+                            res += encoding.GetString(br.ReadBytes(2));
                         }
+
                         break;
+
                     default:
                         return string.Empty;
                 }
 
-                return res;
+                return res.Replace("\0", "");
             }
         }
 
@@ -188,13 +287,13 @@ namespace text_bmg
 
             using (BinaryWriterX bw = new BinaryWriterX(File.Create(filename), byteOrder))
             {
-                bw.BaseStream.Position = align;
+                bw.BaseStream.Position = headerSize;
 
                 //INF1
-                bw.Write(0x31464e49);
-                bw.Write((0x10 + items.Count * (0x4 + items[0].attr.Length) + align - 1) & ~(align - 1));
-                bw.Write((short)items.Count);
-                bw.Write((short)(0x4 + items[0].attr.Length));
+                bw.Write(Encoding.ASCII.GetBytes("INF1"));
+                bw.Write((0x10 + items.Count * (0x4 + items[0].attr.Length) + align) & ~align);
+                bw.Write((short) items.Count);
+                bw.Write((short) (0x4 + items[0].attr.Length));
                 bw.BaseStream.Position += 4;
 
                 var strOffset = items[0].strOffset;
@@ -205,80 +304,54 @@ namespace text_bmg
                     strOffset += parStr[i].Length;
                 }
 
-                bw.WriteAlignment(align);
+                bw.WriteAlignment(align + 1);
 
                 //DAT1
-                bw.Write(0x31544144);
-                bw.Write((0x8 + items[0].strOffset + parStr.Aggregate(0, (o, i) => o += i.Length) + align - 1) & ~(align - 1));
+                bw.Write(Encoding.ASCII.GetBytes("DAT1"));
+                bw.Write((0x8 + items[0].strOffset + parStr.Aggregate(0, (o, i) => o += i.Length) + align) & ~align);
                 bw.Write(new byte[items[0].strOffset]);
 
                 foreach (var str in parStr)
                     bw.Write(str);
 
-                bw.WriteAlignment(align);
+                bw.WriteAlignment(align + 1);
 
                 //MID1
                 if (midUsed)
                 {
-                    bw.Write(0x3144494d);
-                    bw.Write((0x10 + Labels.Count * 0x4 + align - 1) & ~(align - 1));
-                    bw.Write((short)Labels.Count);
+                    bw.Write(Encoding.ASCII.GetBytes("MID1"));
+                    bw.Write((0x10 + Labels.Count * 0x4 + align) & ~align);
+                    bw.Write((short) Labels.Count);
                     bw.Write(midUnk1);
                     bw.BaseStream.Position += 4;
 
                     foreach (var label in Labels)
                         bw.Write(label.TextID);
 
-                    bw.WriteAlignment(align);
+                    bw.WriteAlignment(align + 1);
                 }
 
                 //Header
                 bw.BaseStream.Position = 0;
-                header.fileSize = (int)bw.BaseStream.Length;
+                header.fileSize = (int) bw.BaseStream.Length;
                 bw.WriteStruct(header);
             }
         }
 
         private byte[] ParseString(string input)
         {
-            if (input.Count(e => e == '{') != input.Count(e => e == '}'))
-                throw new InvalidOperationException("Not all code parts are correctly opened or closed.");
+            /*if (input.Count(e => e == '{') != input.Count(e => e == '}'))
+                throw new InvalidOperationException("Not all code parts are correctly opened or closed.");*/
 
             var ms = new MemoryStream();
             using (var bw = new BinaryWriterX(ms, true, byteOrder))
-                switch (usedEncoding)
+                switch (header.encoding)
                 {
-                    case Enc.UTF16:
+                    case BmgEncoding.ASCII:
+                    case BmgEncoding.ShiftJIS:
                         for (int i = 0; i < input.Length; i++)
                         {
-                            if (input[i] == '{')
-                            {
-                                i++;
-                                var paraStr = "";
-                                while (input[i] != '}')
-                                {
-                                    paraStr += input[i];
-                                    i++;
-                                }
-                                var paras = paraStr.Split(',');
-
-                                bw.Write((short)0x1a);
-                                bw.Write((byte)(2 + 1 + 1 + (paras.Count() - 1) * 2));
-                                bw.Write(Convert.ToByte(paras[0]));
-                                for (int j = 1; j < paras.Count(); j++)
-                                    bw.Write(Convert.ToInt16(paras[j]));
-                            }
-                            else
-                            {
-                                bw.Write(Encoding.GetEncoding("UTF-16").GetBytes(input[i].ToString()));
-                            }
-                        }
-                        bw.Write((short)0);
-                        break;
-                    case Enc.SJIS:
-                        for (int i = 0; i < input.Length; i++)
-                        {
-                            if (input[i] == '{')
+                            /*if (input[i] == '{')
                             {
                                 i++;
                                 var paraStr = "";
@@ -290,17 +363,47 @@ namespace text_bmg
                                 var paras = paraStr.Split(',');
 
                                 bw.Write((byte)0x1a);
-                                bw.Write((byte)(1 + 1 + 1 + (paras.Count() - 1)));
+                                bw.Write((byte)(1 + 1 + 1 + (paras.Length - 1)));
                                 bw.Write(Convert.ToByte(paras[0]));
-                                for (int j = 1; j < paras.Count(); j++)
+                                for (int j = 1; j < paras.Length; j++)
                                     bw.Write(Convert.ToByte(paras[j]));
                             }
-                            else
+                            else*/
                             {
-                                bw.Write(Encoding.GetEncoding("SJIS").GetBytes(input[i].ToString()));
+                                bw.Write(encoding.GetBytes(input[i].ToString()));
                             }
                         }
+
                         bw.Write((byte)0);
+                        break;
+
+                    case BmgEncoding.UTF16:
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            /*if (input[i] == '{')
+                            {
+                                i++;
+                                var paraStr = "";
+                                while (input[i] != '}')
+                                {
+                                    paraStr += input[i];
+                                    i++;
+                                }
+                                var paras = paraStr.Split(',');
+
+                                bw.Write((short)0x1a);
+                                bw.Write((byte)(2 + 1 + 1 + (paras.Length - 1) * 2));
+                                bw.Write(Convert.ToByte(paras[0]));
+                                for (int j = 1; j < paras.Length; j++)
+                                    bw.Write(Convert.ToInt16(paras[j]));
+                            }
+                            else*/
+                            {
+                                bw.Write(encoding.GetBytes(input[i].ToString()));
+                            }
+                        }
+
+                        bw.Write((short)0);
                         break;
                 }
 
