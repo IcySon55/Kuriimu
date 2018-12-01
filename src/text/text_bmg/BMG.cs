@@ -89,6 +89,8 @@ namespace text_bmg
                     items.Add(new Item { strOffset = br.ReadInt32(), attr = br.ReadBytes(itemSize - 4) });
                 }
 
+                // Reset the stream position to immediately after the header.
+                br.BaseStream.Position = headerSize;
 
                 var strs = new List<string>();
                 for (var i = 0; i < header.sectionCount - 1; i++)
