@@ -22,7 +22,7 @@ namespace text_bmg
 
         // Information
         public string Name => "BMG";
-        public string Description => "Mario Kart Script";
+        public string Description => "Binary Message Group";
         public string Extension => "*.bmg";
         public string About => "This is the BMG text adapter for Kuriimu.";
 
