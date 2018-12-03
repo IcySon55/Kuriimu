@@ -1,11 +1,14 @@
-﻿using System.Reflection;
+﻿// Do not change this file, as it will be overwritten on build time
+// Edit AssemblyInfo_template.cs instead
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Kuriimu")]
-[assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepiecefreak\r\nGIT Info:\r\n\tBranch:\tIcySon55/Kuriimu/master\r\n\tCommit:\t3f7bcd9\r\n\tCompiled:\t2018-11-10 00:07:40UTC\r\n\tby:\tIcySon55 (icyson55@gmail.com)")]
+[assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepiecefreak\r\nGIT Info:\r\n\tBranch:\tIcySon55/Kuriimu/master\r\n\tCommit:\t64e86178\r\n\tCompiled:\t2018-12-03 19:34:08UTC\r\n\tby:\tIcySon55 (icyson55@gmail.com)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("Kuriimu")]
@@ -31,6 +34,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
+
+// Use this when you apply git tags like "0.1.0" to automatically keep up with the version
+[assembly: AssemblyVersion("1.0.13.2071")]
+[assembly: AssemblyFileVersion("1.0.13.2071")]
+[assembly: AssemblyInformationalVersion("1.0.13-64e86178")]

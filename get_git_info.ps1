@@ -38,7 +38,7 @@ $assemblyFile = $projectPath + "\Properties\AssemblyInfo.cs";
 $templateAssemblyFile = $projectPath + "\Properties\AssemblyInfo_template.cs";
 
 # Read template files, overwrite place holders with git version info
-$newAssemblyContent = Get-Content $templateAssemblyFile |
+$newAssemblyContent = Get-Content -Encoding UTF8 $templateAssemblyFile |
     %{$_ -replace '\$gitUser\$', $gitUser.Replace('"','\"') } |
     %{$_ -replace '\$gitEmail\$', $gitEmail } |
     %{$_ -replace '\$gitStateUser\$', $gitStateUser.Replace('"','\"') } |
@@ -53,5 +53,5 @@ $newAssemblyContent = Get-Content $templateAssemblyFile |
     %{$_ -replace '\$compileTime\$', $compileTime };
 
 # Write cs files only if there are changes
-Write-Host " * Updated AssemblyInfo.cs";
-$newAssemblyContent > $assemblyFile;
+Write-Host " * Wrote AssemblyInfo.cs";
+$newAssemblyContent | Out-File -Encoding UTF8 $assemblyFile;
