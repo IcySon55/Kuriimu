@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Kontract.Interface;
 using Kontract.Image.Format;
@@ -6,6 +6,7 @@ using Kontract;
 using System;
 using Kontract.Image.Swizzle;
 using System.Drawing;
+using static Kontract.Image.Support.ETC1;
 
 namespace image_g1t
 {
@@ -21,8 +22,10 @@ namespace image_g1t
         public static Dictionary<byte, IImageFormat> N3DSFormat = new Dictionary<byte, IImageFormat>
         {
             [9] = new RGBA(8, 8, 8, 8),
+            [0x3B] = new RGBA(5, 6, 5),
             [0x3D] = new RGBA(4, 4, 4, 4),
             [0x44] = new LA(0, 4),
+            [0x47] = new ETC1(false),
             [0x48] = new ETC1(true)
         };
 
