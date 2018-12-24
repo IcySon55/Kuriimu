@@ -35,6 +35,7 @@ namespace image_g1t
             [1] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.LittleEndian, true),
             [6] = new DXT(DXT.Version.DXT1),
             [8] = new DXT(DXT.Version.DXT5),
+            [0x10] = new DXT(DXT.Version.DXT1),
             [0x12] = new DXT(DXT.Version.DXT5),
         };
 
