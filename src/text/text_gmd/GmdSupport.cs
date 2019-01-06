@@ -34,8 +34,8 @@ namespace text_gmd
     }
     public class GMDContent
     {
-        public ByteOrder ByteOrder;
-        public string Name;
+        public ByteOrder ByteOrder = ByteOrder.LittleEndian;
+        public string Name = string.Empty;
         public List<Label> Content = new List<Label>();
     }
     //public class Content
