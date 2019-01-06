@@ -311,15 +311,7 @@ namespace image_tmx
                     bool found = false;
                     int count = 0;
                     Color color = bmp.GetPixel(x, y);
-                    while (!found && count < colors.Count)
-                    {
-                        if (color == colors[count])
-                        {
-                            found = true;
-                        }
-                        count++;
-                    }
-                    if (!found)
+                    if (!colors.Contains(color))
                         colors.Add(color);
                 }
             }
