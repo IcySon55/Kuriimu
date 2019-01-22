@@ -36,7 +36,7 @@ namespace Knit.steps
             var progressReport = new ProgressReport();
             var stepResults = new StepResults { Message = column + Common.ProcessVariableTokens(ValidMessage, variableCache), Status = StepStatus.Success };
 
-            progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache), Percentage = 0, NewLine = false });
+            progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache), NewLine = false });
             await Task.Delay(10);
 
             if ((Variable == string.Empty && Path == string.Empty) || (Variable != string.Empty && !variableCache.ContainsKey(Variable)))
