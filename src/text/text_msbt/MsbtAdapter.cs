@@ -55,7 +55,7 @@ namespace text_msbt
 
         public LoadResult Load(string filename, bool autoBackup = false)
         {
-            LoadResult result = LoadResult.Success;
+            var result = LoadResult.Success;
 
             FileInfo = new FileInfo(filename);
             _entries = null;
@@ -64,7 +64,7 @@ namespace text_msbt
             {
                 _msbt = new MSBT(FileInfo.OpenRead());
 
-                string backupFilePath = FileInfo.FullName + ".bak";
+                var backupFilePath = FileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
                     _msbtBackup = new MSBT(File.OpenRead(backupFilePath));
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + FileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -83,7 +83,7 @@ namespace text_msbt
 
         public SaveResult Save(string filename = "")
         {
-            SaveResult result = SaveResult.Success;
+            var result = SaveResult.Success;
 
             if (filename.Trim() != string.Empty)
                 FileInfo = new FileInfo(filename);
@@ -111,11 +111,10 @@ namespace text_msbt
                     {
                         if (_msbt.HasLabels)
                             _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o)).ToList();
-                        else if (_msbt.HasIDs) 
-                             _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label {Index = o.Index, String = o, Name = _msbt.NLI1.globaIDs[o.Index].ToString()})).ToList();
+                        else if (_msbt.HasIDs)
+                            _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label { Index = o.Index, String = o, Name = _msbt.NLI1.GlobalIDs[o.Index].ToString() })).ToList();
                         else
-    
-                            _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label {Index = o.Index, String = o})).ToList();
+                            _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label { Index = o.Index, String = o })).ToList();
                     }
                     else
                     {
@@ -126,7 +125,7 @@ namespace text_msbt
                             _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o =>
                             {
                                 var originalString = _msbtBackup.TXT2.Strings.FirstOrDefault(b => b.Index == o.Index);
-                                return new MsbtEntry(new Label { Index = o.Index, String = o, Name = _msbt.NLI1.globaIDs[o.Index].ToString() }, new Label { Index = originalString?.Index ?? 0, String = originalString, Name = _msbt.NLI1.globaIDs[originalString?.Index ?? 0].ToString() });
+                                return new MsbtEntry(new Label { Index = o.Index, String = o, Name = _msbt.NLI1.GlobalIDs[o.Index].ToString() }, new Label { Index = originalString?.Index ?? 0, String = originalString, Name = _msbt.NLI1.GlobalIDs[originalString?.Index ?? 0].ToString() });
                             }).ToList();
                         }
                         else
@@ -134,7 +133,7 @@ namespace text_msbt
                             _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o =>
                             {
                                 var originalString = _msbtBackup.TXT2.Strings.FirstOrDefault(b => b.Index == o.Index);
-                                return new MsbtEntry(new Label {Index = o.Index, String = o}, new Label {Index = originalString?.Index ?? 0, String = originalString});
+                                return new MsbtEntry(new Label { Index = o.Index, String = o }, new Label { Index = originalString?.Index ?? 0, String = originalString });
                             }).ToList();
                         }
                     }
@@ -158,11 +157,11 @@ namespace text_msbt
 
         public bool AddEntry(TextEntry entry)
         {
-            bool result = true;
+            var result = true;
 
             try
             {
-                MsbtEntry ent = (MsbtEntry)entry;
+                var ent = (MsbtEntry)entry;
                 ent.EditedLabel = _msbt.AddLabel(entry.Name);
                 _entries.Add((MsbtEntry)entry);
             }
@@ -176,11 +175,11 @@ namespace text_msbt
 
         public bool RenameEntry(TextEntry entry, string newName)
         {
-            bool result = true;
+            var result = true;
 
             try
             {
-                MsbtEntry ent = (MsbtEntry)entry;
+                var ent = (MsbtEntry)entry;
                 _msbt.RenameLabel(ent.EditedLabel, newName);
             }
             catch (Exception)
@@ -193,11 +192,11 @@ namespace text_msbt
 
         public bool DeleteEntry(TextEntry entry)
         {
-            bool result = true;
+            var result = true;
 
             try
             {
-                MsbtEntry ent = (MsbtEntry)entry;
+                var ent = (MsbtEntry)entry;
                 _msbt.RemoveLabel(ent.EditedLabel);
                 _entries.Remove(ent);
             }

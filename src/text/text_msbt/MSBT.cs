@@ -141,7 +141,7 @@ namespace text_msbt
 
             LBL1.Groups = br.ReadMultiple<Group>((int)LBL1.NumberOfGroups).ToList();
 
-            foreach (Group grp in LBL1.Groups)
+            foreach (var grp in LBL1.Groups)
                 for (var i = 0; i < grp.NumberOfLabels; i++)
                     LBL1.Labels.Add(new Label
                     {
@@ -170,15 +170,15 @@ namespace text_msbt
         {
             NLI1.Section = br.ReadStruct<Section>();
 
-            if(NLI1.Section.Size > 0)
+            if (NLI1.Section.Size > 0)
             {
                 NLI1.NumberOfIDs = br.ReadUInt32();
 
-                for (int i = 0; i < NLI1.NumberOfIDs; i++)
+                for (var i = 0; i < NLI1.NumberOfIDs; i++)
                 {
-                    uint val = br.ReadUInt32();
-                    uint key = br.ReadUInt32();
-                    NLI1.globaIDs.Add(key, val);
+                    var val = br.ReadUInt32();
+                    var key = br.ReadUInt32();
+                    NLI1.GlobalIDs.Add(key, val);
                 }
 
                 HasIDs = NLI1.NumberOfIDs > 0;
@@ -239,7 +239,8 @@ namespace text_msbt
             var newString = new String();
             TXT2.Strings.Add(newString);
             TXT2.NumberOfStrings += 1;
-            Label newLabel = null;
+
+            Label newLabel;
             if (HasLabels)
             {
                 newLabel = new Label
@@ -252,9 +253,10 @@ namespace text_msbt
                 LBL1.Labels.Add(newLabel);
                 LBL1.Groups[(int)newLabel.Checksum].NumberOfLabels += 1;
                 //ATR1.NumberOfAttributes += 1;
-            } else if (HasIDs)
+            }
+            else if (HasIDs)
             {
-                uint key = uint.Parse(labelName.Trim());
+                var key = uint.Parse(labelName.Trim());
                 newLabel = new Label
                 {
                     Name = key.ToString(),
@@ -262,8 +264,9 @@ namespace text_msbt
                     String = newString
                 };
                 NLI1.NumberOfIDs++;
-                NLI1.globaIDs.Add(newLabel.Index, key);
-            } else
+                NLI1.GlobalIDs.Add(newLabel.Index, key);
+            }
+            else
             {
                 newLabel = new Label
                 {
@@ -286,9 +289,9 @@ namespace text_msbt
             }
             else if (HasIDs)
             {
-                uint key = uint.Parse(labelName.Trim());
+                var key = uint.Parse(labelName.Trim());
                 label.Name = key.ToString();
-                NLI1.globaIDs[label.Index] = key;
+                NLI1.GlobalIDs[label.Index] = key;
             }
         }
 
@@ -303,15 +306,16 @@ namespace text_msbt
 
                 LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
                 LBL1.Labels.Remove(label);
-            } else if (HasIDs)
+            }
+            else if (HasIDs)
             {
-                if (NLI1.globaIDs.ContainsKey(label.Index))
+                if (NLI1.GlobalIDs.ContainsKey(label.Index))
                 {
-                    NLI1.globaIDs.Remove(label.Index);
+                    NLI1.GlobalIDs.Remove(label.Index);
                     NLI1.NumberOfIDs--;
                 }
             }
-            
+
             //ATR1.NumberOfAttributes -= 1;
             TXT2.Strings.RemoveAt((int)label.Index);
             TXT2.NumberOfStrings -= 1;
@@ -397,21 +401,19 @@ namespace text_msbt
         {
             if (NLI1.Section.Size > 0)
             {
-
-                uint newsize = 4 + NLI1.NumberOfIDs * 8;
-                NLI1.Section.Size = newsize;
+                var newSize = 4 + NLI1.NumberOfIDs * 8;
+                NLI1.Section.Size = newSize;
                 bw.WriteStruct(NLI1.Section);
 
                 bw.Write(NLI1.NumberOfIDs);
-                foreach (KeyValuePair<uint, uint> entry in NLI1.globaIDs)
+                foreach (var entry in NLI1.GlobalIDs)
                 {
                     bw.Write(entry.Value);
                     bw.Write(entry.Key);
                 }
-            } else
-            {
-                bw.WriteStruct(NLI1.Section);
             }
+            else
+                bw.WriteStruct(NLI1.Section);
 
             bw.WriteAlignment(_paddingChar);
         }

@@ -80,7 +80,7 @@ namespace text_msbt
         public Section Section;
         public uint NumberOfIDs;
 
-        public Dictionary<uint, uint> globaIDs = new Dictionary<uint, uint>();
+        public Dictionary<uint, uint> GlobalIDs = new Dictionary<uint, uint>();
     }
 
     public sealed class ATO1
