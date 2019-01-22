@@ -111,13 +111,24 @@ namespace text_msbt
                     {
                         if (_msbt.HasLabels)
                             _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o)).ToList();
+                        else if (_msbt.HasIDs) 
+                             _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label {Index = o.Index, String = o, Name = _msbt.NLI1.globaIDs[o.Index].ToString()})).ToList();
                         else
+    
                             _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o => new MsbtEntry(new Label {Index = o.Index, String = o})).ToList();
                     }
                     else
                     {
                         if (_msbt.HasLabels)
                             _entries = _msbt.LBL1.Labels.OrderBy(o => o.Index).Select(o => new MsbtEntry(o, _msbtBackup.LBL1.Labels.FirstOrDefault(b => b.Name == o.Name))).ToList();
+                        else if (_msbt.HasIDs)
+                        {
+                            _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o =>
+                            {
+                                var originalString = _msbtBackup.TXT2.Strings.FirstOrDefault(b => b.Index == o.Index);
+                                return new MsbtEntry(new Label { Index = o.Index, String = o, Name = _msbt.NLI1.globaIDs[o.Index].ToString() }, new Label { Index = originalString?.Index ?? 0, String = originalString, Name = _msbt.NLI1.globaIDs[originalString?.Index ?? 0].ToString() });
+                            }).ToList();
+                        }
                         else
                         {
                             _entries = _msbt.TXT2.Strings.OrderBy(o => o.Index).Select(o =>
