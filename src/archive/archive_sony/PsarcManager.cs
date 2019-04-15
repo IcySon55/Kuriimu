@@ -6,7 +6,7 @@ using Kontract.IO;
 
 namespace archive_sony.PSARC
 {
-    class PsarcManager : IArchiveManager
+    public class PsarcManager : IArchiveManager
     {
         private PSARC _psar;
 

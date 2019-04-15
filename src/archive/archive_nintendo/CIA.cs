@@ -42,13 +42,6 @@ namespace archive_nintendo.CIA
                 tmd = new TMD(br.BaseStream);
                 br.SeekAlignment(alignement);
 
-                //Meta
-                if (ciaHeader.metaSize != 0)
-                {
-                    meta = br.ReadStruct<Meta>();
-                    br.SeekAlignment(alignement);
-                }
-
                 //List NCCH's
                 partitions = new List<SubStream>();
                 var partitionOffset = br.BaseStream.Position;
@@ -72,6 +65,14 @@ namespace archive_nintendo.CIA
                         FileName = GetPartitionName(flags[5], index++),
                         FileData = sub
                     });
+                }
+
+                //Meta
+                br.BaseStream.Position = partitionOffset;
+                if (ciaHeader.metaSize != 0)
+                {
+                    meta = br.ReadStruct<Meta>();
+                    br.SeekAlignment(alignement);
                 }
             }
         }

@@ -28,6 +28,7 @@ namespace text_msbt
         public Encoding Encoding = Encoding.Unicode;
         public List<string> SectionOrder = new List<string>();
         public bool HasLabels;
+        public bool HasIDs = false;
 
         public MSBT(Stream input)
         {
@@ -140,7 +141,7 @@ namespace text_msbt
 
             LBL1.Groups = br.ReadMultiple<Group>((int)LBL1.NumberOfGroups).ToList();
 
-            foreach (Group grp in LBL1.Groups)
+            foreach (var grp in LBL1.Groups)
                 for (var i = 0; i < grp.NumberOfLabels; i++)
                     LBL1.Labels.Add(new Label
                     {
@@ -168,7 +169,20 @@ namespace text_msbt
         private void ReadNLI1(BinaryReaderX br)
         {
             NLI1.Section = br.ReadStruct<Section>();
-            NLI1.Unknown = br.ReadBytes((int)NLI1.Section.Size); // Read in the entire section at once since we don't know what it's for
+
+            if (NLI1.Section.Size > 0)
+            {
+                NLI1.NumberOfIDs = br.ReadUInt32();
+
+                for (var i = 0; i < NLI1.NumberOfIDs; i++)
+                {
+                    var val = br.ReadUInt32();
+                    var key = br.ReadUInt32();
+                    NLI1.GlobalIDs.Add(key, val);
+                }
+
+                HasIDs = NLI1.NumberOfIDs > 0;
+            }
 
             _paddingChar = br.SeekAlignment(_paddingChar);
         }
@@ -226,37 +240,82 @@ namespace text_msbt
             TXT2.Strings.Add(newString);
             TXT2.NumberOfStrings += 1;
 
-            var newLabel = new Label
+            Label newLabel;
+            if (HasLabels)
             {
-                Name = labelName.Trim(),
-                Index = (uint)TXT2.Strings.IndexOf(newString),
-                Checksum = SimpleHash.Create(labelName.Trim(), LabelHashMagic, LBL1.NumberOfGroups),
-                String = newString
-            };
-            LBL1.Labels.Add(newLabel);
-            LBL1.Groups[(int)newLabel.Checksum].NumberOfLabels += 1;
-            //ATR1.NumberOfAttributes += 1;
+                newLabel = new Label
+                {
+                    Name = labelName.Trim(),
+                    Index = (uint)TXT2.Strings.IndexOf(newString),
+                    Checksum = SimpleHash.Create(labelName.Trim(), LabelHashMagic, LBL1.NumberOfGroups),
+                    String = newString
+                };
+                LBL1.Labels.Add(newLabel);
+                LBL1.Groups[(int)newLabel.Checksum].NumberOfLabels += 1;
+                //ATR1.NumberOfAttributes += 1;
+            }
+            else if (HasIDs)
+            {
+                var key = uint.Parse(labelName.Trim());
+                newLabel = new Label
+                {
+                    Name = key.ToString(),
+                    Index = (uint)TXT2.Strings.IndexOf(newString),
+                    String = newString
+                };
+                NLI1.NumberOfIDs++;
+                NLI1.GlobalIDs.Add(newLabel.Index, key);
+            }
+            else
+            {
+                newLabel = new Label
+                {
+                    Index = (uint)TXT2.Strings.IndexOf(newString),
+                    String = newString
+                };
+            }
 
             return newLabel;
         }
 
         public void RenameLabel(Label label, string labelName)
         {
-            label.Name = labelName.Trim();
-            LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
-            label.Checksum = SimpleHash.Create(labelName.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
-            LBL1.Groups[(int)label.Checksum].NumberOfLabels += 1;
+            if (HasLabels)
+            {
+                label.Name = labelName.Trim();
+                LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
+                label.Checksum = SimpleHash.Create(labelName.Trim(), LabelHashMagic, LBL1.NumberOfGroups);
+                LBL1.Groups[(int)label.Checksum].NumberOfLabels += 1;
+            }
+            else if (HasIDs)
+            {
+                var key = uint.Parse(labelName.Trim());
+                label.Name = key.ToString();
+                NLI1.GlobalIDs[label.Index] = key;
+            }
         }
 
         public void RemoveLabel(Label label)
         {
             var textIndex = TXT2.Strings.IndexOf(label.String);
-            for (var i = 0; i < TXT2.NumberOfStrings; i++)
-                if (LBL1.Labels[i].Index > textIndex)
-                    LBL1.Labels[i].Index -= 1;
+            if (HasLabels)
+            {
+                for (var i = 0; i < TXT2.NumberOfStrings; i++)
+                    if (LBL1.Labels[i].Index > textIndex)
+                        LBL1.Labels[i].Index -= 1;
 
-            LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
-            LBL1.Labels.Remove(label);
+                LBL1.Groups[(int)label.Checksum].NumberOfLabels -= 1;
+                LBL1.Labels.Remove(label);
+            }
+            else if (HasIDs)
+            {
+                if (NLI1.GlobalIDs.ContainsKey(label.Index))
+                {
+                    NLI1.GlobalIDs.Remove(label.Index);
+                    NLI1.NumberOfIDs--;
+                }
+            }
+
             //ATR1.NumberOfAttributes -= 1;
             TXT2.Strings.RemoveAt((int)label.Index);
             TXT2.NumberOfStrings -= 1;
@@ -340,8 +399,21 @@ namespace text_msbt
 
         private void WriteNLI1(BinaryWriterX bw)
         {
-            bw.WriteStruct(NLI1.Section);
-            bw.Write(NLI1.Unknown);
+            if (NLI1.Section.Size > 0)
+            {
+                var newSize = 4 + NLI1.NumberOfIDs * 8;
+                NLI1.Section.Size = newSize;
+                bw.WriteStruct(NLI1.Section);
+
+                bw.Write(NLI1.NumberOfIDs);
+                foreach (var entry in NLI1.GlobalIDs)
+                {
+                    bw.Write(entry.Value);
+                    bw.Write(entry.Key);
+                }
+            }
+            else
+                bw.WriteStruct(NLI1.Section);
 
             bw.WriteAlignment(_paddingChar);
         }

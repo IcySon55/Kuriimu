@@ -157,6 +157,7 @@ namespace Kuriimu
             var find = new Find
             {
                 Entries = _entries,
+                Handler = _gameHandler,
                 Replace = true,
                 Current = (TextEntry) treEntries.SelectedNode.Tag
             };

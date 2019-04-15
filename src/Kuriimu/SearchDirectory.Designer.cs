@@ -88,6 +88,9 @@
             // 
             // lstResults
             // 
+            this.lstResults.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstResults.FormattingEnabled = true;
             this.lstResults.IntegralHeight = false;
             this.lstResults.Location = new System.Drawing.Point(13, 98);

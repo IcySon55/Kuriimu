@@ -163,7 +163,7 @@ namespace Kuriimu
 
         public override string ToString()
         {
-            return new FileInfo(Filename).Name + " - " + Entry;
+            return new FileInfo(Filename).Name + " - " + Entry + ": " + Entry.EditedText;
         }
     }
 }
