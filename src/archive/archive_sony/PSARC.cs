@@ -96,9 +96,9 @@ namespace archive_sony.PSARC
                 // Load Filenames
                 if (!AllStarsEncryptedArchive)
                 {
-                    using (var brNames = new StreamReader(Files[0].FileData, Encoding.UTF8))
+                    using (var brNames = new BinaryReaderX(Files[0].FileData, Encoding.UTF8))
                         for (var i = 1; i < Header.TocEntryCount; i++)
-                            Files[i].FileName = brNames.ReadLine() ?? Files[i].FileName;
+                            Files[i].FileName = Encoding.UTF8.GetString(brNames.ReadBytesUntil(0x0, (byte)'\n')) ?? Files[i].FileName;
                 }
                 else
                 {
