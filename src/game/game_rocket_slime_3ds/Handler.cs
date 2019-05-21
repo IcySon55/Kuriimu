@@ -14,7 +14,8 @@ namespace game_rocket_slime_3ds
     public enum Scenes
     {
         TopScreen,
-        BottomScreen
+        BottomScreen,
+        BattleScreen
     }
 
     public class Handler : IGameHandler
@@ -94,6 +95,7 @@ namespace game_rocket_slime_3ds
 
         Bitmap background = new Bitmap(Resources.background);
         Bitmap bottom = new Bitmap(Resources.bottom);
+        Bitmap battle = new Bitmap(Resources.battle);
         Bitmap nameBox = new Bitmap(Resources.namebox_top);
         Bitmap textBox = new Bitmap(Resources.textbox_top);
 
@@ -116,6 +118,9 @@ namespace game_rocket_slime_3ds
                             break;
                         case Scenes.BottomScreen:
                             img = new Bitmap(bottom.Width, bottom.Height);
+                            break;
+                        case Scenes.BattleScreen:
+                            img = new Bitmap(battle.Width, battle.Height);
                             break;
                     }
 
@@ -149,6 +154,11 @@ namespace game_rocket_slime_3ds
                                 gfx.DrawImage(bottom, 0, 0);
                                 rectName = new RectangleF(6, 2, 128, 17);
                                 rectText = new RectangleF(20, 18, 280, 37);
+                                break;
+                            case Scenes.BattleScreen:
+                                gfx.DrawImage(battle, 0, 0);
+                                rectName = new RectangleF(0, 185, 128, 17);
+                                rectText = new RectangleF(14, 200, 290, 37);
                                 break;
                         }
 
