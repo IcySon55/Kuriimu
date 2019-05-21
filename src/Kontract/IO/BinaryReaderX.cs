@@ -109,12 +109,12 @@ namespace Kontract.IO
         }
 
         // Custom Methods
-        public byte[] ReadBytesUntil(byte stop)
+        public byte[] ReadBytesUntil(params byte[] stop)
         {
             List<byte> result = new List<byte>();
 
             byte b = ReadByte();
-            while (b != stop && BaseStream.Position < BaseStream.Length)
+            while (stop.All(s => s != b) && BaseStream.Position < BaseStream.Length)
             {
                 result.Add(b);
                 b = ReadByte();
