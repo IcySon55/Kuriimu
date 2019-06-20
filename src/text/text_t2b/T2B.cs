@@ -39,7 +39,7 @@ namespace text_t2b
                     {
                         entryTypeID = br.ReadUInt32(),
                         entryLength = br.ReadByte(),
-                        typeMask = br.ReadBytes((entryLength > 10) ? 7 : 3)
+                        typeMask = br.ReadBytes(GetEntryLength(entryLength))
                     };
 
                     //cultivate data
@@ -77,7 +77,7 @@ namespace text_t2b
 
                         if (d.type == 0)
                         {
-                            if (d.value != 0xffffffff)
+                            if (d.value != 0xffffffff && d.value<header.stringSecSize)
                             {
                                 int index = -1;
                                 for (var i = 0; i < Labels.Count; i++)
@@ -148,6 +148,16 @@ namespace text_t2b
                 default:
                     throw new System.Exception("Encoding isn't supported!");
             }
+        }
+
+        public int GetEntryLength(byte entryLength)
+        {
+            var result = 3;
+            if (entryLength <= 12)
+                return result;
+
+            var multiplier = (entryLength - 13) / 16 + 1;
+            return result + multiplier * 4;
         }
 
         public void Save(string filename)
