@@ -29,6 +29,9 @@ namespace Knit
         [XmlAttribute("errorMessage")]
         public string ErrorMessage { get; set; } = string.Empty;
 
+        [XmlAttribute("outDirectory")]
+        public string OutDirectory { get; set; } = string.Empty;
+
         [XmlArray("stop-on-text")]
         [XmlArrayItem("text")]
         public List<string> StopOnText { get; set; } = new List<string>();
@@ -42,7 +45,7 @@ namespace Knit
             var progressReport = new ProgressReport();
             var stepResults = new StepResults { Status = StepStatus.Success };
 
-            progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache) });
+            progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(StartMessage, variableCache), NewLine = false });
             var arguments = Common.ProcessVariableTokens(Arguments, variableCache);
             var error = false;
 
@@ -90,6 +93,9 @@ namespace Knit
             {
                 progress.Report(new ProgressReport { Message = Common.ProcessVariableTokens(!error ? EndMessage : ErrorMessage, variableCache) });
             };
+
+            if (OutDirectory != string.Empty && !Directory.Exists(Common.ProcessVariableTokens(OutDirectory, variableCache)))
+                Directory.CreateDirectory(Common.ProcessVariableTokens(OutDirectory, variableCache));
 
             await rpa.StartAsync(startInfo);
 

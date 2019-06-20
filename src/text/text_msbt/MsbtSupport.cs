@@ -78,7 +78,9 @@ namespace text_msbt
     public sealed class NLI1
     {
         public Section Section;
-        public byte[] Unknown; // Tons of unknown data
+        public uint NumberOfIDs;
+
+        public Dictionary<uint, uint> GlobalIDs = new Dictionary<uint, uint>();
     }
 
     public sealed class ATO1

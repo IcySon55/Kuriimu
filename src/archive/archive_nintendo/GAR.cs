@@ -38,6 +38,7 @@ namespace archive_nintendo.GAR
                         ParseZeldaGar(br);
                         break;
 
+                    case "agora\0\0\0":
                     case "SYSTEM\0\0":
                         ParseSystemGar(br);
                         break;

@@ -139,6 +139,10 @@ namespace image_mt
         {
             using (var bw = new BinaryWriterX(output, ByteOrder))
             {
+                // Update the width and height
+                HeaderInfo.Width = Bitmaps[0].Width;
+                HeaderInfo.Height = Bitmaps[0].Height;
+
                 if (SwitchUnknownData != null)
                     HeaderInfo.MipMapCount--;
                 Header.Block1 = (uint)((int)HeaderInfo.Version | (HeaderInfo.Unknown1 << 12) | (HeaderInfo.Unused1 << 24) | ((int)HeaderInfo.AlphaChannelFlags << 28));
