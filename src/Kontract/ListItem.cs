@@ -20,7 +20,7 @@ namespace Kontract
 
         public int CompareTo(ListItem rhs)
         {
-            return Text.CompareTo(rhs.Text);
+            return string.Compare(Text, rhs.Text, StringComparison.Ordinal);
         }
     }
 }
