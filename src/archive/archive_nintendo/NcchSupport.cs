@@ -37,6 +37,7 @@ namespace archive_nintendo.NCCH
             if (State == ArchiveFileState.Archived || !compressed)
             {
                 base.FileData.CopyTo(instream);
+                base.FileData.Position = 0;
                 return Kontract.Hash.SHA256.Create(base.FileData);
             }
             else
@@ -344,7 +345,21 @@ namespace archive_nintendo.NCCH
             if (currentDirEntry.firstFileOffset != -1)
             {
                 br.BaseStream.Position = lv3Offset + lv3Header.fileMetaTableOffset + currentDirEntry.firstFileOffset;
-                ResolveFiles(br, currentPath + currentDirEntry.name + "\\");
+
+                var currentFileEntry = ResolveFiles(br, currentPath + currentDirEntry.name + "\\");
+                while (true)
+                {
+                    //Move to next sibling
+                    if (currentFileEntry.nextSiblingFileOffset != -1)
+                    {
+                        br.BaseStream.Position = lv3Offset + lv3Header.fileMetaTableOffset + currentFileEntry.nextSiblingFileOffset;
+                        currentFileEntry = ResolveFiles(br, currentPath + currentDirEntry.name + "\\");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
 
             //finally move to next sibling dir
@@ -355,7 +370,7 @@ namespace archive_nintendo.NCCH
             }
         }
 
-        void ResolveFiles(BinaryReaderX br, string currentPath = "")
+        FileMetaData ResolveFiles(BinaryReaderX br, string currentPath = "")
         {
             var currentFileEntry = new FileMetaData
             {
@@ -376,12 +391,7 @@ namespace archive_nintendo.NCCH
                 fileSize = currentFileEntry.fileSize
             });
 
-            //Move to next sibling
-            if (currentFileEntry.nextSiblingFileOffset != -1)
-            {
-                br.BaseStream.Position = lv3Offset + lv3Header.fileMetaTableOffset + currentFileEntry.nextSiblingFileOffset;
-                ResolveFiles(br, currentPath);
-            }
+            return currentFileEntry;
         }
     }
 
@@ -507,12 +517,12 @@ namespace archive_nintendo.NCCH
                 MetaOffset = 0,
                 ParentOffset = 0,
                 NextSiblingOffset = UnusedEntry,
-                FirstChildOffset = 0x18,
+                FirstChildOffset = ROOT.GetDirectories().Length <= 0 ? UnusedEntry : 0x18,
                 FirstFileOffset = 0,
                 NextDirInSameBucket = UnusedEntry,
                 name = ""
             };
-            metaData.DirMetaOffset = 0x18;
+            metaData.DirMetaOffset = ROOT.GetDirectories().Length <= 0 ? UnusedEntry : 0x18;
             metaData.Dirs.Add(rootDir);
 
             PopulateMetaData(metaData, ROOT, rootDir);

@@ -43,20 +43,27 @@ namespace archive_nintendo.NCA
                             }
                             catch
                             {
-
+                                ;
                             }
                             break;
                         case 3:     //RomFS
-                            var romFSBlock = new BinaryReaderX(new MemoryStream(section.superBlock)).ReadStruct<RomFSSuperBlock>();
-                            var romFS = new RomFS(input, romFSBlock, ncaHeader.sectionEntries[index].mediaStartOffset * 0x200L, $"RomFS (Section {index})");
-                            foreach (var file in romFS.files)
+                            try
                             {
-                                Files.Add(new ArchiveFileInfo
+                                var romFSBlock = new BinaryReaderX(new MemoryStream(section.superBlock)).ReadStruct<RomFSSuperBlock>();
+                                var romFS = new RomFS(input, romFSBlock, ncaHeader.sectionEntries[index].mediaStartOffset * 0x200L, $"RomFS (Section {index})");
+                                foreach (var file in romFS.files)
                                 {
-                                    State = ArchiveFileState.Archived,
-                                    FileName = file.fileName,
-                                    FileData = new SubStream(_stream, file.fileOffset, file.fileSize)
-                                });
+                                    Files.Add(new ArchiveFileInfo
+                                    {
+                                        State = ArchiveFileState.Archived,
+                                        FileName = file.fileName,
+                                        FileData = new SubStream(_stream, file.fileOffset, file.fileSize)
+                                    });
+                                }
+                            }
+                            catch
+                            {
+                                ;
                             }
                             break;
                         default:

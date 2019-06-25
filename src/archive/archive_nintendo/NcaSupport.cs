@@ -145,6 +145,9 @@ namespace archive_nintendo.NCA
 
             using (var br = new BinaryReaderX(input, true))
             {
+                if (offset + romFsBlock.level6Offset > input.Length)
+                    throw new InvalidOperationException("Invalid romfs data.");
+
                 lv6Offset = br.BaseStream.Position = offset + romFsBlock.level6Offset;
 
                 lv6header = br.ReadStruct<HashLevelHeader>();
@@ -281,6 +284,8 @@ namespace archive_nintendo.NCA
                 br.BaseStream.Position = offset + superBlock.pfs0Offset;
 
                 var header = br.ReadStruct<PFS0Header>();
+                if (header.magic != "PFS0")
+                    throw new InvalidOperationException("No valid PFS0");
                 var fileEntries = br.ReadMultiple<FileEntry>(header.fileCount);
 
                 var stringTable = br.ReadBytes(header.stringTableSize);
