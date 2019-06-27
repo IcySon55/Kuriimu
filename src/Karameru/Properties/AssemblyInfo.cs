@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿// Do not change this file, as it will be overwritten on build time
+// Edit AssemblyInfo_template.cs instead
+
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -31,6 +34,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
+
+// Use this when you apply git tags like "0.1.0" to automatically keep up with the version
+[assembly: AssemblyVersion("1.0.14.2103")]
+[assembly: AssemblyFileVersion("1.0.14.2103")]
+[assembly: AssemblyInformationalVersion("1.0.14-c82c7c09")]

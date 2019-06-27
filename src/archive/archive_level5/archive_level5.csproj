@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ARC0.cs" />
+    <Compile Include="G4PK.cs" />
+    <Compile Include="G4PKManager.cs" />
+    <Compile Include="G4PKSupport.cs" />
     <Compile Include="X3Manager.cs" />
     <Compile Include="Arc0Manager.cs" />
     <Compile Include="Arc0Support.cs" />
