@@ -1,8 +1,16 @@
-Issue: [plugin request | bug report | feature request]
+---
+name: Plugin request
+about: Requesting a plugin for a file format.
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+Game Name: 
 Console: 
 Format extension(s): 
 Type: [text | image | archive]
-Game Name: 
 
 First 8 bytes of the file(s):
 <extension> - [bytes in hex] - [bytes in ASCII]
