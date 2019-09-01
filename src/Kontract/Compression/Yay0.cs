@@ -130,9 +130,7 @@ namespace Kontract.Compression
 
                 while (pos < sz)
                 {
-                    var hitp = 0;
-                    var hitl = 0;
-                    _search(input, pos, sz, cap, ref hitp, ref hitl);
+                    var (hitp, hitl) = Search(input, pos, sz, cap);
 
                     if (hitl < 3)
                     {
@@ -142,11 +140,9 @@ namespace Kontract.Compression
                     }
                     else
                     {
-                        var tstp = 0;
-                        var tstl = 0;
-                        _search(input, pos + 1, sz, cap, ref tstp, ref tstl);
+                        var (tstp, tstl) = Search(input, pos + 1, sz, cap);
 
-                        if ((hitl + 1) < tstl)
+                        if (hitl + 1 < tstl)
                         {
                             raws.Add(br.ScanBytes(pos)[0]);
                             cmds[cmdpos] |= flag;
@@ -155,7 +151,7 @@ namespace Kontract.Compression
                             if (flag == 0)
                             {
                                 flag = 0x80;
-                                cmdpos = cmds.Count();
+                                cmdpos = cmds.Count;
                                 cmds.Add(0);
                             }
 
@@ -173,7 +169,7 @@ namespace Kontract.Compression
                         }
                         else
                         {
-                            ctrl.AddRange(BitConverter.GetBytes((ushort)(e)).Reverse());
+                            ctrl.AddRange(BitConverter.GetBytes((ushort)e).Reverse());
                             raws.Add((byte)(hitl - 0x12));
                         }
                     }
@@ -182,7 +178,7 @@ namespace Kontract.Compression
                     if (flag == 0)
                     {
                         flag = 0x80;
-                        cmdpos = cmds.Count();
+                        cmdpos = cmds.Count;
                         cmds.Add(0);
                     }
                 }
@@ -190,10 +186,10 @@ namespace Kontract.Compression
                 if (flag == 0x80)
                     cmds.RemoveAt(cmdpos);
 
-                var v = 4 - (cmds.Count() & 3);
+                var v = 4 - (cmds.Count & 3);
                 cmds.AddRange(new byte[v & 3]);
-                var l = cmds.Count() + 16;
-                var o = ctrl.Count() + l;
+                var l = cmds.Count + 16;
+                var o = ctrl.Count + l;
 
                 List<byte> header = new List<byte>();
                 header.AddRange(Encoding.ASCII.GetBytes("Yay0"));
@@ -208,36 +204,35 @@ namespace Kontract.Compression
             }
         }
 
-        public static void _search(Stream data, int pos, long sz, int cap, ref int hitp, ref int hitl)
+        // Windowsize = 0x1000
+        // Length = 0x111
+        public static (int, int) Search(Stream data, int pos, long sz, int cap)
         {
-            var t = 0;
-            if (pos == 734)
-                t = 0;
             using (var br = new BinaryReaderX(data, true))
             {
                 var ml = Math.Min(cap, sz - pos);
                 if (ml < 3)
-                    return;
+                    return (0, 0);
 
                 var mp = Math.Max(0, pos - 0x1000);
-                hitp = 0;
-                hitl = 3;
+                var hitp = 0;
+                var hitl = 3;
 
                 if (mp < pos)
                 {
                     var hl = (int)FirstIndexOfNeedleInHaystack(br.ScanBytes(mp, (pos + hitl) - mp), br.ScanBytes(pos, hitl));
-                    while (hl < (pos - mp))
+                    while (hl < pos - mp)
                     {
-                        while ((hitl < ml) && (br.ScanBytes(pos + hitl)[0] == br.ScanBytes(mp + hl + hitl)[0]))
-                            hitl += 1;
+                        while (hitl < ml && br.ScanBytes(pos + hitl)[0] == br.ScanBytes(mp + hl + hitl)[0])
+                            hitl++;
 
                         mp += hl;
                         hitp = mp;
                         if (hitl == ml)
-                            return;
+                            return (hitp, hitl);
 
-                        mp += 1;
-                        hitl += 1;
+                        mp++;
+                        hitl++;
                         if (mp >= pos)
                             break;
 
@@ -248,70 +243,46 @@ namespace Kontract.Compression
                 if (hitl < 4)
                     hitl = 1;
 
-                hitl -= 1;
-                return;
+                hitl--;
+
+                return (hitp, hitl);
             }
         }
 
-        public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
+        // max haystack size = windowsize + maxMatchLength-1
+        // Returns position of needle in haystack, only if whole needle matches somewhere in haystack
+        // Partial matches with length < needleLength are ignored
+        public static long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
         {
-            int m = needle.Length;
-            int n = haystack.Length;
+            var m = needle.Length;
+            var n = haystack.Length;
 
-            int[] badChar = new int[256];
+            var badChar = new int[256];
+            BadCharHeuristic(needle, m, badChar);
 
-            BadCharHeuristic(needle, m, ref badChar);
-
-            int s = 0;
-            while (s <= (n - m))
+            var s = 0;
+            while (s <= n - m)
             {
-                int j = m - 1;
-
+                var j = m - 1;
                 while (j >= 0 && needle[j] == haystack[s + j])
-                    --j;
+                    j--;
 
-                if (j < 0) return s;
-                else s += Math.Max(1, j - badChar[haystack[s + j]]);
+                if (j < 0)
+                    return s;
+
+                s += Math.Max(1, j - badChar[haystack[s + j]]);
             }
 
             return -1;
         }
-        private static void BadCharHeuristic(byte[] input, int size, ref int[] badChar)
-        {
-            int i;
 
-            for (i = 0; i < 256; i++)
+        private static void BadCharHeuristic(byte[] input, int size, int[] badChar)
+        {
+            for (var i = 0; i < 256; i++)
                 badChar[i] = -1;
 
-            for (i = 0; i < size; i++)
+            for (var i = 0; i < size; i++)
                 badChar[input[i]] = i;
         }
-
-        /*public static unsafe long FirstIndexOfNeedleInHaystack(byte[] haystack, byte[] needle)
-        {
-            fixed (byte* numPtr1 = haystack)
-            fixed (byte* numPtr2 = needle)
-            {
-                long num = 0;
-                byte* numPtr3 = numPtr1;
-                for (byte* numPtr4 = numPtr1 + haystack.Length; numPtr3 < numPtr4; ++numPtr3)
-                {
-                    bool flag = true;
-                    byte* numPtr5 = numPtr3;
-                    byte* numPtr6 = numPtr2;
-                    byte* numPtr7 = numPtr2 + needle.Length;
-                    while (flag && numPtr6 < numPtr7)
-                    {
-                        flag = (int)*numPtr6 == (int)*numPtr5;
-                        ++numPtr6;
-                        ++numPtr5;
-                    }
-                    if (flag)
-                        return num;
-                    ++num;
-                }
-                return -1;
-            }
-        }*/
     }
 }

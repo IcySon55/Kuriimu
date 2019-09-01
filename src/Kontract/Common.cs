@@ -43,6 +43,7 @@ namespace Kontract
     {
         long value;
         public static implicit operator string(Magic8 magic) => Encoding.ASCII.GetString(BitConverter.GetBytes(magic.value));
+        public static implicit operator Magic8(string s) => new Magic8 { value = BitConverter.ToInt64(Encoding.ASCII.GetBytes(s), 0) };
     }
 
     public static class Extensions

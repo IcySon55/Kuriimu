@@ -190,6 +190,15 @@ namespace Kontract.Compression
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data">input data</param>
+        /// <param name="pos">position at which to find match</param>
+        /// <param name="sz">size of input</param>
+        /// <param name="cap">max match length</param>
+        /// <param name="hitp">absolute position at which the match was found</param>
+        /// <param name="hitl">length of the match found</param>
         public static void _search(Stream data, int pos, long sz, int cap, ref int hitp, ref int hitl)
         {
             var t = 0;
