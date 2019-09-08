@@ -2,7 +2,7 @@
 using System.IO;
 using Kontract.IO;
 
-namespace archive_l7c
+namespace archive_l7c.Compression
 {
     public class L7cDecoder
     {

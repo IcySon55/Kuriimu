@@ -42,11 +42,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitReader.cs" />
+    <Compile Include="Compression\BackwardsLz77MatchFinder.cs" />
+    <Compile Include="Compression\BitReader.cs" />
     <Compile Include="ChunkInfo.cs" />
     <Compile Include="ChunkStream.cs" />
+    <Compile Include="Compression\BitWriter.cs" />
+    <Compile Include="Compression\DataType.cs" />
+    <Compile Include="Compression\HuffmanTree.cs" />
+    <Compile Include="Compression\HuffmanTreeNode.cs" />
+    <Compile Include="Compression\IPriceCalculator.cs" />
+    <Compile Include="Compression\Match.cs" />
+    <Compile Include="Compression\L7c80Encoder.cs" />
+    <Compile Include="Compression\L7c81Encoder.cs" />
+    <Compile Include="Compression\OptimalParser.cs" />
+    <Compile Include="Compression\PriceHistoryElement.cs" />
+    <Compile Include="Compression\TaikoLz80PriceCalculator.cs" />
+    <Compile Include="Compression\TaikoLz81PriceCalculator.cs" />
     <Compile Include="L7C.cs" />
-    <Compile Include="L7cDecoder.cs" />
+    <Compile Include="Compression\L7cDecoder.cs" />
     <Compile Include="L7cManager.cs" />
     <Compile Include="L7cSupport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

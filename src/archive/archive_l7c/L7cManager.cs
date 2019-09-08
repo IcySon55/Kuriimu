@@ -28,8 +28,8 @@ namespace archive_l7c
         public bool CanAddFiles => false;
         public bool CanRenameFiles => false;
         public bool CanDeleteFiles => false;
-        public bool CanSave => false;
-        public bool CanReplaceFiles => false;
+        public bool CanSave => true;
+        public bool CanReplaceFiles => true;
 
         public FileInfo FileInfo { get; set; }
 
@@ -57,38 +57,35 @@ namespace archive_l7c
 
         public void Save(string filename)
         {
-            //if (!string.IsNullOrEmpty(filename))
-            //    FileInfo = new FileInfo(filename);
+            if (!string.IsNullOrEmpty(filename))
+                FileInfo = new FileInfo(filename);
 
-            //var irlstFilename = filename;
-            //var irarcFilename = filename.Remove(filename.Length - 5) + "irarc";
+            // Save As...
+            if (!string.IsNullOrWhiteSpace(filename))
+            {
+                _l7c.Save(File.Create(filename));
+                _l7c.Close();
+            }
+            else
+            {
+                // Create the temp files
+                _l7c.Save(File.Create(FileInfo.FullName + ".tmp"));
+                _l7c.Close();
 
-            //// Save As...
-            //if (!string.IsNullOrWhiteSpace(filename))
-            //{
-            //    _l7c.Save(File.Create(irlstFilename), File.Create(irarcFilename));
-            //    _l7c.Close();
-            //}
-            //else
-            //{
-            //    // Create the temp files
-            //    _l7c.Save(File.Create(irlstFilename + ".tmp"), File.Create(irarcFilename + ".tmp"));
-            //    _l7c.Close();
-            //    // Delete the originals
-            //    FileInfo.Delete();
-            //    File.Delete(irarcFilename);
-            //    // Rename the temporary files
-            //    File.Move(irlstFilename + ".tmp", irlstFilename);
-            //    File.Move(irarcFilename + ".tmp", irarcFilename);
-            //}
+                // Delete the originals
+                FileInfo.Delete();
 
-            //// Reload the new file to make sure everything is in order
-            //Load(FileInfo.FullName);
+                // Rename the temporary files
+                File.Move(FileInfo.FullName + ".tmp", FileInfo.FullName);
+            }
+
+            // Reload the new file to make sure everything is in order
+            Load(FileInfo.FullName);
         }
 
         public void Unload()
         {
-            //_l7c?.Close();
+            _l7c?.Close();
         }
 
         // Files

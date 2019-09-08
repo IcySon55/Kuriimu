@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using archive_l7c.Compression;
 
 namespace archive_l7c
 {
-    class ChunkInfo
+    public class ChunkInfo
     {
         public long Offset { get; }
         public long Length { get; set; }

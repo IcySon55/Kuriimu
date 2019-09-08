@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Kontract.IO;
 
-namespace archive_l7c
+namespace archive_l7c.Compression
 {
     public enum BitOrder
     {

@@ -6,16 +6,109 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using archive_l7c.Compression;
+using Kontract.Hash;
 using Kontract.Interface;
 using Kontract.IO;
 
 namespace archive_l7c
 {
-    class L7cArchiveFileInfo : ArchiveFileInfo
+    public class L7cArchiveFileInfo : ArchiveFileInfo
     {
-        public L7CAFileEntry Entry { get; set; }
+        private L7CAChunkEntry[] _chunks;
+        private ChunkStream _chunkStream;
+        private bool _isDataSet;
+
+        public L7cArchiveFileInfo(Stream fileData, int rawLength, L7CAChunkEntry[] chunks, L7CAFileEntry fileEntry)
+        {
+            base.FileData = fileData;
+            Entry = fileEntry;
+
+            _chunks = chunks;
+            var chunkRecords = GetChunkRecords(chunks);
+            _chunkStream = new ChunkStream(fileData, rawLength, chunkRecords);
+        }
+
+        private ChunkInfo[] GetChunkRecords(L7CAChunkEntry[] chunks)
+        {
+            var chunkRecords = new ChunkInfo[chunks.Length];
+            var offset = 0;
+            for (int j = 0; j < chunkRecords.Length; j++)
+            {
+                var length = chunks[j].chunkSize & 0xFFFFFF;
+                chunkRecords[j] = new ChunkInfo(offset, length);
+
+                var compMode = (chunks[j].chunkSize >> 24) & 0xFF;
+                if (compMode > 0)
+                    chunkRecords[j].Decoder = new L7cDecoder(compMode);
+
+                offset += length;
+            }
+
+            return chunkRecords;
+        }
+
+        public L7CAFileEntry Entry { get; }
+
+        public override Stream FileData
+        {
+            get => _isDataSet ? base.FileData : _chunkStream;
+            set
+            {
+                _isDataSet = true;
+                base.FileData = value;
+            }
+        }
 
         public override long? FileSize => Entry.rawFilesize;
+
+        public L7CAChunkEntry[] WriteFile(Stream output, out uint crc32, out int compressedSize)
+        {
+            if (!_isDataSet)
+            {
+                // If we still have the original file, write that one and return its chunks
+
+                crc32 = Entry.crc32;
+                compressedSize = (int)base.FileData.Length;
+
+                base.FileData.Position = 0;
+                base.FileData.CopyTo(output);
+
+                return _chunks;
+            }
+
+            // Otherwise compress the new file and return a single chunk description
+
+            base.FileData.Position = 0;
+            crc32 = Crc32.Create(new BinaryReaderX(base.FileData, true).ReadAllBytes());
+
+            var parser = new NewOptimalParser(new TaikoLz80PriceCalculator(), 0,
+                new BackwardLz77MatchFinder(2, 5, 1, 0x10),
+                new BackwardLz77MatchFinder(3, 0x12, 1, 0x400),
+                new BackwardLz77MatchFinder(4, 0x83, 1, 0x8000));
+            var encoder = new TaikoLz80Encoder();
+
+            base.FileData.Position = 0;
+            var buffer = new byte[base.FileData.Length];
+            base.FileData.Read(buffer, 0, buffer.Length);
+            base.FileData.Position = 0;
+            var matches = parser.ParseMatches(buffer, 0);
+            var compressedFile = new MemoryStream();
+            encoder.Encode(base.FileData, compressedFile, matches);
+
+            compressedSize = (int)compressedFile.Length;
+            compressedFile.Position = 0;
+            compressedFile.CopyTo(output);
+
+            return new[]
+            {
+                new L7CAChunkEntry
+                {
+                    chunkId = 0,
+                    chunkSize = (int)(0x80000000 | ((int)compressedFile.Length & 0xFFFFFF))
+                }
+            };
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -32,7 +125,7 @@ namespace archive_l7c
         public int files;
         public int chunks;
         public int stringTableSize;
-        public int unk4 = 5; // Number of sections??
+        public int unk4;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -40,7 +133,7 @@ namespace archive_l7c
     class L7CAFilesystemEntry
     {
         public int id;
-        public uint hash; // Hash of what?
+        public uint hash; // Hash of filename
         public int folderNameOffset;
         public int fileNameOffset;
         public long timestamp;
@@ -61,7 +154,7 @@ namespace archive_l7c
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    class L7CAFileEntry
+    public class L7CAFileEntry
     {
         public int compressedFilesize;
         public int rawFilesize;
@@ -72,7 +165,7 @@ namespace archive_l7c
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    class L7CAChunkEntry
+    public class L7CAChunkEntry
     {
         public int chunkSize;
         public ushort unk = 0;
