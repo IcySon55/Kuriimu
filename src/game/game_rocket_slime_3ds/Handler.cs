@@ -158,7 +158,7 @@ namespace game_rocket_slime_3ds
                             case Scenes.BattleScreen:
                                 gfx.DrawImage(battle, 0, 0);
                                 rectName = new RectangleF(0, 185, 128, 17);
-                                rectText = new RectangleF(14, 200, 290, 37);
+                                rectText = new RectangleF(8, 200, 300, 37);
                                 break;
                         }
 

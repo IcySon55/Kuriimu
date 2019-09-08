@@ -19,7 +19,7 @@ namespace archive_level5.G4PK
         // Information
         public string Name => "G4PK";
         public string Description => "Level 5 G4 package";
-        public string Extension => "*.g4pkm";
+        public string Extension => "*.g4pkm;*.g4pk";
         public string About => "This is the G4PK archive manager for Karameru.";
 
         // Feature Support
