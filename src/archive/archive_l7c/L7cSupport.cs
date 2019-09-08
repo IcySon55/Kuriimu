@@ -60,7 +60,16 @@ namespace archive_l7c
             }
         }
 
-        public override long? FileSize => Entry.rawFilesize;
+        public override long? FileSize
+        {
+            get
+            {
+                if (!_isDataSet)
+                    return Entry.rawFilesize;
+                else
+                    return base.FileData.Length;
+            }
+        }
 
         public L7CAChunkEntry[] WriteFile(Stream output, out uint crc32, out int compressedSize)
         {
