@@ -9,6 +9,7 @@ using Kontract.Image.Format;
 using Kontract.Image.Swizzle;
 using Kontract.IO;
 using Cetera.PICA;
+using System.Drawing.Drawing2D;
 
 //Code ported from Ohana3DS
 
@@ -74,21 +75,23 @@ namespace image_nintendo.BCH
                             var format = (byte)picaEntries[i].getTexUnit0Format();
                             int bitDepth = Support.CTRFormat[format].BitDepth;
 
-                            for (int j = 0; j <= picaEntries[i].getTexUnit0LoD(); j++)
+                            //for (int j = 0; j <= picaEntries[i].getTexUnit0LoD(); j++)
+                            //{
+                            origValues.Add(new TexEntry(size.Width, size.Height, format));
+
+                            var settings = new ImageSettings
                             {
-                                origValues.Add(new TexEntry(size.Width >> j, size.Height >> j, format));
+                                Width = size.Width,
+                                Height = size.Height,
+                                Format = Support.CTRFormat[format],
+                                Swizzle = new CTRSwizzle(size.Width, size.Height)
+                            };
 
-                                var settings = new ImageSettings
-                                {
-                                    Width = size.Width >> j,
-                                    Height = size.Height >> j,
-                                    Format = Support.CTRFormat[format],
-                                    Swizzle = new CTRSwizzle(size.Width >> j, size.Height >> j)
-                                };
+                            _settings.Add(settings);
+                            //    bmps.Add(Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
+                            //}
 
-                                _settings.Add(settings);
-                                bmps.Add(Common.Load(br.ReadBytes((((size.Width >> j) * (size.Height >> j)) * bitDepth) / 8), settings));
-                            }
+                            bmps.Add(Common.Load(br.ReadBytes((((size.Width) * (size.Height)) * bitDepth) / 8), settings));
 
                             br.BaseStream.Position = (br.BaseStream.Position + 0x7f) & ~0x7f;
                         }
@@ -128,8 +131,18 @@ namespace image_nintendo.BCH
                                 Swizzle = new CTRSwizzle(size.Width >> j, size.Height >> j)
                             };
 
-                            bw.Write(Common.Save(bmps[bmpCount++], settings));
+                            var sourceBmp = bmps[bmpCount];
+                            var bmp = new Bitmap(settings.Width, settings.Height);
+                            var gfx = Graphics.FromImage(bmp);
+                            gfx.SmoothingMode = SmoothingMode.HighQuality;
+                            gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            gfx.CompositingQuality = CompositingQuality.HighQuality;
+                            gfx.DrawImage(sourceBmp, new Rectangle(new Point(0,0), bmp.Size), 0, 0, sourceBmp.Width, sourceBmp.Height, GraphicsUnit.Pixel);
+
+                            bw.Write(Common.Save(bmp, settings));
                         }
+
+                        bmpCount++;
                     }
                 }
             }
