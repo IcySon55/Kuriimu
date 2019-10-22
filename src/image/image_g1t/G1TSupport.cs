@@ -41,8 +41,10 @@ namespace image_g1t
 
         public static Dictionary<byte, IImageFormat> PSFormat = new Dictionary<byte, IImageFormat>
         {
+            [0x1] = new RGBA(4, 4, 4, 4),
             [0x59] = new DXT(DXT.Version.DXT1),
-            [0x5b] = new DXT(DXT.Version.DXT5)
+            [0x5b] = new DXT(DXT.Version.DXT5),
+            [0x5f] = new RGBA(8, 8, 8, 8, Kontract.IO.ByteOrder.BigEndian)
         };
     }
 

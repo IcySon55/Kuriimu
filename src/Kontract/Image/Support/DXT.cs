@@ -17,6 +17,8 @@ namespace Kontract.Image.Support
             private Queue<Color> queue = new Queue<Color>();
             public Formats Format { get; set; }
 
+            public bool QueueFinished => !queue.Any();
+
             private int Interpolate(int a, int b, int num, int den) => (num * a + (den - num) * b + den / 2) / den;
             private Color InterpolateColor(Color a, Color b, int num, int den) => Color.FromArgb(Interpolate(a.R, b.R, num, den), Interpolate(a.G, b.G, num, den), Interpolate(a.B, b.B, num, den));
 

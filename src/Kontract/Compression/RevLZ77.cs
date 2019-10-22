@@ -21,6 +21,7 @@ namespace Kontract.Compression
             int[] offsetTable = new int[4098];
             int[] reversedOffsetTable = new int[4098];
             int[] byteTable = Enumerable.Repeat(-1, 256).ToArray();
+            // Holds last offset of each byte value
             int[] endTable = Enumerable.Repeat(-1, 256).ToArray();
             byte[] input;
 
@@ -139,7 +140,8 @@ namespace Kontract.Compression
         {
             byte[] input = new BinaryReaderX(instream, true).ReadBytes((int)instream.Length);
 
-            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
 
             var compFooter = input.BytesToStruct<CompFooter>(input.Length - 8);
             int dest = input.Length + compFooter.originalBottom;
@@ -188,47 +190,59 @@ namespace Kontract.Compression
             var info = new SCompressInfo(input);
             const int maxSize = 0xF + 3;
             int src = input.Length;
-            int dest = input.Length;
+            int dest = input.Length;    // Will be input.Length - compressedSize
 
-            while (src > 0 && dest > 0)
-            {
-                int flagPos = --dest, mask = 0x80;
-                result[flagPos] = 0;
-
-                do
+            var fileName = @"D:\Users\Kirito\Desktop\otherMatches.bin";
+            var file = File.Open(fileName, FileMode.Create);
+            using (var br = new BinaryWriter(file))
+                while (src > 0 && dest > 0)
                 {
-                    int nOffset;
-                    int size = info.Search(src, out nOffset, Math.Min(Math.Min(maxSize, src), input.Length - src));
+                    int flagPos = --dest, mask = 0x80;
+                    result[flagPos] = 0;
 
-                    if (size < 3)
+                    do
                     {
-                        if (dest < 1)
-                        {
-                            return null;
-                        }
-                        info.SlideByte(--src);
-                        result[--dest] = input[src];
-                    }
-                    else
-                    {
-                        if (dest < 2)
-                        {
-                            return null;
-                        }
+                        int nOffset;
+                        // Get max match in window
+                        int size = info.Search(src, out nOffset, Math.Min(Math.Min(maxSize, src), input.Length - src));
 
-                        for (int i = 0; i < size; i++)
+                        if (size < 3)
+                        {
+                            if (dest < 1)
+                            {
+                                return null;
+                            }
+
+                            // Uncompressed byte
                             info.SlideByte(--src);
-                        result[flagPos] |= (byte)mask;
-                        result[--dest] = (byte)(((size - 3) << 4) | ((nOffset - 3) >> 8 & 0x0F));
-                        result[--dest] = (byte)(nOffset - 3);
-                    }
+                            result[--dest] = input[src];
+                        }
+                        else
+                        {
+                            if (dest < 2)
+                            {
+                                return null;
+                            }
 
-                    if (src <= 0)
-                    {
-                        break;
-                    }
-                } while ((mask >>= 1) != 0);
-            }
+                            br.Write(nOffset);
+                            br.Write(size);
+
+                            // Compressed bytes
+                            for (int i = 0; i < size; i++)
+                                info.SlideByte(--src);
+
+                            // Flag and match
+                            result[flagPos] |= (byte)mask;
+                            result[--dest] = (byte)(((size - 3) << 4) | ((nOffset - 3) >> 8 & 0x0F));
+                            result[--dest] = (byte)(nOffset - 3);
+                        }
+
+                        if (src <= 0)
+                        {
+                            break;
+                        }
+                    } while ((mask >>= 1) != 0);
+                }
 
             Func<int, int, byte[]> func = (origSize, unusedSize) =>
             {
@@ -253,8 +267,8 @@ namespace Kontract.Compression
                     .ToArray();
             };
 
-            int orig = input.Length;
-            int unused = input.Length;
+            int orig = input.Length;    // Will be 0, if nothing went wrong
+            int unused = input.Length;  // Will be input.Length - compressedLength == dest?
 
             while (true)
             {

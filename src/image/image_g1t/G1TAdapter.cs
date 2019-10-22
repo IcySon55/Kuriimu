@@ -38,7 +38,7 @@ namespace image_g1t
                 if (br.BaseStream.Length < 4) return false;
                 var magic1 = br.ReadString(4);
                 var magic2 = br.ReadString(4);
-                return (magic1 == "GT1G" || magic1 == "G1TG") && (magic2 == "0600" || magic2 == "0500");
+                return (magic1 == "GT1G" || magic1 == "G1TG") && (magic2 == "0600" || magic2 == "0500" || magic2 == "1600");
             }
         }
 

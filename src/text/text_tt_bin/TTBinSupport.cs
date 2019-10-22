@@ -209,6 +209,7 @@ namespace tt.text_ttbin
         public uint hash;
         public byte entryCount;
         public List<Meta> metaInfo = new List<Meta>();
+        public Label label;
 
         public class Meta
         {

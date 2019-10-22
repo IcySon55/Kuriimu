@@ -39,26 +39,12 @@ namespace Kontract.Encryption
                 }
             }
 
-            //private static byte[] ncaHeader_sha256 = new byte[] { 0x8e, 0x03, 0xde, 0x24, 0x81, 0x8d, 0x96, 0xce, 0x4f, 0x2a, 0x09, 0xb4, 0x3a, 0xf9, 0x79, 0xe6, 0x79, 0x97, 0x4f, 0x75, 0x70, 0x71, 0x3a, 0x61, 0xee, 0xd8, 0xb3, 0x14, 0x86, 0x4a, 0x11, 0xd5 };
-
-            //public byte[] ncaHeaderKey = new byte[0x20];
-
-            //byte[][] masterkeys = new byte[3][];
-            //byte[] titlekekSource;
-
-            //byte[] aesKekGenSource;
-            //byte[] aesKeyGenSource;
-
-            //byte[] kakAppSource;
-            //byte[] kakOceanSource;
-            //byte[] kakSystemSource;
-
-            public Keyset()
+            public Keyset(string keysFile)
             {
-                if (!File.Exists("bin\\switch_keys.dat"))
-                    throw new FileNotFoundException("Couldn't find switch_keys.dat");
+                if (!File.Exists(keysFile))
+                    throw new FileNotFoundException(keysFile);
 
-                _keyMaterial = File.ReadAllLines("bin\\switch_keys.dat")
+                _keyMaterial = File.ReadAllLines(keysFile)
                     .Select(l => l.Replace(" ", "").Replace("\t", ""))
                     .Where(l => !l.StartsWith(";") && !String.IsNullOrEmpty(l) && Regex.IsMatch(l.Split('=').Skip(1).First(), "^[a-fA-F0-9]+$"))
                     .ToDictionary(
@@ -97,14 +83,48 @@ namespace Kontract.Encryption
             }
         }
 
-        private static byte[] xci_sha256 = new byte[] { 0x2e, 0x36, 0xcc, 0x55, 0x15, 0x7a, 0x35, 0x10, 0x90, 0xa7, 0x3e, 0x7a, 0xe7, 0x7c, 0xf5, 0x81, 0xf6, 0x9b, 0x0b, 0x6e, 0x48, 0xfb, 0x06, 0x6c, 0x98, 0x48, 0x79, 0xa6, 0xed, 0x7d, 0x2e, 0x96 };
+        public class TitleKeySet
+        {
+            private Dictionary<string, byte[]> _keyMaterial;
+
+            public byte[] this[string i]
+            {
+                get
+                {
+                    if (!_keyMaterial.ContainsKey(i))
+                        throw new KeyNotFoundException(i);
+                    return _keyMaterial[i];
+                }
+                set
+                {
+                    if (!_keyMaterial.ContainsKey(i))
+                        _keyMaterial.Add(i, value);
+                    else
+                        _keyMaterial[i] = value;
+                }
+            }
+
+            public TitleKeySet(string titleKeyFile)
+            {
+                if (!File.Exists(titleKeyFile))
+                    throw new FileNotFoundException(titleKeyFile);
+
+                _keyMaterial = File.ReadAllLines(titleKeyFile)
+                    .Select(l => l.Replace(" ", "").Replace("\t", ""))
+                    .Where(l => !l.StartsWith(";") && !string.IsNullOrEmpty(l) && Regex.IsMatch(l.Split('=').First(), "^[a-fA-F0-9]+$") && Regex.IsMatch(l.Split('=').Skip(1).First(), "^[a-fA-F0-9]+$"))
+                    .ToDictionary(
+                        l => l.Split('=').First().ToUpper(),
+                        l => l.Split('=').Skip(1).First().Hexlify()
+                        );
+            }
+        }
 
         public static void DecryptXCI(Stream input)
         {
             if (!input.CanWrite)
                 throw new Exception("File not writeable. Is it open somewhere?");
 
-            var keyset = new Keyset();
+            var keyset = new Keyset("bin\\switch_keys.dat");
             using (var bw = new BinaryWriterX(input, true))
             using (var br = new BinaryReaderX(input, true))
             {
@@ -206,7 +226,7 @@ namespace Kontract.Encryption
         #region NCA Decryption
         public static void DecryptNCA(Stream input, long offset, Keyset keys = null)
         {
-            var keyset = keys ?? new Keyset();
+            var keyset = keys ?? new Keyset("bin\\switch_keys.dat");
 
             using (var bw = new BinaryWriterX(input, true))
             using (var br = new BinaryReaderX(input, true))
@@ -298,8 +318,17 @@ namespace Kontract.Encryption
                 else
                 {
                     //Decrypt title_key
-                    var title_key = InputBox.Show("Input Titlekey:", "Decrypt NCA").Hexlify(16);
-                    dec_title_key = Decryption.ECB128(title_key, keyset[$"titlekek_{cryptoType:00}"]);
+                    var titleKeySet = new TitleKeySet("bin\\title.keys");
+                    byte[] titleKey;
+                    try
+                    {
+                        titleKey = titleKeySet[headerPart.GetElements(0x230, 0x10).Stringify()];
+                    }
+                    catch (KeyNotFoundException knfex)
+                    {
+                        titleKey = InputBox.Show("Input Titlekey:", "Decrypt NCA").Hexlify(16);
+                    }
+                    dec_title_key = Decryption.ECB128(titleKey, keyset[$"titlekek_{cryptoType:00}"]);
                 }
 
                 //Read out section crypto
@@ -313,7 +342,8 @@ namespace Kontract.Encryption
                         if (hasRightsID)
                         {
                             var enc_buffer = br.ReadBytes((int)(sectionList[i].endMediaOffset * 0x200L - sectionList[i].mediaOffset * 0x200L));
-                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(i + 1, sectionList[i].mediaOffset * 0x200L));
+                            var section_ctr = headerPart2.GetElements(i * 0x200 + 0x140, 8).Reverse().ToArray();
+                            var dec_buffer = Decryption.CTR128(enc_buffer, dec_title_key, GenerateCTR(section_ctr, sectionList[i].mediaOffset * 0x200L));
                             bw.BaseStream.Position = offset + sectionList[i].mediaOffset * 0x200L;
                             bw.Write(dec_buffer);
                         }

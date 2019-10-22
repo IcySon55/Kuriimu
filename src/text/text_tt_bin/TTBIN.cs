@@ -12,7 +12,7 @@ namespace tt.text_ttbin
         public List<Label> Labels = new List<Label>();
 
         public Header cfgHeader;
-        List<CfgEntry> entries;
+        public List<CfgEntry> entries;
 
         public TTBIN(string filename)
         {
@@ -37,13 +37,15 @@ namespace tt.text_ttbin
                         if (meta.type == 0)
                         {
                             br.BaseStream.Position = cfgHeader.dataOffset + (int)meta.value;
-                            Labels.Add(new Label
+                            var label = new Label
                             {
                                 Name = $"Text{textCount:0000}",
                                 TextID = textCount++,
                                 TextOffset = (int)br.BaseStream.Position,
                                 Text = ((int)meta.value < 0) ? "" : ((newPage) ? "<NP>" : "") + br.ReadCStringSJIS()
-                            });
+                            };
+                            Labels.Add(label);
+                            entry.label = label;
                             newPage = false;
                         }
                     }
@@ -58,7 +60,7 @@ namespace tt.text_ttbin
             int textOffset = 0;
             int labelCount = 0;
             int pageCount = 0;
-            for(int j=0;j<entries.Count;j++)
+            for (int j = 0; j < entries.Count; j++)
             {
                 if (labelCount < Labels.Count && Labels[labelCount].Text.Length >= 4 && Labels[labelCount].Text.Substring(0, 4) == "<NP>")
                 {
@@ -86,7 +88,7 @@ namespace tt.text_ttbin
                 bw.BaseStream.Position = cfgHeader.dataOffset;
                 foreach (var label in Labels)
                     if (label.Text != String.Empty)
-                        bw.Write(sjis.GetBytes(label.Text.Replace("<NP>", "") + "\0"));
+                        bw.Write(sjis.GetBytes(label.Text.Replace("<NP>", "").TrimEnd('\n') + "\0"));
                 cfgHeader.dataLength = (uint)bw.BaseStream.Position - cfgHeader.dataOffset;
                 bw.WriteAlignment(16, 0xff);
 
