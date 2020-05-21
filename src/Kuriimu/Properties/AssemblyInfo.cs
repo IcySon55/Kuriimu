@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Kuriimu")]
-[assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepiecefreak\r\nGIT Info:\r\n\tBranch:\tIcySon55/Kuriimu/master\r\n\tCommit:\tc82c7c09\r\n\tCompiled:\t2019-06-25 16:12:03UTC\r\n\tby:\tonepiecefreak3 (alberteinstein1980@gmx.de)")]
+[assembly: AssemblyDescription("Kuriimu is the game translation text editor for authors of fan translations.\r\n\r\nCoding:\r\n\tIcySon55\r\n\tNeobeo\r\n\tonepiecefreak\r\nGIT Info:\r\n\tBranch:\tIcySon55/Kuriimu/master\r\n\tCommit:\tb6964236\r\n\tCompiled:\t2020-04-12 21:48:53UTC\r\n\tby:\tonepiecefreak3 (alberteinstein1980@gmx.de)")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Fan Translators International")]
 [assembly: AssemblyProduct("Kuriimu")]
@@ -36,6 +36,6 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 
 // Use this when you apply git tags like "0.1.0" to automatically keep up with the version
-[assembly: AssemblyVersion("1.0.14.2103")]
-[assembly: AssemblyFileVersion("1.0.14.2103")]
-[assembly: AssemblyInformationalVersion("1.0.14-c82c7c09")]
+[assembly: AssemblyVersion("1.0.14.2118")]
+[assembly: AssemblyFileVersion("1.0.14.2118")]
+[assembly: AssemblyInformationalVersion("1.0.14-b6964236")]

@@ -26,6 +26,7 @@ namespace archive_nintendo.GARC2
         public uint secCount;
         public uint dataOffset;
         public uint fileSize;
+        // misses largest file size from GARC4
     }
 
     //File Allocation Table Offsets
@@ -53,6 +54,7 @@ namespace archive_nintendo.GARC2
         public uint unk1;
         public uint offset;
         public uint endOffset;
+        // misses size from GARC4
     }
 
     //FIMB

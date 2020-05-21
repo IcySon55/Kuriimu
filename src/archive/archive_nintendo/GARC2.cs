@@ -9,6 +9,7 @@ using Kontract.Interface;
 
 namespace archive_nintendo.GARC2
 {
+    // Exact same structure as GARC4, beside changes noted in structures
     public sealed class GARC2
     {
         public List<GARC2FileInfo> Files = new List<GARC2FileInfo>();
