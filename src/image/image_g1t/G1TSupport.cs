@@ -23,8 +23,10 @@ namespace image_g1t
         {
             [9] = new RGBA(8, 8, 8, 8),
             [0x3B] = new RGBA(5, 6, 5),
+            [0x3C] = new RGBA(5, 5, 5, 1),
             [0x3D] = new RGBA(4, 4, 4, 4),
             [0x44] = new LA(0, 4),
+            [0x45] = new RGBA(8, 8, 8),
             [0x47] = new ETC1(false),
             [0x48] = new ETC1(true)
         };
