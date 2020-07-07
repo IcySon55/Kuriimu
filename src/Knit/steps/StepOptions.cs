@@ -11,11 +11,11 @@ namespace Knit.steps
     public class StepOptions : Step
     {
         // Properties
-        [XmlAttribute("setOptionsTitle")]
-        public string SetOptionsTitle { get; set; } = "Select options...";
+        [XmlAttribute("optionsTitle")]
+        public string OptionsTitle { get; set; } = "Select options...";
 
-        [XmlElement("option")]
-        public List<Option> Options { get; set; } = new List<Option>();
+        [XmlElement("option-group")]
+        public List<OptionGroup> OptionGroups { get; set; } = new List<OptionGroup>();
 
         // Methods
         public override async Task<StepResults> Perform(Dictionary<string, object> variableCache, IProgress<ProgressReport> progress)
@@ -26,7 +26,8 @@ namespace Knit.steps
             try
             {
                 var meta = Meta.Load(Path.Combine(WorkingDirectory, "meta", "meta.xml"));
-                var frmOptions = new StepOptionsForm(Options, variableCache) {Icon = new Icon(Path.Combine(WorkingDirectory, "meta", meta.Icon)), StartPosition = FormStartPosition.CenterParent};
+                var frmOptions = new StepOptionsForm(OptionGroups, variableCache) { Icon = new Icon(Path.Combine(WorkingDirectory, "meta", meta.Icon)), StartPosition = FormStartPosition.CenterParent };
+                frmOptions.Text = OptionsTitle;
                 var dr = frmOptions.ShowDialog();
 
                 if (dr == DialogResult.OK)
@@ -56,6 +57,15 @@ namespace Knit.steps
         }
     }
 
+    public class OptionGroup
+    {
+        [XmlAttribute("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [XmlElement("option")]
+        public List<Option> Options { get; set; } = new List<Option>();
+    }
+
     public class Option
     {
         [XmlAttribute("name")]
@@ -70,7 +80,26 @@ namespace Knit.steps
         [XmlAttribute("description")]
         public string Description { get; set; } = string.Empty;
 
-        [XmlElement("option")]
-        public List<Option> Options { get; set; } = new List<Option>();
+        [XmlAttribute("mode")]
+        public OptionsMode Mode { get; set; } = OptionsMode.CheckBox;
+
+        [XmlElement("option-value")]
+        public List<OptionValue> Values { get; set; } = new List<OptionValue>();
+    }
+
+    public class OptionValue
+    {
+        [XmlAttribute("text")]
+        public string Text { get; set; } = string.Empty;
+
+        [XmlAttribute("variable")]
+        public string Variable { get; set; } = string.Empty;
+    }
+
+    public enum OptionsMode
+    {
+        CheckBox,
+        RadioButton,
+        DropDown
     }
 }

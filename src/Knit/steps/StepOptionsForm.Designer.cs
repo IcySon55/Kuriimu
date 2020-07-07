@@ -32,8 +32,10 @@
             this.splMain = new System.Windows.Forms.SplitContainer();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.pnlOptions = new System.Windows.Forms.Panel();
             this.pnlMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).BeginInit();
+            this.splMain.Panel1.SuspendLayout();
             this.splMain.Panel2.SuspendLayout();
             this.splMain.SuspendLayout();
             this.SuspendLayout();
@@ -57,14 +59,21 @@
             this.splMain.Name = "splMain";
             this.splMain.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
+            // splMain.Panel1
+            // 
+            this.splMain.Panel1.Controls.Add(this.pnlOptions);
+            this.splMain.Panel1.Padding = new System.Windows.Forms.Padding(10, 4, 10, 0);
+            // 
             // splMain.Panel2
             // 
             this.splMain.Panel2.Controls.Add(this.btnOK);
             this.splMain.Panel2.Controls.Add(this.btnCancel);
             this.splMain.Panel2.Padding = new System.Windows.Forms.Padding(6, 0, 6, 7);
             this.splMain.Size = new System.Drawing.Size(184, 162);
-            this.splMain.SplitterDistance = 121;
+            this.splMain.SplitterDistance = 124;
+            this.splMain.SplitterWidth = 1;
             this.splMain.TabIndex = 0;
+            this.splMain.TabStop = false;
             // 
             // btnOK
             // 
@@ -88,6 +97,14 @@
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
+            // pnlOptions
+            // 
+            this.pnlOptions.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlOptions.Location = new System.Drawing.Point(10, 4);
+            this.pnlOptions.Name = "pnlOptions";
+            this.pnlOptions.Size = new System.Drawing.Size(164, 120);
+            this.pnlOptions.TabIndex = 0;
+            // 
             // StepOptionsForm
             // 
             this.AcceptButton = this.btnOK;
@@ -104,6 +121,7 @@
             this.Text = "Select options...";
             this.Load += new System.EventHandler(this.StepOptionsForm_Load);
             this.pnlMain.ResumeLayout(false);
+            this.splMain.Panel1.ResumeLayout(false);
             this.splMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splMain)).EndInit();
             this.splMain.ResumeLayout(false);
@@ -117,5 +135,6 @@
         private System.Windows.Forms.SplitContainer splMain;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Panel pnlOptions;
     }
 }

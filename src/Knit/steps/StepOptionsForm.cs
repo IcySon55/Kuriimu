@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace Knit.steps
@@ -14,40 +15,111 @@ namespace Knit.steps
             InitializeComponent();
         }
 
-        public StepOptionsForm(IEnumerable<Option> options, Dictionary<string, object> variableCache)
+        public StepOptionsForm(IEnumerable<OptionGroup> optionGroups, Dictionary<string, object> variableCache)
         {
             InitializeComponent();
             _variableCache = variableCache;
 
-            const int margin = 10;
+            const int margin = 12;
             const int padding = 6;
-            var nextY = margin;
+            var nextGroupY = 0;
             var width = margin * 2;
 
-            foreach (var option in options)
+            foreach (var optionGroup in optionGroups)
             {
-                if (option.Variable.Trim() == string.Empty) continue;
+                if (optionGroup.Options.Count == 0) continue;
 
-                // Checkbox / Dropdown (Phase 2)
-                var chkOption = new CheckBox { Text = option.Name, Location = new Point(margin, nextY), Size = new Size(Size.Width, 20), TextAlign = ContentAlignment.MiddleLeft, Tag = option.Variable};
-                splMain.Panel1.Controls.Add(chkOption);
-                nextY += chkOption.Height + padding;
-                _fieldCount++;
+                var glpOptions = new GroupBox
+                {
+                    Text = optionGroup.Name,
+                    Location = new Point(0, nextGroupY),
+                    Width = pnlOptions.Width,
+                    Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
+                };
+                pnlOptions.Controls.Add(glpOptions);
 
-                // Default
-                if (bool.TryParse(option.Default, out var def))
-                    chkOption.Checked = def;
+                var nextOptionY = padding + margin;
+                foreach (var option in optionGroup.Options)
+                {
+                    // Description
+                    if (!string.IsNullOrWhiteSpace(option.Description))
+                    {
+                        var lblDescription = new Label
+                        {
+                            Text = option.Description,
+                            Location = new Point(margin, nextOptionY),
+                            TextAlign = ContentAlignment.MiddleLeft,
+                            MaximumSize = new Size(300, 0),
+                            AutoSize = true
+                        };
+                        glpOptions.Controls.Add(lblDescription);
+                        nextOptionY += lblDescription.Height + padding;
+                        width = System.Math.Max(margin * 3 + lblDescription.Width, width);
+                    }
 
-                // Description
-                if (option.Description.Trim() == string.Empty) continue;
+                    switch (option.Mode)
+                    {
+                        case OptionsMode.CheckBox:
+                            var chkOption = new CheckBox
+                            {
+                                Text = option.Name,
+                                Location = new Point(margin, nextOptionY),
+                                Size = new Size(glpOptions.Width, 16),
+                                TextAlign = ContentAlignment.MiddleLeft,
+                                Tag = option.Variable
+                            };
 
-                var lblDescription = new Label { Text = option.Description, Location = new Point(margin, nextY - padding), MaximumSize = new Size(300, 0), AutoSize = true };
-                splMain.Panel1.Controls.Add(lblDescription);
-                nextY += lblDescription.Height + padding;
-                width = margin * 2 + lblDescription.Width;
+                            // Default
+                            if (bool.TryParse(option.Default, out var def))
+                                chkOption.Checked = def;
+
+                            glpOptions.Controls.Add(chkOption);
+                            nextOptionY += chkOption.Height + padding;
+                            break;
+                        case OptionsMode.RadioButton:
+                            if (option.Values.Count == 0) continue;
+
+                            foreach (var value in option.Values)
+                            {
+                                var rbnOption = new RadioButton
+                                {
+                                    Text = value.Text,
+                                    Location = new Point(margin, nextOptionY),
+                                    Size = new Size(glpOptions.Width, 16),
+                                    TextAlign = ContentAlignment.MiddleLeft,
+                                    Tag = value.Variable
+                                };
+                                glpOptions.Controls.Add(rbnOption);
+                                nextOptionY += rbnOption.Height + padding;
+                            }
+                            break;
+                        case OptionsMode.DropDown:
+                            if (option.Values.Count == 0) continue;
+
+                            var ddlOption = new ComboBox
+                            {
+                                Location = new Point(margin, nextOptionY),
+                                Size = new Size(glpOptions.Width, 21),
+                                DropDownStyle = ComboBoxStyle.DropDownList,
+                                ValueMember = "Text",
+                                DisplayMember = "Text"
+                            };
+                            ddlOption.Items.AddRange(option.Values.ToArray());
+                            ddlOption.SelectedIndex = 0;
+
+                            glpOptions.Controls.Add(ddlOption);
+                            nextOptionY += ddlOption.Height + padding;
+                            break;
+                    }
+
+                    _fieldCount++;
+                }
+
+                glpOptions.Height = nextOptionY + padding;
+                nextGroupY += glpOptions.Height + padding;
             }
 
-            SetClientSizeCore(width, nextY + splMain.Panel2.Height);
+            SetClientSizeCore(width, nextGroupY + margin + splMain.Panel2.Height);
         }
 
         private void StepOptionsForm_Load(object sender, System.EventArgs e)
@@ -58,7 +130,7 @@ namespace Knit.steps
 
         private void btnOK_Click(object sender, System.EventArgs e)
         {
-            foreach (var ctrl in splMain.Panel1.Controls)
+            foreach (var ctrl in pnlOptions.Controls)
             {
                 if (!(ctrl is CheckBox)) continue;
                 var chk = ctrl as CheckBox;

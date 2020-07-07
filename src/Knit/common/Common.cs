@@ -42,7 +42,11 @@ namespace Knit
 
         public static void SetState(this ProgressBar pbr, ProgressBarStyle state)
         {
-            SendMessage(pbr.Handle, 1040, (IntPtr)state, IntPtr.Zero);
+            try
+            {
+                SendMessage(pbr.Handle, 1040, (IntPtr)state, IntPtr.Zero);
+            }
+            catch (Exception) { }
         }
     }
 
