@@ -14,7 +14,7 @@ namespace Knit.steps
             var sb = new StringBuilder();
 
             foreach (var keu in variableCache.Keys)
-                sb.AppendLine($"[{keu}]: " + variableCache[keu]);
+                sb.AppendLine($"[{keu}]: {variableCache[keu]}");
 
             if (variableCache.Count == 0)
                 sb.AppendLine("There are currently no variables stored.");

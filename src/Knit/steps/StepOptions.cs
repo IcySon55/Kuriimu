@@ -14,6 +14,12 @@ namespace Knit.steps
         [XmlAttribute("optionsTitle")]
         public string OptionsTitle { get; set; } = "Select options...";
 
+        [XmlAttribute("minWidth")]
+        public int MinWidth {  get; set; } = 200;
+
+        [XmlAttribute("minHeight")]
+        public int MinHeight { get; set; } = 200;
+
         [XmlElement("option-group")]
         public List<OptionGroup> OptionGroups { get; set; } = new List<OptionGroup>();
 
@@ -27,6 +33,7 @@ namespace Knit.steps
             {
                 var meta = Meta.Load(Path.Combine(WorkingDirectory, "meta", "meta.xml"));
                 var frmOptions = new StepOptionsForm(OptionGroups, variableCache) { Icon = new Icon(Path.Combine(WorkingDirectory, "meta", meta.Icon)), StartPosition = FormStartPosition.CenterParent };
+                frmOptions.MinimumSize = new Size(MinWidth, MinHeight);
                 frmOptions.Text = OptionsTitle;
                 var dr = frmOptions.ShowDialog();
 

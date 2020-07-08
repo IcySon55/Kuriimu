@@ -12,7 +12,7 @@ namespace Knit.steps
         {
             if (variableCache.ContainsKey(Variable))
             {
-                MessageBox.Show($"{Variable}: " + variableCache[Variable], "Debug - Show Variable", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"{Variable}: {variableCache[Variable]}", "Debug - Show Variable", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {

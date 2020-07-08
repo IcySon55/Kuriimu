@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Net.Sockets;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Knit.steps
@@ -8,6 +9,7 @@ namespace Knit.steps
     public sealed partial class StepOptionsForm : Form
     {
         private readonly Dictionary<string, object> _variableCache;
+
         private readonly int _fieldCount;
 
         public StepOptionsForm()
@@ -29,14 +31,16 @@ namespace Knit.steps
             {
                 if (optionGroup.Options.Count == 0) continue;
 
-                var glpOptions = new GroupBox
+                var gpbOptions = new GroupBox
                 {
                     Text = optionGroup.Name,
                     Location = new Point(0, nextGroupY),
                     Width = pnlOptions.Width,
                     Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
                 };
-                pnlOptions.Controls.Add(glpOptions);
+                pnlOptions.Controls.Add(gpbOptions);
+
+                var innerControlWidth = gpbOptions.Width - margin * 2;
 
                 var nextOptionY = padding + margin;
                 foreach (var option in optionGroup.Options)
@@ -50,9 +54,10 @@ namespace Knit.steps
                             Location = new Point(margin, nextOptionY),
                             TextAlign = ContentAlignment.MiddleLeft,
                             MaximumSize = new Size(300, 0),
-                            AutoSize = true
+                            AutoSize = true,
+                            Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
                         };
-                        glpOptions.Controls.Add(lblDescription);
+                        gpbOptions.Controls.Add(lblDescription);
                         nextOptionY += lblDescription.Height + padding;
                         width = System.Math.Max(margin * 3 + lblDescription.Width, width);
                     }
@@ -64,33 +69,60 @@ namespace Knit.steps
                             {
                                 Text = option.Name,
                                 Location = new Point(margin, nextOptionY),
-                                Size = new Size(glpOptions.Width, 16),
+                                Size = new Size(innerControlWidth, 16),
                                 TextAlign = ContentAlignment.MiddleLeft,
-                                Tag = option.Variable
+                                Tag = option.Variable,
+                                Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
                             };
 
                             // Default
-                            if (bool.TryParse(option.Default, out var def))
-                                chkOption.Checked = def;
+                            if (bool.TryParse(option.Default, out var chkDef))
+                                chkOption.Checked = chkDef;
 
-                            glpOptions.Controls.Add(chkOption);
+                            gpbOptions.Controls.Add(chkOption);
                             nextOptionY += chkOption.Height + padding;
                             break;
                         case OptionsMode.RadioButton:
-                            if (option.Values.Count == 0) continue;
-
-                            foreach (var value in option.Values)
+                            if (option.Values.Count == 0)
                             {
                                 var rbnOption = new RadioButton
                                 {
-                                    Text = value.Text,
+                                    Text = option.Name,
                                     Location = new Point(margin, nextOptionY),
-                                    Size = new Size(glpOptions.Width, 16),
+                                    Size = new Size(innerControlWidth, 16),
                                     TextAlign = ContentAlignment.MiddleLeft,
-                                    Tag = value.Variable
+                                    Tag = option.Variable,
+                                    Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
                                 };
-                                glpOptions.Controls.Add(rbnOption);
+
+                                // Default
+                                if (bool.TryParse(option.Default, out var rbnDef))
+                                    rbnOption.Checked = rbnDef;
+
+                                gpbOptions.Controls.Add(rbnOption);
                                 nextOptionY += rbnOption.Height + padding;
+                            }
+                            else
+                            {
+                                foreach (var value in option.Values)
+                                {
+                                    var rbnOption = new RadioButton
+                                    {
+                                        Text = value.Text,
+                                        Location = new Point(margin, nextOptionY),
+                                        Size = new Size(innerControlWidth, 16),
+                                        TextAlign = ContentAlignment.MiddleLeft,
+                                        Tag = value.Variable,
+                                        Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right
+                                    };
+
+                                    // Default
+                                    if (option.Default == value.Variable)
+                                        rbnOption.Checked = true;
+
+                                    gpbOptions.Controls.Add(rbnOption);
+                                    nextOptionY += rbnOption.Height + padding;
+                                }
                             }
                             break;
                         case OptionsMode.DropDown:
@@ -99,24 +131,29 @@ namespace Knit.steps
                             var ddlOption = new ComboBox
                             {
                                 Location = new Point(margin, nextOptionY),
-                                Size = new Size(glpOptions.Width, 21),
+                                Size = new Size(innerControlWidth, 21),
                                 DropDownStyle = ComboBoxStyle.DropDownList,
-                                ValueMember = "Text",
+                                ValueMember = "Variable",
                                 DisplayMember = "Text"
                             };
                             ddlOption.Items.AddRange(option.Values.ToArray());
-                            ddlOption.SelectedIndex = 0;
 
-                            glpOptions.Controls.Add(ddlOption);
+                            // Default
+                            ddlOption.SelectedIndex = Math.Max(ddlOption.Items.IndexOf(option.Values.FirstOrDefault(v => v.Variable == option.Default)), 0);
+
+                            gpbOptions.Controls.Add(ddlOption);
                             nextOptionY += ddlOption.Height + padding;
+
                             break;
                     }
+
+                    width = System.Math.Max(innerControlWidth, width);
 
                     _fieldCount++;
                 }
 
-                glpOptions.Height = nextOptionY + padding;
-                nextGroupY += glpOptions.Height + padding;
+                gpbOptions.Height = nextOptionY + padding;
+                nextGroupY += gpbOptions.Height + padding;
             }
 
             SetClientSizeCore(width, nextGroupY + margin + splMain.Panel2.Height);
@@ -130,13 +167,31 @@ namespace Knit.steps
 
         private void btnOK_Click(object sender, System.EventArgs e)
         {
-            foreach (var ctrl in pnlOptions.Controls)
+            foreach (var gpb in pnlOptions.Controls)
             {
-                if (!(ctrl is CheckBox)) continue;
-                var chk = ctrl as CheckBox;
+                if (!(gpb is GroupBox groupBox)) continue;
 
-                var v = chk.Tag.ToString();
-                _variableCache[v] = chk.Checked;
+                foreach (Control opt in groupBox.Controls)
+                {
+                    switch (opt)
+                    {
+                        case Label lbl:
+                            continue;
+                        case CheckBox chk:
+                            _variableCache[chk.Tag.ToString()] = chk.Checked;
+                            break;
+                        case RadioButton rbn:
+                            _variableCache[rbn.Tag.ToString()] = rbn.Checked;
+                            break;
+                        case ComboBox ddl:
+                            foreach (OptionValue item in ddl.Items)
+                            {
+                                var selected = ddl.SelectedItem == item;
+                                _variableCache[item.Variable] = selected;
+                            }
+                            break;
+                    }
+                }
             }
 
             DialogResult = DialogResult.OK;
