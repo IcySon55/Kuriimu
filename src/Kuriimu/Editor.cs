@@ -166,7 +166,7 @@ namespace Kuriimu
             if (find.Replaced)
             {
                 _hasChanges = true;
-                UpdateForm();
+                treEntries_AfterSelect(null, null);
             }
 
             if (find.Selected == null) return;
@@ -177,6 +177,7 @@ namespace Kuriimu
             txtEdit.SelectionLength = Settings.Default.FindWhat.Length;
             txtEdit.Focus();
         }
+
         private void tsbFindReplace_Click(object sender, EventArgs e)
         {
             findReplaceToolStripMenuItem_Click(sender, e);
