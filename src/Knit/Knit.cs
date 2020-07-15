@@ -269,17 +269,20 @@ namespace Knit
 
             if (error)
             {
-                await Task.Delay(500);
+                await Task.Delay(250);
                 prgProgress.SetState(ProgressBarStyle.Error);
             }
             else if (Cancelled)
             {
-                await Task.Delay(500);
+                await Task.Delay(250);
                 prgProgress.SetState(ProgressBarStyle.Pause);
             }
 
             if (!error && !Cancelled)
+            {
                 txtStatus.AppendText("Patch applied successfully!");
+                prgProgress.Value = prgProgress.Maximum;
+            }
             if (Cancelled)
                 txtStatus.AppendText("Cancelled...");
 
