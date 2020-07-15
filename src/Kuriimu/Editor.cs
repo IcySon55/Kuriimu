@@ -1366,11 +1366,9 @@ namespace Kuriimu
         private void txtEdit_KeyUp(object sender, KeyEventArgs e)
         {
             var entry = (TextEntry)treEntries.SelectedNode.Tag;
-            var previous = string.Empty;
-            var next = string.Empty;
+            var previous = _gameHandler.GetKuriimuString(entry.EditedText);
+            var next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _textAdapter.LineEndings);
 
-            previous = _gameHandler.GetKuriimuString(entry.EditedText);
-            next = txtEdit.Text.Replace("<null>", "\0").Replace("\r\n", _textAdapter.LineEndings);
             entry.EditedText = _gameHandler.GetRawString(next);
             treEntries.SelectedNode.Text = entry + (Settings.Default.ShowTextPreview ? " - " + entry.EditedText : string.Empty);
 
