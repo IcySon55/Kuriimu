@@ -451,7 +451,7 @@ namespace Kukkii
 
         private void UpdateForm()
         {
-            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Description + " Adapter (" + _imageAdapter.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} (Final Release)" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_imageAdapter != null ? " - " + _imageAdapter.Description + " Adapter (" + _imageAdapter.Name + ")" : string.Empty);
 
             if (_imageAdapter != null)
             {
@@ -769,6 +769,11 @@ namespace Kukkii
                 _hasChanges = true;
                 UpdateForm();
             }
+        }
+
+        private void upgradeToKuriimu2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/FanTranslatorsInternational/Kuriimu2");
         }
     }
 }

@@ -340,6 +340,11 @@ namespace Karameru
             Process.Start("https://github.com/Icyson55/Kuriimu");
         }
 
+        private void upgradeToKuriimu2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/FanTranslatorsInternational/Kuriimu2");
+        }
+
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             //frmAbout about = new frmAbout();
@@ -615,7 +620,7 @@ namespace Karameru
         // Utilities
         private void UpdateForm()
         {
-            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion}" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Description + " Manager (" + _archiveManager.Name + ")" : string.Empty);
+            Text = $"{Settings.Default.ApplicationName} v{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion} (Final Release)" + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty) + (_archiveManager != null ? " - " + _archiveManager.Description + " Manager (" + _archiveManager.Name + ")" : string.Empty);
 
             openToolStripMenuItem.Enabled = _archiveManagers.Count > 0;
             tsbOpen.Enabled = _archiveManagers.Count > 0;
