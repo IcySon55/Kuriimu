@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 using Kontract.Image;
 using Kontract.Image.Swizzle;
 using Kontract.IO;
@@ -24,8 +23,8 @@ namespace image_rawJtex
                 br.BaseStream.Position = JTEXRawHeader.dataStart;
                 settings = new ImageSettings
                 {
-                    Width = JTEXRawHeader.width,
-                    Height = JTEXRawHeader.height,
+                    Width = JTEXRawHeader.virWidth,
+                    Height = JTEXRawHeader.virHeight,
                     Format = Support.Format[JTEXRawHeader.format],
                     Swizzle = new CTRSwizzle(JTEXRawHeader.width, JTEXRawHeader.height)
                 };
@@ -52,14 +51,29 @@ namespace image_rawJtex
                 byte[] resBmp = Kontract.Image.Common.Save(Image, settings);
 
                 //Header
-                JTEXRawHeader.width = Image.Width;
-                JTEXRawHeader.height = Image.Height;
+                JTEXRawHeader.width = NextPowerOfTwo(Image.Width);
+                JTEXRawHeader.height = NextPowerOfTwo(Image.Height);
+                JTEXRawHeader.virWidth = Image.Width;
+                JTEXRawHeader.virHeight = Image.Height;
                 bw.WriteStruct(JTEXRawHeader);
 
                 //Image
                 bw.BaseStream.Position = JTEXRawHeader.dataStart;
                 bw.Write(resBmp);
             }
+        }
+
+        public int NextPowerOfTwo(int val)
+        {
+            var v = (uint)val;
+            v--;
+            v |= v >> 1;
+            v |= v >> 2;
+            v |= v >> 4;
+            v |= v >> 8;
+            v |= v >> 16;
+            v++;
+            return (int)v;
         }
     }
 }

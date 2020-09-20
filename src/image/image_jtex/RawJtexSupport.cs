@@ -17,7 +17,8 @@ namespace image_rawJtex
             [2] = new RGBA(8, 8, 8, 8),
             [3] = new RGBA(8, 8, 8),
             [4] = new RGBA(4, 4, 4, 4),
-            [5] = new RGBA(5, 5, 5, 1)
+            [5] = new RGBA(5, 5, 5, 1),
+            [6] = new RGBA(5, 6, 5)
         };
     }
 
