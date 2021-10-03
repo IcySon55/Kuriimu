@@ -11,9 +11,10 @@ namespace text_papa
     public sealed class PAPA
     {
         public List<Label> Labels = new List<Label>();
-
-        public PAPA(string filename)
+        private string _version = "";
+        public PAPA(string filename, string version)
         {
+            _version = version;
             using (BinaryReaderX br = new BinaryReaderX(File.OpenRead(filename)))
             {
                 var magic = br.ReadStruct<Magic8>();
@@ -24,18 +25,31 @@ namespace text_papa
                 var textID = 0;
                 foreach (var offset in offsets)
                 {
+                    var text = "";
+                    var name = "";
                     br.BaseStream.Position = offset;
                     var entryHeader = br.ReadStruct<EntryHeader>();
                     if (entryHeader.dataSize == 0 && entryHeader.metaCount == 0)
                         break;
                     var meta = br.ReadMultiple<int>(entryHeader.metaCount);
+                    // JPN version
+                    if (version == "JPN")
+                    {
+                        br.BaseStream.Position = offset + meta[1];
+                        text = br.ReadCStringW();
 
-                    br.BaseStream.Position = offset + meta[1];
-                    var text = br.ReadCStringW();
+                        br.BaseStream.Position = offset + meta[2];
+                        name = br.ReadCStringA();
+                    }
+                    // USA version
+                    else
+                    {
+                        br.BaseStream.Position = offset + meta[1];
+                        name = br.ReadCStringA();
 
-                    br.BaseStream.Position = offset + meta[2];
-                    var name = br.ReadCStringA();
-
+                        br.BaseStream.Position = offset + meta[2];
+                        text = br.ReadCStringW();
+                    }
                     Labels.Add(new Label
                     {
                         TextID = textID++,
@@ -79,10 +93,24 @@ namespace text_papa
                 for (int i = 0; i < entryCount; i++)
                 {
                     bw.Write(initOff);
-                    initOff += entryHeaderSize + 4 + texts[i].Length;
-                    initOff = (initOff + 3) & ~3;
-                    initOff += names[i].Length;
-                    initOff = (initOff + 3) & ~3;
+                    // Idk this codes actually mean, but both methods are works, I just keep original code.
+                    //if (_version == "JPN")
+                    //{
+                        initOff += entryHeaderSize + 4 + texts[i].Length;
+                        initOff = (initOff + 3) & ~3;
+                        initOff += names[i].Length;
+                        initOff = (initOff + 3) & ~3;
+                    //}
+                    /*
+                    else
+                    {
+                        initOff += entryHeaderSize + 4 + names[i].Length;
+                        initOff = (initOff + 3) & ~3;
+                        initOff += texts[i].Length;
+                        initOff = (initOff + 3) & ~3;
+                    }
+                    */
+                    
                 }
                 bw.Write(initOff);
 
@@ -95,13 +123,28 @@ namespace text_papa
                     bw.Write(3);
                     bw.Write(0x14);
                     bw.Write(0x18);
-                    bw.Write((entryHeaderSize + 4 + texts[i].Length + 3) & ~3);
+                    if (_version == "JPN")
+                        bw.Write((entryHeaderSize + 4 + texts[i].Length + 3) & ~3);
+                    else
+                        bw.Write((entryHeaderSize + 4 + names[i].Length + 3) & ~3);
 
                     bw.WriteASCII("Msg\0");
-                    bw.Write(texts[i]);
-                    bw.WriteAlignment(4);
-                    bw.Write(names[i]);
-                    bw.WriteAlignment(4);
+                    // JPN version
+                    if (_version == "JPN")
+                    {
+                        bw.Write(texts[i]);
+                        bw.WriteAlignment(4);
+                        bw.Write(names[i]);
+                        bw.WriteAlignment(4);
+                    }
+                    else
+                    {
+                        bw.Write(names[i]);
+                        bw.WriteAlignment(4);
+                        bw.Write(texts[i]);
+                        bw.WriteAlignment(4);
+                    }
+                    
                 }
 
                 //End Mark Entry

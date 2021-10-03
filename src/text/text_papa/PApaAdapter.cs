@@ -62,6 +62,8 @@ namespace text_papa
             }
         }
 
+        public string version = "";
+
         public string LineEndings => "\n";
 
         #endregion
@@ -81,20 +83,32 @@ namespace text_papa
 
             _fileInfo = new FileInfo(filename);
             _entries = null;
+            version = "";
 
             if (_fileInfo.Exists)
             {
-                _papa = new PAPA(_fileInfo.FullName);
+                if (MessageBox.Show(_fileInfo.Name + ": Is this JPN version?", "Language select", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    // JPN version
+                    version = "JPN";
+                }
+                else
+                {
+                    // USA version
+                    version = "USA";
+                }
+               
+                _papa = new PAPA(_fileInfo.FullName, version);
 
                 string backupFilePath = _fileInfo.FullName + ".bak";
                 if (File.Exists(backupFilePath))
                 {
-                    _papaBackup = new PAPA(backupFilePath);
+                    _papaBackup = new PAPA(backupFilePath, version);
                 }
                 else if (autoBackup || MessageBox.Show("Would you like to create a backup of " + _fileInfo.Name + "?\r\nA backup allows the Original text box to display the source text before edits were made.", "Create Backup", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     File.Copy(_fileInfo.FullName, backupFilePath);
-                    _papaBackup = new PAPA(backupFilePath);
+                    _papaBackup = new PAPA(backupFilePath, version);
                 }
                 else
                 {
